@@ -29,7 +29,7 @@ class OngoingGamesController {
      */
     @GetMapping("/id")
     fun getOngoingGameById(
-        @RequestParam id: Int
+        @RequestParam("id") id: Int
     ): ResponseEntity<String> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         
@@ -43,7 +43,7 @@ class OngoingGamesController {
      */
     @GetMapping("/discord")
     fun getOngoingGameByDiscordChannelId(
-        @RequestParam channelId: String?
+        @RequestParam("channelId") channelId: String?
     ): ResponseEntity<String> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByHomePlatformId("Discord", channelId)
             ?: ongoingGamesRepository?.findByAwayPlatformId("Discord", channelId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
