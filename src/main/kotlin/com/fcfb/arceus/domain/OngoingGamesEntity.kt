@@ -2,7 +2,7 @@ package com.fcfb.arceus.domain
 
 import java.time.LocalDateTime
 import java.util.*
-import jakarta.persistence.*
+import javax.persistence.*
 
 @Entity
 @Table(name = "ongoing_games", schema = "arceus")

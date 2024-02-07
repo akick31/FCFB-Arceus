@@ -1,7 +1,7 @@
 package com.fcfb.arceus.domain
 
 import java.util.*
-import jakarta.persistence.*
+import javax.persistence.*
 
 @Entity
 @Table(name = "ranges", schema = "arceus")

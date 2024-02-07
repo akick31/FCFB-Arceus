@@ -12,7 +12,9 @@ interface RangesRepository : CrudRepository<RangesEntity?, Int?> {
                 "AND defensive_playbook = ? AND ? BETWEEN lower_range AND upper_range;", nativeQuery = true
     )
     fun findNormalResult(
-        play_type: String?, offensive_playbook: String?, defensive_playbook: String?,
+        playType: String?,
+        offensivePlaybook: String?,
+        defensivePlaybook: String?,
         difference: Int
     ): RangesEntity?
 
@@ -20,5 +22,7 @@ interface RangesRepository : CrudRepository<RangesEntity?, Int?> {
         value = "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN lower_range AND upper_range;",
         nativeQuery = true
     )
-    fun findNonNormalResult(play_type: String?, difference: Int): RangesEntity?
+    fun findNonNormalResult(playType: String?,
+                            difference: Int
+    ): RangesEntity?
 }

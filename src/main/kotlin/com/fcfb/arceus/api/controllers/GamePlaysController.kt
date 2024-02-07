@@ -20,14 +20,12 @@ import java.util.*
 @RestController
 @RequestMapping("/arceus/game_plays")
 class GamePlaysController(
-    playLogic: PlayLogic, gameInformation: GameInformation, gameStats: GameStats,
-    encryptionUtils: EncryptionUtils, gameUtils: GameUtils
+    private var playLogic: PlayLogic,
+    private var gameInformation: GameInformation,
+    private var gameStats: GameStats,
+    private var encryptionUtils: EncryptionUtils,
+    private var gameUtils: GameUtils
 ) {
-    private val playLogic: PlayLogic
-    private val gameInformation: GameInformation
-    private val gameStats: GameStats
-    private val encryptionUtils: EncryptionUtils
-    private val gameUtils: GameUtils
 
     @Autowired
     var gamePlaysRepository: GamePlaysRepository? = null
