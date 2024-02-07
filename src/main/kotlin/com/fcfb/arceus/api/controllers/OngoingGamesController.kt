@@ -31,7 +31,7 @@ class OngoingGamesController {
     fun getOngoingGameById(
         @RequestParam("id") id: Int
     ): ResponseEntity<String> {
-        val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByGameId(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         
         return ResponseEntity(ongoingGameData.get().toString(), HttpStatus.OK)
     }

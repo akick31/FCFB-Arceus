@@ -13,4 +13,7 @@ interface OngoingGamesRepository : CrudRepository<OngoingGamesEntity?, Int?> {
 
     @Query(value = "SELECT * FROM ongoing_games WHERE away_platform =? && away_platform_id =?", nativeQuery = true)
     fun findByAwayPlatformId(platform: String?, platformId: String?): Optional<OngoingGamesEntity?>?
+
+    @Query(value = "SELECT * FROM ongoing_games WHERE game_id =?", nativeQuery = true)
+    fun findByGameId(gameId: Int): Optional<OngoingGamesEntity?>?
 }
