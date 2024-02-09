@@ -23,22 +23,16 @@ class TeamsController {
     @GetMapping("/id")
     fun getTeamById(
         @RequestParam id: Int
-    ): ResponseEntity<String> {
+    ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
-        return ResponseEntity(teamData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(teamData.get(), HttpStatus.OK)
     }
     
     @GetMapping("")
-    fun getAllTeams(): ResponseEntity<String> {
-        val teamData: Iterable<TeamsEntity?> =
-            teamsRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        return if (teamData.iterator().hasNext()) {
-            val teamsString = teamData.joinToString("\n") { team -> team.toString() }
-            ResponseEntity(teamsString, HttpStatus.OK)
-        } else {
-            ResponseEntity(null, HttpStatus.NOT_FOUND)
-        }
+    fun getAllTeams(): ResponseEntity<List<TeamsEntity>> {
+        val teamData: Iterable<TeamsEntity?> = teamsRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        return ResponseEntity(teamData.filterNotNull(), HttpStatus.OK)
     }
 
     /**
@@ -49,10 +43,10 @@ class TeamsController {
     @GetMapping("/name")
     fun getTeamByName(
         @RequestParam name: String?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findByName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
-        return ResponseEntity(teamData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(teamData.get(), HttpStatus.OK)
     }
 
     /**
@@ -63,7 +57,7 @@ class TeamsController {
     @PostMapping("")
     fun createTeam(
         @RequestBody team: TeamsEntity
-    ): ResponseEntity<String> {
+    ): ResponseEntity<TeamsEntity> {
         return try {
             val newTeam: TeamsEntity? = teamsRepository?.save(
                 TeamsEntity(
@@ -88,7 +82,7 @@ class TeamsController {
                     0
                 ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             )
-            ResponseEntity(newTeam.toString(), HttpStatus.CREATED)
+            ResponseEntity(newTeam, HttpStatus.CREATED)
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
         }
@@ -104,7 +98,7 @@ class TeamsController {
     fun updateTeam(
         @PathVariable("name") name: String?,
         @RequestBody team: TeamsEntity
-    ): ResponseEntity<String> {
+    ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findByName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
         val existingTeam: TeamsEntity = teamData.get()
@@ -129,7 +123,7 @@ class TeamsController {
             overallConferenceLosses = team.overallConferenceLosses
         }
         teamsRepository?.save(existingTeam)
-        return ResponseEntity(existingTeam.toString(), HttpStatus.OK)
+        return ResponseEntity(existingTeam, HttpStatus.OK)
     }
 
     /**

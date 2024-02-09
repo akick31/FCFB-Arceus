@@ -127,26 +127,4 @@ class UsersEntity {
             approved
         )
     }
-
-    override fun toString(): String {
-        return """
-            {
-            "id": "$id",
-            "username": "$username",
-            "coachName": "$coachName",
-            "discordTag": "$discordTag",
-            "email": "$email",
-            "wins": $wins,
-            "losses": $losses,
-            "password": "$password",
-            "position": "$position",
-            "redditUsername": "$redditUsername",
-            "role": "$role",
-            "salt": "$salt",
-            "team": "$team",
-            "winPercentage": $winPercentage,
-            "approved": $approved
-            }
-            """.trimIndent()
-    }
 }

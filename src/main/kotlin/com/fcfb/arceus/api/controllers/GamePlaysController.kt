@@ -55,7 +55,7 @@ class GamePlaysController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<GamePlaysEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
             val offensiveSubmitter: String?
@@ -104,7 +104,7 @@ class GamePlaysController(
             val ongoingGamesEntity: OngoingGamesEntity = gameData.get()
             ongoingGamesEntity.currentPlayId = gamePlay.playId
             ongoingGamesRepository?.save(ongoingGamesEntity)
-            ResponseEntity(gamePlay.toString(), HttpStatus.CREATED)
+            ResponseEntity(gamePlay, HttpStatus.CREATED)
             
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
@@ -129,7 +129,7 @@ class GamePlaysController(
         @RequestParam("runoffType") runoffType: String,
         @RequestParam("offensiveTimeoutCalled") offensiveTimeoutCalled: Boolean,
         @RequestParam("defensiveTimeoutCalled") defensiveTimeoutCalled: Boolean
-    ): ResponseEntity<String> {
+    ): ResponseEntity<GamePlaysEntity> {
         return try {
             val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository?.findById(playId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
             val playCall = playCall.lowercase()
@@ -198,7 +198,7 @@ class GamePlaysController(
             // Mark play as finished, set the timeouts, save the play
             gamePlay.playFinished = true
             gamePlaysRepository?.save(gamePlay)
-            return ResponseEntity(gamePlay.toString(), HttpStatus.OK)
+            return ResponseEntity(gamePlay, HttpStatus.OK)
             //}
 
         } catch (e: Exception) {

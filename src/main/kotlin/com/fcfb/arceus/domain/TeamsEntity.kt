@@ -151,29 +151,4 @@ class TeamsEntity {
             overallConferenceLosses
         )
     }
-
-    override fun toString(): String {
-        return """{
-          "id": "$id",
-          "logo": "$logo",
-          "coach": "$coach",
-          "coachesPollRanking": $coachesPollRanking,
-          "name": "$name",
-          "playoffCommitteeRanking": $playoffCommitteeRanking,
-          "primaryColor": "$primaryColor",
-          "secondaryColor": "$secondaryColor",
-          "subdivision": "$subdivision",
-          "offensivePlaybook": "$offensivePlaybook",
-          "defensivePlaybook": "$defensivePlaybook",
-          "conference": "$conference",
-          "currentWins": $currentWins,
-          "currentLosses": $currentLosses,
-          "overallWins": $overallWins,
-          "overallLosses": $overallLosses,
-          "currentConferenceWins": $currentConferenceWins,
-          "currentConferenceLosses": $currentConferenceLosses,
-          "overallConferenceWins": $overallConferenceWins,
-          "overallConferenceLosses": $overallConferenceLosses
-        }"""
-    }
 }

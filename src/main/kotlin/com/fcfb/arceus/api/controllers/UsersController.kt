@@ -23,10 +23,10 @@ class UsersController {
     @GetMapping("/id")
     fun getUserById(
         @RequestParam id: String
-    ): ResponseEntity<String> {
+    ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
-        return ResponseEntity(userData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
     /**
@@ -37,22 +37,16 @@ class UsersController {
     @GetMapping("/team")
     fun getUserByTeam(
         @RequestParam team: String?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findByTeam(team) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
-        return ResponseEntity(userData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
     @GetMapping("")
-    fun getAllUsers(): ResponseEntity<String> {
-        val userData: Iterable<UsersEntity?> =
-            usersRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        return if (userData.iterator().hasNext()) {
-            val usersString = userData.joinToString("\n") { user -> user.toString() }
-            ResponseEntity(usersString, HttpStatus.OK)
-        } else {
-            ResponseEntity("No users found", HttpStatus.NOT_FOUND)
-        }
+    fun getAllUsers(): ResponseEntity<List<UsersEntity>> {
+        val userData: Iterable<UsersEntity?> = usersRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        return ResponseEntity(userData.filterNotNull(), HttpStatus.OK)
     }
 
     /**
@@ -63,10 +57,10 @@ class UsersController {
     @GetMapping("/name")
     fun getUserByName(
         @RequestParam name: String?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findByCoachName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
 
-        return ResponseEntity(userData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
     /**
@@ -77,7 +71,7 @@ class UsersController {
     @PostMapping("")
     fun createUser(
         @RequestBody user: UsersEntity
-    ): ResponseEntity<String> {
+    ): ResponseEntity<UsersEntity> {
         return try {
             val newUser: UsersEntity = usersRepository?.save(
                 UsersEntity(
@@ -97,7 +91,7 @@ class UsersController {
                     user.approved
                 )
             ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
-            ResponseEntity(newUser.toString(), HttpStatus.CREATED )
+            ResponseEntity(newUser, HttpStatus.CREATED )
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
         }
@@ -112,11 +106,11 @@ class UsersController {
     fun updateUser(
         @PathVariable("id") id: String,
         @RequestBody user: UsersEntity?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         val user: UsersEntity = userData.get()
         usersRepository!!.save(user)
-        return ResponseEntity(user.toString(), HttpStatus.OK)
+        return ResponseEntity(user, HttpStatus.OK)
     }
 
     /**

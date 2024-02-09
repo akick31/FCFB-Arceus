@@ -30,10 +30,10 @@ class OngoingGamesController {
     @GetMapping("/id")
     fun getOngoingGameById(
         @RequestParam("id") id: Int
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByGameId(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         
-        return ResponseEntity(ongoingGameData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(ongoingGameData.get(), HttpStatus.OK)
     }
 
     /**
@@ -44,11 +44,11 @@ class OngoingGamesController {
     @GetMapping("/discord")
     fun getOngoingGameByDiscordChannelId(
         @RequestParam("channelId") channelId: String?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByHomePlatformId("Discord", channelId)
             ?: ongoingGamesRepository?.findByAwayPlatformId("Discord", channelId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         
-        return ResponseEntity(ongoingGameData.get().toString(), HttpStatus.OK)
+        return ResponseEntity(ongoingGameData.get(), HttpStatus.OK)
     }
 
     /**
@@ -77,7 +77,7 @@ class OngoingGamesController {
         @RequestParam("startTime") startTime: String?,
         @RequestParam("location") location: String?,
         @RequestParam("isScrimmage") isScrimmage: Boolean?
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(homeTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(awayTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
@@ -158,7 +158,7 @@ class OngoingGamesController {
 
             // Save the updated entity
             ongoingGamesRepository?.save(newGame)
-            ResponseEntity(newGame.toString(), HttpStatus.CREATED)
+            ResponseEntity(newGame, HttpStatus.CREATED)
             
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
@@ -175,7 +175,7 @@ class OngoingGamesController {
     fun runCoinToss(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossCall") coinTossCall: String
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
             val game: OngoingGamesEntity = gameData.get()
@@ -187,7 +187,7 @@ class OngoingGamesController {
                 game.awayTeam
             }
             game.coinTossWinner = coinTossWinner
-            return ResponseEntity(ongoingGamesRepository?.save(game).toString(), HttpStatus.OK)
+            return ResponseEntity(ongoingGamesRepository?.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
         }
@@ -203,7 +203,7 @@ class OngoingGamesController {
     fun updateCoinTossChoice(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: String
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
             val game: OngoingGamesEntity = gameData.get()
@@ -213,7 +213,7 @@ class OngoingGamesController {
             } else if (game.coinTossWinner == game.awayTeam && coinTossChoice == "defer") {
                 game.possession = "away"
             }
-            return ResponseEntity(ongoingGamesRepository?.save(game).toString(), HttpStatus.OK)
+            return ResponseEntity(ongoingGamesRepository?.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
         }
@@ -229,7 +229,7 @@ class OngoingGamesController {
     fun updateWaitingOn(
         @RequestParam("gameId") gameId: String,
         @RequestParam("username") username: String
-    ): ResponseEntity<String> {
+    ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
             val game: OngoingGamesEntity = gameData.get()
@@ -248,7 +248,7 @@ class OngoingGamesController {
             // Format the result and set it on the game
             val formattedDateTime = futureTime.format(formatter)
             game.gameTimer = formattedDateTime
-            return ResponseEntity(ongoingGamesRepository?.save(game).toString(), HttpStatus.OK)
+            return ResponseEntity(ongoingGamesRepository?.save(game), HttpStatus.OK)
 
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
