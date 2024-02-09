@@ -40,9 +40,9 @@ class GameInformation(private val gameUtils: GameUtils) {
 
         // If game quarter is 0, then the game is over
         if (play.gameQuarter == 0) {
-            game.isFinal = true
+            game.final = true
         } else if (play.gameQuarter!! >= 5) {
-            game.isOT = true
+            game.ot = true
         }
 
         // Update the play type

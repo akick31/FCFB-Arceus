@@ -121,12 +121,12 @@ class OngoingGamesEntity {
     var winProbability: Double? = null
 
     @Basic
-    @Column(name = "is_final")
-    var isFinal: Boolean = false
+    @Column(name = "final")
+    var final: Boolean = false
 
     @Basic
-    @Column(name = "is_ot")
-    var isOT: Boolean = false
+    @Column(name = "ot")
+    var ot: Boolean = false
 
     @Basic
     @Column(name = "season")
@@ -197,8 +197,8 @@ class OngoingGamesEntity {
     var currentPlayId: Int? = null
 
     @Basic
-    @Column(name = "is_scrimmage")
-    var isScrimmage: Boolean? = null
+    @Column(name = "scrimmage")
+    var scrimmage: Boolean? = null
 
     @Basic
     @Column(name = "clock_stopped")
@@ -211,12 +211,12 @@ class OngoingGamesEntity {
         quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
         tvChannel: String?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
         awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: String?,
-        timestamp: LocalDateTime?, winProbability: Double?, isFinal: Boolean, isOT: Boolean,
+        timestamp: LocalDateTime?, winProbability: Double?, final: Boolean, ot: Boolean,
         season: Int?, week: Int?, waitingOn: String, winProbabilityPlot: String?, scorePlot: String?,
         numPlays: Int, homeTimeouts: Int, awayTimeouts: Int, coinTossWinner: String?,
         coinTossChoice: String?, homePlatform: String?, homePlatformId: String?, awayPlatform: String?,
         awayPlatformId: String?, gameTimer: String?, currentPlayType: String?, currentPlayId: Int?,
-        isScrimmage: Boolean?, clockStopped: Boolean?
+        scrimmage: Boolean?, clockStopped: Boolean?
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -245,8 +245,8 @@ class OngoingGamesEntity {
         this.subdivision = subdivision
         this.timestamp = timestamp
         this.winProbability = winProbability
-        this.isFinal = isFinal
-        this.isOT = isOT
+        this.final = final
+        this.ot = ot
         this.season = season
         this.week = week
         this.waitingOn = waitingOn
@@ -264,7 +264,7 @@ class OngoingGamesEntity {
         this.gameTimer = gameTimer
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
-        this.isScrimmage = isScrimmage
+        this.scrimmage = scrimmage
         this.clockStopped = clockStopped
     }
 
@@ -274,7 +274,7 @@ class OngoingGamesEntity {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as OngoingGamesEntity
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && isFinal == that.isFinal && isOT == that.isOT && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && isScrimmage == that.isScrimmage && clockStopped == that.clockStopped
+        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && final == that.final && ot == that.ot && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped
     }
 
     override fun hashCode(): Int {
@@ -307,8 +307,8 @@ class OngoingGamesEntity {
             subdivision,
             timestamp,
             winProbability,
-            isFinal,
-            isOT,
+            final,
+            ot,
             season,
             week,
             waitingOn,
@@ -326,7 +326,7 @@ class OngoingGamesEntity {
             gameTimer,
             currentPlayType,
             currentPlayId,
-            isScrimmage,
+            scrimmage,
             clockStopped
         )
     }
