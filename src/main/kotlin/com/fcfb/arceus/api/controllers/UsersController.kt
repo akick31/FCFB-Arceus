@@ -3,6 +3,7 @@ package com.fcfb.arceus.api.controllers
 import com.fcfb.arceus.domain.UsersEntity
 import com.fcfb.arceus.api.repositories.UsersRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -25,7 +26,9 @@ class UsersController {
         @RequestParam id: String
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!userData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
@@ -39,13 +42,18 @@ class UsersController {
         @RequestParam team: String?
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findByTeam(team) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!userData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
     @GetMapping("")
     fun getAllUsers(): ResponseEntity<List<UsersEntity>> {
         val userData: Iterable<UsersEntity?> = usersRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!userData.iterator().hasNext()) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(userData.filterNotNull(), HttpStatus.OK)
     }
 
@@ -59,7 +67,9 @@ class UsersController {
         @RequestParam name: String?
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findByCoachName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!userData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
@@ -73,6 +83,10 @@ class UsersController {
         @RequestBody user: UsersEntity
     ): ResponseEntity<UsersEntity> {
         return try {
+            // Generate salt and hash password
+            val passwordEncoder = BCryptPasswordEncoder()
+            val salt = passwordEncoder.encode(user.password)
+
             val newUser: UsersEntity = usersRepository?.save(
                 UsersEntity(
                     user.username,
@@ -80,15 +94,15 @@ class UsersController {
                     user.discordTag,
                     user.email,
                     0,
-                    user.password,
+                    passwordEncoder.encode(user.password),
                     user.position,
                     user.redditUsername,
-                    user.role,
-                    user.salt,
-                    user.team,
+                    "user",
+                    salt,
+                    null,
                     0.0,
                     0,
-                    user.approved
+                    0
                 )
             ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             ResponseEntity(newUser, HttpStatus.CREATED )
@@ -105,12 +119,112 @@ class UsersController {
     @PutMapping("/{id}")
     fun updateUser(
         @PathVariable("id") id: String,
-        @RequestBody user: UsersEntity?
+        @RequestBody updatedUser: UsersEntity?
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!userData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
+
         val user: UsersEntity = userData.get()
+
+        // Check if password is being updated
+        if (updatedUser?.password != null) {
+            // Generate new salt and hash new password
+            val passwordEncoder = BCryptPasswordEncoder()
+            val newSalt = passwordEncoder.encode(updatedUser.password)
+            user.password = passwordEncoder.encode(updatedUser.password)
+            user.salt = newSalt
+        }
+
+        // Update other user information
+        // Update username
+        if (updatedUser?.username != null) {
+            user.username = updatedUser.username
+        }
+
+        // Update coachName
+        if (updatedUser?.coachName != null) {
+            user.coachName = updatedUser.coachName
+        }
+
+        // Update discordTag
+        if (updatedUser?.discordTag != null) {
+            user.discordTag = updatedUser.discordTag
+        }
+
+        // Update email
+        if (updatedUser?.email != null) {
+            user.email = updatedUser.email
+        }
+
+        // Update role
+        if (updatedUser?.role != null) {
+            user.role = updatedUser.role
+        }
+
+        // Update position
+        if (updatedUser?.position != null) {
+            user.position = updatedUser.position
+        }
+
+        // Update reddit username
+        if (updatedUser?.redditUsername != null) {
+            user.redditUsername = updatedUser.redditUsername
+        }
+
+        // Update team
+        if (updatedUser?.team != null) {
+            user.team = updatedUser.team
+        }
+
+        // Update wins
+        if (updatedUser?.wins != null) {
+            user.wins = updatedUser.wins
+        }
+
+        // Update losses
+        if (updatedUser?.losses != null) {
+            user.losses = updatedUser.losses
+        }
+
+        // Update winPercentage
+        user.winPercentage = user.wins.toDouble() / (user.wins + user.losses)
+
+        // Update approved
+        if (updatedUser?.approved != null) {
+            user.approved = updatedUser.approved
+        }
+
         usersRepository!!.save(user)
         return ResponseEntity(user, HttpStatus.OK)
+    }
+
+    /**
+     * Login a user
+     * @param usernameOrEmail
+     * @param password
+     * @return
+     */
+    @PostMapping("/login")
+    fun loginUser(
+        @RequestParam("usernameOrEmail") usernameOrEmail: String,
+        @RequestParam("password") password: String
+    ): ResponseEntity<UsersEntity> {
+        val userData: Optional<UsersEntity?> = usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!userData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
+        val user = userData.get()
+        val passwordEncoder = BCryptPasswordEncoder()
+        if (passwordEncoder.matches(password, user.password)) {
+            // Passwords match, return user data
+            return ResponseEntity(user, HttpStatus.OK)
+        }
+        else {
+            // Passwords do not match
+            return ResponseEntity(null, HttpStatus.UNAUTHORIZED)
+        }
     }
 
     /**
@@ -123,6 +237,9 @@ class UsersController {
         @PathVariable("id") id: String
     ): ResponseEntity<HttpStatus> {
         usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!usersRepository?.findById(id)!!.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         usersRepository?.deleteById(id)
         return ResponseEntity(HttpStatus.OK)
     }

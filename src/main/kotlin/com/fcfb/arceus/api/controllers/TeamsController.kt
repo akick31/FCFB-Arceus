@@ -25,13 +25,18 @@ class TeamsController {
         @RequestParam id: Int
     ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!teamData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(teamData.get(), HttpStatus.OK)
     }
     
     @GetMapping("")
     fun getAllTeams(): ResponseEntity<List<TeamsEntity>> {
         val teamData: Iterable<TeamsEntity?> = teamsRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!teamData.iterator().hasNext()) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(teamData.filterNotNull(), HttpStatus.OK)
     }
 
@@ -45,7 +50,9 @@ class TeamsController {
         @RequestParam name: String?
     ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findByName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!teamData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(teamData.get(), HttpStatus.OK)
     }
 
@@ -100,7 +107,9 @@ class TeamsController {
         @RequestBody team: TeamsEntity
     ): ResponseEntity<TeamsEntity> {
         val teamData: Optional<TeamsEntity?> = teamsRepository?.findByName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-
+        if (!teamData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         val existingTeam: TeamsEntity = teamData.get()
         existingTeam.apply {
             this.name = team.name
@@ -136,6 +145,9 @@ class TeamsController {
         @PathVariable("id") id: Int
     ): ResponseEntity<HttpStatus> {
         teamsRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!teamsRepository?.findById(id)!!.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         teamsRepository?.deleteById(id)
         return ResponseEntity(HttpStatus.OK)
     }

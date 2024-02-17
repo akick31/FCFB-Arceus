@@ -58,6 +58,9 @@ class GamePlaysController(
     ): ResponseEntity<GamePlaysEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            if (!gameData.isPresent) {
+                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            }
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
             if (gameData.get().possession == "home") {
@@ -132,6 +135,9 @@ class GamePlaysController(
     ): ResponseEntity<GamePlaysEntity> {
         return try {
             val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository?.findById(playId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            if (!gamePlayData.isPresent) {
+                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            }
             val playCall = playCall.lowercase()
 
             val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST))

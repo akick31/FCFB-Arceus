@@ -32,7 +32,9 @@ class OngoingGamesController {
         @RequestParam("id") id: Int
     ): ResponseEntity<OngoingGamesEntity> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByGameId(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        
+        if (!ongoingGameData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(ongoingGameData.get(), HttpStatus.OK)
     }
 
@@ -47,7 +49,9 @@ class OngoingGamesController {
     ): ResponseEntity<OngoingGamesEntity> {
         val ongoingGameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findByHomePlatformId("Discord", channelId)
             ?: ongoingGamesRepository?.findByAwayPlatformId("Discord", channelId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        
+        if (!ongoingGameData.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         return ResponseEntity(ongoingGameData.get(), HttpStatus.OK)
     }
 
@@ -80,8 +84,14 @@ class OngoingGamesController {
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(homeTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            if (!homeTeamData.isPresent) {
+                return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            }
             val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(awayTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
-            
+            if (!awayTeamData.isPresent) {
+                return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            }
+
             // Set the DOG timer
             // Get the current date and time
             val now = LocalDateTime.now()
@@ -178,6 +188,9 @@ class OngoingGamesController {
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            if (!gameData.isPresent) {
+                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            }
             val game: OngoingGamesEntity = gameData.get()
             val result = Random().nextInt(2)
             // 1 is heads, away team called tails, they lose
@@ -206,6 +219,9 @@ class OngoingGamesController {
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            if (!gameData.isPresent) {
+                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            }
             val game: OngoingGamesEntity = gameData.get()
             game.coinTossChoice = coinTossChoice
             if (game.coinTossWinner == game.homeTeam && coinTossChoice == "receive") {
@@ -232,6 +248,9 @@ class OngoingGamesController {
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId.toInt()) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            if (!gameData.isPresent) {
+                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            }
             val game: OngoingGamesEntity = gameData.get()
             game.waitingOn = username
 
@@ -265,6 +284,9 @@ class OngoingGamesController {
         @PathVariable("id") id: Int
     ): ResponseEntity<HttpStatus> {
         ongoingGamesRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        if (!ongoingGamesRepository?.findById(id)!!.isPresent) {
+            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        }
         ongoingGamesRepository?.deleteById(id)
         return ResponseEntity(HttpStatus.OK)
     }

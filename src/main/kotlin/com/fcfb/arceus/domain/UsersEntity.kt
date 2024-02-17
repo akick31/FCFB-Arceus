@@ -13,11 +13,11 @@ class UsersEntity {
 
     @Basic
     @Column(name = "username")
-    var username: String? = null
+    lateinit var username: String
 
     @Basic
     @Column(name = "coach_name")
-    var coachName: String? = null
+    lateinit var coachName: String
 
     @Basic
     @Column(name = "discord_tag")
@@ -25,19 +25,19 @@ class UsersEntity {
 
     @Basic
     @Column(name = "email")
-    var email: String? = null
+    lateinit var email: String
 
     @Basic
     @Column(name = "losses")
-    var losses: Int? = null
+    var losses: Int = 0
 
     @Basic
     @Column(name = "password")
-    var password: String? = null
+    lateinit var password: String
 
     @Basic
     @Column(name = "position")
-    var position: String? = null
+    lateinit var position: String
 
     @Basic
     @Column(name = "reddit_username")
@@ -45,11 +45,11 @@ class UsersEntity {
 
     @Basic
     @Column(name = "role")
-    var role: String? = null
+    var role: String = "user"
 
     @Basic
     @Column(name = "salt")
-    var salt: String? = null
+    lateinit var salt: String
 
     @Basic
     @Column(name = "team")
@@ -57,30 +57,30 @@ class UsersEntity {
 
     @Basic
     @Column(name = "win_percentage")
-    var winPercentage: Double? = null
+    var winPercentage: Double = 0.0
 
     @Basic
     @Column(name = "wins")
-    var wins: Int? = null
+    var wins: Int = 0
 
     @Basic
     @Column(name = "approved")
     var approved: Byte = 0
 
     constructor(
-        username: String?,
-        coachName: String?,
+        username: String,
+        coachName: String,
         discordTag: String?,
-        email: String?,
-        losses: Int?,
-        password: String?,
-        position: String?,
+        email: String,
+        losses: Int,
+        password: String,
+        position: String,
         redditUsername: String?,
-        role: String?,
-        salt: String?,
+        role: String,
+        salt: String,
         team: String?,
-        winPercentage: Double?,
-        wins: Int?,
+        winPercentage: Double,
+        wins: Int,
         approved: Byte
     ) {
         this.username = username

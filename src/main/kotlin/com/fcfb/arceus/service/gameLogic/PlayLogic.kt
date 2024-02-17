@@ -28,8 +28,11 @@ class PlayLogic(private val gameUtils: GameUtils) {
      * @return
      */
     fun runNormalPlay(
-        gamePlay: GamePlaysEntity, clockStopped: Boolean?, game: OngoingGamesEntity,
-        playCall: String, runoffType: String, timeoutCalled: Boolean, offensiveNumber: String,
+        gamePlay: GamePlaysEntity,
+        clockStopped: Boolean?,
+        game: OngoingGamesEntity,
+        playCall: String, runoffType: String,
+        timeoutCalled: Boolean, offensiveNumber: String,
         decryptedDefensiveNumber: String
     ): GamePlaysEntity {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
@@ -222,8 +225,18 @@ class PlayLogic(private val gameUtils: GameUtils) {
         return gamePlay
     }
 
+    /**
+     * Runs the kickoff play, returns the updated gamePlay
+     * @param gamePlay
+     * @param game
+     * @param playCall
+     * @param offensiveNumber
+     * @param decryptedDefensiveNumber
+     */
     fun runKickoffPlay(
-        gamePlay: GamePlaysEntity, game: OngoingGamesEntity, playCall: String, offensiveNumber: String,
+        gamePlay: GamePlaysEntity,
+        game: OngoingGamesEntity, playCall: String,
+        offensiveNumber: String,
         decryptedDefensiveNumber: String
     ): GamePlaysEntity {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
@@ -344,9 +357,20 @@ class PlayLogic(private val gameUtils: GameUtils) {
         return gamePlay
     }
 
+    /**
+     * Runs the point after play, returns the updated gamePlay
+     * @param gamePlay
+     * @param game
+     * @param playCall
+     * @param offensiveNumber
+     * @param decryptedDefensiveNumber
+     */
     fun runPointAfterPlay(
-        gamePlay: GamePlaysEntity, game: OngoingGamesEntity, playCall: String,
-        offensiveNumber: String, decryptedDefensiveNumber: String
+        gamePlay: GamePlaysEntity,
+        game: OngoingGamesEntity,
+        playCall: String,
+        offensiveNumber: String,
+        decryptedDefensiveNumber: String
     ): GamePlaysEntity {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession: String? = gamePlay.possession

@@ -1,6 +1,7 @@
 package com.fcfb.arceus.api.repositories
 
 import com.fcfb.arceus.domain.UsersEntity
+import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import java.util.*
@@ -10,4 +11,7 @@ interface UsersRepository : CrudRepository<UsersEntity?, String?> {
     fun findByCoachName(name: String?): Optional<UsersEntity?>?
     fun findByTeam(team: String?): Optional<UsersEntity?>?
     fun findEntityByTeam(team: String?): UsersEntity?
+    @Query("SELECT u FROM UsersEntity u WHERE u.username = :usernameOrEmail OR u.email = :usernameOrEmail")
+    fun findByUsernameOrEmail(usernameOrEmail: String): Optional<UsersEntity?>?
+
 }
