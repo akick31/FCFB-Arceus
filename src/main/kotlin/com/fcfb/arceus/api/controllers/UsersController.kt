@@ -21,9 +21,9 @@ class UsersController {
      * @param id
      * @return
      */
-    @GetMapping("/id")
+    @GetMapping("id")
     fun getUserById(
-        @RequestParam id: String
+        @RequestParam id: Long
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
@@ -198,33 +198,6 @@ class UsersController {
 
         usersRepository!!.save(user)
         return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Login a user
-     * @param usernameOrEmail
-     * @param password
-     * @return
-     */
-    @PostMapping("/login")
-    fun loginUser(
-        @RequestParam("usernameOrEmail") usernameOrEmail: String,
-        @RequestParam("password") password: String
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
-        val passwordEncoder = BCryptPasswordEncoder()
-        if (passwordEncoder.matches(password, user.password)) {
-            // Passwords match, return user data
-            return ResponseEntity(user, HttpStatus.OK)
-        }
-        else {
-            // Passwords do not match
-            return ResponseEntity(null, HttpStatus.UNAUTHORIZED)
-        }
     }
 
     /**

@@ -8,6 +8,7 @@ import java.util.*
 
 @Repository
 interface UsersRepository : CrudRepository<UsersEntity?, String?> {
+    fun findById(id: Long?): Optional<UsersEntity?>?
     fun findByCoachName(name: String?): Optional<UsersEntity?>?
     fun findByTeam(team: String?): Optional<UsersEntity?>?
     fun findEntityByTeam(team: String?): UsersEntity?
