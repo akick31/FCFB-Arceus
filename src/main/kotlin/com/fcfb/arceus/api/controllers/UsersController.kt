@@ -74,44 +74,6 @@ class UsersController {
     }
 
     /**
-     * Create a new yser
-     * @param user
-     * @return
-     */
-    @PostMapping("")
-    fun createUser(
-        @RequestBody user: UsersEntity
-    ): ResponseEntity<UsersEntity> {
-        return try {
-            // Generate salt and hash password
-            val passwordEncoder = BCryptPasswordEncoder()
-            val salt = passwordEncoder.encode(user.password)
-
-            val newUser: UsersEntity = usersRepository?.save(
-                UsersEntity(
-                    user.username,
-                    user.coachName,
-                    user.discordTag,
-                    user.email,
-                    0,
-                    passwordEncoder.encode(user.password),
-                    user.position,
-                    user.redditUsername,
-                    "user",
-                    salt,
-                    null,
-                    0.0,
-                    0,
-                    0
-                )
-            ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
-            ResponseEntity(newUser, HttpStatus.CREATED )
-        } catch (e: Exception) {
-            ResponseEntity(null, HttpStatus.BAD_REQUEST)
-        }
-    }
-
-    /**
      * Update a user
      * @param id
      * @return

@@ -14,5 +14,6 @@ interface UsersRepository : CrudRepository<UsersEntity?, String?> {
     fun findEntityByTeam(team: String?): UsersEntity?
     @Query("SELECT u FROM UsersEntity u WHERE u.username = :usernameOrEmail OR u.email = :usernameOrEmail")
     fun findByUsernameOrEmail(usernameOrEmail: String): Optional<UsersEntity?>?
+    fun findByVerificationToken(token: String?): Optional<UsersEntity?>?
 
 }

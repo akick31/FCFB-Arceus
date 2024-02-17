@@ -67,6 +67,10 @@ class UsersEntity {
     @Column(name = "approved")
     var approved: Byte = 0
 
+    @Basic
+    @Column(name = "verification_token")
+    lateinit var verificationToken: String
+
     constructor(
         username: String,
         coachName: String,
@@ -81,7 +85,8 @@ class UsersEntity {
         team: String?,
         winPercentage: Double,
         wins: Int,
-        approved: Byte
+        approved: Byte,
+        verificationToken: String
     ) {
         this.username = username
         this.coachName = coachName
@@ -97,6 +102,7 @@ class UsersEntity {
         this.winPercentage = winPercentage
         this.wins = wins
         this.approved = approved
+        this.verificationToken = verificationToken
     }
 
     constructor()
@@ -124,7 +130,8 @@ class UsersEntity {
             team,
             winPercentage,
             wins,
-            approved
+            approved,
+            verificationToken
         )
     }
 }
