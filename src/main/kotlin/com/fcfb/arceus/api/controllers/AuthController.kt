@@ -5,6 +5,7 @@ import com.fcfb.arceus.api.repositories.UsersRepository
 import com.fcfb.arceus.api.repositories.SessionRepository
 import com.fcfb.arceus.models.Session
 import com.fcfb.arceus.service.email.EmailService
+import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
@@ -19,7 +20,7 @@ import javax.transaction.Transactional
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
 @RequestMapping("/arceus/auth")
-class AuthController(
+open class AuthController(
     private var sessionUtils: SessionUtils,
     private var emailService: EmailService
 ) {
@@ -69,7 +70,8 @@ class AuthController(
             // Send verification email
             emailService.sendVerificationEmail(newUser.email, newUser.id, verificationToken)
 
-            ResponseEntity(newUser, HttpStatus.CREATED )
+            Logger.debug("User ${user.username} registered successfully. Verification email sent.")
+            ResponseEntity(newUser, HttpStatus.CREATED)
         } catch (e: Exception) {
             ResponseEntity(null, HttpStatus.BAD_REQUEST)
         }
@@ -118,7 +120,7 @@ class AuthController(
      */
     @PostMapping("/logout")
     @Transactional
-    fun logoutUser(
+    open fun logoutUser(
         @RequestParam("token") token: String
     ): ResponseEntity<String> {
         sessionRepository?.deleteByToken(token)
