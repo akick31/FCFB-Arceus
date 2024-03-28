@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.gameLogic
+package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.OngoingGamesEntity
 import org.springframework.stereotype.Component

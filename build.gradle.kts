@@ -15,6 +15,7 @@ repositories {
 }
 
 dependencies {
+    implementation("ch.qos.logback:logback-classic:1.2.0")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -28,6 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("javax.persistence:javax.persistence-api")
     implementation("dev.kord:kord-core:0.13.1")
+    implementation("org.reactivestreams:reactive-streams:1.0.3")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
