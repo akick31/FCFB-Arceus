@@ -4,7 +4,7 @@ import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.domain.TeamsEntity
 import com.fcfb.arceus.api.repositories.OngoingGamesRepository
 import com.fcfb.arceus.api.repositories.TeamsRepository
-import com.fcfb.arceus.models.StartGameRequest
+import com.fcfb.arceus.models.Game
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -69,7 +69,7 @@ class OngoingGamesController(
      */
     @PostMapping("/start")
     suspend fun startGame(
-        @RequestBody startGameRequest: StartGameRequest
+        @RequestBody startGameRequest: Game.StartRequest
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
             val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startGameRequest.homeTeam)
@@ -159,11 +159,18 @@ class OngoingGamesController(
             newGame.winProbabilityPlot = winprobName
             newGame.scorePlot = scoreplotName
 
+            // Create a new Discord thread
+            if (newGame.homePlatform == "Discord") {
+                val gameThreadId = discordService.createGameThread(newGame)
+                newGame.homePlatformId = gameThreadId.toString()
+            }
+            if (newGame.awayPlatform == "Discord") {
+                val gameThreadId = discordService.createGameThread(newGame)
+                newGame.awayPlatformId = gameThreadId.toString()
+            }
+
             // Save the updated entity
             ongoingGamesRepository?.save(newGame)
-
-            // Create a new Discord thread
-            discordService.createGameThread(newGame)
             ResponseEntity(newGame, HttpStatus.CREATED)
             
         } catch (e: Exception) {

@@ -1,5 +1,6 @@
 package com.fcfb.arceus.domain
 
+import com.fcfb.arceus.models.Game
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -182,7 +183,7 @@ class OngoingGamesEntity {
 
     @Basic
     @Column(name = "away_platform_id")
-    private var awayPlatformId: String? = null
+    var awayPlatformId: String? = null
 
     @Basic
     @Column(name = "game_timer")
@@ -209,12 +210,12 @@ class OngoingGamesEntity {
         homeOffensivePlaybook: String, awayOffensivePlaybook: String, homeDefensivePlaybook: String,
         awayDefensivePlaybook: String, homeScore: Int, awayScore: Int, possession: String?,
         quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
-        tvChannel: String?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
-        awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: String?,
+        tvChannel: Game.TVChannel?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
+        awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: Game.Subdivision?,
         timestamp: LocalDateTime?, winProbability: Double?, final: Boolean, ot: Boolean,
         season: Int?, week: Int?, waitingOn: String, winProbabilityPlot: String?, scorePlot: String?,
         numPlays: Int, homeTimeouts: Int, awayTimeouts: Int, coinTossWinner: String?,
-        coinTossChoice: String?, homePlatform: String?, homePlatformId: String?, awayPlatform: String?,
+        coinTossChoice: String?, homePlatform: Game.Platform?, homePlatformId: String?, awayPlatform: Game.Platform?,
         awayPlatformId: String?, gameTimer: String?, currentPlayType: String?, currentPlayId: Int?,
         scrimmage: Boolean?, clockStopped: Boolean?
     ) {

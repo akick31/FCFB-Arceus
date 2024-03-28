@@ -1,17 +1,24 @@
 package com.fcfb.arceus.service.discord
 
+import com.fcfb.arceus.api.repositories.GameMessagesRepository
 import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.models.Game
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import dev.kord.core.*
 import dev.kord.gateway.PrivilegedIntent
 import dev.kord.gateway.Intent
 import com.fcfb.arceus.utils.Logger
+import dev.kord.common.annotation.KordExperimental
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.entity.channel.ForumChannel
+import dev.kord.core.entity.channel.thread.TextChannelThread
+import org.springframework.beans.factory.annotation.Autowired
 
 @Service
 class DiscordService {
+    @Autowired
+    var gameMessagesRepository: GameMessagesRepository? = null
 
     @Value("\${discord.bot.token}")
     private lateinit var botToken: String
@@ -21,6 +28,17 @@ class DiscordService {
 
     @Value("\${discord.forum.channel.id}")
     private lateinit var gameChannelId: String
+
+    //TODO: Prompt for coin toss
+    @OptIn(KordExperimental::class)
+    suspend fun sendMessage(game: OngoingGamesEntity, gameThread: TextChannelThread, scenario: Game.Scenario) {
+        var messageContent = gameMessagesRepository?.findByScenario(scenario)?.message ?: return
+
+        // Append the users to ping to the message
+        messageContent += "\n\n @${game.homeCoach} @${game.awayCoach}"
+
+        gameThread.createMessage(messageContent)
+    }
 
     /**
      * Create a new Discord thread
@@ -62,6 +80,9 @@ class DiscordService {
                     content = threadContent
                 }
             }
+
+            sendMessage(game, gameThread, Game.Scenario.GAME_START)
+
             Logger.info("Game thread created: $gameThread")
             logoutFromDiscord(client)
             Logger.info("Logged out of Discord")
