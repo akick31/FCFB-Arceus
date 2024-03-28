@@ -106,7 +106,7 @@ class UsersController {
      * @param id
      * @param newUsername
      */
-    @PutMapping("/update/username")
+    @PutMapping("/username")
     fun updateUserUsername(
         @RequestParam("id") id: Long,
         @RequestParam newUsername: String?

@@ -19,7 +19,7 @@ import javax.transaction.Transactional
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/arceus/auth")
+@RequestMapping("/auth")
 open class AuthController(
     private var sessionUtils: SessionUtils,
     private var emailService: EmailService

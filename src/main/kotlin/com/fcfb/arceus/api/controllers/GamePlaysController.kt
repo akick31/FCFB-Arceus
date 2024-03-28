@@ -18,7 +18,7 @@ import java.util.*
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/arceus/game_plays")
+@RequestMapping("/game_plays")
 class GamePlaysController(
     private var playLogic: PlayLogic,
     private var gameInformation: GameInformation,

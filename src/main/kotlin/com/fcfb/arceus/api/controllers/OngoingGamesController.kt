@@ -4,6 +4,8 @@ import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.domain.TeamsEntity
 import com.fcfb.arceus.api.repositories.OngoingGamesRepository
 import com.fcfb.arceus.api.repositories.TeamsRepository
+import com.fcfb.arceus.models.StartGameRequest
+import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -14,8 +16,10 @@ import java.util.*
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/arceus/ongoing_games")
-class OngoingGamesController {
+@RequestMapping("/ngoing_games")
+class OngoingGamesController(
+    private var discordService: DiscordService
+) {
     @Autowired
     var ongoingGamesRepository: OngoingGamesRepository? = null
 
@@ -57,37 +61,21 @@ class OngoingGamesController {
 
     /**
      * Start a game
-     * @param season
-     * @param subdivision
-     * @param homeTeam
-     * @param awayTeam
-     * @param tvChannel
-     * @param startTime
-     * @param location
+     * @param startGameRequest
      * @return
      */
     @PostMapping("/start")
-    fun startGame(
-        @RequestParam("homePlatform") homePlatform: String?,
-        @RequestParam("homePlatformId") homePlatformId: String?,
-        @RequestParam("awayPlatform") awayPlatform: String?,
-        @RequestParam("awayPlatformId") awayPlatformId: String?,
-        @RequestParam("season") season: String,
-        @RequestParam("week") week: String,
-        @RequestParam("subdivision") subdivision: String?,
-        @RequestParam("homeTeam") homeTeam: String,
-        @RequestParam("awayTeam") awayTeam: String,
-        @RequestParam("tvChannel") tvChannel: String?,
-        @RequestParam("startTime") startTime: String?,
-        @RequestParam("location") location: String?,
-        @RequestParam("isScrimmage") isScrimmage: Boolean?
+    suspend fun startGame(
+        @RequestBody startGameRequest: StartGameRequest
     ): ResponseEntity<OngoingGamesEntity> {
         return try {
-            val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(homeTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startGameRequest.homeTeam)
+                ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             if (!homeTeamData.isPresent) {
                 return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             }
-            val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(awayTeam) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startGameRequest.awayTeam)
+                ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             if (!awayTeamData.isPresent) {
                 return ResponseEntity(null, HttpStatus.BAD_REQUEST)
             }
@@ -106,8 +94,8 @@ class OngoingGamesController {
             val formattedDateTime = futureTime.format(formatter)
             val newGame: OngoingGamesEntity = ongoingGamesRepository?.save(
                 OngoingGamesEntity(
-                    homeTeam,
-                    awayTeam,
+                    startGameRequest.homeTeam,
+                    startGameRequest.awayTeam,
                     homeTeamData.get().coach ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
                     awayTeamData.get().coach ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
                     homeTeamData.get().offensivePlaybook?.lowercase() ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
@@ -122,19 +110,21 @@ class OngoingGamesController {
                     0,
                     1,
                     10,
-                    tvChannel,
-                    startTime,
-                    location,
+                    startGameRequest.tvChannel,
+                    startGameRequest.startTime,
+                    startGameRequest.location,
                     homeTeamData.get().currentWins,
                     homeTeamData.get().currentLosses,
                     awayTeamData.get().currentWins,
                     awayTeamData.get().currentLosses,
                     "none_scorebug.png",
-                    subdivision,
+                    startGameRequest.subdivision,
                     LocalDateTime.now(),
                     0.0,
                     java.lang.Boolean.FALSE,
-                    java.lang.Boolean.FALSE, season.toInt(), week.toInt(),
+                    java.lang.Boolean.FALSE,
+                    startGameRequest.season.toInt(),
+                    startGameRequest.week.toInt(),
                     awayTeamData.get().coach ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
                     "none_winprob.png",
                     "none_scoreplot.png",
@@ -143,14 +133,14 @@ class OngoingGamesController {
                     3,
                     "None",
                     "None",
-                    homePlatform,
-                    homePlatformId,
-                    awayPlatform,
-                    awayPlatformId,
+                    startGameRequest.homePlatform,
+                    startGameRequest.homePlatformId,
+                    startGameRequest.awayPlatform,
+                    startGameRequest.awayPlatformId,
                     formattedDateTime,
                     "KICKOFF",
                     0,
-                    isScrimmage,
+                    startGameRequest.isScrimmage,
                     true
                 )
             ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
@@ -168,6 +158,9 @@ class OngoingGamesController {
 
             // Save the updated entity
             ongoingGamesRepository?.save(newGame)
+
+            // Create a new Discord thread
+            discordService.createGameThread(newGame)
             ResponseEntity(newGame, HttpStatus.CREATED)
             
         } catch (e: Exception) {

@@ -10,7 +10,7 @@ import java.util.*
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/arceus/teams")
+@RequestMapping("/teams")
 class TeamsController {
     @Autowired
     var teamsRepository: TeamsRepository? = null
