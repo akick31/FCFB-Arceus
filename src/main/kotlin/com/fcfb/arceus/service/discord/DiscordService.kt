@@ -30,9 +30,16 @@ class DiscordService {
     private lateinit var gameChannelId: String
 
     //TODO: Prompt for coin toss
-    @OptIn(KordExperimental::class)
-    suspend fun sendMessage(game: OngoingGamesEntity, gameThread: TextChannelThread, scenario: Game.Scenario) {
+    private suspend fun sendMessage(game: OngoingGamesEntity, gameThread: TextChannelThread, scenario: Game.Scenario) {
         var messageContent = gameMessagesRepository?.findByScenario(scenario)?.message ?: return
+
+        // Replace the placeholders in the message
+        if ("{home_coach}" in messageContent) {
+            messageContent = messageContent.replace("{home_coach}", "@${game.homeCoach}")
+        }
+        if ("{away_coach}" in messageContent) {
+            messageContent = messageContent.replace("{away_coach}", "@${game.awayCoach}")
+        }
 
         // Append the users to ping to the message
         messageContent += "\n\n @${game.homeCoach} @${game.awayCoach}"
