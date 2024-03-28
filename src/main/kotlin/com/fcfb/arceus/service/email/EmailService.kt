@@ -1,5 +1,6 @@
 package com.fcfb.arceus.service.email
 
+import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender
@@ -40,10 +41,16 @@ class EmailService(private val mailSender: JavaMailSender) {
      * Send an email
      */
     fun sendEmail(to: String, subject: String, text: String) {
-        val message = SimpleMailMessage()
-        message.setTo(to)
-        message.setSubject(subject)
-        message.setText(text)
-        mailSender.send(message)
+        try {
+            val message = SimpleMailMessage()
+            message.setTo(to)
+            message.setSubject(subject)
+            message.setText(text)
+            mailSender.send(message)
+            Logger.debug("Email sent to $to")
+        }
+        catch (e: Exception) {
+            Logger.debug("{}", e)
+        }
     }
 }

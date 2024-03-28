@@ -5,10 +5,10 @@ import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.api.repositories.GamePlaysRepository
 import com.fcfb.arceus.api.repositories.GameStatsRepository
 import com.fcfb.arceus.api.repositories.OngoingGamesRepository
-import com.fcfb.arceus.service.gameLogic.GameInformation
-import com.fcfb.arceus.service.gameLogic.GameStats
-import com.fcfb.arceus.service.gameLogic.GameUtils
-import com.fcfb.arceus.service.gameLogic.PlayLogic
+import com.fcfb.arceus.service.game.GameInformation
+import com.fcfb.arceus.service.game.GameStats
+import com.fcfb.arceus.service.game.GameUtils
+import com.fcfb.arceus.service.game.PlayLogic
 import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpStatus

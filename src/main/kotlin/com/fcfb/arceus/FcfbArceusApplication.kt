@@ -6,7 +6,7 @@ import org.springframework.scheduling.annotation.EnableScheduling
 
 @SpringBootApplication
 @EnableScheduling
-class FcfbArceusApplication
+open class FcfbArceusApplication
 
 fun main(args: Array<String>) {
     runApplication<FcfbArceusApplication>(*args)
