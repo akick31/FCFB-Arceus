@@ -8,7 +8,7 @@ import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpHeaders
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -30,8 +30,10 @@ open class AuthController(
     @Autowired
     var sessionRepository: SessionRepository? = null
 
+    private var emptyHeaders: HttpHeaders = HttpHeaders()
+
     /**
-     * Register a new yser
+     * Register a new user
      * @param user
      * @return
      */
@@ -65,7 +67,7 @@ open class AuthController(
                     0, // Approved
                     verificationToken
                 )
-            ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Send verification email
             emailService.sendVerificationEmail(newUser.email, newUser.id, verificationToken)
@@ -73,7 +75,7 @@ open class AuthController(
             Logger.debug("User ${user.username} registered successfully. Verification email sent.")
             ResponseEntity(newUser, HttpStatus.CREATED)
         } catch (e: Exception) {
-            ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -89,9 +91,9 @@ open class AuthController(
         @RequestParam("password") password: String
     ): ResponseEntity<Session> {
         val userData: Optional<UsersEntity?> =
-            usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         val user = userData.get()
         val passwordEncoder = BCryptPasswordEncoder()
@@ -109,13 +111,13 @@ open class AuthController(
             return ResponseEntity(session, HttpStatus.OK)
         } else {
             // Passwords do not match
-            return ResponseEntity(null, HttpStatus.UNAUTHORIZED)
+            return ResponseEntity(emptyHeaders, HttpStatus.UNAUTHORIZED)
         }
     }
 
     /**
      * Logout a user
-     * @param userId
+     * @param token
      * @return
      */
     @PostMapping("/logout")
@@ -136,9 +138,9 @@ open class AuthController(
     fun verifyEmail(
         @RequestParam("token") token: String
     ): ResponseEntity<String> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByVerificationToken(token) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findByVerificationToken(token) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         val user = userData.get()
         user.approved = 1
@@ -155,9 +157,9 @@ open class AuthController(
     fun resetVerificationToken(
         @RequestParam("id") id: Long
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         val user = userData.get()
         val verificationToken = UUID.randomUUID().toString()

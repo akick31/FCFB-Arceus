@@ -3,6 +3,7 @@ package com.fcfb.arceus.api.controllers
 import com.fcfb.arceus.domain.UsersEntity
 import com.fcfb.arceus.api.repositories.UsersRepository
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,6 +17,8 @@ class UsersController {
     @Autowired
     var usersRepository: UsersRepository? = null
 
+    private var emptyHeaders: HttpHeaders = HttpHeaders()
+
     /**
      * Get a user by id
      * @param id
@@ -25,9 +28,9 @@ class UsersController {
     fun getUserById(
         @RequestParam id: Long
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
@@ -41,18 +44,18 @@ class UsersController {
     fun getUserByTeam(
         @RequestParam team: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByTeam(team) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findByTeam(team) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
 
     @GetMapping("")
     fun getAllUsers(): ResponseEntity<List<UsersEntity>> {
-        val userData: Iterable<UsersEntity?> = usersRepository?.findAll() ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Iterable<UsersEntity?> = usersRepository?.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.iterator().hasNext()) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(userData.filterNotNull(), HttpStatus.OK)
     }
@@ -66,9 +69,9 @@ class UsersController {
     fun getUserByName(
         @RequestParam name: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByCoachName(name) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findByCoachName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(userData.get(), HttpStatus.OK)
     }
@@ -84,9 +87,9 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newPassword: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
 
         val user: UsersEntity = userData.get()
@@ -111,12 +114,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newUsername: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newUsername == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -135,12 +138,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newEmail: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newEmail == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -159,12 +162,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newRole: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newRole == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -183,12 +186,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newPosition: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newPosition == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -208,12 +211,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newRedditUsername: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newRedditUsername == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -232,12 +235,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newTeam: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newTeam == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -256,12 +259,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newWins: Int?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newWins == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -281,12 +284,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newLosses: Int?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newLosses == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -306,12 +309,12 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newCoachName: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         if (newCoachName == null) {
-            return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
 
         val user: UsersEntity = userData.get()
@@ -330,9 +333,9 @@ class UsersController {
         @RequestParam("id") id: Long,
         @RequestParam newDiscordTag: String?
     ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
 
         val user: UsersEntity = userData.get()
@@ -350,9 +353,9 @@ class UsersController {
     fun deleteTeam(
         @PathVariable("id") id: String
     ): ResponseEntity<HttpStatus> {
-        usersRepository?.findById(id) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+        usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!usersRepository?.findById(id)!!.isPresent) {
-            return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         usersRepository?.deleteById(id)
         return ResponseEntity(HttpStatus.OK)

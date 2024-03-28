@@ -11,6 +11,7 @@ import com.fcfb.arceus.service.game.GameUtils
 import com.fcfb.arceus.service.game.PlayLogic
 import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
@@ -36,6 +37,8 @@ class GamePlaysController(
     @Autowired
     var gameStatsRepository: GameStatsRepository? = null
 
+    private var emptyHeaders: HttpHeaders = HttpHeaders()
+
     init {
         this.playLogic = playLogic
         this.gameInformation = gameInformation
@@ -57,9 +60,9 @@ class GamePlaysController(
         @RequestParam("timeoutCalled") timeoutCalled: Boolean?
     ): ResponseEntity<GamePlaysEntity> {
         return try {
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             if (!gameData.isPresent) {
-                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             }
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
@@ -71,11 +74,11 @@ class GamePlaysController(
                 defensiveSubmitter = gameData.get().homeCoach
             }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST))
+            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock)
             val gamePlay: GamePlaysEntity = gamePlaysRepository?.save(
                 GamePlaysEntity(
                     gameId,
-                    gameData.get().numPlays?.plus(1) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
+                    gameData.get().numPlays.plus(1),
                     gameData.get().homeScore,
                     gameData.get().awayScore,
                     gameData.get().quarter,
@@ -99,18 +102,18 @@ class GamePlaysController(
                     gameData.get().awayTeam,
                     0,
                     false,
-                    gameData.get().homeTimeouts ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
-                    gameData.get().awayTimeouts ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST),
+                    gameData.get().homeTimeouts,
+                    gameData.get().awayTimeouts,
                     false
                 )
-            ) ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val ongoingGamesEntity: OngoingGamesEntity = gameData.get()
             ongoingGamesEntity.currentPlayId = gamePlay.playId
             ongoingGamesRepository?.save(ongoingGamesEntity)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
             
         } catch (e: Exception) {
-            ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -134,24 +137,24 @@ class GamePlaysController(
         @RequestParam("defensiveTimeoutCalled") defensiveTimeoutCalled: Boolean
     ): ResponseEntity<GamePlaysEntity> {
         return try {
-            val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository?.findById(playId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository?.findById(playId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             if (!gamePlayData.isPresent) {
-                return ResponseEntity(null, HttpStatus.NOT_FOUND)
+                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             }
             val playCall = playCall.lowercase()
 
-            val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST))
+            val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
 
             var gamePlay: GamePlaysEntity = gamePlayData.get()
 
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gamePlay.gameId) ?: return ResponseEntity(null, HttpStatus.NOT_FOUND)
+            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             //Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
 
             //if (statsData.isPresent()) {
             var game: OngoingGamesEntity = gameData.get()
             //GameStatsEntity stats = statsData.get();
 
-            val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             var timeoutCalled = false
             if (offensiveTimeoutCalled || defensiveTimeoutCalled) {
                 timeoutCalled = true
@@ -208,7 +211,7 @@ class GamePlaysController(
             //}
 
         } catch (e: Exception) {
-            ResponseEntity(null, HttpStatus.BAD_REQUEST)
+            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
 }
