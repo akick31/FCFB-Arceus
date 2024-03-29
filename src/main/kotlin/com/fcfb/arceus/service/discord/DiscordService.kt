@@ -47,14 +47,20 @@ class DiscordService {
         // Append the users to ping to the message
         messageContent += "\n\n@${game.homeCoach} @${game.awayCoach}"
 
-        gameThread.createMessage(messageContent)
+        gameThread.createMessage(messageContent) {
+            allowedMentions {
+                everyone = false
+                roles = false
+                users = true
+            }
+        }
     }
 
     /**
      * Create a new Discord thread
      */
     suspend fun createGameThread(game: OngoingGamesEntity): Snowflake? {
-        val client: Kord = loginToDiscord() ?: return null
+        val client = Kord(botToken)
         return try {
             val guild = client.getGuild(Snowflake(guildId))
             val gameChannel = guild.getChannel(Snowflake(gameChannelId)) as ForumChannel
@@ -95,7 +101,6 @@ class DiscordService {
 
             Logger.info("Game thread created: $gameThread")
             logoutFromDiscord(client)
-            Logger.info("Logged out of Discord")
             gameThread.id
         } catch (e: Exception) {
             Logger.error("{}", e)
@@ -107,21 +112,5 @@ class DiscordService {
     private suspend fun logoutFromDiscord(client: Kord) {
         client.logout()
         Logger.info("Logged out of Discord")
-    }
-
-    private suspend fun loginToDiscord(): Kord? {
-        return try {
-            val client = Kord(botToken)
-            client.login {
-                // we need to specify this to receive the content of messages
-                @OptIn(PrivilegedIntent::class)
-                intents += Intent.MessageContent
-            }
-            Logger.info("Logged in to Discord")
-            client
-        } catch (e: Exception) {
-            Logger.error("{}", e)
-            null
-        }
     }
 }
