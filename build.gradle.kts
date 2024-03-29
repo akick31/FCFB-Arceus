@@ -1,7 +1,7 @@
 plugins {
     id("org.springframework.boot") version "2.7.0"
     id("io.spring.dependency-management") version "1.1.4"
-    kotlin("jvm") version "1.8.21"
+    kotlin("jvm") version "1.9.22"
     application
 }
 
@@ -30,6 +30,14 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api")
     implementation("dev.kord:kord-core:0.13.1")
     implementation("org.reactivestreams:reactive-streams:1.0.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.0")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test")

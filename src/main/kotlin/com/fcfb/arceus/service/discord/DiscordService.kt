@@ -31,7 +31,7 @@ class DiscordService {
 
     //TODO: Prompt for coin toss
     private suspend fun sendMessage(game: OngoingGamesEntity, gameThread: TextChannelThread, scenario: Game.Scenario) {
-        var messageContent = gameMessagesRepository?.findByScenario(scenario)?.message ?: return
+        var messageContent = gameMessagesRepository?.findByScenario(scenario.toString())?.message ?: return
 
         // Replace the placeholders in the message
         if ("{home_coach}" in messageContent) {
@@ -39,6 +39,9 @@ class DiscordService {
         }
         if ("{away_coach}" in messageContent) {
             messageContent = messageContent.replace("{away_coach}", "@${game.awayCoach}")
+        }
+        if ("<br>" in messageContent) {
+            messageContent = messageContent.replace("<br>", "\n")
         }
 
         // Append the users to ping to the message

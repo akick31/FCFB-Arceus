@@ -1,6 +1,5 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.models.GameScenario
 import java.util.*
 import javax.persistence.*
 
@@ -14,14 +13,14 @@ class GameMessagesEntity {
 
     @Basic
     @Column(name = "scenario")
-    var scenario: GameScenario? = null
+    var scenario: String? = null
 
     @Basic
     @Column(name = "message")
     var message: String? = null
 
     constructor(
-        scenario: GameScenario,
+        scenario: String?,
         message: String?
     ) {
         this.scenario = scenario

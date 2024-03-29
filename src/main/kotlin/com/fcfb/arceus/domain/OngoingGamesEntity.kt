@@ -235,7 +235,7 @@ class OngoingGamesEntity {
         this.ballLocation = ballLocation
         this.down = down
         this.yardsToGo = yardsToGo
-        this.tvChannel = tvChannel
+        this.tvChannel = tvChannel.toString()
         this.startTime = startTime
         this.location = location
         this.homeWins = homeWins
@@ -243,7 +243,7 @@ class OngoingGamesEntity {
         this.awayWins = awayWins
         this.awayLosses = awayLosses
         this.scorebug = scorebug
-        this.subdivision = subdivision
+        this.subdivision = subdivision.toString()
         this.timestamp = timestamp
         this.winProbability = winProbability
         this.final = final
@@ -258,9 +258,9 @@ class OngoingGamesEntity {
         this.awayTimeouts = awayTimeouts
         this.coinTossWinner = coinTossWinner
         this.coinTossChoice = coinTossChoice
-        this.homePlatform = homePlatform
+        this.homePlatform = homePlatform.toString()
         this.homePlatformId = homePlatformId
-        this.awayPlatform = awayPlatform
+        this.awayPlatform = awayPlatform.toString()
         this.awayPlatformId = awayPlatformId
         this.gameTimer = gameTimer
         this.currentPlayType = currentPlayType
