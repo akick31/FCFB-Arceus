@@ -9,7 +9,7 @@ class TeamsEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id = 0
+    var id: Int? = 0
 
     @Basic
     @Column(name = "logo")

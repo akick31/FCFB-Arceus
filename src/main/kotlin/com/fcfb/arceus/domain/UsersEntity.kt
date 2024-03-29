@@ -9,7 +9,7 @@ class UsersEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: Long = 0
+    var id: Long? = 0
 
     @Basic
     @Column(name = "username")
@@ -29,7 +29,7 @@ class UsersEntity {
 
     @Basic
     @Column(name = "losses")
-    var losses: Int = 0
+    var losses: Int? = 0
 
     @Basic
     @Column(name = "password")
@@ -45,7 +45,7 @@ class UsersEntity {
 
     @Basic
     @Column(name = "role")
-    var role: String = "user"
+    var role: String? = "user"
 
     @Basic
     @Column(name = "salt")
@@ -57,15 +57,15 @@ class UsersEntity {
 
     @Basic
     @Column(name = "win_percentage")
-    var winPercentage: Double = 0.0
+    var winPercentage: Double? = 0.0
 
     @Basic
     @Column(name = "wins")
-    var wins: Int = 0
+    var wins: Int? = 0
 
     @Basic
     @Column(name = "approved")
-    var approved: Byte = 0
+    var approved: Byte? = 0
 
     @Basic
     @Column(name = "verification_token")

@@ -1,5 +1,6 @@
 package com.fcfb.arceus.domain
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fcfb.arceus.models.Game
 import java.time.LocalDateTime
 import java.util.*
@@ -11,198 +12,247 @@ class OngoingGamesEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "game_id")
-    var gameId = 0
+    @JsonProperty("game_id")
+    var gameId: Int? = 0
 
     @Basic
     @Column(name = "home_team")
-    var homeTeam: String = "home team"
+    @JsonProperty("home_team")
+    var homeTeam: String? = "home team"
 
     @Basic
     @Column(name = "away_team")
-    var awayTeam: String = "away team"
+    @JsonProperty("away_team")
+    var awayTeam: String? = "away team"
 
     @Basic
     @Column(name = "home_coach")
-    var homeCoach: String = "home coach"
+    @JsonProperty("home_coach")
+    var homeCoach: String? = "home coach"
 
     @Basic
     @Column(name = "away_coach")
-    var awayCoach: String = "away coach"
+    @JsonProperty("away_coach")
+    var awayCoach: String? = "away coach"
 
     @Basic
     @Column(name = "home_offensive_playbook")
-    var homeOffensivePlaybook: String = "home offensive playbook"
+    @JsonProperty("home_offensive_playbook")
+    var homeOffensivePlaybook: String? = "home offensive playbook"
 
     @Basic
     @Column(name = "away_offensive_playbook")
-    var awayOffensivePlaybook: String = "away offensive playbook"
+    @JsonProperty("away_offensive_playbook")
+    var awayOffensivePlaybook: String? = "away offensive playbook"
 
     @Basic
     @Column(name = "home_defensive_playbook")
-    var homeDefensivePlaybook: String = "home defensive playbook"
+    @JsonProperty("home_defensive_playbook")
+    var homeDefensivePlaybook: String? = "home defensive playbook"
 
     @Basic
     @Column(name = "away_defensive_playbook")
-    var awayDefensivePlaybook: String = "away defensive playbook"
+    @JsonProperty("away_defensive_playbook")
+    var awayDefensivePlaybook: String? = "away defensive playbook"
 
     @Basic
     @Column(name = "home_score")
-    var homeScore: Int = 0
+    @JsonProperty("home_score")
+    var homeScore: Int? = 0
 
     @Basic
     @Column(name = "away_score")
-    var awayScore: Int = 0
+    @JsonProperty("away_score")
+    var awayScore: Int? = 0
 
     @Basic
     @Column(name = "possession")
+    @JsonProperty("possession")
     var possession: String? = null
 
     @Basic
     @Column(name = "quarter")
-    var quarter: Int = 1
+    @JsonProperty("quarter")
+    var quarter: Int? = 1
 
     @Basic
     @Column(name = "clock")
-    var clock: String = "7:00"
+    @JsonProperty("clock")
+    var clock: String? = "7:00"
 
     @Basic
     @Column(name = "ball_location")
+    @JsonProperty("ball_location")
     var ballLocation: Int? = null
 
     @Basic
     @Column(name = "down")
-    var down: Int = 1
+    @JsonProperty("down")
+    var down: Int? = 1
 
     @Basic
     @Column(name = "yards_to_go")
-    var yardsToGo: Int = 10
+    @JsonProperty("yards_to_go")
+    var yardsToGo: Int? = 10
 
     @Basic
     @Column(name = "tv_channel")
+    @JsonProperty("tv_channel")
     var tvChannel: String? = null
 
     @Basic
     @Column(name = "start_time")
+    @JsonProperty("start_time")
     var startTime: String? = null
 
     @Basic
     @Column(name = "location")
+    @JsonProperty("location")
     var location: String? = null
 
     @Basic
     @Column(name = "home_wins")
+    @JsonProperty("home_wins")
     var homeWins: Int? = null
 
     @Basic
     @Column(name = "home_losses")
+    @JsonProperty("home_losses")
     var homeLosses: Int? = null
 
     @Basic
     @Column(name = "away_wins")
+    @JsonProperty("away_wins")
     var awayWins: Int? = null
 
     @Basic
     @Column(name = "away_losses")
+    @JsonProperty("away_losses")
     var awayLosses: Int? = null
 
     @Basic
     @Column(name = "scorebug")
+    @JsonProperty("scorebug")
     var scorebug: String? = null
 
     @Basic
     @Column(name = "subdivision")
+    @JsonProperty("subdivision")
     var subdivision: String? = null
 
     @Basic
     @Column(name = "timestamp")
+    @JsonProperty("timestamp")
     var timestamp: LocalDateTime? = null
 
     @Basic
     @Column(name = "win_probability")
+    @JsonProperty("win_probability")
     var winProbability: Double? = null
 
     @Basic
     @Column(name = "final")
-    var final: Boolean = false
+    @JsonProperty("final")
+    var final: Boolean? = false
 
     @Basic
     @Column(name = "ot")
-    var ot: Boolean = false
+    @JsonProperty("ot")
+    var ot: Boolean? = false
 
     @Basic
     @Column(name = "season")
+    @JsonProperty("season")
     var season: Int? = null
 
     @Basic
     @Column(name = "week")
+    @JsonProperty("week")
     var week: Int? = null
 
     @Basic
     @Column(name = "waiting_on")
-    var waitingOn: String = "away"
+    @JsonProperty("waiting_on")
+    var waitingOn: String? = "away"
 
     @Basic
     @Column(name = "win_probability_plot")
+    @JsonProperty("win_probability_plot")
     var winProbabilityPlot: String? = null
 
     @Basic
     @Column(name = "score_plot")
+    @JsonProperty("score_plot")
     var scorePlot: String? = null
 
     @Basic
     @Column(name = "num_plays")
-    var numPlays: Int = 0
+    @JsonProperty("num_plays")
+    var numPlays: Int? = 0
 
     @Basic
     @Column(name = "home_timeouts")
-    var homeTimeouts: Int = 3
+    @JsonProperty("home_timeouts")
+    var homeTimeouts: Int? = 3
 
     @Basic
     @Column(name = "away_timeouts")
-    var awayTimeouts: Int = 3
+    @JsonProperty("away_timeouts")
+    var awayTimeouts: Int? = 3
 
     @Basic
     @Column(name = "coin_toss_winner")
+    @JsonProperty("coin_toss_winner")
     var coinTossWinner: String? = null
 
     @Basic
     @Column(name = "coin_toss_choice")
+    @JsonProperty("coin_toss_choice")
     var coinTossChoice: String? = null
 
     @Basic
     @Column(name = "home_platform")
+    @JsonProperty("home_platform")
     var homePlatform: String? = null
 
     @Basic
     @Column(name = "home_platform_id")
+    @JsonProperty("home_platform_id")
     var homePlatformId: String? = null
 
     @Basic
     @Column(name = "away_platform")
+    @JsonProperty("away_platform")
     var awayPlatform: String? = null
 
     @Basic
     @Column(name = "away_platform_id")
+    @JsonProperty("away_platform_id")
     var awayPlatformId: String? = null
 
     @Basic
     @Column(name = "game_timer")
+    @JsonProperty("game_timer")
     var gameTimer: String? = null
 
     @Basic
     @Column(name = "current_play_type")
+    @JsonProperty("current_play_type")
     var currentPlayType: String? = null
 
     @Basic
     @Column(name = "current_play_id")
+    @JsonProperty("current_play_id")
     var currentPlayId: Int? = null
 
     @Basic
     @Column(name = "scrimmage")
+    @JsonProperty("scrimmage")
     var scrimmage: Boolean? = null
 
     @Basic
     @Column(name = "clock_stopped")
+    @JsonProperty("clock_stopped")
     var clockStopped: Boolean? = null
 
     constructor(

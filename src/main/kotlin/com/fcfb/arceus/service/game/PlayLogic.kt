@@ -73,11 +73,11 @@ class PlayLogic(private val gameUtils: GameUtils) {
                 offensivePlaybook == "west coast" -> runoffTime = 17
             }
         }
-        var homeScore: Int = game.homeScore
-        var awayScore: Int = game.awayScore
+        var homeScore: Int = game.homeScore ?: throw Exception("Home score not found")
+        var awayScore: Int = game.awayScore ?: throw Exception("Away score not found")
         var ballLocation: Int = game.ballLocation ?: throw Exception("Ball location not found")
-        var down: Int = game.down
-        var yardsToGo: Int = game.yardsToGo
+        var down: Int = game.down ?: throw Exception("Down not found")
+        var yardsToGo: Int = game.yardsToGo ?: throw Exception("Yards to go not found")
         var yards = 0
         var actualResult: String
         when (result) {
@@ -244,8 +244,8 @@ class PlayLogic(private val gameUtils: GameUtils) {
         val resultInformation: RangesEntity = rangesRepository.findNonNormalResult(playCall.lowercase(), difference) ?: throw Exception("Result not found in the ranges")
         val result: String? = resultInformation.result?.uppercase()
         val playCall = playCall.uppercase()
-        var homeScore: Int = game.homeScore
-        var awayScore: Int = game.awayScore
+        var homeScore: Int = game.homeScore ?: throw Exception("Home score not found")
+        var awayScore: Int = game.awayScore ?: throw Exception("Away score not found")
         var ballLocation = 35
         val down = 1
         val yardsToGo = 10
@@ -377,8 +377,8 @@ class PlayLogic(private val gameUtils: GameUtils) {
         val resultInformation: RangesEntity = rangesRepository.findNonNormalResult(playCall.lowercase(), difference) ?: throw Exception("Result not found in the ranges")
         val result: String? = resultInformation.result?.uppercase()
         var playCall = playCall.uppercase()
-        var homeScore: Int = game.homeScore
-        var awayScore: Int = game.awayScore
+        var homeScore: Int = game.homeScore ?: throw Exception("Home score not found")
+        var awayScore: Int = game.awayScore ?: throw Exception("Away score not found")
         val ballLocation = 25
         val down = 1
         val yardsToGo = 10

@@ -7,7 +7,7 @@ import java.util.*
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/arceus/discord")
+@RequestMapping("/discord")
 class DiscordController(
     private var discordService: DiscordService
 ) {

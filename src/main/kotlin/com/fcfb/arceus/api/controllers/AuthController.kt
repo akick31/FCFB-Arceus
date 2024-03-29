@@ -70,7 +70,7 @@ open class AuthController(
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Send verification email
-            emailService.sendVerificationEmail(newUser.email, newUser.id, verificationToken)
+            emailService.sendVerificationEmail(newUser.email, newUser.id!!, verificationToken)
 
             Logger.debug("User ${user.username} registered successfully. Verification email sent.")
             ResponseEntity(newUser, HttpStatus.CREATED)
@@ -105,7 +105,7 @@ open class AuthController(
             val expirationTime = LocalDateTime.now().plusHours(1)
 
             // Save session information in the database
-            val session = sessionRepository?.save(Session(user.id, token, expirationTime))
+            val session = sessionRepository?.save(Session(user.id!!, token, expirationTime))
 
             // Return session information to the client
             return ResponseEntity(session, HttpStatus.OK)
@@ -167,7 +167,7 @@ open class AuthController(
         usersRepository?.save(user)
 
         // Send verification email
-        emailService.sendVerificationEmail(user.email, user.id, verificationToken)
+        emailService.sendVerificationEmail(user.email, user.id!!, verificationToken)
 
         return ResponseEntity(user, HttpStatus.OK)
     }

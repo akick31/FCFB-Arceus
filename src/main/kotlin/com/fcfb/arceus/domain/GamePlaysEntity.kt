@@ -9,15 +9,15 @@ class GamePlaysEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "play_id")
-    var playId = 0
+    var playId: Int? = 0
 
     @Basic
     @Column(name = "game_id")
-    var gameId = 0
+    var gameId: Int? = 0
 
     @Basic
     @Column(name = "play_number")
-    var playNumber = 0
+    var playNumber: Int? = 0
 
     @Basic
     @Column(name = "home_score")

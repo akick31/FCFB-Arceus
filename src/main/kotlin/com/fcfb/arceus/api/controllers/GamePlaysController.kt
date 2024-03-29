@@ -74,11 +74,11 @@ class GamePlaysController(
                 defensiveSubmitter = gameData.get().homeCoach
             }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock)
+            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
             val gamePlay: GamePlaysEntity = gamePlaysRepository?.save(
                 GamePlaysEntity(
                     gameId,
-                    gameData.get().numPlays.plus(1),
+                    gameData.get().numPlays?.plus(1) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     gameData.get().homeScore,
                     gameData.get().awayScore,
                     gameData.get().quarter,
@@ -102,8 +102,8 @@ class GamePlaysController(
                     gameData.get().awayTeam,
                     0,
                     false,
-                    gameData.get().homeTimeouts,
-                    gameData.get().awayTimeouts,
+                    gameData.get().homeTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    gameData.get().awayTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     false
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

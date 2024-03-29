@@ -45,7 +45,7 @@ class DiscordService {
         }
 
         // Append the users to ping to the message
-        messageContent += "\n\n @${game.homeCoach} @${game.awayCoach}"
+        messageContent += "\n\n@${game.homeCoach} @${game.awayCoach}"
 
         gameThread.createMessage(messageContent)
     }

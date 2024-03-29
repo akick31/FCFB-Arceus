@@ -28,13 +28,13 @@ class GameInformation(private val gameUtils: GameUtils) {
         val possession: String? = game.possession
         if (!clockStopped) {
             if (possession == "home" && defensiveTimeout) {
-                game.awayTimeouts = game.awayTimeouts - 1
+                game.awayTimeouts = game.awayTimeouts!! - 1
             } else if (possession == "home" && offensiveTimeout) {
-                game.homeTimeouts = game.homeTimeouts - 1
+                game.homeTimeouts = game.homeTimeouts!! - 1
             } else if (possession == "away" && defensiveTimeout) {
-                game.homeTimeouts = game.homeTimeouts - 1
+                game.homeTimeouts = game.homeTimeouts!! - 1
             } else if (possession == "away" && offensiveTimeout) {
-                game.awayTimeouts = game.awayTimeouts - 1
+                game.awayTimeouts = game.awayTimeouts!! - 1
             }
         }
 

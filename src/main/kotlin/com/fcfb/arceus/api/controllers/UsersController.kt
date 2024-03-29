@@ -269,7 +269,7 @@ class UsersController {
 
         val user: UsersEntity = userData.get()
         user.wins = newWins
-        user.winPercentage = user.wins.toDouble() / (user.wins + user.losses)
+        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
         usersRepository!!.save(user)
         return ResponseEntity(user, HttpStatus.OK)
     }
@@ -294,7 +294,7 @@ class UsersController {
 
         val user: UsersEntity = userData.get()
         user.losses = newLosses
-        user.winPercentage = user.wins.toDouble() / (user.wins + user.losses)
+        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
         usersRepository!!.save(user)
         return ResponseEntity(user, HttpStatus.OK)
     }
