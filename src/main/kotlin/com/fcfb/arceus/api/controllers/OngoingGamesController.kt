@@ -99,8 +99,10 @@ class OngoingGamesController(
                 OngoingGamesEntity(
                     startGameRequest.homeTeam,
                     startGameRequest.awayTeam,
-                    homeTeamData.get().coach ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    awayTeamData.get().coach ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    homeTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    awayTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    homeTeamData.get().coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    awayTeamData.get().coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     homeTeamData.get().offensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     awayTeamData.get().offensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     homeTeamData.get().defensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
@@ -128,7 +130,7 @@ class OngoingGamesController(
                     java.lang.Boolean.FALSE,
                     startGameRequest.season.toInt(),
                     startGameRequest.week.toInt(),
-                    awayTeamData.get().coach ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    awayTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     "none_winprob.png",
                     "none_scoreplot.png",
                     0,
@@ -161,12 +163,18 @@ class OngoingGamesController(
 
             // Create a new Discord thread
             if (newGame.homePlatform == "Discord") {
-                val gameThreadId = discordService.createGameThread(newGame)
-                newGame.homePlatformId = gameThreadId.toString()
+                val gameThreadId = discordService.startGameThread(newGame)
+                if (gameThreadId == null) {
+                   return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                }
+                newGame.homePlatformId = gameThreadId
             }
             if (newGame.awayPlatform == "Discord") {
-                val gameThreadId = discordService.createGameThread(newGame)
-                newGame.awayPlatformId = gameThreadId.toString()
+                val gameThreadId = discordService.startGameThread(newGame)
+                if (gameThreadId == null) {
+                    return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                }
+                newGame.awayPlatformId = gameThreadId
             }
 
             // Save the updated entity

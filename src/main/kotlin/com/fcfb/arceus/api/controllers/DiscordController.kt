@@ -11,8 +11,5 @@ import java.util.*
 class DiscordController(
     private var discordService: DiscordService
 ) {
-    @PostMapping("/create_game_thread")
-    suspend fun createGameThread(
-        @RequestBody game: OngoingGamesEntity
-    ) = discordService.createGameThread(game)
+
 }

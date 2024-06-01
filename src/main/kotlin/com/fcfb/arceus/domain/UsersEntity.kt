@@ -21,7 +21,11 @@ class UsersEntity {
 
     @Basic
     @Column(name = "discord_tag")
-    var discordTag: String? = null
+    lateinit var discordTag: String
+
+    @Basic
+    @Column(name = "discord_id")
+    var discordId: String? = null
 
     @Basic
     @Column(name = "email")
@@ -74,7 +78,8 @@ class UsersEntity {
     constructor(
         username: String,
         coachName: String,
-        discordTag: String?,
+        discordTag: String,
+        discordId: String?,
         email: String,
         losses: Int,
         password: String,
@@ -91,6 +96,7 @@ class UsersEntity {
         this.username = username
         this.coachName = coachName
         this.discordTag = discordTag
+        this.discordId = discordId
         this.email = email
         this.losses = losses
         this.password = password
@@ -111,7 +117,7 @@ class UsersEntity {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as UsersEntity
-        return id == that.id && username === that.username && approved == that.approved && coachName == that.coachName && discordTag == that.discordTag && email == that.email && losses == that.losses && password == that.password && position == that.position && redditUsername == that.redditUsername && role == that.role && salt == that.salt && team == that.team && winPercentage == that.winPercentage && wins == that.wins
+        return id == that.id && username === that.username && approved == that.approved && coachName == that.coachName && discordTag == that.discordTag && discordId == that.discordId && email == that.email && losses == that.losses && password == that.password && position == that.position && redditUsername == that.redditUsername && role == that.role && salt == that.salt && team == that.team && winPercentage == that.winPercentage && wins == that.wins
     }
 
     override fun hashCode(): Int {
@@ -120,6 +126,7 @@ class UsersEntity {
             username,
             coachName,
             discordTag,
+            discordId,
             email,
             losses,
             password,

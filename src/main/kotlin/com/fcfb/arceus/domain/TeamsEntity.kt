@@ -16,8 +16,20 @@ class TeamsEntity {
     var logo: String? = null
 
     @Basic
-    @Column(name = "coach")
-    var coach: String? = null
+    @Column(name = "coach_username")
+    var coachUsername: String? = null
+
+    @Basic
+    @Column(name = "coach_name")
+    var coachName: String? = null
+
+    @Basic
+    @Column(name = "coach_discord_tag")
+    var coachDiscordTag: String? = null
+
+    @Basic
+    @Column(name = "coach_discord_id")
+    var coachDiscordId: String? = null
 
     @Basic
     @Column(name = "coaches_poll_ranking")
@@ -88,15 +100,18 @@ class TeamsEntity {
     var overallConferenceLosses: Int? = null
 
     constructor(
-        logo: String?, coach: String?, coachesPollRanking: Int?, name: String?,
-        playoffCommitteeRanking: Int?, primaryColor: String?, secondaryColor: String?, subdivision: String?,
-        offensivePlaybook: String?, defensivePlaybook: String?, conference: String?, currentWins: Int?,
-        currentLosses: Int?, overallWins: Int?, overallLosses: Int?, currentConferenceWins: Int?,
-        currentConferenceLosses: Int?, overallConferenceWins: Int?,
+        logo: String?, coachUsername: String?, coachName: String?, coachDiscordTag: String?, coachDiscordId: String?,
+        coachesPollRanking: Int?, name: String?, playoffCommitteeRanking: Int?, primaryColor: String?,
+        secondaryColor: String?, subdivision: String?, offensivePlaybook: String?, defensivePlaybook: String?,
+        conference: String?, currentWins: Int?, currentLosses: Int?, overallWins: Int?, overallLosses: Int?,
+        currentConferenceWins: Int?, currentConferenceLosses: Int?, overallConferenceWins: Int?,
         overallConferenceLosses: Int?
     ) {
         this.logo = logo
-        this.coach = coach
+        this.coachUsername = coachUsername
+        this.coachName = coachName
+        this.coachDiscordTag = coachDiscordTag
+        this.coachDiscordId = coachDiscordId
         this.coachesPollRanking = coachesPollRanking
         this.name = name
         this.playoffCommitteeRanking = playoffCommitteeRanking
@@ -124,14 +139,17 @@ class TeamsEntity {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as TeamsEntity
-        return id == that.id && logo == that.logo && coach == that.coach && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
+        return id == that.id && logo == that.logo && coachUsername == that.coachUsername && coachName == that.coachName && coachDiscordTag == that.coachDiscordTag && coachDiscordId == that.coachDiscordId && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
             id,
             logo,
-            coach,
+            coachUsername,
+            coachName,
+            coachDiscordTag,
+            coachDiscordId,
             coachesPollRanking,
             name,
             playoffCommitteeRanking,

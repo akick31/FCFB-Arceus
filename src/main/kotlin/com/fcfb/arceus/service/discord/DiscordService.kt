@@ -1,116 +1,53 @@
 package com.fcfb.arceus.service.discord
 
-import com.fcfb.arceus.api.repositories.GameMessagesRepository
 import com.fcfb.arceus.domain.OngoingGamesEntity
-import com.fcfb.arceus.models.Game
+import com.fcfb.arceus.utils.Logger
+import dev.kord.common.entity.Snowflake
+import dev.kord.core.Kord
+import dev.kord.core.entity.User
+import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
-import dev.kord.core.*
-import dev.kord.gateway.PrivilegedIntent
-import dev.kord.gateway.Intent
-import com.fcfb.arceus.utils.Logger
-import dev.kord.common.annotation.KordExperimental
-import dev.kord.common.entity.Snowflake
-import dev.kord.core.entity.channel.ForumChannel
-import dev.kord.core.entity.channel.thread.TextChannelThread
-import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.web.client.RestTemplate
+
 
 @Service
 class DiscordService {
-    @Autowired
-    var gameMessagesRepository: GameMessagesRepository? = null
-
-    @Value("\${discord.bot.token}")
-    private lateinit var botToken: String
+    private var restTemplate: RestTemplate? = null
+    private var discordBotUrl = "http://0.0.0.0:1212/zebstrika"
 
     @Value("\${discord.guild.id}")
-    private lateinit var guildId: String
+    private val guildId: String? = null
 
-    @Value("\${discord.forum.channel.id}")
-    private lateinit var gameChannelId: String
+    @Value("\${discord.bot.token}")
+    private val botToken: String? = null
 
-    //TODO: Prompt for coin toss
-    private suspend fun sendMessage(game: OngoingGamesEntity, gameThread: TextChannelThread, scenario: Game.Scenario) {
-        var messageContent = gameMessagesRepository?.findByScenario(scenario.toString())?.message ?: return
-
-        // Replace the placeholders in the message
-        if ("{home_coach}" in messageContent) {
-            messageContent = messageContent.replace("{home_coach}", "@${game.homeCoach}")
-        }
-        if ("{away_coach}" in messageContent) {
-            messageContent = messageContent.replace("{away_coach}", "@${game.awayCoach}")
-        }
-        if ("<br>" in messageContent) {
-            messageContent = messageContent.replace("<br>", "\n")
-        }
-
-        // Append the users to ping to the message
-        messageContent += "\n\n@${game.homeCoach} @${game.awayCoach}"
-
-        gameThread.createMessage(messageContent) {
-            allowedMentions {
-                everyone = false
-                roles = false
-                users = true
-            }
-        }
+    fun DiscordService(restTemplate: RestTemplate?) {
+        this.restTemplate = restTemplate
     }
 
-    /**
-     * Create a new Discord thread
-     */
-    suspend fun createGameThread(game: OngoingGamesEntity): Snowflake? {
-        val client = Kord(botToken)
+    fun startGameThread(ongoingGame: OngoingGamesEntity): String {
+        val discordBotUrl = "$discordBotUrl/start_game"
+        return restTemplate!!.postForEntity(discordBotUrl, ongoingGame, String::class.java).toString()
+    }
+
+    suspend fun getUserByDiscordTag(
+        tag: String
+    ): User? {
         return try {
-            val guild = client.getGuild(Snowflake(guildId))
-            val gameChannel = guild.getChannel(Snowflake(gameChannelId)) as ForumChannel
-
-            // Get the available tags in the game channel
-            val availableTags = gameChannel.availableTags
-            val tagsToApply = mutableListOf<Snowflake>()
-            for (tag in availableTags) {
-                if (tag.name == game.subdivision) {
-                    tagsToApply.add(tag.id)
-                }
-                if (tag.name == "Week " + game.week) {
-                    tagsToApply.add(tag.id)
-                }
-                if (tag.name == "Season " + game.season) {
-                    tagsToApply.add(tag.id)
+            val client = Kord(botToken!!)
+            val guild = client.getGuild(Snowflake(guildId!!))
+            val members = guild.members.toList()
+            for (member in members) {
+                if (member.username == tag) {
+                    val user = client.getUser(Snowflake(member.id.value))
+                    return user
                 }
             }
-            if (game.scrimmage == true) {
-                tagsToApply.add(availableTags.first { it.name == "Scrimmage" }.id)
-            }
-
-            // Get the thread name
-            val threadName = game.homeTeam + " vs " + game.awayTeam
-
-            // Get the thread content
-            val threadContent = "[INSERT FCFB WEBSITE LINK HERE]"
-
-            val gameThread = gameChannel.startPublicThread(threadName) {
-                name = threadName
-                appliedTags = tagsToApply
-                message {
-                    content = threadContent
-                }
-            }
-
-            sendMessage(game, gameThread, Game.Scenario.GAME_START)
-
-            Logger.info("Game thread created: $gameThread")
-            logoutFromDiscord(client)
-            gameThread.id
+            null
         } catch (e: Exception) {
             Logger.error("{}", e)
-            logoutFromDiscord(client)
             null
         }
-    }
-
-    private suspend fun logoutFromDiscord(client: Kord) {
-        client.logout()
-        Logger.info("Logged out of Discord")
     }
 }

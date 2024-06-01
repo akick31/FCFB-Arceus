@@ -72,7 +72,10 @@ class TeamsController {
             val newTeam: TeamsEntity? = teamsRepository?.save(
                 TeamsEntity(
                     team.logo,
-                    team.coach,
+                    team.coachUsername,
+                    team.coachName,
+                    team.coachDiscordTag,
+                    team.coachDiscordId,
                     0,
                     team.name,
                     0,
@@ -116,7 +119,10 @@ class TeamsController {
         val existingTeam: TeamsEntity = teamData.get()
         existingTeam.apply {
             this.name = team.name
-            coach = team.coach
+            coachUsername = team.coachUsername
+            coachName = team.coachName
+            coachDiscordTag = team.coachDiscordTag
+            coachDiscordId = team.coachDiscordId
             subdivision = team.subdivision
             conference = team.conference
             primaryColor = team.primaryColor

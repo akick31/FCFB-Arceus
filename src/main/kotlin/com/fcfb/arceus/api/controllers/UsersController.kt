@@ -331,7 +331,7 @@ class UsersController {
     @PutMapping("/update/discord-tag")
     fun updateUserDiscordTag(
         @RequestParam("id") id: Long,
-        @RequestParam newDiscordTag: String?
+        @RequestParam newDiscordTag: String
     ): ResponseEntity<UsersEntity> {
         val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!userData.isPresent) {

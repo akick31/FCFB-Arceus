@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.UsersEntity
 import com.fcfb.arceus.api.repositories.UsersRepository
 import com.fcfb.arceus.api.repositories.SessionRepository
 import com.fcfb.arceus.models.Session
+import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
@@ -22,7 +23,8 @@ import javax.transaction.Transactional
 @RequestMapping("/auth")
 open class AuthController(
     private var sessionUtils: SessionUtils,
-    private var emailService: EmailService
+    private var emailService: EmailService,
+    private var discordService: DiscordService
 ) {
     @Autowired
     var usersRepository: UsersRepository? = null
@@ -38,7 +40,7 @@ open class AuthController(
      * @return
      */
     @PostMapping("/register")
-    fun createUser(
+    suspend fun createUser(
         @RequestBody user: UsersEntity
     ): ResponseEntity<UsersEntity> {
         return try {
@@ -49,11 +51,19 @@ open class AuthController(
             // Generate verification token
             val verificationToken = UUID.randomUUID().toString()
 
+            // Get user disord id
+            val discordUser = discordService.getUserByDiscordTag(user.discordTag)
+            if (discordUser == null) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
+            val discordId = discordUser.id.toString()
+
             val newUser: UsersEntity = usersRepository?.save(
                 UsersEntity(
                     user.username,
                     user.coachName,
                     user.discordTag,
+                    discordId,
                     user.email,
                     0,
                     passwordEncoder.encode(user.password),

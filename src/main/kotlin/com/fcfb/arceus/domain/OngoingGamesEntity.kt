@@ -36,6 +36,16 @@ class OngoingGamesEntity {
     var awayCoach: String? = "away coach"
 
     @Basic
+    @Column(name = "home_coach_discord_id")
+    @JsonProperty("home_coach_discord_id")
+    var homeCoachDiscordId: String? = null
+
+    @Basic
+    @Column(name = "away_coach_discord_id")
+    @JsonProperty("away_coach_discord_id")
+    var awayCoachDiscordId: String? = null
+
+    @Basic
     @Column(name = "home_offensive_playbook")
     @JsonProperty("home_offensive_playbook")
     var homeOffensivePlaybook: String? = "home offensive playbook"
@@ -256,10 +266,10 @@ class OngoingGamesEntity {
     var clockStopped: Boolean? = null
 
     constructor(
-        homeTeam: String, awayTeam: String, homeCoach: String, awayCoach: String,
-        homeOffensivePlaybook: String, awayOffensivePlaybook: String, homeDefensivePlaybook: String,
-        awayDefensivePlaybook: String, homeScore: Int, awayScore: Int, possession: String?,
-        quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
+        homeTeam: String, awayTeam: String, homeCoach: String, awayCoach: String, homeCoachDiscordId: String,
+        awayCoachDiscordId: String, homeOffensivePlaybook: String, awayOffensivePlaybook: String,
+        homeDefensivePlaybook: String, awayDefensivePlaybook: String, homeScore: Int, awayScore: Int,
+        possession: String?, quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
         tvChannel: Game.TVChannel?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
         awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: Game.Subdivision?,
         timestamp: LocalDateTime?, winProbability: Double?, final: Boolean, ot: Boolean,
@@ -273,6 +283,8 @@ class OngoingGamesEntity {
         this.awayTeam = awayTeam
         this.homeCoach = homeCoach
         this.awayCoach = awayCoach
+        this.homeCoachDiscordId = homeCoachDiscordId
+        this.awayCoachDiscordId = awayCoachDiscordId
         this.homeOffensivePlaybook = homeOffensivePlaybook
         this.awayOffensivePlaybook = awayOffensivePlaybook
         this.homeDefensivePlaybook = homeDefensivePlaybook
@@ -325,7 +337,7 @@ class OngoingGamesEntity {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as OngoingGamesEntity
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && final == that.final && ot == that.ot && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped
+        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeCoachDiscordId == that.homeCoachDiscordId && awayCoachDiscordId == that.awayCoachDiscordId && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && final == that.final && ot == that.ot && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped
     }
 
     override fun hashCode(): Int {
@@ -335,6 +347,8 @@ class OngoingGamesEntity {
             awayTeam,
             homeCoach,
             awayCoach,
+            homeCoachDiscordId,
+            awayCoachDiscordId,
             homeOffensivePlaybook,
             awayOffensivePlaybook,
             homeDefensivePlaybook,
