@@ -16,12 +16,15 @@ import com.fcfb.arceus.models.game.Game.Play
 import com.fcfb.arceus.models.game.Game.ActualResult
 import com.fcfb.arceus.models.game.Game.Result
 import com.fcfb.arceus.models.handleException
+import com.fcfb.arceus.utils.GameUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 import java.util.*
 
 @Component
-class PlayLogic(private val gameUtils: GameUtils) {
+class GamePlaysHandler(
+    private val gameUtils: GameUtils
+) {
     @Autowired
     lateinit var rangesRepository: RangesRepository
 

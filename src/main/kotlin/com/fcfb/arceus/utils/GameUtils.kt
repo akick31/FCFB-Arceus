@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.utils
 
 import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.models.game.Game.CoinTossWinner

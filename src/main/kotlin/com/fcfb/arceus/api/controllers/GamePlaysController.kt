@@ -8,10 +8,7 @@ import com.fcfb.arceus.api.repositories.OngoingGamesRepository
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.RunoffType
 import com.fcfb.arceus.models.game.Game.Play
-import com.fcfb.arceus.service.game.GameInformation
-import com.fcfb.arceus.service.game.GameStats
-import com.fcfb.arceus.service.game.GameUtils
-import com.fcfb.arceus.service.game.PlayLogic
+import com.fcfb.arceus.service.game.*
 import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -24,32 +21,8 @@ import java.util.*
 @RestController
 @RequestMapping("/game_plays")
 class GamePlaysController(
-    private var playLogic: PlayLogic,
-    private var gameInformation: GameInformation,
-    private var gameStats: GameStats,
-    private var encryptionUtils: EncryptionUtils,
-    private var gameUtils: GameUtils
+    private var gamePlaysService: GamePlaysService
 ) {
-
-    @Autowired
-    var gamePlaysRepository: GamePlaysRepository? = null
-
-    @Autowired
-    var ongoingGamesRepository: OngoingGamesRepository? = null
-
-    @Autowired
-    var gameStatsRepository: GameStatsRepository? = null
-
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
-
-    init {
-        this.playLogic = playLogic
-        this.gameInformation = gameInformation
-        this.gameStats = gameStats
-        this.encryptionUtils = encryptionUtils
-        this.gameUtils = gameUtils
-    }
-
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
      * @param gameId
@@ -61,64 +34,7 @@ class GamePlaysController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean?
-    ): ResponseEntity<GamePlaysEntity> {
-        return try {
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            if (!gameData.isPresent) {
-                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            }
-            val offensiveSubmitter: String?
-            val defensiveSubmitter: String?
-            if (gameData.get().possession == Possession.HOME) {
-                offensiveSubmitter = gameData.get().homeCoach
-                defensiveSubmitter = gameData.get().awayCoach
-            } else {
-                offensiveSubmitter = gameData.get().awayCoach
-                defensiveSubmitter = gameData.get().homeCoach
-            }
-            val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
-            val gamePlay: GamePlaysEntity = gamePlaysRepository?.save(
-                GamePlaysEntity(
-                    gameId,
-                    gameData.get().numPlays?.plus(1) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    gameData.get().homeScore,
-                    gameData.get().awayScore,
-                    gameData.get().quarter,
-                    clock,
-                    gameData.get().ballLocation,
-                    gameData.get().possession,
-                    gameData.get().down,
-                    gameData.get().yardsToGo,
-                    encryptedDefensiveNumber,
-                    "0",
-                    offensiveSubmitter,
-                    defensiveSubmitter,
-                    null,
-                    null,
-                    null,
-                    0,
-                    0,
-                    0,
-                    gameData.get().winProbability,
-                    gameData.get().homeTeam,
-                    gameData.get().awayTeam,
-                    0,
-                    false,
-                    gameData.get().homeTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    gameData.get().awayTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    false
-                )
-            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val ongoingGamesEntity: OngoingGamesEntity = gameData.get()
-            ongoingGamesEntity.currentPlayId = gamePlay.playId
-            ongoingGamesRepository?.save(ongoingGamesEntity)
-            ResponseEntity(gamePlay, HttpStatus.CREATED)
-            
-        } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
-    }
+    ) = gamePlaysService.defensiveNumberSubmitted(gameId, defensiveNumber, timeoutCalled)
 
     /**
      * The offensive number was submitted, run the play
@@ -138,82 +54,5 @@ class GamePlaysController(
         @RequestParam("runoffType") runoffType: RunoffType,
         @RequestParam("offensiveTimeoutCalled") offensiveTimeoutCalled: Boolean,
         @RequestParam("defensiveTimeoutCalled") defensiveTimeoutCalled: Boolean
-    ): ResponseEntity<GamePlaysEntity> {
-        return try {
-            val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository?.findById(playId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            if (!gamePlayData.isPresent) {
-                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            }
-
-            val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
-
-            var gamePlay: GamePlaysEntity = gamePlayData.get()
-
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository?.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            //Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
-
-            //if (statsData.isPresent()) {
-            var game: OngoingGamesEntity = gameData.get()
-            //GameStatsEntity stats = statsData.get();
-
-            val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            var timeoutCalled = false
-            if (offensiveTimeoutCalled || defensiveTimeoutCalled) {
-                timeoutCalled = true
-            }
-            when (playCall) {
-                Play.PASS, Play.RUN, Play.SPIKE, Play.KNEEL -> gamePlay = playLogic.runNormalPlay(
-                    gamePlay,
-                    clockStopped,
-                    game,
-                    playCall,
-                    runoffType,
-                    timeoutCalled,
-                    offensiveNumber.toString(),
-                    decryptedDefensiveNumber
-                )
-
-                Play.PAT, Play.TWO_POINT -> gamePlay = playLogic.runPointAfterPlay(
-                    gamePlay,
-                    game,
-                    playCall,
-                    offensiveNumber.toString(),
-                    decryptedDefensiveNumber
-                )
-
-                Play.KICKOFF_NORMAL, Play.KICKOFF_ONSIDE, Play.KICKOFF_SQUIB -> gamePlay = playLogic.runKickoffPlay(
-                    gamePlay,
-                    game,
-                    playCall,
-                    offensiveNumber.toString(),
-                    decryptedDefensiveNumber
-                )
-
-                Play.FIELD_GOAL -> {}
-                Play.PUNT -> {}
-            }
-            game = gameInformation.updateGameInformation(
-                game,
-                gamePlay,
-                playCall,
-                clockStopped,
-                offensiveTimeoutCalled,
-                defensiveTimeoutCalled
-            )
-            //stats = gameStats.updateGameStats(stats, gamePlay);
-
-            // Send the defense the request for the number
-            ongoingGamesRepository?.save(game)
-            //gameStatsRepository.save(stats);
-
-            // Mark play as finished, set the timeouts, save the play
-            gamePlay.playFinished = true
-            gamePlaysRepository?.save(gamePlay)
-            return ResponseEntity(gamePlay, HttpStatus.OK)
-            //}
-
-        } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
-    }
+    ) = gamePlaysService.offensiveNumberSubmitted(playId, offensiveNumber, playCall, runoffType, offensiveTimeoutCalled, defensiveTimeoutCalled)
 }

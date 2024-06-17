@@ -1,6 +1,7 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.dto
 
 import com.fcfb.arceus.domain.GamePlaysEntity
+import com.fcfb.arceus.domain.GameStatsEntity
 import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.game.Game.ActualResult
@@ -9,10 +10,13 @@ import com.fcfb.arceus.models.game.Game.Play
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.Result
 import com.fcfb.arceus.models.handleException
+import com.fcfb.arceus.utils.GameUtils
 import org.springframework.stereotype.Component
 
 @Component
-class GameInformation(private val gameUtils: GameUtils) {
+class GameDTO(
+    private val gameUtils: GameUtils
+) {
     fun updateGameInformation(
         game: OngoingGamesEntity,
         play: GamePlaysEntity,
@@ -74,5 +78,9 @@ class GameInformation(private val gameUtils: GameUtils) {
         game.yardsToGo = play.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
         game.numPlays = play.playNumber
         return game
+    }
+
+    fun updateGameStats(stats: GameStatsEntity?, play: GamePlaysEntity?): GameStatsEntity? {
+        return null
     }
 }
