@@ -5,6 +5,9 @@ import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.api.repositories.GamePlaysRepository
 import com.fcfb.arceus.api.repositories.GameStatsRepository
 import com.fcfb.arceus.api.repositories.OngoingGamesRepository
+import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.models.game.Game.RunoffType
+import com.fcfb.arceus.models.game.Game.Play
 import com.fcfb.arceus.service.game.GameInformation
 import com.fcfb.arceus.service.game.GameStats
 import com.fcfb.arceus.service.game.GameUtils
@@ -66,7 +69,7 @@ class GamePlaysController(
             }
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
-            if (gameData.get().possession == "home") {
+            if (gameData.get().possession == Possession.HOME) {
                 offensiveSubmitter = gameData.get().homeCoach
                 defensiveSubmitter = gameData.get().awayCoach
             } else {
@@ -91,9 +94,9 @@ class GamePlaysController(
                     "0",
                     offensiveSubmitter,
                     defensiveSubmitter,
-                    "None",
-                    "None",
-                    "None",
+                    null,
+                    null,
+                    null,
                     0,
                     0,
                     0,
@@ -131,8 +134,8 @@ class GamePlaysController(
     fun offensiveNumberSubmitted(
         @RequestParam("playId") playId: Int,
         @RequestParam("offensiveNumber") offensiveNumber: Int,
-        @RequestParam("playCall") playCall: String,
-        @RequestParam("runoffType") runoffType: String,
+        @RequestParam("playCall") playCall: Play,
+        @RequestParam("runoffType") runoffType: RunoffType,
         @RequestParam("offensiveTimeoutCalled") offensiveTimeoutCalled: Boolean,
         @RequestParam("defensiveTimeoutCalled") defensiveTimeoutCalled: Boolean
     ): ResponseEntity<GamePlaysEntity> {
@@ -141,7 +144,6 @@ class GamePlaysController(
             if (!gamePlayData.isPresent) {
                 return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             }
-            val playCall = playCall.lowercase()
 
             val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
 
@@ -160,7 +162,7 @@ class GamePlaysController(
                 timeoutCalled = true
             }
             when (playCall) {
-                "pass", "run", "spike", "kneel" -> gamePlay = playLogic.runNormalPlay(
+                Play.PASS, Play.RUN, Play.SPIKE, Play.KNEEL -> gamePlay = playLogic.runNormalPlay(
                     gamePlay,
                     clockStopped,
                     game,
@@ -171,7 +173,7 @@ class GamePlaysController(
                     decryptedDefensiveNumber
                 )
 
-                "pat", "two point" -> gamePlay = playLogic.runPointAfterPlay(
+                Play.PAT, Play.TWO_POINT -> gamePlay = playLogic.runPointAfterPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -179,7 +181,7 @@ class GamePlaysController(
                     decryptedDefensiveNumber
                 )
 
-                "kickoff normal", "kickoff onside", "kickoff squib" -> gamePlay = playLogic.runKickoffPlay(
+                Play.KICKOFF_NORMAL, Play.KICKOFF_ONSIDE, Play.KICKOFF_SQUIB -> gamePlay = playLogic.runKickoffPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -187,8 +189,8 @@ class GamePlaysController(
                     decryptedDefensiveNumber
                 )
 
-                "field goal" -> {}
-                "punt" -> {}
+                Play.FIELD_GOAL -> {}
+                Play.PUNT -> {}
             }
             game = gameInformation.updateGameInformation(
                 game,

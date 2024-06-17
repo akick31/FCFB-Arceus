@@ -1,6 +1,6 @@
 package com.fcfb.arceus.api.repositories
 
-import com.fcfb.arceus.models.Session
+import com.fcfb.arceus.models.website.Session
 import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 import java.time.LocalDateTime

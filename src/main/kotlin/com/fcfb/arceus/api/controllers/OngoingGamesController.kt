@@ -4,7 +4,9 @@ import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.domain.TeamsEntity
 import com.fcfb.arceus.api.repositories.OngoingGamesRepository
 import com.fcfb.arceus.api.repositories.TeamsRepository
-import com.fcfb.arceus.models.Game
+import com.fcfb.arceus.models.game.Game.Platform
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -64,20 +66,21 @@ class OngoingGamesController(
 
     /**
      * Start a game
-     * @param startGameRequest
+     * @param startRequest
      * @return
      */
     @PostMapping("/start")
-    suspend fun startGame(
-        @RequestBody startGameRequest: Game.StartRequest
+    fun startGame(
+        @RequestBody startRequest: StartRequest
     ): ResponseEntity<OngoingGamesEntity> {
+        println("Deserialized StartRequest: $startRequest")
         return try {
-            val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startGameRequest.homeTeam)
+            val homeTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startRequest.homeTeam)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             if (!homeTeamData.isPresent) {
                 return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             }
-            val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startGameRequest.awayTeam)
+            val awayTeamData: Optional<TeamsEntity?> = teamsRepository?.findByName(startRequest.awayTeam)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             if (!awayTeamData.isPresent) {
                 return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -97,16 +100,16 @@ class OngoingGamesController(
             val formattedDateTime = futureTime.format(formatter)
             val newGame: OngoingGamesEntity = ongoingGamesRepository?.save(
                 OngoingGamesEntity(
-                    startGameRequest.homeTeam,
-                    startGameRequest.awayTeam,
+                    startRequest.homeTeam ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    startRequest.awayTeam ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     homeTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     awayTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     homeTeamData.get().coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     awayTeamData.get().coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    homeTeamData.get().offensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    awayTeamData.get().offensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    homeTeamData.get().defensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    awayTeamData.get().defensivePlaybook?.lowercase() ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    homeTeamData.get().offensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    awayTeamData.get().offensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    homeTeamData.get().defensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    awayTeamData.get().defensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     0,
                     0,
                     "home",
@@ -115,21 +118,21 @@ class OngoingGamesController(
                     0,
                     1,
                     10,
-                    startGameRequest.tvChannel,
-                    startGameRequest.startTime,
-                    startGameRequest.location,
+                    startRequest.tvChannel,
+                    startRequest.startTime,
+                    startRequest.location,
                     homeTeamData.get().currentWins,
                     homeTeamData.get().currentLosses,
                     awayTeamData.get().currentWins,
                     awayTeamData.get().currentLosses,
                     "none_scorebug.png",
-                    startGameRequest.subdivision,
+                    startRequest.subdivision ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     LocalDateTime.now(),
                     0.0,
                     java.lang.Boolean.FALSE,
                     java.lang.Boolean.FALSE,
-                    startGameRequest.season.toInt(),
-                    startGameRequest.week.toInt(),
+                    startRequest.season?.toInt(),
+                    startRequest.week?.toInt(),
                     awayTeamData.get().coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     "none_winprob.png",
                     "none_scoreplot.png",
@@ -138,14 +141,14 @@ class OngoingGamesController(
                     3,
                     "None",
                     "None",
-                    startGameRequest.homePlatform,
-                    startGameRequest.homePlatformId,
-                    startGameRequest.awayPlatform,
-                    startGameRequest.awayPlatformId,
+                    startRequest.homePlatform ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    null,
+                    startRequest.awayPlatform ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    null,
                     formattedDateTime,
-                    "KICKOFF",
+                    PlayType.KICKOFF,
                     0,
-                    startGameRequest.isScrimmage,
+                    startRequest.isScrimmage,
                     true
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -162,14 +165,14 @@ class OngoingGamesController(
             newGame.scorePlot = scoreplotName
 
             // Create a new Discord thread
-            if (newGame.homePlatform == "Discord") {
+            if (newGame.homePlatform == Platform.DISCORD) {
                 val gameThreadId = discordService.startGameThread(newGame)
                 if (gameThreadId == null) {
                    return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
                 }
                 newGame.homePlatformId = gameThreadId
             }
-            if (newGame.awayPlatform == "Discord") {
+            if (newGame.awayPlatform == Platform.DISCORD) {
                 val gameThreadId = discordService.startGameThread(newGame)
                 if (gameThreadId == null) {
                     return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

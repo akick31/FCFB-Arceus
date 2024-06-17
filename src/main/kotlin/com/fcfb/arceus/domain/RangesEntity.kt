@@ -2,6 +2,7 @@ package com.fcfb.arceus.domain
 
 import java.util.*
 import javax.persistence.*
+import com.fcfb.arceus.models.game.Game.Result
 
 @Entity
 @Table(name = "ranges", schema = "arceus")
@@ -25,7 +26,7 @@ class RangesEntity {
 
     @Basic
     @Column(name = "result")
-    var result: String? = null
+    var result: Result? = null
 
     @Basic
     @Column(name = "play_time")
@@ -43,7 +44,7 @@ class RangesEntity {
         playType: String?,
         offensivePlaybook: String?,
         defensivePlaybook: String?,
-        result: String?,
+        result: Result?,
         playTime: Int?,
         lowerRange: Int?,
         upperRange: Int?

@@ -1,7 +1,15 @@
 package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fcfb.arceus.models.Game
+import com.fcfb.arceus.models.game.Game.CoinTossWinner
+import com.fcfb.arceus.models.game.Game.CoinTossChoice
+import com.fcfb.arceus.models.game.Game.OffensivePlaybook
+import com.fcfb.arceus.models.game.Game.DefensivePlaybook
+import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.game.Game.TVChannel
+import com.fcfb.arceus.models.game.Game.Platform
+import com.fcfb.arceus.models.game.Game.Subdivision
 import java.time.LocalDateTime
 import java.util.*
 import javax.persistence.*
@@ -48,22 +56,22 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "home_offensive_playbook")
     @JsonProperty("home_offensive_playbook")
-    var homeOffensivePlaybook: String? = "home offensive playbook"
+    lateinit var homeOffensivePlaybook: OffensivePlaybook
 
     @Basic
     @Column(name = "away_offensive_playbook")
     @JsonProperty("away_offensive_playbook")
-    var awayOffensivePlaybook: String? = "away offensive playbook"
+    lateinit var awayOffensivePlaybook: OffensivePlaybook
 
     @Basic
     @Column(name = "home_defensive_playbook")
     @JsonProperty("home_defensive_playbook")
-    var homeDefensivePlaybook: String? = "home defensive playbook"
+    lateinit var homeDefensivePlaybook: DefensivePlaybook
 
     @Basic
     @Column(name = "away_defensive_playbook")
     @JsonProperty("away_defensive_playbook")
-    var awayDefensivePlaybook: String? = "away defensive playbook"
+    lateinit var awayDefensivePlaybook: DefensivePlaybook
 
     @Basic
     @Column(name = "home_score")
@@ -78,7 +86,7 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "possession")
     @JsonProperty("possession")
-    var possession: String? = null
+    var possession: Possession? = null
 
     @Basic
     @Column(name = "quarter")
@@ -108,7 +116,7 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "tv_channel")
     @JsonProperty("tv_channel")
-    var tvChannel: String? = null
+    var tvChannel: TVChannel? = null
 
     @Basic
     @Column(name = "start_time")
@@ -148,7 +156,7 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "subdivision")
     @JsonProperty("subdivision")
-    var subdivision: String? = null
+    lateinit var subdivision: Subdivision
 
     @Basic
     @Column(name = "timestamp")
@@ -213,17 +221,17 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "coin_toss_winner")
     @JsonProperty("coin_toss_winner")
-    var coinTossWinner: String? = null
+    var coinTossWinner: CoinTossWinner? = null
 
     @Basic
     @Column(name = "coin_toss_choice")
     @JsonProperty("coin_toss_choice")
-    var coinTossChoice: String? = null
+    var coinTossChoice: CoinTossChoice? = null
 
     @Basic
     @Column(name = "home_platform")
     @JsonProperty("home_platform")
-    var homePlatform: String? = null
+    lateinit var homePlatform: Platform
 
     @Basic
     @Column(name = "home_platform_id")
@@ -233,7 +241,7 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "away_platform")
     @JsonProperty("away_platform")
-    var awayPlatform: String? = null
+    lateinit var awayPlatform: Platform
 
     @Basic
     @Column(name = "away_platform_id")
@@ -248,7 +256,7 @@ class OngoingGamesEntity {
     @Basic
     @Column(name = "current_play_type")
     @JsonProperty("current_play_type")
-    var currentPlayType: String? = null
+    var currentPlayType: PlayType? = null
 
     @Basic
     @Column(name = "current_play_id")
@@ -267,16 +275,16 @@ class OngoingGamesEntity {
 
     constructor(
         homeTeam: String, awayTeam: String, homeCoach: String, awayCoach: String, homeCoachDiscordId: String,
-        awayCoachDiscordId: String, homeOffensivePlaybook: String, awayOffensivePlaybook: String,
-        homeDefensivePlaybook: String, awayDefensivePlaybook: String, homeScore: Int, awayScore: Int,
-        possession: String?, quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
-        tvChannel: Game.TVChannel?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
-        awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: Game.Subdivision?,
+        awayCoachDiscordId: String, homeOffensivePlaybook: OffensivePlaybook, awayOffensivePlaybook: OffensivePlaybook,
+        homeDefensivePlaybook: DefensivePlaybook, awayDefensivePlaybook: DefensivePlaybook, homeScore: Int, awayScore: Int,
+        possession: Possession?, quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
+        tvChannel: TVChannel?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
+        awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: Subdivision,
         timestamp: LocalDateTime?, winProbability: Double?, final: Boolean, ot: Boolean,
         season: Int?, week: Int?, waitingOn: String, winProbabilityPlot: String?, scorePlot: String?,
-        numPlays: Int, homeTimeouts: Int, awayTimeouts: Int, coinTossWinner: String?,
-        coinTossChoice: String?, homePlatform: Game.Platform?, homePlatformId: String?, awayPlatform: Game.Platform?,
-        awayPlatformId: String?, gameTimer: String?, currentPlayType: String?, currentPlayId: Int?,
+        numPlays: Int, homeTimeouts: Int, awayTimeouts: Int, coinTossWinner: CoinTossWinner?,
+        coinTossChoice: CoinTossChoice?, homePlatform: Platform, homePlatformId: String?, awayPlatform: Platform,
+        awayPlatformId: String?, gameTimer: String?, currentPlayType: PlayType?, currentPlayId: Int?,
         scrimmage: Boolean?, clockStopped: Boolean?
     ) {
         this.homeTeam = homeTeam
@@ -297,7 +305,7 @@ class OngoingGamesEntity {
         this.ballLocation = ballLocation
         this.down = down
         this.yardsToGo = yardsToGo
-        this.tvChannel = tvChannel.toString()
+        this.tvChannel = tvChannel
         this.startTime = startTime
         this.location = location
         this.homeWins = homeWins
@@ -305,7 +313,7 @@ class OngoingGamesEntity {
         this.awayWins = awayWins
         this.awayLosses = awayLosses
         this.scorebug = scorebug
-        this.subdivision = subdivision.toString()
+        this.subdivision = subdivision
         this.timestamp = timestamp
         this.winProbability = winProbability
         this.final = final
@@ -320,9 +328,9 @@ class OngoingGamesEntity {
         this.awayTimeouts = awayTimeouts
         this.coinTossWinner = coinTossWinner
         this.coinTossChoice = coinTossChoice
-        this.homePlatform = homePlatform.toString()
+        this.homePlatform = homePlatform
         this.homePlatformId = homePlatformId
-        this.awayPlatform = awayPlatform.toString()
+        this.awayPlatform = awayPlatform
         this.awayPlatformId = awayPlatformId
         this.gameTimer = gameTimer
         this.currentPlayType = currentPlayType

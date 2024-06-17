@@ -2,6 +2,13 @@ package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.GamePlaysEntity
 import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.models.ExceptionType
+import com.fcfb.arceus.models.game.Game.ActualResult
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.game.Game.Play
+import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.models.game.Game.Result
+import com.fcfb.arceus.models.handleException
 import org.springframework.stereotype.Component
 
 @Component
@@ -9,31 +16,31 @@ class GameInformation(private val gameUtils: GameUtils) {
     fun updateGameInformation(
         game: OngoingGamesEntity,
         play: GamePlaysEntity,
-        playCall: String,
+        playCall: Play,
         clockStopped: Boolean,
         offensiveTimeout: Boolean,
         defensiveTimeout: Boolean
     ): OngoingGamesEntity {
 
         // Update if the clock is stopped
-        game.clockStopped = play.play == "SPIKE" || play.result == "INCOMPLETE" ||
-                play.actualResult == "TURNOVER ON DOWNS" ||
-                play.actualResult == "TOUCHDOWN" || play.play == "FIELD GOAL" ||
-                play.play == "PAT" || play.play == "KICKOFF NORMAL" ||
-                play.play == "KICKOFF ONSIDE" || play.play == "KICKOFF SQUIB" ||
-                play.play == "PUNT" || play.actualResult == "TURNOVER" ||
-                play.actualResult == "TURNOVER TOUCHDOWN" || play.actualResult == "SAFETY"
+        game.clockStopped = play.play == Play.SPIKE || play.result == Result.INCOMPLETE ||
+                play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
+                play.actualResult == ActualResult.TOUCHDOWN || play.play == Play.FIELD_GOAL ||
+                play.play == Play.PAT || play.play == Play.KICKOFF_NORMAL ||
+                play.play == Play.KICKOFF_ONSIDE || play.play == Play.KICKOFF_SQUIB ||
+                play.play == Play.PUNT || play.actualResult == ActualResult.TURNOVER ||
+                play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
-        val possession: String? = game.possession
+        val possession: Possession? = game.possession
         if (!clockStopped) {
-            if (possession == "home" && defensiveTimeout) {
+            if (possession == Possession.HOME && defensiveTimeout) {
                 game.awayTimeouts = game.awayTimeouts!! - 1
-            } else if (possession == "home" && offensiveTimeout) {
+            } else if (possession == Possession.HOME && offensiveTimeout) {
                 game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == "away" && defensiveTimeout) {
+            } else if (possession == Possession.AWAY && defensiveTimeout) {
                 game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == "away" && offensiveTimeout) {
+            } else if (possession == Possession.AWAY && offensiveTimeout) {
                 game.awayTimeouts = game.awayTimeouts!! - 1
             }
         }
@@ -46,25 +53,25 @@ class GameInformation(private val gameUtils: GameUtils) {
         }
 
         // Update the play type
-        if (play.actualResult?.contains("TOUCHDOWN") == true) {
-            game.currentPlayType = "POINT AFTER"
-        } else if (play.actualResult?.contains("SAFETY") == true || playCall == "field goal" && play.actualResult
-                .equals("GOOD") || playCall == "pat" || playCall == "two point"
+        if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
+            game.currentPlayType = PlayType.PAT
+        } else if (play.actualResult == ActualResult.SAFETY ||
+            (playCall == Play.FIELD_GOAL && play.result == Result.GOOD) || playCall == Play.PAT || playCall == Play.TWO_POINT
         ) {
-            game.currentPlayType = "KICKOFF"
+            game.currentPlayType = PlayType.KICKOFF
         } else {
-            game.currentPlayType = "NORMAL"
+            game.currentPlayType = PlayType.NORMAL
         }
 
         // Update everything else
-        game.homeScore = play.homeScore ?: throw IllegalArgumentException("Home score is null")
-        game.awayScore = play.awayScore ?: throw IllegalArgumentException("Away score is null")
+        game.homeScore = play.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
+        game.awayScore = play.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
         game.possession = play.possession
-        game.quarter = play.gameQuarter ?: throw IllegalArgumentException("Game quarter is null")
+        game.quarter = play.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
         game.clock = gameUtils.convertClockToString(play.clock ?: 420)
         game.ballLocation = play.ballLocation
-        game.down = play.down ?: throw IllegalArgumentException("Down is null")
-        game.yardsToGo = play.yardsToGo ?: throw IllegalArgumentException("Yards to go is null")
+        game.down = play.down ?: handleException(ExceptionType.INVALID_DOWN)
+        game.yardsToGo = play.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
         game.numPlays = play.playNumber
         return game
     }

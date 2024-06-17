@@ -1,6 +1,6 @@
 // src/main/kotlin/com/fcfb/arceus/models/Session.kt
 
-package com.fcfb.arceus.models
+package com.fcfb.arceus.models.website
 
 import java.time.LocalDateTime
 import javax.persistence.*

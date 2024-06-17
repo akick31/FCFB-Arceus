@@ -2,6 +2,10 @@ package com.fcfb.arceus.domain
 
 import java.util.*
 import javax.persistence.*
+import com.fcfb.arceus.models.game.Game.Play
+import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.models.game.Game.Result
+import com.fcfb.arceus.models.game.Game.ActualResult
 
 @Entity
 @Table(name = "game_plays", schema = "arceus")
@@ -41,7 +45,7 @@ class GamePlaysEntity {
 
     @Basic
     @Column(name = "possession")
-    var possession: String? = null
+    var possession: Possession? = null
 
     @Basic
     @Column(name = "down")
@@ -69,11 +73,11 @@ class GamePlaysEntity {
 
     @Basic
     @Column(name = "play")
-    var play: String? = null
+    var play: Play? = null
 
     @Basic
     @Column(name = "result")
-    var result: String? = null
+    var result: Result? = null
 
     @Basic
     @Column(name = "difference")
@@ -81,7 +85,7 @@ class GamePlaysEntity {
 
     @Basic
     @Column(name = "actual_result")
-    var actualResult: String? = null
+    var actualResult: ActualResult? = null
 
     @Basic
     @Column(name = "yards")
@@ -125,9 +129,9 @@ class GamePlaysEntity {
 
     constructor(
         gameId: Int, playNumber: Int, homeScore: Int?, awayScore: Int?, quarter: Int?,
-        clock: Int?, ballLocation: Int?, possession: String?, down: Int?, yardsToGo: Int?,
+        clock: Int?, ballLocation: Int?, possession: Possession?, down: Int?, yardsToGo: Int?,
         defensiveNumber: String?, offensiveNumber: String?, offensiveSubmitter: String?,
-        defensiveSubmitter: String?, play: String?, result: String?, actualResult: String?, yards: Int,
+        defensiveSubmitter: String?, play: Play?, result: Result?, actualResult: ActualResult?, yards: Int,
         playTime: Int, runoffTime: Int, winProbability: Double?, homeTeam: String?, awayTeam: String?,
         difference: Int, timeoutUsed: Boolean?, homeTimeouts: Int, awayTimeouts: Int,
         playFinished: Boolean?

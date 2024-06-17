@@ -1,5 +1,8 @@
 package com.fcfb.arceus.domain
 
+import com.fcfb.arceus.models.game.Game.OffensivePlaybook
+import com.fcfb.arceus.models.game.Game.DefensivePlaybook
+import com.fcfb.arceus.models.game.Game.Subdivision
 import java.util.*
 import javax.persistence.*
 
@@ -53,15 +56,15 @@ class TeamsEntity {
 
     @Basic
     @Column(name = "subdivision")
-    var subdivision: String? = null
+    var subdivision: Subdivision? = null
 
     @Basic
     @Column(name = "offensive_playbook")
-    var offensivePlaybook: String? = null
+    var offensivePlaybook: OffensivePlaybook? = null
 
     @Basic
     @Column(name = "defensive_playbook")
-    var defensivePlaybook: String? = null
+    var defensivePlaybook: DefensivePlaybook? = null
 
     @Basic
     @Column(name = "conference")
@@ -102,7 +105,7 @@ class TeamsEntity {
     constructor(
         logo: String?, coachUsername: String?, coachName: String?, coachDiscordTag: String?, coachDiscordId: String?,
         coachesPollRanking: Int?, name: String?, playoffCommitteeRanking: Int?, primaryColor: String?,
-        secondaryColor: String?, subdivision: String?, offensivePlaybook: String?, defensivePlaybook: String?,
+        secondaryColor: String?, subdivision: Subdivision?, offensivePlaybook: OffensivePlaybook?, defensivePlaybook: DefensivePlaybook?,
         conference: String?, currentWins: Int?, currentLosses: Int?, overallWins: Int?, overallLosses: Int?,
         currentConferenceWins: Int?, currentConferenceLosses: Int?, overallConferenceWins: Int?,
         overallConferenceLosses: Int?
