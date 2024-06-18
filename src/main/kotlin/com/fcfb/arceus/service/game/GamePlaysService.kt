@@ -1,9 +1,9 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.api.repositories.GamePlaysRepository
-import com.fcfb.arceus.api.repositories.OngoingGamesRepository
+import com.fcfb.arceus.repositories.GamePlaysRepository
+import com.fcfb.arceus.repositories.GamesRepository
 import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.models.game.Game
 import com.fcfb.arceus.dto.GameDTO
 import com.fcfb.arceus.utils.GameUtils
@@ -16,7 +16,7 @@ import java.util.*
 
 @Component
 class GamePlaysService(
-    private var ongoingGamesRepository: OngoingGamesRepository,
+    private var gamesRepository: GamesRepository,
     private var gamePlaysRepository: GamePlaysRepository,
     private var gameDTO: GameDTO,
     private var gameUtils: GameUtils,
@@ -37,7 +37,7 @@ class GamePlaysService(
         timeoutCalled: Boolean?
     ): ResponseEntity<GamePlaysEntity> {
         return try {
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository.findById(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val gameData: Optional<GamesEntity?> = gamesRepository.findById(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             if (!gameData.isPresent) {
                 return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             }
@@ -84,9 +84,9 @@ class GamePlaysService(
                     false
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val ongoingGamesEntity: OngoingGamesEntity = gameData.get()
-            ongoingGamesEntity.currentPlayId = gamePlay.playId
-            ongoingGamesRepository.save(ongoingGamesEntity)
+            val gamesEntity: GamesEntity = gameData.get()
+            gamesEntity.currentPlayId = gamePlay.playId
+            gamesRepository.save(gamesEntity)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
 
         } catch (e: Exception) {
@@ -122,11 +122,11 @@ class GamePlaysService(
 
             var gamePlay: GamePlaysEntity = gamePlayData.get()
 
-            val gameData: Optional<OngoingGamesEntity?> = ongoingGamesRepository.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val gameData: Optional<GamesEntity?> = gamesRepository.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             //Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
 
             //if (statsData.isPresent()) {
-            var game: OngoingGamesEntity = gameData.get()
+            var game: GamesEntity = gameData.get()
             //GameStatsEntity stats = statsData.get();
 
             val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -176,7 +176,7 @@ class GamePlaysService(
             //stats = gameStats.updateGameStats(stats, gamePlay);
 
             // Send the defense the request for the number
-            ongoingGamesRepository.save(game)
+            gamesRepository.save(game)
             //gameStatsRepository.save(stats);
 
             // Mark play as finished, set the timeouts, save the play

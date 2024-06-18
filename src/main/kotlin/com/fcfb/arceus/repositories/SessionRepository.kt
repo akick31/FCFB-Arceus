@@ -1,4 +1,4 @@
-package com.fcfb.arceus.api.repositories
+package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.models.website.Session
 import org.springframework.data.jpa.repository.JpaRepository

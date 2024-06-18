@@ -3,7 +3,7 @@ package com.fcfb.arceus.tasks
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Component
-import com.fcfb.arceus.api.repositories.SessionRepository
+import com.fcfb.arceus.repositories.SessionRepository
 import com.fcfb.arceus.utils.Logger
 import java.time.LocalDateTime
 

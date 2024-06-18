@@ -1,9 +1,6 @@
-package com.fcfb.arceus.api.controllers
+package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.api.repositories.GameMessagesRepository
-import com.fcfb.arceus.api.repositories.GameStatsRepository
-import com.fcfb.arceus.domain.OngoingGamesEntity
-import com.fcfb.arceus.service.discord.DiscordService
+import com.fcfb.arceus.repositories.GameMessagesRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import java.util.*

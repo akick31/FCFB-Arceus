@@ -1,4 +1,4 @@
-package com.fcfb.arceus.api.repositories
+package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.UsersEntity
 import org.springframework.data.jpa.repository.Query

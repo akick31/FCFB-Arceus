@@ -1,8 +1,8 @@
 package com.fcfb.arceus.dto
 
 import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.GameStatsEntity
-import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.domain.FinishedGamesEntity
+import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.game.Game.ActualResult
 import com.fcfb.arceus.models.game.Game.PlayType
@@ -18,13 +18,13 @@ class GameDTO(
     private val gameUtils: GameUtils
 ) {
     fun updateGameInformation(
-        game: OngoingGamesEntity,
+        game: GamesEntity,
         play: GamePlaysEntity,
         playCall: Play,
         clockStopped: Boolean,
         offensiveTimeout: Boolean,
         defensiveTimeout: Boolean
-    ): OngoingGamesEntity {
+    ): GamesEntity {
 
         // Update if the clock is stopped
         game.clockStopped = play.play == Play.SPIKE || play.result == Result.INCOMPLETE ||
@@ -80,7 +80,9 @@ class GameDTO(
         return game
     }
 
-    fun updateGameStats(stats: GameStatsEntity?, play: GamePlaysEntity?): GameStatsEntity? {
+    fun updateGameStats(stats: FinishedGamesEntity?, play: GamePlaysEntity?): FinishedGamesEntity? {
         return null
     }
+
+
 }

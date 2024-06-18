@@ -1,6 +1,5 @@
-package com.fcfb.arceus.api.controllers
+package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.OngoingGamesEntity
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.web.bind.annotation.*
 import java.util.*

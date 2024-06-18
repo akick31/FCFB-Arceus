@@ -1,6 +1,6 @@
 package com.fcfb.arceus.utils
 
-import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.models.game.Game.CoinTossWinner
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.CoinTossChoice
@@ -53,7 +53,7 @@ class GameUtils {
     }
 
     fun handleHalfTimePossessionChange(
-        game: OngoingGamesEntity
+        game: GamesEntity
     ): Possession? {
         var possession: Possession? = null
         if (game.coinTossWinner == CoinTossWinner.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {

@@ -1,11 +1,11 @@
 package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.domain.RangesEntity
 import com.fcfb.arceus.domain.UsersEntity
-import com.fcfb.arceus.api.repositories.RangesRepository
-import com.fcfb.arceus.api.repositories.UsersRepository
+import com.fcfb.arceus.repositories.RangesRepository
+import com.fcfb.arceus.repositories.UsersRepository
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.PlayType
@@ -43,7 +43,7 @@ class GamePlaysHandler(
     fun runNormalPlay(
         gamePlay: GamePlaysEntity,
         clockStopped: Boolean?,
-        game: OngoingGamesEntity,
+        game: GamesEntity,
         playCall: Play,
         runoffType: RunoffType,
         timeoutCalled: Boolean,
@@ -296,7 +296,7 @@ class GamePlaysHandler(
      */
     fun runKickoffPlay(
         gamePlay: GamePlaysEntity,
-        game: OngoingGamesEntity,
+        game: GamesEntity,
         playCall: Play,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
@@ -439,7 +439,7 @@ class GamePlaysHandler(
      */
     fun runPointAfterPlay(
         gamePlay: GamePlaysEntity,
-        game: OngoingGamesEntity,
+        game: GamesEntity,
         playCall: Play,
         offensiveNumber: String,
         decryptedDefensiveNumber: String

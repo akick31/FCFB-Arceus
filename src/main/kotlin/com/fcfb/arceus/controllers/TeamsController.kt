@@ -1,7 +1,7 @@
-package com.fcfb.arceus.api.controllers
+package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.TeamsEntity
-import com.fcfb.arceus.api.repositories.TeamsRepository
+import com.fcfb.arceus.repositories.TeamsRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus

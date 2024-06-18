@@ -230,4 +230,10 @@ class Game {
         AWAY("away")
     }
 
+    enum class CoinTossCall(val description: String) {
+        HEADS("heads"),
+        TAILS("tails")
+    }
+
+
 }

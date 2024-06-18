@@ -1,6 +1,6 @@
 package com.fcfb.arceus.service.discord
 
-import com.fcfb.arceus.domain.OngoingGamesEntity
+import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
@@ -26,7 +26,7 @@ class DiscordService {
         this.restTemplate = restTemplate
     }
 
-    fun startGameThread(ongoingGame: OngoingGamesEntity): String {
+    fun startGameThread(ongoingGame: GamesEntity): String {
         val discordBotUrl = "$discordBotUrl/start_game"
         return restTemplate!!.postForEntity(discordBotUrl, ongoingGame, String::class.java).toString()
     }

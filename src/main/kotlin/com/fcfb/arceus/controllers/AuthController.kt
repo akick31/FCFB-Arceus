@@ -1,8 +1,8 @@
-package com.fcfb.arceus.api.controllers
+package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.UsersEntity
-import com.fcfb.arceus.api.repositories.UsersRepository
-import com.fcfb.arceus.api.repositories.SessionRepository
+import com.fcfb.arceus.repositories.UsersRepository
+import com.fcfb.arceus.repositories.SessionRepository
 import com.fcfb.arceus.models.website.Session
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService

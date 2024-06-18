@@ -1,19 +1,8 @@
-package com.fcfb.arceus.api.controllers
+package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.OngoingGamesEntity
-import com.fcfb.arceus.api.repositories.GamePlaysRepository
-import com.fcfb.arceus.api.repositories.GameStatsRepository
-import com.fcfb.arceus.api.repositories.OngoingGamesRepository
-import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.RunoffType
 import com.fcfb.arceus.models.game.Game.Play
 import com.fcfb.arceus.service.game.*
-import com.fcfb.arceus.utils.EncryptionUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.*
 import java.util.*
 
