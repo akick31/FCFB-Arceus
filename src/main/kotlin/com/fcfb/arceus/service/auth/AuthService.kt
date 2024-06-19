@@ -1,9 +1,9 @@
 package com.fcfb.arceus.service.auth
 
-import com.fcfb.arceus.domain.UsersEntity
+import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.models.website.Session
 import com.fcfb.arceus.repositories.SessionRepository
-import com.fcfb.arceus.repositories.UsersRepository
+import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.utils.Logger
@@ -15,7 +15,6 @@ import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.time.LocalDateTime
-import java.util.Optional
 import java.util.UUID
 import javax.transaction.Transactional
 
@@ -26,14 +25,14 @@ open class AuthService(
     private val discordService: DiscordService
 ) {
     @Autowired
-    var usersRepository: UsersRepository? = null
+    var usersRepository: UserRepository? = null
 
     @Autowired
     var sessionRepository: SessionRepository? = null
 
     private val emptyHeaders = HttpHeaders()
 
-    suspend fun createUser(user: UsersEntity): ResponseEntity<UsersEntity> {
+    suspend fun createUser(user: User): ResponseEntity<User> {
         return try {
             val passwordEncoder = BCryptPasswordEncoder()
             val salt = passwordEncoder.encode(user.password)
@@ -43,8 +42,8 @@ open class AuthService(
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val discordId = discordUser.id.toString()
 
-            val newUser: UsersEntity = usersRepository?.save(
-                UsersEntity(
+            val newUser: User = usersRepository?.save(
+                User(
                     user.username,
                     user.coachName,
                     user.discordTag,
@@ -73,12 +72,7 @@ open class AuthService(
     }
 
     fun loginUser(usernameOrEmail: String, password: String): ResponseEntity<Session> {
-        val userData: Optional<UsersEntity> =
-            usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
+        val user = usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         val passwordEncoder = BCryptPasswordEncoder()
         return if (passwordEncoder.matches(password, user.password)) {
             val token = sessionUtils.generateSessionToken()
@@ -97,23 +91,14 @@ open class AuthService(
     }
 
     fun verifyEmail(token: String): ResponseEntity<String> {
-        val userData: Optional<UsersEntity> =
-            usersRepository?.findByVerificationToken(token) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
+        val user = usersRepository?.findByVerificationToken(token) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         user.approved = 1
         usersRepository?.save(user)
         return ResponseEntity("Email verified successfully", HttpStatus.OK)
     }
 
-    fun resetVerificationToken(id: Long): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
+    fun resetVerificationToken(id: Long): ResponseEntity<User> {
+        val user: User = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         val verificationToken = UUID.randomUUID().toString()
         user.verificationToken = verificationToken
         usersRepository?.save(user)

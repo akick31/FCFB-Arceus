@@ -1,14 +1,14 @@
 package com.fcfb.arceus.dto
 
-import com.fcfb.arceus.domain.FinishedGamesEntity
-import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.GamesEntity
+import com.fcfb.arceus.domain.FinishedGame
+import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.ActualResult
+import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.PlayCall
+import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.Possession
 import com.fcfb.arceus.models.ExceptionType
-import com.fcfb.arceus.models.game.Game.ActualResult
-import com.fcfb.arceus.models.game.Game.Play
-import com.fcfb.arceus.models.game.Game.PlayType
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.Result
 import com.fcfb.arceus.models.handleException
 import com.fcfb.arceus.utils.GameUtils
 import org.springframework.stereotype.Component
@@ -18,25 +18,24 @@ class GameDTO(
     private val gameUtils: GameUtils
 ) {
     fun updateGameInformation(
-        game: GamesEntity,
-        play: GamePlaysEntity,
-        playCall: Play,
+        game: Game,
+        play: Play,
+        playCall: PlayCall,
         clockStopped: Boolean,
         offensiveTimeout: Boolean,
         defensiveTimeout: Boolean
-    ): GamesEntity {
-
+    ): Game {
         // Update if the clock is stopped
-        game.clockStopped = play.play == Play.SPIKE || play.result == Result.INCOMPLETE ||
+        game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Result.INCOMPLETE ||
             play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
-            play.actualResult == ActualResult.TOUCHDOWN || play.play == Play.FIELD_GOAL ||
-            play.play == Play.PAT || play.play == Play.KICKOFF_NORMAL ||
-            play.play == Play.KICKOFF_ONSIDE || play.play == Play.KICKOFF_SQUIB ||
-            play.play == Play.PUNT || play.actualResult == ActualResult.TURNOVER ||
+            play.actualResult == ActualResult.TOUCHDOWN || play.playCall == PlayCall.FIELD_GOAL ||
+            play.playCall == PlayCall.PAT || play.playCall == PlayCall.KICKOFF_NORMAL ||
+            play.playCall == PlayCall.KICKOFF_ONSIDE || play.playCall == PlayCall.KICKOFF_SQUIB ||
+            play.playCall == PlayCall.PUNT || play.actualResult == ActualResult.TURNOVER ||
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
-        val possession: Possession? = game.possession
+        val possession =  game.possession
         if (!clockStopped) {
             if (possession == Possession.HOME && defensiveTimeout) {
                 game.awayTimeouts = game.awayTimeouts!! - 1
@@ -60,7 +59,7 @@ class GameDTO(
         if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
-            (playCall == Play.FIELD_GOAL && play.result == Result.GOOD) || playCall == Play.PAT || playCall == Play.TWO_POINT
+            (playCall == PlayCall.FIELD_GOAL && play.result == Result.GOOD) || playCall == PlayCall.PAT || playCall == PlayCall.TWO_POINT
         ) {
             game.currentPlayType = PlayType.KICKOFF
         } else {
@@ -80,7 +79,7 @@ class GameDTO(
         return game
     }
 
-    fun updateGameStats(stats: FinishedGamesEntity?, play: GamePlaysEntity?): FinishedGamesEntity? {
+    fun updateGameStats(stats: FinishedGame?, play: com.fcfb.arceus.domain.Play?): FinishedGame? {
         return null
     }
 }

@@ -1,9 +1,9 @@
 package com.fcfb.arceus.utils
 
-import com.fcfb.arceus.domain.GamesEntity
-import com.fcfb.arceus.models.game.Game.CoinTossChoice
-import com.fcfb.arceus.models.game.Game.CoinTossWinner
-import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.CoinTossWinner
+import com.fcfb.arceus.domain.Game.Possession
 import org.springframework.stereotype.Component
 
 @Component
@@ -53,7 +53,7 @@ class GameUtils {
     }
 
     fun handleHalfTimePossessionChange(
-        game: GamesEntity
+        game: Game
     ): Possession? {
         var possession: Possession? = null
         if (game.coinTossWinner == CoinTossWinner.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {

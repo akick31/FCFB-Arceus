@@ -1,7 +1,7 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.TeamsEntity
-import com.fcfb.arceus.service.team.TeamsService
+import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.service.team.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,35 +16,35 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
 @RequestMapping("/teams")
-class TeamsController(
-    private var teamsService: TeamsService
+class TeamController(
+    private var teamService: TeamService
 ) {
     @GetMapping("/id")
     fun getTeamById(
         @RequestParam id: Int
-    ) = teamsService.getTeamById(id)
+    ) = teamService.getTeamById(id)
 
     @GetMapping("")
-    fun getAllTeams() = teamsService.getAllTeams()
+    fun getAllTeams() = teamService.getAllTeams()
 
     @GetMapping("/name")
     fun getTeamByName(
         @RequestParam name: String?
-    ) = teamsService.getTeamByName(name)
+    ) = teamService.getTeamByName(name)
 
     @PostMapping("")
     fun createTeam(
-        @RequestBody team: TeamsEntity
-    ) = teamsService.createTeam(team)
+        @RequestBody team: Team
+    ) = teamService.createTeam(team)
 
     @PutMapping("/{name}")
     fun updateTeam(
         @PathVariable("name") name: String?,
-        @RequestBody team: TeamsEntity
-    ) = teamsService.updateTeam(name, team)
+        @RequestBody team: Team
+    ) = teamService.updateTeam(name, team)
 
     @DeleteMapping("/{id}")
     fun deleteTeam(
         @PathVariable("id") id: Int
-    ) = teamsService.deleteTeam(id)
+    ) = teamService.deleteTeam(id)
 }

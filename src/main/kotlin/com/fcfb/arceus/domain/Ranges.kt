@@ -1,6 +1,6 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.models.game.Game.Result
+import com.fcfb.arceus.domain.Game.Result
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -12,7 +12,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "ranges", schema = "arceus")
-class RangesEntity {
+class Ranges {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -69,7 +69,7 @@ class RangesEntity {
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as RangesEntity
+        val that = o as Ranges
         return id == that.id && playType == that.playType && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && result == that.result && playTime == that.playTime && lowerRange == that.lowerRange && upperRange == that.upperRange
     }
 

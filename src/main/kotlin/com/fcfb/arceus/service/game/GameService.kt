@@ -1,15 +1,15 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.domain.GamesEntity
-import com.fcfb.arceus.models.game.Game.CoinTossCall
-import com.fcfb.arceus.models.game.Game.CoinTossChoice
-import com.fcfb.arceus.models.game.Game.CoinTossWinner
-import com.fcfb.arceus.models.game.Game.Platform
-import com.fcfb.arceus.models.game.Game.PlayType
-import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.CoinTossCall
+import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.CoinTossWinner
+import com.fcfb.arceus.domain.Game.Platform
+import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.Possession
 import com.fcfb.arceus.models.requests.StartRequest
-import com.fcfb.arceus.repositories.GamesRepository
-import com.fcfb.arceus.repositories.TeamsRepository
+import com.fcfb.arceus.repositories.GameRepository
+import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -20,29 +20,25 @@ import java.time.format.DateTimeFormatter
 import java.util.Random
 
 @Component
-class GamesService(
-    private var gamesRepository: GamesRepository,
-    private var teamsRepository: TeamsRepository,
+class GameService(
+    private var gameRepository: GameRepository,
+    private var teamRepository: TeamRepository,
     private var discordService: DiscordService
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
     fun getGameById(
         id: Int
-    ): ResponseEntity<GamesEntity> {
-        val ongoingGameData = gamesRepository.findByGameId(id)
-        return ongoingGameData.orElse(null)?.let {
-            ResponseEntity(it, HttpStatus.OK)
-        } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    ): ResponseEntity<Game> {
+        val ongoingGameData = gameRepository.findByGameId(id)
+        return ResponseEntity(ongoingGameData, HttpStatus.OK)
     }
 
     fun getOngoingGameByDiscordChannelId(
         channelId: String?
-    ): ResponseEntity<GamesEntity> {
-        val ongoingGameData = gamesRepository.findByHomePlatformId("Discord", channelId)
-            .orElseGet {
-                gamesRepository.findByAwayPlatformId("Discord", channelId).orElse(null)
-            }
+    ): ResponseEntity<Game> {
+        val ongoingGameData = gameRepository.findByHomePlatformId("Discord", channelId) ?:
+            gameRepository.findByAwayPlatformId("Discord", channelId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
@@ -50,13 +46,13 @@ class GamesService(
 
     fun startGame(
         startRequest: StartRequest
-    ): ResponseEntity<GamesEntity> {
+    ): ResponseEntity<Game> {
         println("Deserialized StartRequest: $startRequest")
         return try {
-            val homeTeamData = teamsRepository.findByName(startRequest.homeTeam).orElse(null)
+            val homeTeamData = teamRepository.findByName(startRequest.homeTeam)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
-            val awayTeamData = teamsRepository.findByName(startRequest.awayTeam).orElse(null)
+            val awayTeamData = teamRepository.findByName(startRequest.awayTeam)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Set the DOG timer
@@ -87,9 +83,9 @@ class GamesService(
             val homePlatform = startRequest.homePlatform ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val awayPlatform = startRequest.awayPlatform ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
-            // Create and save the GamesEntity object
-            val newGame = gamesRepository.save(
-                GamesEntity(
+            // Create and save the Game object
+            val newGame = gameRepository.save(
+                Game(
                     homeTeam = homeTeam,
                     awayTeam = awayTeam,
                     homeCoach = homeCoachUsername,
@@ -163,7 +159,7 @@ class GamesService(
             }
 
             // Save the updated entity
-            gamesRepository.save(newGame)
+            gameRepository.save(newGame)
             ResponseEntity(newGame, HttpStatus.CREATED)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -173,9 +169,9 @@ class GamesService(
     fun runCoinToss(
         gameId: String,
         coinTossCall: CoinTossCall
-    ): ResponseEntity<GamesEntity> {
+    ): ResponseEntity<Game> {
         return try {
-            val game: GamesEntity = gamesRepository.findById(gameId.toInt()).orElse(null)
+            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             val result = Random().nextInt(2)
@@ -186,7 +182,7 @@ class GamesService(
                 CoinTossWinner.AWAY
             }
             game.coinTossWinner = coinTossWinner
-            return ResponseEntity(gamesRepository.save(game), HttpStatus.OK)
+            return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
@@ -195,9 +191,9 @@ class GamesService(
     fun updateCoinTossChoice(
         gameId: String,
         coinTossChoice: CoinTossChoice
-    ): ResponseEntity<GamesEntity> {
+    ): ResponseEntity<Game> {
         return try {
-            val game: GamesEntity = gamesRepository.findById(gameId.toInt()).orElse(null)
+            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             game.coinTossChoice = coinTossChoice
@@ -206,7 +202,7 @@ class GamesService(
             } else if (game.coinTossWinner == CoinTossWinner.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
                 game.possession = Possession.AWAY
             }
-            return ResponseEntity(gamesRepository.save(game), HttpStatus.OK)
+            return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
@@ -215,9 +211,9 @@ class GamesService(
     fun updateWaitingOn(
         gameId: String,
         username: String
-    ): ResponseEntity<GamesEntity> {
+    ): ResponseEntity<Game> {
         return try {
-            val game: GamesEntity = gamesRepository.findById(gameId.toInt()).orElse(null)
+            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             game.waitingOn = username
@@ -235,7 +231,7 @@ class GamesService(
             // Format the result and set it on the game
             val formattedDateTime = futureTime.format(formatter)
             game.gameTimer = formattedDateTime
-            return ResponseEntity(gamesRepository.save(game), HttpStatus.OK)
+            return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
@@ -244,11 +240,11 @@ class GamesService(
     fun deleteOngoingGame(
         id: Int
     ): ResponseEntity<HttpStatus> {
-        gamesRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!gamesRepository.findById(id).isPresent) {
+        gameRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        if (!gameRepository.findById(id).isPresent) {
             return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-        gamesRepository.deleteById(id)
+        gameRepository.deleteById(id)
         return ResponseEntity(HttpStatus.OK)
     }
 }

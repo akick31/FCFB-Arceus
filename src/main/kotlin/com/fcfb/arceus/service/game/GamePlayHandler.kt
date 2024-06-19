@@ -1,56 +1,55 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.GamesEntity
-import com.fcfb.arceus.domain.RangesEntity
-import com.fcfb.arceus.domain.UsersEntity
+import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.ActualResult
+import com.fcfb.arceus.domain.Game.DefensivePlaybook
+import com.fcfb.arceus.domain.Game.OffensivePlaybook
+import com.fcfb.arceus.domain.Game.PlayCall
+import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.RunoffType
+import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.models.ExceptionType
-import com.fcfb.arceus.models.game.Game.ActualResult
-import com.fcfb.arceus.models.game.Game.DefensivePlaybook
-import com.fcfb.arceus.models.game.Game.OffensivePlaybook
-import com.fcfb.arceus.models.game.Game.Play
-import com.fcfb.arceus.models.game.Game.PlayType
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.Result
-import com.fcfb.arceus.models.game.Game.RunoffType
 import com.fcfb.arceus.models.handleException
 import com.fcfb.arceus.repositories.RangesRepository
-import com.fcfb.arceus.repositories.UsersRepository
+import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.utils.GameUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
 
 @Component
-class GamePlaysHandler(
+class GamePlayHandler(
     private val gameUtils: GameUtils
 ) {
     @Autowired
     lateinit var rangesRepository: RangesRepository
 
     @Autowired
-    lateinit var usersRepository: UsersRepository
+    lateinit var usersRepository: UserRepository
 
     /**
      * Runs the play, returns the updated gamePlay
      * @param gamePlay
      * @param game
-     * @param play
+     * @param playCall
      * @param offensiveNumber
      * @param decryptedDefensiveNumber
      * @return
      */
     fun runNormalPlay(
-        gamePlay: GamePlaysEntity,
+        gamePlay: Play,
         clockStopped: Boolean?,
-        game: GamesEntity,
-        playCall: Play,
+        game: Game,
+        playCall: PlayCall,
         runoffType: RunoffType,
         timeoutCalled: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): GamePlaysEntity {
+    ):  Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
-        var possession: Possession? = gamePlay.possession
+        var possession = gamePlay.possession
         val offensivePlaybook: OffensivePlaybook
         val defensivePlaybook: DefensivePlaybook
         if (possession == Possession.HOME) {
@@ -60,22 +59,22 @@ class GamePlaysHandler(
             offensivePlaybook = game.awayOffensivePlaybook
             defensivePlaybook = game.homeDefensivePlaybook
         }
-        val resultInformation: RangesEntity = rangesRepository.findNormalResult(
+        val resultInformation: Ranges = rangesRepository.findNormalResult(
             playCall,
             offensivePlaybook,
             defensivePlaybook,
             difference
         ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
 
-        var result = resultInformation.result
-        val playTime: Int? = resultInformation.playTime
+        val result = resultInformation.result
+        val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
         var runoffTime = 0
         if (!clockStopped!! && !timeoutCalled) {
             when {
-                playCall == Play.SPIKE -> runoffTime = 3
-                playCall == Play.KNEEL -> runoffTime = 30
+                playCall == PlayCall.SPIKE -> runoffTime = 3
+                playCall == PlayCall.KNEEL -> runoffTime = 30
                 runoffType == RunoffType.CHEW -> runoffTime = 30
                 runoffType == RunoffType.HURRY -> runoffTime = 7
                 offensivePlaybook == OffensivePlaybook.PRO -> runoffTime = 15
@@ -85,11 +84,11 @@ class GamePlaysHandler(
                 offensivePlaybook == OffensivePlaybook.WEST_COAST -> runoffTime = 17
             }
         }
-        var homeScore: Int = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
-        var awayScore: Int = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
-        var ballLocation: Int = game.ballLocation ?: handleException(ExceptionType.INVALID_BALL_LOCATION)
-        var down: Int = game.down ?: handleException(ExceptionType.INVALID_DOWN)
-        var yardsToGo: Int = game.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
+        var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
+        var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
+        var ballLocation = game.ballLocation ?: handleException(ExceptionType.INVALID_BALL_LOCATION)
+        var down = game.down ?: handleException(ExceptionType.INVALID_DOWN)
+        var yardsToGo = game.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
         var yards = 0
         var actualResult: ActualResult
         when (result) {
@@ -228,8 +227,8 @@ class GamePlaysHandler(
         }
 
         // Handle clock logic
-        var clock: Int = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK)) - (playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
-        var quarter: Int = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
+        var clock = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK)) - (playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
+        var quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
         if (clock <= 0 &&
             quarter < 4 &&
             actualResult != ActualResult.TOUCHDOWN &&
@@ -266,7 +265,7 @@ class GamePlaysHandler(
         gamePlay.offensiveNumber = offensiveNumber
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
-        gamePlay.play = playCall
+        gamePlay.playCall = playCall
         gamePlay.result = result
         gamePlay.actualResult = actualResult
         gamePlay.yards = yards
@@ -274,10 +273,10 @@ class GamePlaysHandler(
         gamePlay.runoffTime = runoffTime
         gamePlay.winProbability = gamePlay.winProbability
         gamePlay.difference = difference
-        val homeUser: UsersEntity = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser: UsersEntity = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername: String = homeUser.username
-        val awayUsername: String = awayUser.username
+        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
+        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
+        val homeUsername = homeUser.username
+        val awayUsername = awayUser.username
         if (possession == Possession.HOME) {
             game.waitingOn = awayUsername
         } else {
@@ -296,23 +295,23 @@ class GamePlaysHandler(
      * @param decryptedDefensiveNumber
      */
     fun runKickoffPlay(
-        gamePlay: GamePlaysEntity,
-        game: GamesEntity,
-        playCall: Play,
+        gamePlay: Play,
+        game: Game,
+        playCall: PlayCall,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): GamePlaysEntity {
+    ): Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
-        var possession: Possession? = gamePlay.possession
-        val resultInformation: RangesEntity = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
-        val result: Result? = resultInformation.result
-        var homeScore: Int = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
-        var awayScore: Int = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
+        var possession = gamePlay.possession
+        val resultInformation = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+        val result = resultInformation.result
+        var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
+        var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
         var ballLocation = 35
         val down = 1
         val yardsToGo = 10
-        val playTime: Int = resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME)
-        var actualResult: ActualResult?
+        val playTime = resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME)
+        val actualResult: ActualResult?
         when (result) {
             Result.TOUCHDOWN -> {
                 actualResult = ActualResult.KICKING_TEAM_TOUCHDOWN
@@ -373,8 +372,8 @@ class GamePlaysHandler(
         }
 
         // Handle clock logic
-        var clock: Int = gamePlay.clock?.minus(playTime) ?: handleException(ExceptionType.INVALID_CLOCK)
-        var quarter: Int = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
+        var clock = gamePlay.clock?.minus(playTime) ?: handleException(ExceptionType.INVALID_CLOCK)
+        var quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
         if (clock <= 0 &&
             quarter < 4 &&
             actualResult != ActualResult.RETURN_TOUCHDOWN &&
@@ -398,10 +397,10 @@ class GamePlaysHandler(
                 5
             }
         }
-        val homeUser: UsersEntity = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser: UsersEntity = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername: String = homeUser.username
-        val awayUsername: String = awayUser.username
+        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
+        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
+        val homeUsername = homeUser.username
+        val awayUsername = awayUser.username
         if (possession == Possession.HOME) {
             game.waitingOn = awayUsername
         } else {
@@ -419,7 +418,7 @@ class GamePlaysHandler(
         gamePlay.offensiveNumber = offensiveNumber
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
-        gamePlay.play = playCall
+        gamePlay.playCall = playCall
         gamePlay.result = result
         gamePlay.actualResult = actualResult
         gamePlay.yards = 0
@@ -440,31 +439,30 @@ class GamePlaysHandler(
      * @param decryptedDefensiveNumber
      */
     fun runPointAfterPlay(
-        gamePlay: GamePlaysEntity,
-        game: GamesEntity,
-        playCall: Play,
+        gamePlay: Play,
+        game: Game,
+        playCall: PlayCall,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): GamePlaysEntity {
+    ):  Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession: Possession? = gamePlay.possession
-        val resultInformation: RangesEntity = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
-        val result: Result? = resultInformation.result
-        var homeScore: Int = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
-        var awayScore: Int = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
+        val resultInformation: Ranges = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+        val result = resultInformation.result
+        var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
+        var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
         val ballLocation = 25
         val down = 1
         val yardsToGo = 10
-        var actualResult: ActualResult ?
-        when (result) {
-            Result.GOOD -> actualResult = ActualResult.GOOD
-            Result.NO_GOOD -> actualResult = ActualResult.NO_GOOD
-            Result.DEFENSE_TWO_POINT -> actualResult = ActualResult.DEFENSE_TWO_POINT
+        val actualResult = when (result) {
+            Result.GOOD -> ActualResult.GOOD
+            Result.NO_GOOD -> ActualResult.NO_GOOD
+            Result.DEFENSE_TWO_POINT -> ActualResult.DEFENSE_TWO_POINT
             else -> handleException(ExceptionType.INVALID_RESULT)
         }
         when (actualResult) {
             ActualResult.GOOD -> {
-                if (playCall == Play.PAT) {
+                if (playCall == PlayCall.PAT) {
                     if (possession == Possession.HOME) {
                         homeScore += 1
                     } else {
@@ -485,12 +483,12 @@ class GamePlaysHandler(
         } else {
             Possession.HOME
         }
-        val clock: Int = (gamePlay.clock ?: handleException(ExceptionType.INVALID_CLOCK)) - (resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
-        val quarter: Int = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        val homeUser: UsersEntity = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser: UsersEntity = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername: String = homeUser.username
-        val awayUsername: String = awayUser.username
+        val clock = ( gamePlay.clock ?: handleException(ExceptionType.INVALID_CLOCK)) - (resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
+        val quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
+        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
+        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
+        val homeUsername = homeUser.username
+        val awayUsername = awayUser.username
         if (possession == Possession.HOME) {
             game.waitingOn = awayUsername
         } else {
@@ -508,7 +506,7 @@ class GamePlaysHandler(
         gamePlay.offensiveNumber = offensiveNumber
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
-        gamePlay.play = playCall
+        gamePlay.playCall = playCall
         gamePlay.result = result
         gamePlay.actualResult = actualResult
         gamePlay.yards = 0

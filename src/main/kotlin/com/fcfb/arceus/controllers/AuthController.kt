@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.UsersEntity
+import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.service.auth.AuthService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,7 +20,7 @@ class AuthController(
 
     @PostMapping("/register")
     suspend fun createUser(
-        @RequestBody user: UsersEntity
+        @RequestBody user: User
     ) = authService.createUser(user)
 
     @PostMapping("/login")

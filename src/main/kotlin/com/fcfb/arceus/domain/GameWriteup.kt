@@ -10,8 +10,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "game_messages", schema = "arceus")
-class GameMessagesEntity {
+@Table(name = "game_writeup", schema = "arceus")
+class GameWriteup {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -38,7 +38,7 @@ class GameMessagesEntity {
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as GameMessagesEntity
+        val that = o as GameWriteup
         return id == that.id && scenario == that.scenario && message == that.message
     }
 

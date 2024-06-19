@@ -1,9 +1,9 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.models.game.Game.ActualResult
-import com.fcfb.arceus.models.game.Game.Play
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.Result
+import com.fcfb.arceus.domain.Game.ActualResult
+import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.PlayCall
+import com.fcfb.arceus.domain.Game.Possession
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -14,8 +14,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "game_plays", schema = "arceus")
-class GamePlaysEntity {
+@Table(name = "play", schema = "arceus")
+class Play {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "play_id")
@@ -78,8 +78,8 @@ class GamePlaysEntity {
     var offensiveSubmitter: String? = null
 
     @Basic
-    @Column(name = "play")
-    var play: Play? = null
+    @Column(name = "play_call")
+    var playCall: PlayCall? = null
 
     @Basic
     @Column(name = "result")
@@ -148,7 +148,7 @@ class GamePlaysEntity {
         offensiveNumber: String?,
         offensiveSubmitter: String?,
         defensiveSubmitter: String?,
-        play: Play?,
+        playCall: PlayCall?,
         result: Result?,
         actualResult: ActualResult?,
         yards: Int,
@@ -177,7 +177,7 @@ class GamePlaysEntity {
         this.offensiveNumber = offensiveNumber
         this.offensiveSubmitter = offensiveSubmitter
         this.defensiveSubmitter = defensiveSubmitter
-        this.play = play
+        this.playCall = playCall
         this.result = result
         this.actualResult = actualResult
         this.yards = yards
@@ -198,8 +198,8 @@ class GamePlaysEntity {
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as GamePlaysEntity
-        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && play == that.play && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
+        val that = o as com.fcfb.arceus.domain.Play
+        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
     }
 
     override fun hashCode(): Int {
@@ -218,7 +218,7 @@ class GamePlaysEntity {
             offensiveNumber,
             defensiveSubmitter,
             offensiveSubmitter,
-            play,
+            playCall,
             result,
             difference,
             actualResult,
@@ -252,7 +252,7 @@ class GamePlaysEntity {
   "offensiveNumber": "$offensiveNumber",
   "offensiveSubmitter": "$offensiveSubmitter",
   "defensiveSubmitter": "$defensiveSubmitter",
-  "play": "$play",
+  "playCall": "$playCall",
   "result": "$result",
   "actualResult": "$actualResult",
   "yards": "$yards",

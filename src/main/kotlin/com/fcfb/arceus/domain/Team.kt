@@ -1,8 +1,8 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.models.game.Game.DefensivePlaybook
-import com.fcfb.arceus.models.game.Game.OffensivePlaybook
-import com.fcfb.arceus.models.game.Game.Subdivision
+import com.fcfb.arceus.domain.Game.DefensivePlaybook
+import com.fcfb.arceus.domain.Game.OffensivePlaybook
+import com.fcfb.arceus.domain.Game.Subdivision
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -13,8 +13,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "teams", schema = "arceus")
-class TeamsEntity {
+@Table(name = "team", schema = "arceus")
+class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -161,7 +161,7 @@ class TeamsEntity {
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as TeamsEntity
+        val that = o as Team
         return id == that.id && logo == that.logo && coachUsername == that.coachUsername && coachName == that.coachName && coachDiscordTag == that.coachDiscordTag && coachDiscordId == that.coachDiscordId && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
     }
 

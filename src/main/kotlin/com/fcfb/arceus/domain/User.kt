@@ -10,8 +10,8 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "users", schema = "arceus")
-class UsersEntity {
+@Table(name = "user", schema = "arceus")
+class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
@@ -122,7 +122,7 @@ class UsersEntity {
     override fun equals(o: Any?): Boolean {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
-        val that = o as UsersEntity
+        val that = o as User
         return id == that.id && username === that.username && approved == that.approved && coachName == that.coachName && discordTag == that.discordTag && discordId == that.discordId && email == that.email && losses == that.losses && password == that.password && position == that.position && redditUsername == that.redditUsername && role == that.role && salt == that.salt && team == that.team && winPercentage == that.winPercentage && wins == that.wins
     }
 

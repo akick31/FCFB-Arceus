@@ -1,11 +1,12 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.domain.GamePlaysEntity
-import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.dto.GameDTO
-import com.fcfb.arceus.models.game.Game
-import com.fcfb.arceus.repositories.GamePlaysRepository
-import com.fcfb.arceus.repositories.GamesRepository
+import com.fcfb.arceus.domain.Game.PlayCall
+import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.RunoffType
+import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.repositories.PlayRepository
+import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.GameUtils
 import org.springframework.http.HttpHeaders
@@ -15,13 +16,13 @@ import org.springframework.stereotype.Component
 import java.util.Optional
 
 @Component
-class GamePlaysService(
-    private var gamesRepository: GamesRepository,
-    private var gamePlaysRepository: GamePlaysRepository,
+class PlayService(
+    private var gameRepository: GameRepository,
+    private var playRepository: PlayRepository,
     private var gameDTO: GameDTO,
     private var gameUtils: GameUtils,
     private var encryptionUtils: EncryptionUtils,
-    private var gamePlaysHandler: GamePlaysHandler
+    private var gamePlaysHandler: GamePlayHandler
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
@@ -35,35 +36,33 @@ class GamePlaysService(
         gameId: Int,
         defensiveNumber: Int,
         timeoutCalled: Boolean?
-    ): ResponseEntity<GamePlaysEntity> {
+    ): ResponseEntity<Play> {
         return try {
-            val gameData: Optional<GamesEntity?> = gamesRepository.findById(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            if (!gameData.isPresent) {
-                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            }
+            val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
-            if (gameData.get().possession == Game.Possession.HOME) {
-                offensiveSubmitter = gameData.get().homeCoach
-                defensiveSubmitter = gameData.get().awayCoach
+            if (game.possession == Possession.HOME) {
+                offensiveSubmitter = game.homeCoach
+                defensiveSubmitter = game.awayCoach
             } else {
-                offensiveSubmitter = gameData.get().awayCoach
-                defensiveSubmitter = gameData.get().homeCoach
+                offensiveSubmitter = game.awayCoach
+                defensiveSubmitter = game.homeCoach
             }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(gameData.get().clock ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
-            val gamePlay: GamePlaysEntity = gamePlaysRepository.save(
-                GamePlaysEntity(
+            val clock: Int = gameUtils.convertClockToSeconds(game.clock ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
+            val gamePlay: Play = playRepository.save(
+                Play(
                     gameId,
-                    gameData.get().numPlays?.plus(1) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    gameData.get().homeScore,
-                    gameData.get().awayScore,
-                    gameData.get().quarter,
+                    game.numPlays?.plus(1) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    game.homeScore,
+                    game.awayScore,
+                    game.quarter,
                     clock,
-                    gameData.get().ballLocation,
-                    gameData.get().possession,
-                    gameData.get().down,
-                    gameData.get().yardsToGo,
+                    game.ballLocation,
+                    game.possession,
+                    game.down,
+                    game.yardsToGo,
                     encryptedDefensiveNumber,
                     "0",
                     offensiveSubmitter,
@@ -74,19 +73,19 @@ class GamePlaysService(
                     0,
                     0,
                     0,
-                    gameData.get().winProbability,
-                    gameData.get().homeTeam,
-                    gameData.get().awayTeam,
+                    game.winProbability,
+                    game.homeTeam,
+                    game.awayTeam,
                     0,
                     false,
-                    gameData.get().homeTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    gameData.get().awayTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    game.homeTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    game.awayTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
                     false
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val gamesEntity: GamesEntity = gameData.get()
-            gamesEntity.currentPlayId = gamePlay.playId
-            gamesRepository.save(gamesEntity)
+
+            game.currentPlayId = gamePlay.playId
+            gameRepository.save(game)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -106,35 +105,29 @@ class GamePlaysService(
     fun offensiveNumberSubmitted(
         playId: Int,
         offensiveNumber: Int,
-        playCall: Game.Play,
-        runoffType: Game.RunoffType,
+        playCall: PlayCall,
+        runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
         defensiveTimeoutCalled: Boolean
-    ): ResponseEntity<GamePlaysEntity> {
+    ): ResponseEntity<Play> {
         return try {
-            val gamePlayData: Optional<GamePlaysEntity?> = gamePlaysRepository.findById(playId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            if (!gamePlayData.isPresent) {
-                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            }
+            var gamePlay = playRepository.findByPlayId(playId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
-            val decryptedDefensiveNumber: String = encryptionUtils.decrypt(gamePlayData.get().defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
+            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
 
-            var gamePlay: GamePlaysEntity = gamePlayData.get()
-
-            val gameData: Optional<GamesEntity?> = gamesRepository.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val game = gameRepository.findByGameId(gamePlay.gameId!!) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
             // Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
 
             // if (statsData.isPresent()) {
-            var game: GamesEntity = gameData.get()
             // GameStatsEntity stats = statsData.get();
 
-            val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val clockStopped = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             var timeoutCalled = false
             if (offensiveTimeoutCalled || defensiveTimeoutCalled) {
                 timeoutCalled = true
             }
             when (playCall) {
-                Game.Play.PASS, Game.Play.RUN, Game.Play.SPIKE, Game.Play.KNEEL -> gamePlay = gamePlaysHandler.runNormalPlay(
+                PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL -> gamePlay = gamePlaysHandler.runNormalPlay(
                     gamePlay,
                     clockStopped,
                     game,
@@ -145,7 +138,7 @@ class GamePlaysService(
                     decryptedDefensiveNumber
                 )
 
-                Game.Play.PAT, Game.Play.TWO_POINT -> gamePlay = gamePlaysHandler.runPointAfterPlay(
+                PlayCall.PAT, PlayCall.TWO_POINT -> gamePlay = gamePlaysHandler.runPointAfterPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -153,7 +146,7 @@ class GamePlaysService(
                     decryptedDefensiveNumber
                 )
 
-                Game.Play.KICKOFF_NORMAL, Game.Play.KICKOFF_ONSIDE, Game.Play.KICKOFF_SQUIB -> gamePlay = gamePlaysHandler.runKickoffPlay(
+                PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB -> gamePlay = gamePlaysHandler.runKickoffPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -161,10 +154,10 @@ class GamePlaysService(
                     decryptedDefensiveNumber
                 )
 
-                Game.Play.FIELD_GOAL -> {}
-                Game.Play.PUNT -> {}
+                PlayCall.FIELD_GOAL -> {}
+                PlayCall.PUNT -> {}
             }
-            game = gameDTO.updateGameInformation(
+            val updated_game = gameDTO.updateGameInformation(
                 game,
                 gamePlay,
                 playCall,
@@ -175,12 +168,12 @@ class GamePlaysService(
             // stats = gameStats.updateGameStats(stats, gamePlay);
 
             // Send the defense the request for the number
-            gamesRepository.save(game)
+            gameRepository.save(game)
             // gameStatsRepository.save(stats);
 
             // Mark play as finished, set the timeouts, save the play
             gamePlay.playFinished = true
-            gamePlaysRepository.save(gamePlay)
+            playRepository.save(gamePlay)
             return ResponseEntity(gamePlay, HttpStatus.OK)
             // }
         } catch (e: Exception) {

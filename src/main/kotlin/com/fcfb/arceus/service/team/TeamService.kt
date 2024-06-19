@@ -1,7 +1,7 @@
 package com.fcfb.arceus.service.team
 
-import com.fcfb.arceus.domain.TeamsEntity
-import com.fcfb.arceus.repositories.TeamsRepository
+import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.repositories.TeamRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
@@ -10,41 +10,38 @@ import org.springframework.stereotype.Service
 import java.util.Optional
 
 @Service
-class TeamsService {
+class TeamService {
 
     @Autowired
-    var teamsRepository: TeamsRepository? = null
+    var teamsRepository: TeamRepository? = null
 
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
-    fun getTeamById(id: Int): ResponseEntity<TeamsEntity> {
-        val teamData: Optional<TeamsEntity?> = teamsRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun getTeamById(id: Int): ResponseEntity<Team> {
+        val teamData: Optional<Team?> = teamsRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!teamData.isPresent) {
             return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(teamData.get(), HttpStatus.OK)
     }
 
-    fun getAllTeams(): ResponseEntity<List<TeamsEntity>> {
-        val teamData: Iterable<TeamsEntity?> = teamsRepository?.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun getAllTeams(): ResponseEntity<List<Team>> {
+        val teamData: Iterable<Team?> = teamsRepository?.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!teamData.iterator().hasNext()) {
             return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         return ResponseEntity(teamData.filterNotNull(), HttpStatus.OK)
     }
 
-    fun getTeamByName(name: String?): ResponseEntity<TeamsEntity> {
-        val teamData: Optional<TeamsEntity> = teamsRepository?.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!teamData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        return ResponseEntity(teamData.get(), HttpStatus.OK)
+    fun getTeamByName(name: String?): ResponseEntity<Team> {
+        val teamData = teamsRepository?.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        return ResponseEntity(teamData, HttpStatus.OK)
     }
 
-    fun createTeam(team: TeamsEntity): ResponseEntity<TeamsEntity> {
+    fun createTeam(team: Team): ResponseEntity<Team> {
         return try {
-            val newTeam: TeamsEntity? = teamsRepository?.save(
-                TeamsEntity(
+            val newTeam: Team? = teamsRepository?.save(
+                Team(
                     team.logo,
                     team.coachUsername,
                     team.coachName,
@@ -75,12 +72,8 @@ class TeamsService {
         }
     }
 
-    fun updateTeam(name: String?, team: TeamsEntity): ResponseEntity<TeamsEntity> {
-        val teamData = teamsRepository?.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!teamData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val existingTeam: TeamsEntity = teamData.get()
+    fun updateTeam(name: String?, team: Team): ResponseEntity<Team> {
+        val existingTeam = teamsRepository?.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         existingTeam.apply {
             this.name = team.name
             coachUsername = team.coachUsername

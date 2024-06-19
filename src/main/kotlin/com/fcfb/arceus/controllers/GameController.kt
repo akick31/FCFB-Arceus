@@ -1,14 +1,10 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.models.game.Game.CoinTossCall
-import com.fcfb.arceus.models.game.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.CoinTossCall
+import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
-import com.fcfb.arceus.repositories.GamesRepository
-import com.fcfb.arceus.repositories.TeamsRepository
 import com.fcfb.arceus.service.discord.DiscordService
-import com.fcfb.arceus.service.game.GamesService
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
+import com.fcfb.arceus.service.game.GameService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -23,18 +19,10 @@ import org.springframework.web.bind.annotation.RestController
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
 @RequestMapping("/ongoing_games")
-class GamesController(
+class GameController(
     private var discordService: DiscordService,
-    private var gamesService: GamesService
+    private var gamesService: GameService
 ) {
-    @Autowired
-    var gamesRepository: GamesRepository? = null
-
-    @Autowired
-    var teamsRepository: TeamsRepository? = null
-
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
-
     /**
      * Get a ongoing game by id
      * @param id

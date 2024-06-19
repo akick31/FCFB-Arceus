@@ -11,7 +11,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "sessions")
+@Table(name = "session")
 data class Session(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
