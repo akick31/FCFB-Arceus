@@ -15,5 +15,5 @@ data class StartRequest(
     val tvChannel: TVChannel?,
     val startTime: String?,
     val location: String?,
-    val isScrimmage: Boolean?
+    val scrimmage: Boolean?
 )

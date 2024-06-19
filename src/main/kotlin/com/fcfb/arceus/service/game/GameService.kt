@@ -134,7 +134,7 @@ class GameService(
                     gameTimer = formattedDateTime,
                     currentPlayType = PlayType.KICKOFF,
                     currentPlayId = 0,
-                    scrimmage = startRequest.isScrimmage,
+                    scrimmage = startRequest.scrimmage,
                     clockStopped = true
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

@@ -1,11 +1,15 @@
 package com.fcfb.arceus.domain
 
+import com.fcfb.arceus.converter.DefensivePlaybookConverter
+import com.fcfb.arceus.converter.OffensivePlaybookConverter
+import com.fcfb.arceus.converter.SubdivisionConverter
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Subdivision
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
+import javax.persistence.Convert
 import javax.persistence.Entity
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
@@ -60,15 +64,15 @@ class Team {
     @Column(name = "secondary_color")
     var secondaryColor: String? = null
 
-    @Basic
+    @Convert(converter = SubdivisionConverter::class)
     @Column(name = "subdivision")
     var subdivision: Subdivision? = null
 
-    @Basic
+    @Convert(converter = OffensivePlaybookConverter::class)
     @Column(name = "offensive_playbook")
     var offensivePlaybook: OffensivePlaybook? = null
 
-    @Basic
+    @Convert(converter = DefensivePlaybookConverter::class)
     @Column(name = "defensive_playbook")
     var defensivePlaybook: DefensivePlaybook? = null
 

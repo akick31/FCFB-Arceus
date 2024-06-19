@@ -441,7 +441,13 @@ class Game {
 
     enum class Subdivision(val description: String) {
         FBS("FBS"),
-        FCS("FCS"),
+        FCS("FCS");
+
+        companion object {
+            fun fromString(description: String): Subdivision? {
+                return Subdivision.values().find { it.description == description }
+            }
+        }
     }
 
     enum class OffensivePlaybook(val description: String) {
@@ -449,7 +455,13 @@ class Game {
         AIR_RAID("Air Raid"),
         PRO("Pro"),
         SPREAD("Spread"),
-        WEST_COAST("West Coast"),
+        WEST_COAST("West Coast");
+
+        companion object {
+            fun fromString(description: String): OffensivePlaybook? {
+                return OffensivePlaybook.values().find { it.description == description }
+            }
+        }
     }
 
     enum class DefensivePlaybook(val description: String) {
@@ -457,7 +469,13 @@ class Game {
         THREE_FOUR("3-4"),
         FIVE_TWO("5-2"),
         FOUR_FOUR("4-4"),
-        THREE_THREE_FIVE("3-3-5"),
+        THREE_THREE_FIVE("3-3-5");
+
+        companion object {
+            fun fromString(description: String): DefensivePlaybook? {
+                return DefensivePlaybook.values().find { it.description == description }
+            }
+        }
     }
 
     enum class TVChannel(val description: String) {
@@ -566,7 +584,13 @@ class Game {
         TOUCHBACK("TOUCHBACK"),
         RETURN_TOUCHDOWN("RETURN TOUCHDOWN"),
         RECOVERED("RECOVERED"),
-        DEFENSE_TWO_POINT("DEFENSE TWO POINT")
+        DEFENSE_TWO_POINT("DEFENSE TWO POINT");
+
+        companion object {
+            fun fromString(description: String): Result? {
+                return Result.values().find { it.description == description }
+            }
+        }
     }
 
     enum class ActualResult(val description: String) {

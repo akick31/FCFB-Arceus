@@ -25,9 +25,9 @@ class DiscordService {
         this.restTemplate = restTemplate
     }
 
-    fun startGameThread(ongoingGame: Game): String {
+    fun startGameThread(game: Game): String {
         val discordBotUrl = "$discordBotUrl/start_game"
-        return restTemplate!!.postForEntity(discordBotUrl, ongoingGame, String::class.java).toString()
+        return restTemplate!!.postForEntity(discordBotUrl, game, String::class.java).toString()
     }
 
     suspend fun getUserByDiscordTag(
