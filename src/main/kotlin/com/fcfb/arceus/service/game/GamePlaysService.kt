@@ -1,18 +1,18 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.repositories.GamePlaysRepository
-import com.fcfb.arceus.repositories.GamesRepository
 import com.fcfb.arceus.domain.GamePlaysEntity
 import com.fcfb.arceus.domain.GamesEntity
-import com.fcfb.arceus.models.game.Game
 import com.fcfb.arceus.dto.GameDTO
-import com.fcfb.arceus.utils.GameUtils
+import com.fcfb.arceus.models.game.Game
+import com.fcfb.arceus.repositories.GamePlaysRepository
+import com.fcfb.arceus.repositories.GamesRepository
 import com.fcfb.arceus.utils.EncryptionUtils
+import com.fcfb.arceus.utils.GameUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
-import java.util.*
+import java.util.Optional
 
 @Component
 class GamePlaysService(
@@ -88,7 +88,6 @@ class GamePlaysService(
             gamesEntity.currentPlayId = gamePlay.playId
             gamesRepository.save(gamesEntity)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
-
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
@@ -123,11 +122,11 @@ class GamePlaysService(
             var gamePlay: GamePlaysEntity = gamePlayData.get()
 
             val gameData: Optional<GamesEntity?> = gamesRepository.findById(gamePlay.gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-            //Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
+            // Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
 
-            //if (statsData.isPresent()) {
+            // if (statsData.isPresent()) {
             var game: GamesEntity = gameData.get()
-            //GameStatsEntity stats = statsData.get();
+            // GameStatsEntity stats = statsData.get();
 
             val clockStopped: Boolean = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             var timeoutCalled = false
@@ -173,22 +172,19 @@ class GamePlaysService(
                 offensiveTimeoutCalled,
                 defensiveTimeoutCalled
             )
-            //stats = gameStats.updateGameStats(stats, gamePlay);
+            // stats = gameStats.updateGameStats(stats, gamePlay);
 
             // Send the defense the request for the number
             gamesRepository.save(game)
-            //gameStatsRepository.save(stats);
+            // gameStatsRepository.save(stats);
 
             // Mark play as finished, set the timeouts, save the play
             gamePlay.playFinished = true
             gamePlaysRepository.save(gamePlay)
             return ResponseEntity(gamePlay, HttpStatus.OK)
-            //}
-
+            // }
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
-
-
 }

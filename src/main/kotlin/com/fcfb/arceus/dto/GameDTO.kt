@@ -1,12 +1,12 @@
 package com.fcfb.arceus.dto
 
-import com.fcfb.arceus.domain.GamePlaysEntity
 import com.fcfb.arceus.domain.FinishedGamesEntity
+import com.fcfb.arceus.domain.GamePlaysEntity
 import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.game.Game.ActualResult
-import com.fcfb.arceus.models.game.Game.PlayType
 import com.fcfb.arceus.models.game.Game.Play
+import com.fcfb.arceus.models.game.Game.PlayType
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.Result
 import com.fcfb.arceus.models.handleException
@@ -28,12 +28,12 @@ class GameDTO(
 
         // Update if the clock is stopped
         game.clockStopped = play.play == Play.SPIKE || play.result == Result.INCOMPLETE ||
-                play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
-                play.actualResult == ActualResult.TOUCHDOWN || play.play == Play.FIELD_GOAL ||
-                play.play == Play.PAT || play.play == Play.KICKOFF_NORMAL ||
-                play.play == Play.KICKOFF_ONSIDE || play.play == Play.KICKOFF_SQUIB ||
-                play.play == Play.PUNT || play.actualResult == ActualResult.TURNOVER ||
-                play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
+            play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
+            play.actualResult == ActualResult.TOUCHDOWN || play.play == Play.FIELD_GOAL ||
+            play.play == Play.PAT || play.play == Play.KICKOFF_NORMAL ||
+            play.play == Play.KICKOFF_ONSIDE || play.play == Play.KICKOFF_SQUIB ||
+            play.play == Play.PUNT || play.actualResult == ActualResult.TURNOVER ||
+            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
         val possession: Possession? = game.possession
@@ -83,6 +83,4 @@ class GameDTO(
     fun updateGameStats(stats: FinishedGamesEntity?, play: GamePlaysEntity?): FinishedGamesEntity? {
         return null
     }
-
-
 }

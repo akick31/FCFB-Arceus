@@ -1,18 +1,24 @@
 package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fcfb.arceus.models.game.Game.CoinTossWinner
 import com.fcfb.arceus.models.game.Game.CoinTossChoice
-import com.fcfb.arceus.models.game.Game.OffensivePlaybook
+import com.fcfb.arceus.models.game.Game.CoinTossWinner
 import com.fcfb.arceus.models.game.Game.DefensivePlaybook
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.PlayType
-import com.fcfb.arceus.models.game.Game.TVChannel
+import com.fcfb.arceus.models.game.Game.OffensivePlaybook
 import com.fcfb.arceus.models.game.Game.Platform
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.Subdivision
+import com.fcfb.arceus.models.game.Game.TVChannel
 import java.time.LocalDateTime
-import java.util.*
-import javax.persistence.*
+import java.util.Objects
+import javax.persistence.Basic
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "games", schema = "arceus")
@@ -274,18 +280,56 @@ class GamesEntity {
     var clockStopped: Boolean? = null
 
     constructor(
-        homeTeam: String, awayTeam: String, homeCoach: String, awayCoach: String, homeCoachDiscordId: String,
-        awayCoachDiscordId: String, homeOffensivePlaybook: OffensivePlaybook, awayOffensivePlaybook: OffensivePlaybook,
-        homeDefensivePlaybook: DefensivePlaybook, awayDefensivePlaybook: DefensivePlaybook, homeScore: Int, awayScore: Int,
-        possession: Possession?, quarter: Int, clock: String, ballLocation: Int?, down: Int, yardsToGo: Int,
-        tvChannel: TVChannel?, startTime: String?, location: String?, homeWins: Int?, homeLosses: Int?,
-        awayWins: Int?, awayLosses: Int?, scorebug: String?, subdivision: Subdivision,
-        timestamp: LocalDateTime?, winProbability: Double?, final: Boolean, ot: Boolean,
-        season: Int?, week: Int?, waitingOn: String, winProbabilityPlot: String?, scorePlot: String?,
-        numPlays: Int, homeTimeouts: Int, awayTimeouts: Int, coinTossWinner: CoinTossWinner?,
-        coinTossChoice: CoinTossChoice?, homePlatform: Platform, homePlatformId: String?, awayPlatform: Platform,
-        awayPlatformId: String?, gameTimer: String?, currentPlayType: PlayType?, currentPlayId: Int?,
-        scrimmage: Boolean?, clockStopped: Boolean?
+        homeTeam: String,
+        awayTeam: String,
+        homeCoach: String,
+        awayCoach: String,
+        homeCoachDiscordId: String,
+        awayCoachDiscordId: String,
+        homeOffensivePlaybook: OffensivePlaybook,
+        awayOffensivePlaybook: OffensivePlaybook,
+        homeDefensivePlaybook: DefensivePlaybook,
+        awayDefensivePlaybook: DefensivePlaybook,
+        homeScore: Int,
+        awayScore: Int,
+        possession: Possession?,
+        quarter: Int,
+        clock: String,
+        ballLocation: Int?,
+        down: Int,
+        yardsToGo: Int,
+        tvChannel: TVChannel?,
+        startTime: String?,
+        location: String?,
+        homeWins: Int?,
+        homeLosses: Int?,
+        awayWins: Int?,
+        awayLosses: Int?,
+        scorebug: String?,
+        subdivision: Subdivision,
+        timestamp: LocalDateTime?,
+        winProbability: Double?,
+        final: Boolean,
+        ot: Boolean,
+        season: Int?,
+        week: Int?,
+        waitingOn: String,
+        winProbabilityPlot: String?,
+        scorePlot: String?,
+        numPlays: Int,
+        homeTimeouts: Int,
+        awayTimeouts: Int,
+        coinTossWinner: CoinTossWinner?,
+        coinTossChoice: CoinTossChoice?,
+        homePlatform: Platform,
+        homePlatformId: String?,
+        awayPlatform: Platform,
+        awayPlatformId: String?,
+        gameTimer: String?,
+        currentPlayType: PlayType?,
+        currentPlayId: Int?,
+        scrimmage: Boolean?,
+        clockStopped: Boolean?
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam

@@ -5,7 +5,7 @@ import com.fcfb.arceus.models.game.Game.Subdivision
 import com.fcfb.arceus.models.game.Game.TVChannel
 import com.google.gson.annotations.SerializedName
 
-data class StartRequest (
+data class StartRequest(
     @SerializedName("home_platform") val homePlatform: Platform?,
     @SerializedName("away_platform") val awayPlatform: Platform?,
     @SerializedName("season") val season: String?,

@@ -1,363 +1,107 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.UsersEntity
-import com.fcfb.arceus.repositories.UsersRepository
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.util.*
+import com.fcfb.arceus.service.user.UsersService
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
 @RequestMapping("/arceus/users")
-class UsersController {
-    @Autowired
-    var usersRepository: UsersRepository? = null
-
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
-
-    /**
-     * Get a user by id
-     * @param id
-     * @return
-     */
+class UsersController(
+    private var usersService: UsersService
+) {
     @GetMapping("id")
     fun getUserById(
         @RequestParam id: Long
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        return ResponseEntity(userData.get(), HttpStatus.OK)
-    }
+    ) = usersService.getUserById(id)
 
-    /**
-     * Get a user by team
-     * @param team
-     * @return
-     */
     @GetMapping("/team")
     fun getUserByTeam(
         @RequestParam team: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByTeam(team) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        return ResponseEntity(userData.get(), HttpStatus.OK)
-    }
+    ) = usersService.getUserByTeam(team)
 
     @GetMapping("")
-    fun getAllUsers(): ResponseEntity<List<UsersEntity>> {
-        val userData: Iterable<UsersEntity?> = usersRepository?.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.iterator().hasNext()) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        return ResponseEntity(userData.filterNotNull(), HttpStatus.OK)
-    }
+    fun getAllUsers() = usersService.getAllUsers()
 
-    /**
-     * Get a user by name
-     * @param name
-     * @return
-     */
     @GetMapping("/name")
     fun getUserByName(
         @RequestParam name: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByCoachName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        return ResponseEntity(userData.get(), HttpStatus.OK)
-    }
+    ) = usersService.getUserByName(name)
 
-    /**
-     * Update a user password
-     * @param id
-     * @param newPassword
-     * @return
-     */
     @PutMapping("/update/password")
     fun updateUserPassword(
         @RequestParam("id") id: Long,
         @RequestParam newPassword: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
+    ) = usersService.updateUserPassword(id, newPassword)
 
-        val user: UsersEntity = userData.get()
-
-        // Generate new salt and hash new password
-        val passwordEncoder = BCryptPasswordEncoder()
-        val newSalt = passwordEncoder.encode(newPassword)
-        user.password = passwordEncoder.encode(newPassword)
-        user.salt = newSalt
-
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user username
-     * @param id
-     * @param newUsername
-     */
     @PutMapping("/username")
     fun updateUserUsername(
         @RequestParam("id") id: Long,
         @RequestParam newUsername: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newUsername == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserUsername(id, newUsername)
 
-        val user: UsersEntity = userData.get()
-        user.username = newUsername
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user email
-     * @param id
-     * @param newEmail
-     */
     @PutMapping("/update/email")
     fun updateUserEmail(
         @RequestParam("id") id: Long,
         @RequestParam newEmail: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newEmail == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserEmail(id, newEmail)
 
-        val user: UsersEntity = userData.get()
-        user.email = newEmail
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user role
-     * @param id
-     * @param newRole
-     */
     @PutMapping("/update/role")
     fun updateUserRole(
         @RequestParam("id") id: Long,
         @RequestParam newRole: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newRole == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserRole(id, newRole)
 
-        val user: UsersEntity = userData.get()
-        user.role = newRole
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user position
-     * @param id
-     * @param newPosition
-     */
     @PutMapping("/update/position")
     fun updateUserPosition(
         @RequestParam("id") id: Long,
         @RequestParam newPosition: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newPosition == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
-
-        val user: UsersEntity = userData.get()
-        user.position = newPosition
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user reddit username
-     * @param id
-     * @param newRedditUsername
-     */
+    ) = usersService.updateUserPosition(id, newPosition)
 
     @PutMapping("/update/reddit-username")
     fun updateUserRedditUsername(
         @RequestParam("id") id: Long,
         @RequestParam newRedditUsername: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newRedditUsername == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserRedditUsername(id, newRedditUsername)
 
-        val user: UsersEntity = userData.get()
-        user.redditUsername = newRedditUsername
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user team
-     * @param id
-     * @param newTeam
-     */
     @PutMapping("/update/team")
     fun updateUserTeam(
         @RequestParam("id") id: Long,
         @RequestParam newTeam: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newTeam == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserTeam(id, newTeam)
 
-        val user: UsersEntity = userData.get()
-        user.team = newTeam
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user wins
-     * @param id
-     * @param newWins
-     */
     @PutMapping("/update/wins")
     fun updateUserWins(
         @RequestParam("id") id: Long,
         @RequestParam newWins: Int?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newWins == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserWins(id, newWins)
 
-        val user: UsersEntity = userData.get()
-        user.wins = newWins
-        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user losses
-     * @param id
-     * @param newLosses
-     */
     @PutMapping("/update/losses")
     fun updateUserLosses(
         @RequestParam("id") id: Long,
         @RequestParam newLosses: Int?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newLosses == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserLosses(id, newLosses)
 
-        val user: UsersEntity = userData.get()
-        user.losses = newLosses
-        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user's coach name
-     * @param id
-     * @param newCoachName
-     */
     @PutMapping("/update/coach-name")
     fun updateUserCoachName(
         @RequestParam("id") id: Long,
         @RequestParam newCoachName: String?
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        if (newCoachName == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
+    ) = usersService.updateUserCoachName(id, newCoachName)
 
-        val user: UsersEntity = userData.get()
-        user.coachName = newCoachName
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     * Update a user's discord tag
-     * @param id
-     * @param newDiscordTag
-     */
     @PutMapping("/update/discord-tag")
     fun updateUserDiscordTag(
         @RequestParam("id") id: Long,
         @RequestParam newDiscordTag: String
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
+    ) = usersService.updateUserDiscordTag(id, newDiscordTag)
 
-        val user: UsersEntity = userData.get()
-        user.discordTag = newDiscordTag
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    /**
-     *
-     * @param id
-     * @return
-     */
     @DeleteMapping("/{id}")
     fun deleteTeam(
         @PathVariable("id") id: String
-    ): ResponseEntity<HttpStatus> {
-        usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!usersRepository?.findById(id)!!.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        usersRepository?.deleteById(id)
-        return ResponseEntity(HttpStatus.OK)
-    }
+    ) = usersService.deleteUser(id)
 }

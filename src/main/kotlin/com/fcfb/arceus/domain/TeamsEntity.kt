@@ -1,10 +1,16 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.models.game.Game.OffensivePlaybook
 import com.fcfb.arceus.models.game.Game.DefensivePlaybook
+import com.fcfb.arceus.models.game.Game.OffensivePlaybook
 import com.fcfb.arceus.models.game.Game.Subdivision
-import java.util.*
-import javax.persistence.*
+import java.util.Objects
+import javax.persistence.Basic
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "teams", schema = "arceus")
@@ -103,11 +109,27 @@ class TeamsEntity {
     var overallConferenceLosses: Int? = null
 
     constructor(
-        logo: String?, coachUsername: String?, coachName: String?, coachDiscordTag: String?, coachDiscordId: String?,
-        coachesPollRanking: Int?, name: String?, playoffCommitteeRanking: Int?, primaryColor: String?,
-        secondaryColor: String?, subdivision: Subdivision?, offensivePlaybook: OffensivePlaybook?, defensivePlaybook: DefensivePlaybook?,
-        conference: String?, currentWins: Int?, currentLosses: Int?, overallWins: Int?, overallLosses: Int?,
-        currentConferenceWins: Int?, currentConferenceLosses: Int?, overallConferenceWins: Int?,
+        logo: String?,
+        coachUsername: String?,
+        coachName: String?,
+        coachDiscordTag: String?,
+        coachDiscordId: String?,
+        coachesPollRanking: Int?,
+        name: String?,
+        playoffCommitteeRanking: Int?,
+        primaryColor: String?,
+        secondaryColor: String?,
+        subdivision: Subdivision?,
+        offensivePlaybook: OffensivePlaybook?,
+        defensivePlaybook: DefensivePlaybook?,
+        conference: String?,
+        currentWins: Int?,
+        currentLosses: Int?,
+        overallWins: Int?,
+        overallLosses: Int?,
+        currentConferenceWins: Int?,
+        currentConferenceLosses: Int?,
+        overallConferenceWins: Int?,
         overallConferenceLosses: Int?
     ) {
         this.logo = logo
@@ -135,8 +157,6 @@ class TeamsEntity {
     }
 
     constructor()
-
-
 
     override fun equals(o: Any?): Boolean {
         if (this === o) return true

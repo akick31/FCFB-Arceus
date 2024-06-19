@@ -1,185 +1,46 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.UsersEntity
-import com.fcfb.arceus.repositories.UsersRepository
-import com.fcfb.arceus.repositories.SessionRepository
-import com.fcfb.arceus.models.website.Session
-import com.fcfb.arceus.service.discord.DiscordService
-import com.fcfb.arceus.service.email.EmailService
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.SessionUtils
-import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.http.HttpHeaders
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
-import java.time.LocalDateTime
-import java.util.*
-import javax.transaction.Transactional
+import com.fcfb.arceus.service.auth.AuthService
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.PutMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
 @RequestMapping("/auth")
-open class AuthController(
-    private var sessionUtils: SessionUtils,
-    private var emailService: EmailService,
-    private var discordService: DiscordService
+class AuthController(
+    private val authService: AuthService
 ) {
-    @Autowired
-    var usersRepository: UsersRepository? = null
 
-    @Autowired
-    var sessionRepository: SessionRepository? = null
-
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
-
-    /**
-     * Register a new user
-     * @param user
-     * @return
-     */
     @PostMapping("/register")
     suspend fun createUser(
         @RequestBody user: UsersEntity
-    ): ResponseEntity<UsersEntity> {
-        return try {
-            // Generate salt and hash password
-            val passwordEncoder = BCryptPasswordEncoder()
-            val salt = passwordEncoder.encode(user.password)
+    ) = authService.createUser(user)
 
-            // Generate verification token
-            val verificationToken = UUID.randomUUID().toString()
-
-            // Get user disord id
-            val discordUser = discordService.getUserByDiscordTag(user.discordTag)
-            if (discordUser == null) {
-                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            }
-            val discordId = discordUser.id.toString()
-
-            val newUser: UsersEntity = usersRepository?.save(
-                UsersEntity(
-                    user.username,
-                    user.coachName,
-                    user.discordTag,
-                    discordId,
-                    user.email,
-                    0,
-                    passwordEncoder.encode(user.password),
-                    user.position,
-                    user.redditUsername,
-                    "user",
-                    salt,
-                    null,
-                    0.0,
-                    0,
-                    0, // Approved
-                    verificationToken
-                )
-            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-
-            // Send verification email
-            emailService.sendVerificationEmail(newUser.email, newUser.id!!, verificationToken)
-
-            Logger.debug("User ${user.username} registered successfully. Verification email sent.")
-            ResponseEntity(newUser, HttpStatus.CREATED)
-        } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
-    }
-
-    /**
-     * Login a user
-     * @param usernameOrEmail
-     * @param password
-     * @return
-     */
     @PostMapping("/login")
     fun loginUser(
         @RequestParam("usernameOrEmail") usernameOrEmail: String,
         @RequestParam("password") password: String
-    ): ResponseEntity<Session> {
-        val userData: Optional<UsersEntity?> =
-            usersRepository?.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
-        val passwordEncoder = BCryptPasswordEncoder()
-        if (passwordEncoder.matches(password, user.password)) {
-            // Passwords match, generate session token
-            val token = sessionUtils.generateSessionToken()
+    ) = authService.loginUser(usernameOrEmail, password)
 
-            // Set expiration time for the session (e.g., 1 hour from now)
-            val expirationTime = LocalDateTime.now().plusHours(1)
-
-            // Save session information in the database
-            val session = sessionRepository?.save(Session(user.id!!, token, expirationTime))
-
-            // Return session information to the client
-            return ResponseEntity(session, HttpStatus.OK)
-        } else {
-            // Passwords do not match
-            return ResponseEntity(emptyHeaders, HttpStatus.UNAUTHORIZED)
-        }
-    }
-
-    /**
-     * Logout a user
-     * @param token
-     * @return
-     */
     @PostMapping("/logout")
-    @Transactional
-    open fun logoutUser(
+    fun logoutUser(
         @RequestParam("token") token: String
-    ): ResponseEntity<String> {
-        sessionRepository?.deleteByToken(token)
-        return ResponseEntity("User logged out successfully", HttpStatus.OK)
-    }
+    ) = authService.logoutUser(token)
 
-    /**
-     * Verify a user's email address
-     * @param token
-     * @return
-     */
     @GetMapping("/verify")
     fun verifyEmail(
         @RequestParam("token") token: String
-    ): ResponseEntity<String> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findByVerificationToken(token) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
-        user.approved = 1
-        usersRepository?.save(user)
-        return ResponseEntity("Email verified successfully", HttpStatus.OK)
-    }
+    ) = authService.verifyEmail(token)
 
-    /**
-     * Reset a verification token
-     * @param id
-     * @return
-     */
     @PutMapping("/resend-verification-email")
     fun resetVerificationToken(
         @RequestParam("id") id: Long
-    ): ResponseEntity<UsersEntity> {
-        val userData: Optional<UsersEntity?> = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
-        val user = userData.get()
-        val verificationToken = UUID.randomUUID().toString()
-        user.verificationToken = verificationToken
-        usersRepository?.save(user)
-
-        // Send verification email
-        emailService.sendVerificationEmail(user.email, user.id!!, verificationToken)
-
-        return ResponseEntity(user, HttpStatus.OK)
-    }
+    ) = authService.resetVerificationToken(id)
 }
-

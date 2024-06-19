@@ -1,12 +1,12 @@
 package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.GamesEntity
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.CoinTossChoice
 import com.fcfb.arceus.models.game.Game.CoinTossCall
+import com.fcfb.arceus.models.game.Game.CoinTossChoice
 import com.fcfb.arceus.models.game.Game.CoinTossWinner
-import com.fcfb.arceus.models.game.Game.PlayType
 import com.fcfb.arceus.models.game.Game.Platform
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GamesRepository
 import com.fcfb.arceus.repositories.TeamsRepository
@@ -17,7 +17,7 @@ import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import java.util.*
+import java.util.Random
 
 @Component
 class GamesService(
@@ -58,7 +58,7 @@ class GamesService(
 
             val awayTeamData = teamsRepository.findByName(startRequest.awayTeam).orElse(null)
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            
+
             // Set the DOG timer
             // Get the current date and time
             val now = LocalDateTime.now()
@@ -165,7 +165,6 @@ class GamesService(
             // Save the updated entity
             gamesRepository.save(newGame)
             ResponseEntity(newGame, HttpStatus.CREATED)
-
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
@@ -183,7 +182,7 @@ class GamesService(
             // 1 is heads, away team called tails, they lose
             val coinTossWinner = if (result == 1 && coinTossCall === CoinTossCall.TAILS) {
                 CoinTossWinner.HOME
-            } else  {
+            } else {
                 CoinTossWinner.AWAY
             }
             game.coinTossWinner = coinTossWinner
@@ -237,7 +236,6 @@ class GamesService(
             val formattedDateTime = futureTime.format(formatter)
             game.gameTimer = formattedDateTime
             return ResponseEntity(gamesRepository.save(game), HttpStatus.OK)
-
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }

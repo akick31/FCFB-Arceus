@@ -4,22 +4,21 @@ import com.fcfb.arceus.domain.GamePlaysEntity
 import com.fcfb.arceus.domain.GamesEntity
 import com.fcfb.arceus.domain.RangesEntity
 import com.fcfb.arceus.domain.UsersEntity
+import com.fcfb.arceus.models.ExceptionType
+import com.fcfb.arceus.models.game.Game.ActualResult
+import com.fcfb.arceus.models.game.Game.DefensivePlaybook
+import com.fcfb.arceus.models.game.Game.OffensivePlaybook
+import com.fcfb.arceus.models.game.Game.Play
+import com.fcfb.arceus.models.game.Game.PlayType
+import com.fcfb.arceus.models.game.Game.Possession
+import com.fcfb.arceus.models.game.Game.Result
+import com.fcfb.arceus.models.game.Game.RunoffType
+import com.fcfb.arceus.models.handleException
 import com.fcfb.arceus.repositories.RangesRepository
 import com.fcfb.arceus.repositories.UsersRepository
-import com.fcfb.arceus.models.ExceptionType
-import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.PlayType
-import com.fcfb.arceus.models.game.Game.RunoffType
-import com.fcfb.arceus.models.game.Game.OffensivePlaybook
-import com.fcfb.arceus.models.game.Game.DefensivePlaybook
-import com.fcfb.arceus.models.game.Game.Play
-import com.fcfb.arceus.models.game.Game.ActualResult
-import com.fcfb.arceus.models.game.Game.Result
-import com.fcfb.arceus.models.handleException
 import com.fcfb.arceus.utils.GameUtils
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import java.util.*
 
 @Component
 class GamePlaysHandler(
@@ -67,7 +66,7 @@ class GamePlaysHandler(
             defensivePlaybook,
             difference
         ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
-        
+
         var result = resultInformation.result
         val playTime: Int? = resultInformation.playTime
 
@@ -82,7 +81,7 @@ class GamePlaysHandler(
                 offensivePlaybook == OffensivePlaybook.PRO -> runoffTime = 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> runoffTime = 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> runoffTime = 20
-                offensivePlaybook == OffensivePlaybook.SPREAD-> runoffTime = 13
+                offensivePlaybook == OffensivePlaybook.SPREAD -> runoffTime = 13
                 offensivePlaybook == OffensivePlaybook.WEST_COAST -> runoffTime = 17
             }
         }
@@ -231,10 +230,11 @@ class GamePlaysHandler(
         // Handle clock logic
         var clock: Int = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK)) - (playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
         var quarter: Int = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        if (clock <= 0 
-            && quarter < 4 
-            && actualResult != ActualResult.TOUCHDOWN 
-            && actualResult != ActualResult.TURNOVER_TOUCHDOWN) {
+        if (clock <= 0 &&
+            quarter < 4 &&
+            actualResult != ActualResult.TOUCHDOWN &&
+            actualResult != ActualResult.TURNOVER_TOUCHDOWN
+        ) {
             quarter += 1
             clock = 420
             if (quarter == 3) {
@@ -242,10 +242,11 @@ class GamePlaysHandler(
                 possession = gameUtils.handleHalfTimePossessionChange(game)
                 game.currentPlayType = PlayType.KICKOFF
             }
-        } else if (clock <= 0 
-            && actualResult != ActualResult.TOUCHDOWN
-            && actualResult != ActualResult.TURNOVER_TOUCHDOWN 
-            && gamePlay.gameQuarter == 4) {
+        } else if (clock <= 0 &&
+            actualResult != ActualResult.TOUCHDOWN &&
+            actualResult != ActualResult.TURNOVER_TOUCHDOWN &&
+            gamePlay.gameQuarter == 4
+        ) {
             // Check if game is over or needs to go to OT
             quarter = if (homeScore > awayScore || awayScore > homeScore) {
                 0
@@ -317,7 +318,7 @@ class GamePlaysHandler(
                 actualResult = ActualResult.KICKING_TEAM_TOUCHDOWN
                 ballLocation = 97
             }
-            Result.FUMBLE-> {
+            Result.FUMBLE -> {
                 actualResult = ActualResult.MUFFED_KICK
                 ballLocation = 75
             }
@@ -369,26 +370,27 @@ class GamePlaysHandler(
                 Possession.AWAY
             }
             else -> handleException(ExceptionType.INVALID_ACTUAL_RESULT)
-
         }
 
         // Handle clock logic
         var clock: Int = gamePlay.clock?.minus(playTime) ?: handleException(ExceptionType.INVALID_CLOCK)
         var quarter: Int = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        if (clock <= 0
-            && quarter < 4
-            && actualResult != ActualResult.RETURN_TOUCHDOWN
-            && actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN) {
+        if (clock <= 0 &&
+            quarter < 4 &&
+            actualResult != ActualResult.RETURN_TOUCHDOWN &&
+            actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN
+        ) {
             quarter += 1
             clock = 420
             if (quarter == 3) {
                 possession = gameUtils.handleHalfTimePossessionChange(game)
                 game.currentPlayType = PlayType.KICKOFF
             }
-        } else if (clock <= 0
-            && actualResult != ActualResult.RETURN_TOUCHDOWN
-            && actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN
-            && gamePlay.gameQuarter == 4) {
+        } else if (clock <= 0 &&
+            actualResult != ActualResult.RETURN_TOUCHDOWN &&
+            actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN &&
+            gamePlay.gameQuarter == 4
+        ) {
             // Check if game is over or needs to go to OT
             quarter = if (homeScore > awayScore || awayScore > homeScore) {
                 0

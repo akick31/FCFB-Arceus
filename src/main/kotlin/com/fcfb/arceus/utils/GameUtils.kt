@@ -1,9 +1,9 @@
 package com.fcfb.arceus.utils
 
 import com.fcfb.arceus.domain.GamesEntity
+import com.fcfb.arceus.models.game.Game.CoinTossChoice
 import com.fcfb.arceus.models.game.Game.CoinTossWinner
 import com.fcfb.arceus.models.game.Game.Possession
-import com.fcfb.arceus.models.game.Game.CoinTossChoice
 import org.springframework.stereotype.Component
 
 @Component
@@ -15,7 +15,7 @@ class GameUtils {
      * @return
      */
     fun getDifference(
-        offensiveNumber: Int, 
+        offensiveNumber: Int,
         defesiveNumber: Int
     ): Int {
         var difference = Math.abs(defesiveNumber - offensiveNumber)
@@ -66,5 +66,5 @@ class GameUtils {
             possession = Possession.AWAY
         }
         return possession
-    } //TODO Win probability and ELO rating methods
+    } // TODO Win probability and ELO rating methods
 }

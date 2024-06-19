@@ -212,7 +212,7 @@ class Game {
         GAIN_OF_90("GAIN_OF_90"),
         GAIN_OF_95("GAIN_OF_95"),
         TOUCHDOWN("TOUCHDOWN"),
-        //TODO: Add kickoffs, punts, field goals, etc
+        // TODO: Add kickoffs, punts, field goals, etc
     }
 
     enum class Possession(val description: String) {
@@ -234,6 +234,4 @@ class Game {
         HEADS("heads"),
         TAILS("tails")
     }
-
-
 }

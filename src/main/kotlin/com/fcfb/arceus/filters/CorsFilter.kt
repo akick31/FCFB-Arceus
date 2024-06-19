@@ -1,10 +1,10 @@
 package com.fcfb.arceus.filters
 
 import org.springframework.stereotype.Component
+import org.springframework.web.filter.OncePerRequestFilter
 import javax.servlet.FilterChain
 import javax.servlet.http.HttpServletRequest
 import javax.servlet.http.HttpServletResponse
-import org.springframework.web.filter.OncePerRequestFilter
 
 @Component
 class CorsFilter : OncePerRequestFilter() {

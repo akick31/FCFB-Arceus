@@ -1,11 +1,17 @@
 package com.fcfb.arceus.domain
 
-import java.util.*
-import javax.persistence.*
+import com.fcfb.arceus.models.game.Game.ActualResult
 import com.fcfb.arceus.models.game.Game.Play
 import com.fcfb.arceus.models.game.Game.Possession
 import com.fcfb.arceus.models.game.Game.Result
-import com.fcfb.arceus.models.game.Game.ActualResult
+import java.util.Objects
+import javax.persistence.Basic
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType
+import javax.persistence.Id
+import javax.persistence.Table
 
 @Entity
 @Table(name = "game_plays", schema = "arceus")
@@ -128,12 +134,33 @@ class GamePlaysEntity {
     var playFinished: Boolean? = null
 
     constructor(
-        gameId: Int, playNumber: Int, homeScore: Int?, awayScore: Int?, quarter: Int?,
-        clock: Int?, ballLocation: Int?, possession: Possession?, down: Int?, yardsToGo: Int?,
-        defensiveNumber: String?, offensiveNumber: String?, offensiveSubmitter: String?,
-        defensiveSubmitter: String?, play: Play?, result: Result?, actualResult: ActualResult?, yards: Int,
-        playTime: Int, runoffTime: Int, winProbability: Double?, homeTeam: String?, awayTeam: String?,
-        difference: Int, timeoutUsed: Boolean?, homeTimeouts: Int, awayTimeouts: Int,
+        gameId: Int,
+        playNumber: Int,
+        homeScore: Int?,
+        awayScore: Int?,
+        quarter: Int?,
+        clock: Int?,
+        ballLocation: Int?,
+        possession: Possession?,
+        down: Int?,
+        yardsToGo: Int?,
+        defensiveNumber: String?,
+        offensiveNumber: String?,
+        offensiveSubmitter: String?,
+        defensiveSubmitter: String?,
+        play: Play?,
+        result: Result?,
+        actualResult: ActualResult?,
+        yards: Int,
+        playTime: Int,
+        runoffTime: Int,
+        winProbability: Double?,
+        homeTeam: String?,
+        awayTeam: String?,
+        difference: Int,
+        timeoutUsed: Boolean?,
+        homeTimeouts: Int,
+        awayTimeouts: Int,
         playFinished: Boolean?
     ) {
         this.gameId = gameId

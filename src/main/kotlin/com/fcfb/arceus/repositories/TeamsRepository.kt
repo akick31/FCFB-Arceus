@@ -4,7 +4,7 @@ import com.fcfb.arceus.domain.TeamsEntity
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
-import java.util.*
+import java.util.Optional
 
 @Repository
 interface TeamsRepository : CrudRepository<TeamsEntity?, Int?> {

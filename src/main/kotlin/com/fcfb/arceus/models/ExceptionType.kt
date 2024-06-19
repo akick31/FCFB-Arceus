@@ -14,7 +14,6 @@ enum class ExceptionType(val description: String) {
     HOME_USER_NOT_FOUND("The home user was not found"),
     AWAY_USER_NOT_FOUND("The away user was not found"),
     RESULT_NOT_FOUND("The result was not found in the ranges")
-
 }
 
 fun handleException(exceptionType: ExceptionType): Nothing {
