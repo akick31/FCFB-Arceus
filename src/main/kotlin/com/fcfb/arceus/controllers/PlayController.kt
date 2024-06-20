@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/game_plays")
+@RequestMapping("/play")
 class PlayController(
     private var playService: PlayService
 ) {

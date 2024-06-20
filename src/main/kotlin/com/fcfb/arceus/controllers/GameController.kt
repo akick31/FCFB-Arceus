@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/ongoing_games")
+@RequestMapping("/game")
 class GameController(
     private var discordService: DiscordService,
     private var gamesService: GameService

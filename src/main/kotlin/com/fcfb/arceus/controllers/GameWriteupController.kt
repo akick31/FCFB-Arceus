@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/game_messages")
+@RequestMapping("/game_writeup")
 class GameWriteupController(
     private var gameMessagesService: GameWriteupService
 ) {

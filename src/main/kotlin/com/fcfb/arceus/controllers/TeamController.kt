@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["http://localhost:8082"])
 @RestController
-@RequestMapping("/teams")
+@RequestMapping("/team")
 class TeamController(
     private var teamService: TeamService
 ) {

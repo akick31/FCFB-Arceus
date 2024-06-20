@@ -1,5 +1,7 @@
 package com.fcfb.arceus.service.discord
 
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
@@ -7,12 +9,16 @@ import dev.kord.core.Kord
 import dev.kord.core.entity.User
 import kotlinx.coroutines.flow.toList
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.http.HttpEntity
+import org.springframework.http.HttpHeaders
+import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
 import org.springframework.web.client.RestTemplate
 
 @Service
-class DiscordService {
-    private var restTemplate: RestTemplate? = null
+class DiscordService(
+    private val restTemplate: RestTemplate
+) {
     private var discordBotUrl = "http://0.0.0.0:1212/zebstrika"
 
     @Value("\${discord.guild.id}")
@@ -21,13 +27,15 @@ class DiscordService {
     @Value("\${discord.bot.token}")
     private val botToken: String? = null
 
-    fun DiscordService(restTemplate: RestTemplate?) {
-        this.restTemplate = restTemplate
-    }
-
     fun startGameThread(game: Game): String {
+        val objectMapper = ObjectMapper()
+        objectMapper.registerModule(JavaTimeModule())
+        val gameJson = objectMapper.writeValueAsString(game)
         val discordBotUrl = "$discordBotUrl/start_game"
-        return restTemplate!!.postForEntity(discordBotUrl, game, String::class.java).toString()
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val requestEntity = HttpEntity(gameJson, headers)
+        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).toString()
     }
 
     suspend fun getUserByDiscordTag(
