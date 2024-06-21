@@ -9,5 +9,4 @@ class FcfbArceusApplicationTests {
     @Test
     fun contextLoads() {
     }
-
 }

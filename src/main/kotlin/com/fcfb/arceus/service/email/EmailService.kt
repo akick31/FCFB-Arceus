@@ -48,8 +48,7 @@ class EmailService(private val mailSender: JavaMailSender) {
             message.setText(text)
             mailSender.send(message)
             Logger.debug("Email sent to $to")
-        }
-        catch (e: Exception) {
+        } catch (e: Exception) {
             Logger.debug("{}", e)
         }
     }
