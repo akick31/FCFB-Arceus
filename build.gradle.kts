@@ -52,6 +52,7 @@ dependencies {
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.6.0")
     implementation("com.google.code.gson:gson:2.8.9")
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
+    implementation("org.apache.httpcomponents:httpclient:4.5.13")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test")

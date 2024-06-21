@@ -1,7 +1,6 @@
 package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.time.LocalDateTime
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -158,7 +157,7 @@ class Game {
     @Basic
     @Column(name = "timestamp")
     @JsonProperty("timestamp")
-    var timestamp: LocalDateTime? = null
+    var timestamp: String? = null
 
     @Basic
     @Column(name = "win_probability")
@@ -298,7 +297,7 @@ class Game {
         awayLosses: Int?,
         scorebug: String?,
         subdivision: Subdivision,
-        timestamp: LocalDateTime?,
+        timestamp: String?,
         winProbability: Double?,
         final: Boolean,
         ot: Boolean,

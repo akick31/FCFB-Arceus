@@ -113,7 +113,7 @@ class GameService(
                     awayLosses = awayTeamData.currentLosses,
                     scorebug = "none_scorebug.png",
                     subdivision = subdivision,
-                    timestamp = LocalDateTime.now(),
+                    timestamp = LocalDateTime.now().toString(),
                     winProbability = 0.0,
                     final = false,
                     ot = false,
@@ -154,7 +154,7 @@ class GameService(
             if (newGame.homePlatform == Platform.DISCORD) {
                 newGame.homePlatformId = discordService.startGameThread(newGame)
             }
-            if (newGame.awayPlatform == Platform.DISCORD) {
+            else if (newGame.awayPlatform == Platform.DISCORD) {
                 newGame.awayPlatformId = discordService.startGameThread(newGame)
             }
 

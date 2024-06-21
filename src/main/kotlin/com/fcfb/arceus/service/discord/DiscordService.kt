@@ -28,13 +28,10 @@ class DiscordService(
     private val botToken: String? = null
 
     fun startGameThread(game: Game): String {
-        val objectMapper = ObjectMapper()
-        objectMapper.registerModule(JavaTimeModule())
-        val gameJson = objectMapper.writeValueAsString(game)
         val discordBotUrl = "$discordBotUrl/start_game"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
-        val requestEntity = HttpEntity(gameJson, headers)
+        val requestEntity = HttpEntity(game, headers)
         return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).toString()
     }
 
