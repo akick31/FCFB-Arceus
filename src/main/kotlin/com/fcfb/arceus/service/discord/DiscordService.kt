@@ -1,7 +1,5 @@
 package com.fcfb.arceus.service.discord
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
@@ -32,7 +30,7 @@ class DiscordService(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)
-        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).toString()
+        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).body!!
     }
 
     suspend fun getUserByDiscordTag(

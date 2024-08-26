@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.CoinTossWinner
+import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Possession
@@ -37,8 +38,8 @@ class GameService(
     fun getOngoingGameByDiscordChannelId(
         channelId: String?
     ): ResponseEntity<Game> {
-        val ongoingGameData = gameRepository.findByHomePlatformId("Discord", channelId) ?:
-            gameRepository.findByAwayPlatformId("Discord", channelId)
+        val ongoingGameData = gameRepository.findByHomePlatformId("Discord", channelId)
+            ?: gameRepository.findByAwayPlatformId("Discord", channelId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
@@ -115,8 +116,6 @@ class GameService(
                     subdivision = subdivision,
                     timestamp = LocalDateTime.now().toString(),
                     winProbability = 0.0,
-                    final = false,
-                    ot = false,
                     season = startRequest.season?.toInt(),
                     week = startRequest.week?.toInt(),
                     waitingOn = awayCoachUsername,
@@ -135,7 +134,8 @@ class GameService(
                     currentPlayType = PlayType.KICKOFF,
                     currentPlayId = 0,
                     scrimmage = startRequest.scrimmage,
-                    clockStopped = true
+                    clockStopped = true,
+                    gameStatus = GameStatus.PREGAME
                 )
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
@@ -153,8 +153,7 @@ class GameService(
             // Create a new Discord thread
             if (newGame.homePlatform == Platform.DISCORD) {
                 newGame.homePlatformId = discordService.startGameThread(newGame)
-            }
-            else if (newGame.awayPlatform == Platform.DISCORD) {
+            } else if (newGame.awayPlatform == Platform.DISCORD) {
                 newGame.awayPlatformId = discordService.startGameThread(newGame)
             }
 
@@ -182,13 +181,14 @@ class GameService(
                 CoinTossWinner.AWAY
             }
             game.coinTossWinner = coinTossWinner
+
             return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
 
-    fun updateCoinTossChoice(
+    fun makeCoinTossChoice(
         gameId: String,
         coinTossChoice: CoinTossChoice
     ): ResponseEntity<Game> {
@@ -202,6 +202,7 @@ class GameService(
             } else if (game.coinTossWinner == CoinTossWinner.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
                 game.possession = Possession.AWAY
             }
+            game.gameStatus = GameStatus.OPENING_KICKOFF
             return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

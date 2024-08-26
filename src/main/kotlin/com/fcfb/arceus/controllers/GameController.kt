@@ -71,11 +71,11 @@ class GameController(
      * @param coinTossChoice
      * @return
      */
-    @PutMapping("/coin_toss_choice")
-    fun updateCoinTossChoice(
+    @PutMapping("/make_coin_toss_choice")
+    fun updateGame(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice
-    ) = gamesService.updateCoinTossChoice(gameId, coinTossChoice)
+    ) = gamesService.makeCoinTossChoice(gameId, coinTossChoice)
 
     /**
      * Update the user being waited on, also update the game timer

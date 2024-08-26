@@ -5,6 +5,8 @@ import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -49,21 +51,25 @@ class Game {
     @JsonProperty("away_coach_discord_id")
     var awayCoachDiscordId: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "home_offensive_playbook")
     @JsonProperty("home_offensive_playbook")
     lateinit var homeOffensivePlaybook: OffensivePlaybook
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_offensive_playbook")
     @JsonProperty("away_offensive_playbook")
     lateinit var awayOffensivePlaybook: OffensivePlaybook
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "home_defensive_playbook")
     @JsonProperty("home_defensive_playbook")
     lateinit var homeDefensivePlaybook: DefensivePlaybook
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_defensive_playbook")
     @JsonProperty("away_defensive_playbook")
@@ -79,6 +85,7 @@ class Game {
     @JsonProperty("away_score")
     var awayScore: Int? = 0
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
     @JsonProperty("possession")
@@ -109,6 +116,7 @@ class Game {
     @JsonProperty("yards_to_go")
     var yardsToGo: Int? = 10
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "tv_channel")
     @JsonProperty("tv_channel")
@@ -149,6 +157,7 @@ class Game {
     @JsonProperty("scorebug")
     var scorebug: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "subdivision")
     @JsonProperty("subdivision")
@@ -163,16 +172,6 @@ class Game {
     @Column(name = "win_probability")
     @JsonProperty("win_probability")
     var winProbability: Double? = null
-
-    @Basic
-    @Column(name = "final")
-    @JsonProperty("final")
-    var final: Boolean? = false
-
-    @Basic
-    @Column(name = "ot")
-    @JsonProperty("ot")
-    var ot: Boolean? = false
 
     @Basic
     @Column(name = "season")
@@ -214,16 +213,19 @@ class Game {
     @JsonProperty("away_timeouts")
     var awayTimeouts: Int? = 3
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "coin_toss_winner")
     @JsonProperty("coin_toss_winner")
     var coinTossWinner: CoinTossWinner? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "coin_toss_choice")
     @JsonProperty("coin_toss_choice")
     var coinTossChoice: CoinTossChoice? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "home_platform")
     @JsonProperty("home_platform")
@@ -234,6 +236,7 @@ class Game {
     @JsonProperty("home_platform_id")
     var homePlatformId: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_platform")
     @JsonProperty("away_platform")
@@ -249,6 +252,7 @@ class Game {
     @JsonProperty("game_timer")
     var gameTimer: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "current_play_type")
     @JsonProperty("current_play_type")
@@ -268,6 +272,12 @@ class Game {
     @Column(name = "clock_stopped")
     @JsonProperty("clock_stopped")
     var clockStopped: Boolean? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_status")
+    @JsonProperty("game_status")
+    var gameStatus: GameStatus? = null
 
     constructor(
         homeTeam: String,
@@ -299,8 +309,6 @@ class Game {
         subdivision: Subdivision,
         timestamp: String?,
         winProbability: Double?,
-        final: Boolean,
-        ot: Boolean,
         season: Int?,
         week: Int?,
         waitingOn: String,
@@ -319,7 +327,8 @@ class Game {
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         scrimmage: Boolean?,
-        clockStopped: Boolean?
+        clockStopped: Boolean?,
+        gameStatus: GameStatus?
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -350,8 +359,6 @@ class Game {
         this.subdivision = subdivision
         this.timestamp = timestamp
         this.winProbability = winProbability
-        this.final = final
-        this.ot = ot
         this.season = season
         this.week = week
         this.waitingOn = waitingOn
@@ -371,6 +378,7 @@ class Game {
         this.currentPlayId = currentPlayId
         this.scrimmage = scrimmage
         this.clockStopped = clockStopped
+        this.gameStatus = gameStatus
     }
 
     constructor()
@@ -379,7 +387,7 @@ class Game {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as Game
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeCoachDiscordId == that.homeCoachDiscordId && awayCoachDiscordId == that.awayCoachDiscordId && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && final == that.final && ot == that.ot && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped
+        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeCoachDiscordId == that.homeCoachDiscordId && awayCoachDiscordId == that.awayCoachDiscordId && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped && gameStatus == that.gameStatus
     }
 
     override fun hashCode(): Int {
@@ -414,8 +422,6 @@ class Game {
             subdivision,
             timestamp,
             winProbability,
-            final,
-            ot,
             season,
             week,
             waitingOn,
@@ -434,8 +440,19 @@ class Game {
             currentPlayType,
             currentPlayId,
             scrimmage,
-            clockStopped
+            clockStopped,
+            gameStatus
         )
+    }
+
+    enum class GameStatus(val description: String) {
+        PREGAME("Pregame"),
+        OPENING_KICKOFF("Opening Kickoff"),
+        IN_PROGRESS("In Progress"),
+        HALFTIME("Halftime"),
+        FINAL("Final"),
+        END_OF_REGULATION("End of Regulation"),
+        OVERTIME("Overtime")
     }
 
     enum class Subdivision(val description: String) {
@@ -444,7 +461,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): Subdivision? {
-                return Subdivision.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -458,7 +475,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): OffensivePlaybook? {
-                return OffensivePlaybook.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -472,7 +489,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): DefensivePlaybook? {
-                return DefensivePlaybook.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -587,7 +604,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): Result? {
-                return Result.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -693,6 +710,12 @@ class Game {
 
     enum class CoinTossCall(val description: String) {
         HEADS("heads"),
-        TAILS("tails")
+        TAILS("tails");
+
+        companion object {
+            fun fromString(description: String): CoinTossCall? {
+                return entries.find { it.description == description }
+            }
+        }
     }
 }

@@ -1,6 +1,5 @@
 package com.fcfb.arceus.service.game
 
-import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
@@ -8,8 +7,9 @@ import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Possession
-import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.RunoffType
+import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.handleException
@@ -47,7 +47,7 @@ class GamePlayHandler(
         timeoutCalled: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ):  Play {
+    ): Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val offensivePlaybook: OffensivePlaybook
@@ -444,7 +444,7 @@ class GamePlayHandler(
         playCall: PlayCall,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ):  Play {
+    ): Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession: Possession? = gamePlay.possession
         val resultInformation: Ranges = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
@@ -483,7 +483,7 @@ class GamePlayHandler(
         } else {
             Possession.HOME
         }
-        val clock = ( gamePlay.clock ?: handleException(ExceptionType.INVALID_CLOCK)) - (resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
+        val clock = (gamePlay.clock ?: handleException(ExceptionType.INVALID_CLOCK)) - (resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
         val quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
         val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
         val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)

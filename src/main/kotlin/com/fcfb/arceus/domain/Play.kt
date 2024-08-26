@@ -1,13 +1,15 @@
 package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.Result
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.Result
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -49,6 +51,7 @@ class Play {
     @Column(name = "ball_location")
     var ballLocation: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
     var possession: Possession? = null
@@ -77,6 +80,7 @@ class Play {
     @Column(name = "offensive_submitter")
     var offensiveSubmitter: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "play_call")
     var playCall: PlayCall? = null
@@ -89,6 +93,7 @@ class Play {
     @Column(name = "difference")
     var difference: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "actual_result")
     var actualResult: ActualResult? = null

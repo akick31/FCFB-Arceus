@@ -150,7 +150,7 @@ class UserService {
     }
 
     fun updateUserCoachName(id: Long, newCoachName: String?): ResponseEntity<User> {
-        val user  = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newCoachName == null) {
             return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
