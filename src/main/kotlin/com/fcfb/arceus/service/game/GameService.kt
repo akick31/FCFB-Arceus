@@ -198,9 +198,9 @@ class GameService(
 
             game.coinTossChoice = coinTossChoice
             if (game.coinTossWinner == CoinTossWinner.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = Possession.HOME
-            } else if (game.coinTossWinner == CoinTossWinner.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
                 game.possession = Possession.AWAY
+            } else if (game.coinTossWinner == CoinTossWinner.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = Possession.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
             return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
