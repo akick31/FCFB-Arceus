@@ -2,8 +2,7 @@ package com.fcfb.arceus.utils
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossChoice
-import com.fcfb.arceus.domain.Game.CoinTossWinner
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.TeamSide
 import org.springframework.stereotype.Component
 
 @Component
@@ -54,16 +53,16 @@ class GameUtils {
 
     fun handleHalfTimePossessionChange(
         game: Game
-    ): Possession? {
-        var possession: Possession? = null
-        if (game.coinTossWinner == CoinTossWinner.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
-            possession = Possession.AWAY
-        } else if (game.coinTossWinner == CoinTossWinner.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            possession = Possession.HOME
-        } else if (game.coinTossWinner == CoinTossWinner.AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
-            possession = Possession.HOME
-        } else if (game.coinTossWinner == CoinTossWinner.AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            possession = Possession.AWAY
+    ): TeamSide? {
+        var possession: TeamSide? = null
+        if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
+            possession = TeamSide.AWAY
+        } else if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            possession = TeamSide.HOME
+        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
+            possession = TeamSide.HOME
+        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            possession = TeamSide.AWAY
         }
         return possession
     } // TODO Win probability and ELO rating methods

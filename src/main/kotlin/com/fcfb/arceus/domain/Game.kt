@@ -89,7 +89,7 @@ class Game {
     @Basic
     @Column(name = "possession")
     @JsonProperty("possession")
-    var possession: Possession? = null
+    var possession: TeamSide? = null
 
     @Basic
     @Column(name = "quarter")
@@ -183,10 +183,11 @@ class Game {
     @JsonProperty("week")
     var week: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "waiting_on")
     @JsonProperty("waiting_on")
-    var waitingOn: String? = "away"
+    var waitingOn: TeamSide? = TeamSide.AWAY
 
     @Basic
     @Column(name = "win_probability_plot")
@@ -217,7 +218,7 @@ class Game {
     @Basic
     @Column(name = "coin_toss_winner")
     @JsonProperty("coin_toss_winner")
-    var coinTossWinner: CoinTossWinner? = null
+    var coinTossWinner: TeamSide? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -292,7 +293,7 @@ class Game {
         awayDefensivePlaybook: DefensivePlaybook,
         homeScore: Int,
         awayScore: Int,
-        possession: Possession?,
+        possession: TeamSide?,
         quarter: Int,
         clock: String,
         ballLocation: Int?,
@@ -311,13 +312,13 @@ class Game {
         winProbability: Double?,
         season: Int?,
         week: Int?,
-        waitingOn: String,
+        waitingOn: TeamSide,
         winProbabilityPlot: String?,
         scorePlot: String?,
         numPlays: Int,
         homeTimeouts: Int,
         awayTimeouts: Int,
-        coinTossWinner: CoinTossWinner?,
+        coinTossWinner: TeamSide?,
         coinTossChoice: CoinTossChoice?,
         homePlatform: Platform,
         homePlatformId: String?,
@@ -693,7 +694,7 @@ class Game {
         // TODO: Add kickoffs, punts, field goals, etc
     }
 
-    enum class Possession(val description: String) {
+    enum class TeamSide(val description: String) {
         HOME("home"),
         AWAY("away")
     }
@@ -701,11 +702,6 @@ class Game {
     enum class CoinTossChoice(val description: String) {
         RECEIVE("receive"),
         DEFER("defer")
-    }
-
-    enum class CoinTossWinner(val description: String) {
-        HOME("home"),
-        AWAY("away")
     }
 
     enum class CoinTossCall(val description: String) {

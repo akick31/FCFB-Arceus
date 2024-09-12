@@ -2,6 +2,7 @@ package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.game.GameService
@@ -38,10 +39,18 @@ class GameController(
      * @param channelId
      * @return
      */
-    @GetMapping("/discord")
+    @GetMapping("/discord_channel")
     fun getOngoingGameByDiscordChannelId(
         @RequestParam("channelId") channelId: String?
     ) = gamesService.getOngoingGameByDiscordChannelId(channelId)
+
+    /**
+     * Get an ongoing game by Discord user id
+     */
+    @GetMapping("/discord_user")
+    fun getOnGoingGameByDiscordUserId(
+        @RequestParam("userId") userId: String?
+    ) = gamesService.getOngoingGameByDiscordUserId(userId)
 
     /**
      * Start a game
@@ -76,18 +85,6 @@ class GameController(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice
     ) = gamesService.makeCoinTossChoice(gameId, coinTossChoice)
-
-    /**
-     * Update the user being waited on, also update the game timer
-     * @param gameId
-     * @param username
-     * @return
-     */
-    @PutMapping("/update_waiting_on")
-    fun updateWaitingOn(
-        @RequestParam("gameId") gameId: String,
-        @RequestParam("username") username: String
-    ) = gamesService.updateWaitingOn(gameId, username)
 
     /**
      * Delete an ongoing game

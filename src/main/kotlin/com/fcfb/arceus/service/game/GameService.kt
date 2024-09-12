@@ -3,11 +3,10 @@ package com.fcfb.arceus.service.game
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
-import com.fcfb.arceus.domain.Game.CoinTossWinner
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.TeamRepository
@@ -40,6 +39,16 @@ class GameService(
     ): ResponseEntity<Game> {
         val ongoingGameData = gameRepository.findByHomePlatformId("Discord", channelId)
             ?: gameRepository.findByAwayPlatformId("Discord", channelId)
+        return ongoingGameData?.let {
+            ResponseEntity(it, HttpStatus.OK)
+        } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun getOngoingGameByDiscordUserId(
+        userId: String?
+    ): ResponseEntity<Game> {
+        val ongoingGameData = gameRepository.findByHomeCoachDiscordId(userId)
+            ?: gameRepository.findByAwayCoachDiscordId(userId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
@@ -99,7 +108,7 @@ class GameService(
                     awayDefensivePlaybook = awayDefensivePlaybook,
                     homeScore = 0,
                     awayScore = 0,
-                    possession = Possession.HOME,
+                    possession = TeamSide.HOME,
                     quarter = 1,
                     clock = "7:00",
                     ballLocation = 0,
@@ -118,7 +127,7 @@ class GameService(
                     winProbability = 0.0,
                     season = startRequest.season?.toInt(),
                     week = startRequest.week?.toInt(),
-                    waitingOn = awayCoachUsername,
+                    waitingOn = TeamSide.AWAY,
                     winProbabilityPlot = "none_winprob.png",
                     scorePlot = "none_scoreplot.png",
                     numPlays = 0,
@@ -176,9 +185,9 @@ class GameService(
             val result = Random().nextInt(2)
             // 1 is heads, away team called tails, they lose
             val coinTossWinner = if (result == 1 && coinTossCall === CoinTossCall.TAILS) {
-                CoinTossWinner.HOME
+                TeamSide.HOME
             } else {
-                CoinTossWinner.AWAY
+                TeamSide.AWAY
             }
             game.coinTossWinner = coinTossWinner
 
@@ -197,41 +206,20 @@ class GameService(
                 ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             game.coinTossChoice = coinTossChoice
-            if (game.coinTossWinner == CoinTossWinner.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = Possession.AWAY
-            } else if (game.coinTossWinner == CoinTossWinner.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
-                game.possession = Possession.HOME
+            if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
+            } else if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
-            return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
-        } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-        }
-    }
-
-    fun updateWaitingOn(
-        gameId: String,
-        username: String
-    ): ResponseEntity<Game> {
-        return try {
-            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-            game.waitingOn = username
-
-            // Set the DOG timer
-            // Get the current date and time
-            val now = LocalDateTime.now()
-
-            // Add 24 hours to the current date and time
-            val futureTime = now.plusHours(24)
-
-            // Define the desired date and time format
-            val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
-
-            // Format the result and set it on the game
-            val formattedDateTime = futureTime.format(formatter)
-            game.gameTimer = formattedDateTime
             return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

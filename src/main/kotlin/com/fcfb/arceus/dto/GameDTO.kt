@@ -6,7 +6,7 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.Result
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.models.ExceptionType
@@ -24,7 +24,8 @@ class GameDTO(
         playCall: PlayCall,
         clockStopped: Boolean,
         offensiveTimeout: Boolean,
-        defensiveTimeout: Boolean
+        defensiveTimeout: Boolean,
+        waitingOn: TeamSide
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Result.INCOMPLETE ||
@@ -38,13 +39,13 @@ class GameDTO(
         // Update timeouts
         val possession = game.possession
         if (!clockStopped) {
-            if (possession == Possession.HOME && defensiveTimeout) {
+            if (possession == TeamSide.HOME && defensiveTimeout) {
                 game.awayTimeouts = game.awayTimeouts!! - 1
-            } else if (possession == Possession.HOME && offensiveTimeout) {
+            } else if (possession == TeamSide.HOME && offensiveTimeout) {
                 game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == Possession.AWAY && defensiveTimeout) {
+            } else if (possession == TeamSide.AWAY && defensiveTimeout) {
                 game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == Possession.AWAY && offensiveTimeout) {
+            } else if (possession == TeamSide.AWAY && offensiveTimeout) {
                 game.awayTimeouts = game.awayTimeouts!! - 1
             }
         }
@@ -77,6 +78,7 @@ class GameDTO(
         game.down = play.down ?: handleException(ExceptionType.INVALID_DOWN)
         game.yardsToGo = play.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
         game.numPlays = play.playNumber
+        game.waitingOn = waitingOn
         return game
     }
 

@@ -2,8 +2,8 @@ package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Possession
 import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.TeamSide
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -54,7 +54,7 @@ class Play {
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
-    var possession: Possession? = null
+    var possession: TeamSide? = null
 
     @Basic
     @Column(name = "down")
@@ -146,7 +146,7 @@ class Play {
         quarter: Int?,
         clock: Int?,
         ballLocation: Int?,
-        possession: Possession?,
+        possession: TeamSide?,
         down: Int?,
         yardsToGo: Int?,
         defensiveNumber: String?,
@@ -243,34 +243,34 @@ class Play {
 
     override fun toString(): String {
         return """{
-  "gameId": "$gameId",
-  "playNumber": "$playNumber",
-  "homeScore": "$homeScore",
-  "awayScore": "$awayScore",
-  "quarter": "$gameQuarter",
-  "clock": "$clock",
-  "ballLocation": "$ballLocation",
-  "possession": "$possession",
-  "down": "$down",
-  "yardsToGo": "$yardsToGo",
-  "defensiveNumber": "$defensiveNumber",
-  "offensiveNumber": "$offensiveNumber",
-  "offensiveSubmitter": "$offensiveSubmitter",
-  "defensiveSubmitter": "$defensiveSubmitter",
-  "playCall": "$playCall",
-  "result": "$result",
-  "actualResult": "$actualResult",
-  "yards": "$yards",
-  "playTime": "$playTime",
-  "runoffTime": "$runoffTime",
-  "winProbability": "$winProbability",
-  "homeTeam": "$homeTeam",
-  "awayTeam": "$awayTeam",
-  "difference": "$difference",
-  "timeoutUsed": "$timeoutUsed",
-  "homeTimeouts": "$homeTimeouts",
-  "awayTimeouts": "$awayTimeouts",
-  "playFinished": "$playFinished"
-}"""
+          "gameId": "$gameId",
+          "playNumber": "$playNumber",
+          "homeScore": "$homeScore",
+          "awayScore": "$awayScore",
+          "quarter": "$gameQuarter",
+          "clock": "$clock",
+          "ballLocation": "$ballLocation",
+          "possession": "$possession",
+          "down": "$down",
+          "yardsToGo": "$yardsToGo",
+          "defensiveNumber": "$defensiveNumber",
+          "offensiveNumber": "$offensiveNumber",
+          "offensiveSubmitter": "$offensiveSubmitter",
+          "defensiveSubmitter": "$defensiveSubmitter",
+          "playCall": "$playCall",
+          "result": "$result",
+          "actualResult": "$actualResult",
+          "yards": "$yards",
+          "playTime": "$playTime",
+          "runoffTime": "$runoffTime",
+          "winProbability": "$winProbability",
+          "homeTeam": "$homeTeam",
+          "awayTeam": "$awayTeam",
+          "difference": "$difference",
+          "timeoutUsed": "$timeoutUsed",
+          "homeTimeouts": "$homeTimeouts",
+          "awayTimeouts": "$awayTimeouts",
+          "playFinished": "$playFinished"
+        }"""
     }
 }

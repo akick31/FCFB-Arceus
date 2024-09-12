@@ -22,7 +22,7 @@ class PlayController(
      * @param defensiveNumber
      * @return
      */
-    @PostMapping("/defense_submitted")
+    @PostMapping("/submit_defense")
     fun defensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
@@ -39,7 +39,7 @@ class PlayController(
      * @param defensiveTimeoutCalled
      * @return
      */
-    @PutMapping("/offense_submitted")
+    @PutMapping("/submit_offense")
     fun offensiveNumberSubmitted(
         @RequestParam("playId") playId: Int,
         @RequestParam("offensiveNumber") offensiveNumber: Int,

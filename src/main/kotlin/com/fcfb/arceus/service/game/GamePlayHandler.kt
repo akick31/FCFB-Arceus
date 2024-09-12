@@ -6,7 +6,7 @@ import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.Result
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
@@ -52,7 +52,7 @@ class GamePlayHandler(
         var possession = gamePlay.possession
         val offensivePlaybook: OffensivePlaybook
         val defensivePlaybook: DefensivePlaybook
-        if (possession == Possession.HOME) {
+        if (possession == TeamSide.HOME) {
             offensivePlaybook = game.homeOffensivePlaybook
             defensivePlaybook = game.awayDefensivePlaybook
         } else {
@@ -189,17 +189,17 @@ class GamePlayHandler(
         }
         when (actualResult) {
             ActualResult.TURNOVER_ON_DOWNS, ActualResult.TURNOVER -> {
-                possession = if (possession == Possession.HOME) {
-                    Possession.AWAY
+                possession = if (possession == TeamSide.HOME) {
+                    TeamSide.AWAY
                 } else {
-                    Possession.HOME
+                    TeamSide.HOME
                 }
                 down = 1
                 yardsToGo = 10
             }
             ActualResult.SAFETY -> {
                 ballLocation = 20
-                if (possession == Possession.HOME) {
+                if (possession == TeamSide.HOME) {
                     awayScore += 2
                 } else {
                     homeScore += 2
@@ -207,7 +207,7 @@ class GamePlayHandler(
             }
             ActualResult.TOUCHDOWN -> {
                 ballLocation = 97
-                if (possession == Possession.HOME) {
+                if (possession == TeamSide.HOME) {
                     homeScore += 6
                 } else {
                     awayScore += 6
@@ -215,12 +215,12 @@ class GamePlayHandler(
             }
             ActualResult.TURNOVER_TOUCHDOWN -> {
                 ballLocation = 97
-                if (possession == Possession.HOME) {
+                if (possession == TeamSide.HOME) {
                     awayScore += 6
-                    possession = Possession.AWAY
+                    possession = TeamSide.AWAY
                 } else {
                     homeScore += 6
-                    possession = Possession.HOME
+                    possession = TeamSide.HOME
                 }
             }
             else -> handleException(ExceptionType.INVALID_ACTUAL_RESULT)
@@ -273,14 +273,10 @@ class GamePlayHandler(
         gamePlay.runoffTime = runoffTime
         gamePlay.winProbability = gamePlay.winProbability
         gamePlay.difference = difference
-        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername = homeUser.username
-        val awayUsername = awayUser.username
-        if (possession == Possession.HOME) {
-            game.waitingOn = awayUsername
+        if (possession == TeamSide.HOME) {
+            game.waitingOn = TeamSide.AWAY
         } else {
-            game.waitingOn = homeUsername
+            game.waitingOn = TeamSide.HOME
         }
         gamePlay.timeoutUsed = !clockStopped && timeoutCalled
         return gamePlay
@@ -346,27 +342,27 @@ class GamePlayHandler(
             else -> handleException(ExceptionType.INVALID_RESULT)
         }
         when (actualResult) {
-            ActualResult.KICKING_TEAM_TOUCHDOWN -> if (possession == Possession.HOME) {
+            ActualResult.KICKING_TEAM_TOUCHDOWN -> if (possession == TeamSide.HOME) {
                 homeScore += 6
             } else {
                 awayScore += 6
             }
-            ActualResult.KICKOFF, ActualResult.FAILED_ONSIDE -> possession = if (possession == Possession.HOME) {
-                Possession.AWAY
+            ActualResult.KICKOFF, ActualResult.FAILED_ONSIDE -> possession = if (possession == TeamSide.HOME) {
+                TeamSide.AWAY
             } else {
-                Possession.HOME
+                TeamSide.HOME
             }
-            ActualResult.RETURN_TOUCHDOWN -> if (possession == Possession.HOME) {
-                possession = Possession.AWAY
+            ActualResult.RETURN_TOUCHDOWN -> if (possession == TeamSide.HOME) {
+                possession = TeamSide.AWAY
                 awayScore += 6
             } else {
-                possession = Possession.HOME
+                possession = TeamSide.HOME
                 homeScore += 6
             }
-            ActualResult.SUCCESSFUL_ONSIDE, ActualResult.MUFFED_KICK -> possession = if (possession == Possession.HOME) {
-                Possession.HOME
+            ActualResult.SUCCESSFUL_ONSIDE, ActualResult.MUFFED_KICK -> possession = if (possession == TeamSide.HOME) {
+                TeamSide.HOME
             } else {
-                Possession.AWAY
+                TeamSide.AWAY
             }
             else -> handleException(ExceptionType.INVALID_ACTUAL_RESULT)
         }
@@ -399,12 +395,10 @@ class GamePlayHandler(
         }
         val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
         val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername = homeUser.username
-        val awayUsername = awayUser.username
-        if (possession == Possession.HOME) {
-            game.waitingOn = awayUsername
+        if (possession == TeamSide.HOME) {
+            game.waitingOn = TeamSide.AWAY
         } else {
-            game.waitingOn = homeUsername
+            game.waitingOn = TeamSide.HOME
         }
         gamePlay.homeScore = homeScore
         gamePlay.awayScore = awayScore
@@ -446,7 +440,7 @@ class GamePlayHandler(
         decryptedDefensiveNumber: String
     ): Play {
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
-        var possession: Possession? = gamePlay.possession
+        var possession: TeamSide? = gamePlay.possession
         val resultInformation: Ranges = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
         val result = resultInformation.result
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
@@ -463,13 +457,13 @@ class GamePlayHandler(
         when (actualResult) {
             ActualResult.GOOD -> {
                 if (playCall == PlayCall.PAT) {
-                    if (possession == Possession.HOME) {
+                    if (possession == TeamSide.HOME) {
                         homeScore += 1
                     } else {
                         awayScore += 1
                     }
                 } else {
-                    if (possession == Possession.HOME) {
+                    if (possession == TeamSide.HOME) {
                         homeScore += 2
                     } else {
                         awayScore += 2
@@ -478,21 +472,17 @@ class GamePlayHandler(
             }
             else -> {}
         }
-        possession = if (possession == Possession.HOME) {
-            Possession.AWAY
+        possession = if (possession == TeamSide.HOME) {
+            TeamSide.AWAY
         } else {
-            Possession.HOME
+            TeamSide.HOME
         }
         val clock = (gamePlay.clock ?: handleException(ExceptionType.INVALID_CLOCK)) - (resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME))
         val quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
-        val homeUsername = homeUser.username
-        val awayUsername = awayUser.username
-        if (possession == Possession.HOME) {
-            game.waitingOn = awayUsername
+        if (possession == TeamSide.HOME) {
+            game.waitingOn = TeamSide.AWAY
         } else {
-            game.waitingOn = homeUsername
+            game.waitingOn = TeamSide.HOME
         }
         gamePlay.homeScore = homeScore
         gamePlay.awayScore = awayScore

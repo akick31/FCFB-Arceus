@@ -1,7 +1,7 @@
 package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.dto.GameDTO
@@ -41,7 +41,7 @@ class PlayService(
 
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
-            if (game.possession == Possession.HOME) {
+            if (game.possession == TeamSide.HOME) {
                 offensiveSubmitter = game.homeCoach
                 defensiveSubmitter = game.awayCoach
             } else {
@@ -84,6 +84,7 @@ class PlayService(
             ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             game.currentPlayId = gamePlay.playId
+            game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.HOME else TeamSide.AWAY
             gameRepository.save(game)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
         } catch (e: Exception) {
@@ -156,18 +157,21 @@ class PlayService(
                 PlayCall.FIELD_GOAL -> {}
                 PlayCall.PUNT -> {}
             }
+
+            val waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+
             val updated_game = gameDTO.updateGameInformation(
                 game,
                 gamePlay,
                 playCall,
                 clockStopped,
                 offensiveTimeoutCalled,
-                defensiveTimeoutCalled
+                defensiveTimeoutCalled,
+                waitingOn
             )
             // stats = gameStats.updateGameStats(stats, gamePlay);
 
-            // Send the defense the request for the number
-            gameRepository.save(game)
+            gameRepository.save(updated_game)
             // gameStatsRepository.save(stats);
 
             // Mark play as finished, set the timeouts, save the play
