@@ -16,10 +16,10 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         nativeQuery = true
     )
     fun findNormalResult(
-        playType: PlayCall?,
-        offensivePlaybook: OffensivePlaybook?,
-        defensivePlaybook: DefensivePlaybook?,
-        difference: Int
+        playType: String?,
+        offensivePlaybook: String?,
+        defensivePlaybook: String?,
+        difference: String
     ): Ranges?
 
     @Query(
@@ -27,7 +27,7 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         nativeQuery = true
     )
     fun findNonNormalResult(
-        playType: PlayCall?,
-        difference: Int
+        playType: String?,
+        difference: String
     ): Ranges?
 }

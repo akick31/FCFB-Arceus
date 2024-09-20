@@ -8,6 +8,7 @@ class GameWriteupService(
     private var gameWriteupRepository: GameWriteupRepository?
 ) {
     fun getGameMessageByScenario(
-        scenario: String
-    ) = gameWriteupRepository?.findByScenario(scenario)?.message
+        scenario: String,
+        passOrRun: String?
+    ) = gameWriteupRepository?.findByScenario(scenario, passOrRun)?.message
 }

@@ -3,7 +3,7 @@ package com.fcfb.arceus.converter
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.Subdivision
 import javax.persistence.AttributeConverter
 import javax.persistence.Converter
@@ -45,14 +45,14 @@ class SubdivisionConverter : AttributeConverter<Subdivision, String> {
 }
 
 @Converter(autoApply = true)
-class ResultConverter : AttributeConverter<Result, String> {
+class ResultConverter : AttributeConverter<Scenario, String> {
 
-    override fun convertToDatabaseColumn(attribute: Result?): String? {
+    override fun convertToDatabaseColumn(attribute: Scenario?): String? {
         return attribute?.description
     }
 
-    override fun convertToEntityAttribute(dbData: String?): Result? {
-        return dbData?.let { Result.fromString(it) }
+    override fun convertToEntityAttribute(dbData: String?): Scenario? {
+        return dbData?.let { Scenario.fromString(it) }
     }
 }
 

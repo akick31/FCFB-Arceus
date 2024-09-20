@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController
 class GameWriteupController(
     private var gameMessagesService: GameWriteupService
 ) {
-    @GetMapping("/{scenario}")
+    @GetMapping("/{scenario}/{passOrRun:.*}")
     fun getGameMessageByScenario(
-        @PathVariable scenario: String
-    ) = gameMessagesService.getGameMessageByScenario(scenario)
+        @PathVariable scenario: String,
+        @PathVariable passOrRun: String?
+    ) = gameMessagesService.getGameMessageByScenario(scenario, passOrRun ?: "NONE")
 }

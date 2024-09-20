@@ -22,14 +22,20 @@ class GameWriteup {
     var scenario: String? = null
 
     @Basic
+    @Column(name = "pass_or_run")
+    var passOrRun: String? = null
+
+    @Basic
     @Column(name = "message")
     var message: String? = null
 
     constructor(
         scenario: String?,
+        passOrRun: String?,
         message: String?
     ) {
         this.scenario = scenario
+        this.passOrRun = passOrRun
         this.message = message
     }
 
@@ -39,13 +45,14 @@ class GameWriteup {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as GameWriteup
-        return id == that.id && scenario == that.scenario && message == that.message
+        return id == that.id && scenario == that.scenario && passOrRun == that.passOrRun && message == that.message
     }
 
     override fun hashCode(): Int {
         return Objects.hash(
             id,
             scenario,
+            passOrRun,
             message
         )
     }

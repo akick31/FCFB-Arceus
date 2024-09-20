@@ -2,7 +2,7 @@ package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import java.util.Objects
 import javax.persistence.Basic
@@ -87,7 +87,7 @@ class Play {
 
     @Basic
     @Column(name = "result")
-    var result: Result? = null
+    var result: Scenario? = null
 
     @Basic
     @Column(name = "difference")
@@ -154,7 +154,7 @@ class Play {
         offensiveSubmitter: String?,
         defensiveSubmitter: String?,
         playCall: PlayCall?,
-        result: Result?,
+        result: Scenario?,
         actualResult: ActualResult?,
         yards: Int,
         playTime: Int,
@@ -166,7 +166,7 @@ class Play {
         timeoutUsed: Boolean?,
         homeTimeouts: Int,
         awayTimeouts: Int,
-        playFinished: Boolean?
+        playFinished: Boolean?,
     ) {
         this.gameId = gameId
         this.playNumber = playNumber
@@ -270,7 +270,7 @@ class Play {
           "timeoutUsed": "$timeoutUsed",
           "homeTimeouts": "$homeTimeouts",
           "awayTimeouts": "$awayTimeouts",
-          "playFinished": "$playFinished"
+          "playFinished": "$playFinished",
         }"""
     }
 }

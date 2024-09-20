@@ -23,7 +23,7 @@ class PlayService(
     private var encryptionUtils: EncryptionUtils,
     private var gamePlaysHandler: GamePlayHandler
 ) {
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
+    private var headers: HttpHeaders = HttpHeaders()
 
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
@@ -35,9 +35,9 @@ class PlayService(
         gameId: Int,
         defensiveNumber: Int,
         timeoutCalled: Boolean?
-    ): ResponseEntity<Play> {
+    ): ResponseEntity<Any> {
         return try {
-            val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(headers.add("Error-Message", "Could not find game with game ID"), HttpStatus.NOT_FOUND)
 
             val offensiveSubmitter: String?
             val defensiveSubmitter: String?
@@ -49,11 +49,11 @@ class PlayService(
                 defensiveSubmitter = game.homeCoach
             }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(game.clock ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
+            val clock: Int = gameUtils.convertClockToSeconds(game.clock ?: return ResponseEntity(headers.add("Error-Message", "Could not find clock for game"), HttpStatus.BAD_REQUEST))
             val gamePlay: Play = playRepository.save(
                 Play(
                     gameId,
-                    game.numPlays?.plus(1) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    game.numPlays?.plus(1) ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of plays for the game"), HttpStatus.BAD_REQUEST),
                     game.homeScore,
                     game.awayScore,
                     game.quarter,
@@ -76,19 +76,19 @@ class PlayService(
                     game.homeTeam,
                     game.awayTeam,
                     0,
-                    false,
-                    game.homeTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
-                    game.awayTimeouts ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST),
+                    timeoutCalled,
+                    game.homeTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of home timeouts"), HttpStatus.BAD_REQUEST),
+                    game.awayTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of away timeouts"), HttpStatus.BAD_REQUEST),
                     false
                 )
-            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue saving the play"), HttpStatus.BAD_REQUEST)
 
             game.currentPlayId = gamePlay.playId
             game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.HOME else TeamSide.AWAY
             gameRepository.save(game)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
         } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            ResponseEntity(headers.add("Error-Message", e.message ?: "Unknown error"), HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -98,30 +98,29 @@ class PlayService(
      * @param offensiveNumber
      * @param playCall
      * @param runoffType
-     * @param offensiveTimeoutCalled
-     * @param defensiveTimeoutCalled
+     * @param timeoutCalled
      * @return
      */
     fun offensiveNumberSubmitted(
-        playId: Int,
+        gameId: Int,
         offensiveNumber: Int,
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        defensiveTimeoutCalled: Boolean
-    ): ResponseEntity<Play> {
+    ): ResponseEntity<Any> {
         return try {
-            var gamePlay = playRepository.findByPlayId(playId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue finding the game"), HttpStatus.NOT_FOUND)
+            var gamePlay = playRepository.findByPlayId(game.currentPlayId!!) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue finding the play"), HttpStatus.NOT_FOUND)
 
-            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
-
-            val game = gameRepository.findByGameId(gamePlay.gameId!!) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(headers.add("Error-Message", "There was an issue decrypting the defensive number"), HttpStatus.BAD_REQUEST))
             // Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
 
             // if (statsData.isPresent()) {
             // GameStatsEntity stats = statsData.get();
 
-            val clockStopped = game.clockStopped ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val clockStopped = game.clockStopped ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the clock was stopped"), HttpStatus.BAD_REQUEST)
+
+            val defensiveTimeoutCalled = gamePlay.timeoutUsed ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the timeout was used"), HttpStatus.BAD_REQUEST)
             var timeoutCalled = false
             if (offensiveTimeoutCalled || defensiveTimeoutCalled) {
                 timeoutCalled = true
@@ -136,7 +135,7 @@ class PlayService(
                     timeoutCalled,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
-                )
+                ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running a normal play"), HttpStatus.BAD_REQUEST)
 
                 PlayCall.PAT, PlayCall.TWO_POINT -> gamePlay = gamePlaysHandler.runPointAfterPlay(
                     gamePlay,
@@ -144,7 +143,7 @@ class PlayService(
                     playCall,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
-                )
+                ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the PAT play"), HttpStatus.BAD_REQUEST)
 
                 PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB -> gamePlay = gamePlaysHandler.runKickoffPlay(
                     gamePlay,
@@ -152,7 +151,7 @@ class PlayService(
                     playCall,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
-                )
+                ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the kickoff play"), HttpStatus.BAD_REQUEST)
 
                 PlayCall.FIELD_GOAL -> {}
                 PlayCall.PUNT -> {}
@@ -180,7 +179,7 @@ class PlayService(
             return ResponseEntity(gamePlay, HttpStatus.OK)
             // }
         } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            ResponseEntity(headers.add("Error-Message", e.message ?: "Unknown error"), HttpStatus.BAD_REQUEST)
         }
     }
 }

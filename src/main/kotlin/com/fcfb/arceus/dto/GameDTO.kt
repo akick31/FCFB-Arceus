@@ -7,7 +7,7 @@ import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.handleException
@@ -28,7 +28,7 @@ class GameDTO(
         waitingOn: TeamSide
     ): Game {
         // Update if the clock is stopped
-        game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Result.INCOMPLETE ||
+        game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
             play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
             play.actualResult == ActualResult.TOUCHDOWN || play.playCall == PlayCall.FIELD_GOAL ||
             play.playCall == PlayCall.PAT || play.playCall == PlayCall.KICKOFF_NORMAL ||
@@ -61,11 +61,16 @@ class GameDTO(
         if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
-            (playCall == PlayCall.FIELD_GOAL && play.result == Result.GOOD) || playCall == PlayCall.PAT || playCall == PlayCall.TWO_POINT
+            (playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || playCall == PlayCall.PAT || playCall == PlayCall.TWO_POINT
         ) {
             game.currentPlayType = PlayType.KICKOFF
         } else {
             game.currentPlayType = PlayType.NORMAL
+        }
+
+        // Update the current game status
+        if (game.gameStatus == GameStatus.OPENING_KICKOFF) {
+            game.gameStatus = GameStatus.IN_PROGRESS
         }
 
         // Update everything else

@@ -1,6 +1,6 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.Scenario
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -32,7 +32,7 @@ class Ranges {
 
     @Basic
     @Column(name = "result")
-    var result: Result? = null
+    var result: Scenario? = null
 
     @Basic
     @Column(name = "play_time")
@@ -50,7 +50,7 @@ class Ranges {
         playType: String?,
         offensivePlaybook: String?,
         defensivePlaybook: String?,
-        result: Result?,
+        result: Scenario?,
         playTime: Int?,
         lowerRange: Int?,
         upperRange: Int?

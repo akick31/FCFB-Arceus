@@ -31,21 +31,19 @@ class PlayController(
 
     /**
      * The offensive number was submitted, run the play
-     * @param playId
+     * @param gameId
      * @param offensiveNumber
      * @param playCall
      * @param runoffType
-     * @param offensiveTimeoutCalled
-     * @param defensiveTimeoutCalled
+     * @param timeoutCalled
      * @return
      */
     @PutMapping("/submit_offense")
     fun offensiveNumberSubmitted(
-        @RequestParam("playId") playId: Int,
+        @RequestParam("gameId") gameId: Int,
         @RequestParam("offensiveNumber") offensiveNumber: Int,
         @RequestParam("playCall") playCall: PlayCall,
         @RequestParam("runoffType") runoffType: RunoffType,
-        @RequestParam("offensiveTimeoutCalled") offensiveTimeoutCalled: Boolean,
-        @RequestParam("defensiveTimeoutCalled") defensiveTimeoutCalled: Boolean
-    ) = playService.offensiveNumberSubmitted(playId, offensiveNumber, playCall, runoffType, offensiveTimeoutCalled, defensiveTimeoutCalled)
+        @RequestParam("timeoutCalled") timeoutCalled: Boolean,
+    ) = playService.offensiveNumberSubmitted(gameId, offensiveNumber, playCall, runoffType, timeoutCalled)
 }

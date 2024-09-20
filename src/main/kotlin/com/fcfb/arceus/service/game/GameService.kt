@@ -111,7 +111,7 @@ class GameService(
                     possession = TeamSide.HOME,
                     quarter = 1,
                     clock = "7:00",
-                    ballLocation = 0,
+                    ballLocation = 35,
                     down = 1,
                     yardsToGo = 10,
                     tvChannel = startRequest.tvChannel,

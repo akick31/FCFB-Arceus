@@ -7,7 +7,7 @@ import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.Game.Result
+import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Ranges
@@ -47,7 +47,10 @@ class GamePlayHandler(
         timeoutCalled: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): Play {
+    ): Play? {
+        if (game.currentPlayType != PlayType.NORMAL) {
+            return null
+        }
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val offensivePlaybook: OffensivePlaybook
@@ -60,10 +63,10 @@ class GamePlayHandler(
             defensivePlaybook = game.homeDefensivePlaybook
         }
         val resultInformation: Ranges = rangesRepository.findNormalResult(
-            playCall,
-            offensivePlaybook,
-            defensivePlaybook,
-            difference
+            playCall.toString(),
+            offensivePlaybook.toString(),
+            defensivePlaybook.toString(),
+            difference.toString()
         ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
 
         val result = resultInformation.result
@@ -92,68 +95,68 @@ class GamePlayHandler(
         var yards = 0
         var actualResult: ActualResult
         when (result) {
-            Result.TURNOVER_TOUCHDOWN -> actualResult = ActualResult.TURNOVER_TOUCHDOWN
-            Result.TURNOVER_PLUS_20_YARDS -> {
+            Scenario.TURNOVER_TOUCHDOWN -> actualResult = ActualResult.TURNOVER_TOUCHDOWN
+            Scenario.TURNOVER_PLUS_20_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 20
                 if (ballLocation > 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
-            Result.TURNOVER_PLUS_15_YARDS -> {
+            Scenario.TURNOVER_PLUS_15_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 15
                 if (ballLocation > 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
-            Result.TURNOVER_PLUS_10_YARDS -> {
+            Scenario.TURNOVER_PLUS_10_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 10
                 if (ballLocation > 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
-            Result.TURNOVER_PLUS_5_YARDS -> {
+            Scenario.TURNOVER_PLUS_5_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 5
                 if (ballLocation > 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
-            Result.TURNOVER -> {
+            Scenario.TURNOVER -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation
             }
-            Result.TURNOVER_MINUS_5_YARDS -> {
+            Scenario.TURNOVER_MINUS_5_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation - 5
                 if (ballLocation <= 0) {
                     ballLocation = 20
                 }
             }
-            Result.TURNOVER_MINUS_10_YARDS -> {
+            Scenario.TURNOVER_MINUS_10_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation - 10
                 if (ballLocation <= 0) {
                     ballLocation = 20
                 }
             }
-            Result.TURNOVER_MINUS_15_YARDS -> {
+            Scenario.TURNOVER_MINUS_15_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation - 15
                 if (ballLocation <= 0) {
                     ballLocation = 20
                 }
             }
-            Result.TURNOVER_MINUS_20_YARDS -> {
+            Scenario.TURNOVER_MINUS_20_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation - 20
                 if (ballLocation <= 0) {
                     ballLocation = 20
                 }
             }
-            Result.NO_GAIN, Result.INCOMPLETE -> {
+            Scenario.NO_GAIN, Scenario.INCOMPLETE -> {
                 actualResult = ActualResult.NO_GAIN
                 if (down > 4) {
                     actualResult = ActualResult.TURNOVER_ON_DOWNS
@@ -296,10 +299,14 @@ class GamePlayHandler(
         playCall: PlayCall,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): Play {
+    ): Play? {
+        if (game.currentPlayType != PlayType.KICKOFF) {
+            return null
+        }
+
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
-        val resultInformation = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+        val resultInformation = rangesRepository.findNonNormalResult(playCall.toString(), difference.toString()) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
         val result = resultInformation.result
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
@@ -309,33 +316,33 @@ class GamePlayHandler(
         val playTime = resultInformation.playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME)
         val actualResult: ActualResult?
         when (result) {
-            Result.TOUCHDOWN -> {
+            Scenario.TOUCHDOWN -> {
                 actualResult = ActualResult.KICKING_TEAM_TOUCHDOWN
                 ballLocation = 97
             }
-            Result.FUMBLE -> {
+            Scenario.FUMBLE -> {
                 actualResult = ActualResult.MUFFED_KICK
                 ballLocation = 75
             }
-            Result.FIVE_YARD_LINE, Result.TEN_YARD_LINE, Result.TWENTY_YARD_LINE, Result.THIRTY_YARD_LINE,
-            Result.THIRTY_FIVE_YARD_LINE, Result.FOURTY_YARD_LINE, Result.FOURTY_FIVE_YARD_LINE,
-            Result.FIFTY_YARD_LINE, Result.SIXTY_FIVE_YARD_LINE -> {
+            Scenario.FIVE_YARD_LINE, Scenario.TEN_YARD_LINE, Scenario.TWENTY_YARD_LINE, Scenario.THIRTY_YARD_LINE,
+            Scenario.THIRTY_FIVE_YARD_LINE, Scenario.FOURTY_YARD_LINE, Scenario.FOURTY_FIVE_YARD_LINE,
+            Scenario.FIFTY_YARD_LINE, Scenario.SIXTY_FIVE_YARD_LINE -> {
                 actualResult = ActualResult.KICKOFF
-                ballLocation = result.description.toInt()
+                ballLocation = result.description.substringBefore(" YARD LINE").toInt()
             }
-            Result.TOUCHBACK -> {
+            Scenario.TOUCHBACK -> {
                 actualResult = ActualResult.KICKOFF
                 ballLocation = 25
             }
-            Result.RETURN_TOUCHDOWN -> {
+            Scenario.RETURN_TOUCHDOWN -> {
                 actualResult = ActualResult.RETURN_TOUCHDOWN
                 ballLocation = 97
             }
-            Result.RECOVERED -> {
+            Scenario.RECOVERED -> {
                 actualResult = ActualResult.SUCCESSFUL_ONSIDE
                 ballLocation = 45
             }
-            Result.NO_GOOD -> {
+            Scenario.NO_GOOD -> {
                 actualResult = ActualResult.FAILED_ONSIDE
                 ballLocation = 55
             }
@@ -393,8 +400,7 @@ class GamePlayHandler(
                 5
             }
         }
-        val homeUser = usersRepository.findEntityByTeam(game.homeTeam) ?: handleException(ExceptionType.HOME_USER_NOT_FOUND)
-        val awayUser = usersRepository.findEntityByTeam(game.awayTeam) ?: handleException(ExceptionType.AWAY_USER_NOT_FOUND)
+
         if (possession == TeamSide.HOME) {
             game.waitingOn = TeamSide.AWAY
         } else {
@@ -438,10 +444,14 @@ class GamePlayHandler(
         playCall: PlayCall,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
-    ): Play {
+    ): Play? {
+        if (game.currentPlayType != PlayType.PAT) {
+            return null
+        }
+
         val difference = gameUtils.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession: TeamSide? = gamePlay.possession
-        val resultInformation: Ranges = rangesRepository.findNonNormalResult(playCall, difference) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+        val resultInformation: Ranges = rangesRepository.findNonNormalResult(playCall.toString(), difference.toString()) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
         val result = resultInformation.result
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
@@ -449,9 +459,9 @@ class GamePlayHandler(
         val down = 1
         val yardsToGo = 10
         val actualResult = when (result) {
-            Result.GOOD -> ActualResult.GOOD
-            Result.NO_GOOD -> ActualResult.NO_GOOD
-            Result.DEFENSE_TWO_POINT -> ActualResult.DEFENSE_TWO_POINT
+            Scenario.GOOD -> ActualResult.GOOD
+            Scenario.NO_GOOD -> ActualResult.NO_GOOD
+            Scenario.DEFENSE_TWO_POINT -> ActualResult.DEFENSE_TWO_POINT
             else -> handleException(ExceptionType.INVALID_RESULT)
         }
         when (actualResult) {
