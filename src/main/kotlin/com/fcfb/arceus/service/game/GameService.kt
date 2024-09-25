@@ -23,7 +23,7 @@ import java.util.Random
 class GameService(
     private var gameRepository: GameRepository,
     private var teamRepository: TeamRepository,
-    private var discordService: DiscordService
+    private var discordService: DiscordService,
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
@@ -161,6 +161,7 @@ class GameService(
 
             // Create a new Discord thread
             if (newGame.homePlatform == Platform.DISCORD) {
+                print(newGame.toString())
                 newGame.homePlatformId = discordService.startGameThread(newGame)
             } else if (newGame.awayPlatform == Platform.DISCORD) {
                 newGame.awayPlatformId = discordService.startGameThread(newGame)
@@ -226,6 +227,11 @@ class GameService(
         }
     }
 
+    /**
+     * Deletes an ongoing game
+     * @param id
+     * @return
+     */
     fun deleteOngoingGame(
         id: Int
     ): ResponseEntity<HttpStatus> {

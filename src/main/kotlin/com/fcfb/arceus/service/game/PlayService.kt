@@ -5,10 +5,11 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.dto.GameDTO
+import com.fcfb.arceus.handlers.game.GameHandler
+import com.fcfb.arceus.handlers.game.PlayHandler
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
-import com.fcfb.arceus.utils.GameUtils
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -19,9 +20,9 @@ class PlayService(
     private var gameRepository: GameRepository,
     private var playRepository: PlayRepository,
     private var gameDTO: GameDTO,
-    private var gameUtils: GameUtils,
+    private var playHandler: PlayHandler,
+    private var gameHandler: GameHandler,
     private var encryptionUtils: EncryptionUtils,
-    private var gamePlaysHandler: GamePlayHandler
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
@@ -49,7 +50,7 @@ class PlayService(
                 defensiveSubmitter = game.homeCoach
             }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int = gameUtils.convertClockToSeconds(game.clock ?: return ResponseEntity(headers.add("Error-Message", "Could not find clock for game"), HttpStatus.BAD_REQUEST))
+            val clock: Int = gameHandler.convertClockToSeconds(game.clock ?: return ResponseEntity(headers.add("Error-Message", "Could not find clock for game"), HttpStatus.BAD_REQUEST))
             val gamePlay: Play = playRepository.save(
                 Play(
                     gameId,
@@ -84,7 +85,7 @@ class PlayService(
             ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue saving the play"), HttpStatus.BAD_REQUEST)
 
             game.currentPlayId = gamePlay.playId
-            game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.HOME else TeamSide.AWAY
+            game.waitingOn = game.possession
             gameRepository.save(game)
             ResponseEntity(gamePlay, HttpStatus.CREATED)
         } catch (e: Exception) {
@@ -126,7 +127,7 @@ class PlayService(
                 timeoutCalled = true
             }
             when (playCall) {
-                PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL -> gamePlay = gamePlaysHandler.runNormalPlay(
+                PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL -> gamePlay = playHandler.runNormalPlay(
                     gamePlay,
                     clockStopped,
                     game,
@@ -137,7 +138,7 @@ class PlayService(
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running a normal play"), HttpStatus.BAD_REQUEST)
 
-                PlayCall.PAT, PlayCall.TWO_POINT -> gamePlay = gamePlaysHandler.runPointAfterPlay(
+                PlayCall.PAT, PlayCall.TWO_POINT -> gamePlay = playHandler.runPointAfterPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -145,7 +146,7 @@ class PlayService(
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the PAT play"), HttpStatus.BAD_REQUEST)
 
-                PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB -> gamePlay = gamePlaysHandler.runKickoffPlay(
+                PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB -> gamePlay = playHandler.runKickoffPlay(
                     gamePlay,
                     game,
                     playCall,
@@ -157,16 +158,13 @@ class PlayService(
                 PlayCall.PUNT -> {}
             }
 
-            val waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
-
             val updated_game = gameDTO.updateGameInformation(
                 game,
                 gamePlay,
                 playCall,
                 clockStopped,
                 offensiveTimeoutCalled,
-                defensiveTimeoutCalled,
-                waitingOn
+                defensiveTimeoutCalled
             )
             // stats = gameStats.updateGameStats(stats, gamePlay);
 

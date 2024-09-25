@@ -9,14 +9,14 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.handleException
-import com.fcfb.arceus.utils.GameUtils
 import org.springframework.stereotype.Component
 
 @Component
 class GameDTO(
-    private val gameUtils: GameUtils
+    private val gameHandler: GameHandler
 ) {
     fun updateGameInformation(
         game: Game,
@@ -24,8 +24,7 @@ class GameDTO(
         playCall: PlayCall,
         clockStopped: Boolean,
         offensiveTimeout: Boolean,
-        defensiveTimeout: Boolean,
-        waitingOn: TeamSide
+        defensiveTimeout: Boolean
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
@@ -57,6 +56,13 @@ class GameDTO(
             game.gameStatus = GameStatus.END_OF_REGULATION
         }
 
+        // Update waiting on
+        val waitingOn = if (play.possession == TeamSide.HOME){
+            TeamSide.AWAY
+        } else {
+            TeamSide.HOME
+        }
+
         // Update the play type
         if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             game.currentPlayType = PlayType.PAT
@@ -78,7 +84,7 @@ class GameDTO(
         game.awayScore = play.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
         game.possession = play.possession
         game.quarter = play.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        game.clock = gameUtils.convertClockToString(play.clock ?: 420)
+        game.clock = gameHandler.convertClockToString(play.clock ?: 420)
         game.ballLocation = play.ballLocation
         game.down = play.down ?: handleException(ExceptionType.INVALID_DOWN)
         game.yardsToGo = play.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)

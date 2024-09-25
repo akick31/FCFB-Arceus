@@ -447,13 +447,13 @@ class Game {
     }
 
     enum class GameStatus(val description: String) {
-        PREGAME("Pregame"),
-        OPENING_KICKOFF("Opening Kickoff"),
-        IN_PROGRESS("In Progress"),
-        HALFTIME("Halftime"),
-        FINAL("Final"),
-        END_OF_REGULATION("End of Regulation"),
-        OVERTIME("Overtime")
+        PREGAME("PREGAME"),
+        OPENING_KICKOFF("OPENING KICKOFF"),
+        IN_PROGRESS("IN PROGRESS"),
+        HALFTIME("HALFTIME"),
+        FINAL("FINAL"),
+        END_OF_REGULATION("END OF REGULATION"),
+        OVERTIME("OVERTIME");
     }
 
     enum class Subdivision(val description: String) {
@@ -516,12 +516,12 @@ class Game {
         PASS("PASS"),
         SPIKE("SPIKE"),
         KNEEL("KNEEL"),
-        FIELD_GOAL("FIELD GOAL"),
+        FIELD_GOAL("FIELD_GOAL"),
         PAT("PAT"),
-        TWO_POINT("TWO POINT"),
-        KICKOFF_NORMAL("KICKOFF NORMAL"),
-        KICKOFF_ONSIDE("KICKOFF ONSIDE"),
-        KICKOFF_SQUIB("KICKOFF SQUIB"),
+        TWO_POINT("TWO_POINT"),
+        KICKOFF_NORMAL("KICKOFF_NORMAL"),
+        KICKOFF_ONSIDE("KICKOFF_ONSIDE"),
+        KICKOFF_SQUIB("KICKOFF_SQUIB"),
         PUNT("PUNT"),
     }
 
@@ -558,12 +558,13 @@ class Game {
     }
 
     enum class Scenario(val description: String) {
-        GAME_START("GAME_START"),
-        PLAY_RESULT("PLAY_RESULT"),
+        GAME_START("GAME START"),
+        PLAY_RESULT("PLAY RESULT"),
         COIN_TOSS("COIN_TOSS"),
-        COIN_TOSS_CHOICE("COIN_TOSS_CHOICE"),
-        KICKOFF_NUMBER_REQUEST("KICKOFF_NUMBER_REQUEST"),
-        NORMAL_NUMBER_REQUEST("NORMAL_NUMBER_REQUEST"),
+        COIN_TOSS_CHOICE("COIN TOSS CHOICE"),
+        KICKOFF_NUMBER_REQUEST("KICKOFF NUMBER REQUEST"),
+        NORMAL_NUMBER_REQUEST("NORMAL NUMBER REQUEST"),
+        DM_NUMBER_REQUEST("DM NUMBER REQUEST"),
         GOOD("GOOD"),
         NO_GOOD("NO GOOD"),
         NO_GAIN("NO GAIN"),
@@ -607,15 +608,15 @@ class Game {
         GAIN_OF_85_YARDS("85"),
         GAIN_OF_90_YARDS("90"),
         GAIN_OF_95_YARDS("95"),
-        TURNOVER_PLUS_20_YARDS("TURNOVER + 20 YARDS"),
-        TURNOVER_PLUS_15_YARDS("TURNOVER + 15 YARDS"),
-        TURNOVER_PLUS_10_YARDS("TURNOVER + 10 YARDS"),
-        TURNOVER_PLUS_5_YARDS("TURNOVER + 5 YARDS"),
-        TURNOVER("TURNOVER"),
-        TURNOVER_MINUS_5_YARDS("TURNOVER - 5 YARDS"),
-        TURNOVER_MINUS_10_YARDS("TURNOVER - 10 YARDS"),
-        TURNOVER_MINUS_15_YARDS("TURNOVER - 15 YARDS"),
-        TURNOVER_MINUS_20_YARDS("TURNOVER - 20 YARDS"),
+        TURNOVER_PLUS_20_YARDS("TO + 20 YARDS"),
+        TURNOVER_PLUS_15_YARDS("TO + 15 YARDS"),
+        TURNOVER_PLUS_10_YARDS("TO + 10 YARDS"),
+        TURNOVER_PLUS_5_YARDS("TO + 5 YARDS"),
+        TURNOVER("TO"),
+        TURNOVER_MINUS_5_YARDS("TO - 5 YARDS"),
+        TURNOVER_MINUS_10_YARDS("TO - 10 YARDS"),
+        TURNOVER_MINUS_15_YARDS("TO - 15 YARDS"),
+        TURNOVER_MINUS_20_YARDS("TO - 20 YARDS"),
         TURNOVER_ON_DOWNS("TURNOVER ON DOWNS"),
         TURNOVER_TOUCHDOWN("PICK/FUMBLE SIX"),
         TOUCHDOWN("TOUCHDOWN"),

@@ -1,4 +1,4 @@
-package com.fcfb.arceus.utils
+package com.fcfb.arceus.handlers.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossChoice
@@ -6,7 +6,7 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import org.springframework.stereotype.Component
 
 @Component
-class GameUtils {
+class GameHandler() {
     /**
      * Returns the difference between the offensive and defensive numbers.
      * @param offensiveNumber

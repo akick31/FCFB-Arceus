@@ -172,7 +172,7 @@ class Play {
         this.playNumber = playNumber
         this.homeScore = homeScore
         this.awayScore = awayScore
-        gameQuarter = quarter
+        this.gameQuarter = quarter
         this.clock = clock
         this.ballLocation = ballLocation
         this.possession = possession
