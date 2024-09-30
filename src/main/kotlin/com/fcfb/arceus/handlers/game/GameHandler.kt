@@ -48,7 +48,7 @@ class GameHandler() {
     ): String {
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60
-        return "$minutes:$remainingSeconds"
+        return String.format("%d:%02d", minutes, remainingSeconds)
     }
 
     fun handleHalfTimePossessionChange(

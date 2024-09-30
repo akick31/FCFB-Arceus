@@ -79,6 +79,16 @@ class GameDTO(
             game.gameStatus = GameStatus.IN_PROGRESS
         }
 
+        // Handle halftime
+        if (game.quarter == 3 && play.clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+            game.gameStatus = GameStatus.HALFTIME
+            game.currentPlayType = PlayType.KICKOFF
+            game.ballLocation = 35
+        } // Change game status back to in progress after first play of the second half
+        else if (game.gameStatus == GameStatus.HALFTIME) {
+            game.gameStatus = GameStatus.IN_PROGRESS
+        }
+
         // Update everything else
         game.homeScore = play.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         game.awayScore = play.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)

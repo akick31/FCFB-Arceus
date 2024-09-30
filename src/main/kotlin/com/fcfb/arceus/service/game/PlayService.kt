@@ -7,6 +7,7 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.dto.GameDTO
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
+import com.fcfb.arceus.service.game.ScorebugService
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
@@ -22,6 +23,7 @@ class PlayService(
     private var gameDTO: GameDTO,
     private var playHandler: PlayHandler,
     private var gameHandler: GameHandler,
+    private var scorebugService: ScorebugService,
     private var encryptionUtils: EncryptionUtils,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
@@ -166,6 +168,10 @@ class PlayService(
                 offensiveTimeoutCalled,
                 defensiveTimeoutCalled
             )
+
+            // Update the scorebug
+            updated_game.scorebug = scorebugService.generateScorebug(updated_game).toString()
+
             // stats = gameStats.updateGameStats(stats, gamePlay);
 
             gameRepository.save(updated_game)

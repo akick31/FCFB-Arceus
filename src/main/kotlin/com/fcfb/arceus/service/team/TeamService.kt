@@ -50,6 +50,7 @@ class TeamService {
                     0,
                     team.name,
                     0,
+                    team.abbreviation,
                     team.primaryColor,
                     team.secondaryColor,
                     team.subdivision,

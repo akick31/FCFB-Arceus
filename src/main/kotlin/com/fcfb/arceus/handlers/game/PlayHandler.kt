@@ -239,9 +239,7 @@ class PlayHandler(
             quarter += 1
             clock = 420
             if (quarter == 3) {
-                ballLocation = 35
                 possession = gameHandler.handleHalfTimePossessionChange(game)
-                game.currentPlayType = PlayType.KICKOFF
             }
         } else if (clock <= 0 &&
             actualResult != ActualResult.TOUCHDOWN &&
@@ -383,7 +381,6 @@ class PlayHandler(
             clock = 420
             if (quarter == 3) {
                 possession = gameHandler.handleHalfTimePossessionChange(game)
-                game.currentPlayType = PlayType.KICKOFF
             }
         } else if (clock <= 0 &&
             actualResult != ActualResult.RETURN_TOUCHDOWN &&
@@ -450,7 +447,7 @@ class PlayHandler(
         val result = resultInformation.result
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
-        val ballLocation = 25
+        val ballLocation = 35
         val down = 1
         val yardsToGo = 10
         val actualResult = when (result) {

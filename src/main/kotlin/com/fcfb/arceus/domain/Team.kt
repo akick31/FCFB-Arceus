@@ -57,6 +57,10 @@ class Team {
     var playoffCommitteeRanking: Int? = null
 
     @Basic
+    @Column(name = "abbreviation")
+    var abbreviation: String? = null
+
+    @Basic
     @Column(name = "primary_color")
     var primaryColor: String? = null
 
@@ -121,6 +125,7 @@ class Team {
         coachesPollRanking: Int?,
         name: String?,
         playoffCommitteeRanking: Int?,
+        abbreviation: String?,
         primaryColor: String?,
         secondaryColor: String?,
         subdivision: Subdivision?,
@@ -144,6 +149,7 @@ class Team {
         this.coachesPollRanking = coachesPollRanking
         this.name = name
         this.playoffCommitteeRanking = playoffCommitteeRanking
+        this.abbreviation = abbreviation
         this.primaryColor = primaryColor
         this.secondaryColor = secondaryColor
         this.subdivision = subdivision
@@ -166,7 +172,7 @@ class Team {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as Team
-        return id == that.id && logo == that.logo && coachUsername == that.coachUsername && coachName == that.coachName && coachDiscordTag == that.coachDiscordTag && coachDiscordId == that.coachDiscordId && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
+        return id == that.id && logo == that.logo && coachUsername == that.coachUsername && coachName == that.coachName && coachDiscordTag == that.coachDiscordTag && coachDiscordId == that.coachDiscordId && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && abbreviation == that.abbreviation && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
     }
 
     override fun hashCode(): Int {
@@ -180,6 +186,7 @@ class Team {
             coachesPollRanking,
             name,
             playoffCommitteeRanking,
+            abbreviation,
             primaryColor,
             secondaryColor,
             subdivision,
