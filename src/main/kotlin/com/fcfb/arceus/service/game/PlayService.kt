@@ -169,9 +169,6 @@ class PlayService(
                 defensiveTimeoutCalled
             )
 
-            // Update the scorebug
-            updated_game.scorebug = scorebugService.generateScorebug(updated_game).toString()
-
             // stats = gameStats.updateGameStats(stats, gamePlay);
 
             gameRepository.save(updated_game)

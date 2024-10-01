@@ -5,6 +5,10 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.utils.Logger
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.MediaType
+import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 import java.awt.AlphaComposite
 import java.awt.BasicStroke
@@ -13,7 +17,9 @@ import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
+import java.io.ByteArrayOutputStream
 import java.io.File
+import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 @Component
@@ -23,17 +29,31 @@ class ScorebugService(
 ) {
     fun getScorebugByGameId(
         gameId: Int
-    ) {
-        val game = gameRepository.findByGameId(gameId) ?: return
-        generateScorebug(game)
+    ): ResponseEntity<ByteArray>? {
+        val game = gameRepository.findByGameId(gameId) ?: return null
+        val image = generateScorebug(game)
+
+        // Convert BufferedImage to byte array
+        val outputStream = ByteArrayOutputStream()
+        ImageIO.write(image, "png", outputStream)
+        val imageBytes = outputStream.toByteArray()
+
+        // Set the response headers
+        val headers = HttpHeaders().apply {
+            contentType = MediaType.IMAGE_PNG
+            contentLength = imageBytes.size.toLong()
+        }
+
+        // Return the image in the response
+        return ResponseEntity(imageBytes, headers, HttpStatus.OK)
     }
 
-    fun generateScorebug(game: Game) {
-        val homeTeam = teamRepository.findByName(game.homeTeam) ?: return
-        val awayTeam = teamRepository.findByName(game.awayTeam) ?: return
+    fun generateScorebug(game: Game): BufferedImage? {
+        val homeTeam = teamRepository.findByName(game.homeTeam) ?: return null
+        val awayTeam = teamRepository.findByName(game.awayTeam) ?: return null
 
-        val width = 500 // Width of the image
-        val height = 400 // Height to accommodate additional boxes
+        val width = 436 // Width of the image
+        val height = 200 // Height to accommodate additional boxes
         val image = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         val g: Graphics2D = image.createGraphics()
 
@@ -51,11 +71,11 @@ class ScorebugService(
         val scoreBoxWidth = 80
         val clockInfoBoxWidth = scoreBoxWidth + 50 // Width for the clock info box
         val bottomBoxHeight = 50 // Height for the bottom info box
-        val homeTeamY = 50 // Y position for the home team box row
+        val homeTeamY = 0 // Y position for the home team box row
         val awayTeamY = homeTeamY + infoBoxHeight  // Y position for the away team box row
         val bottomBoxY = awayTeamY + infoBoxHeight // Y position for the down & distance box
-        val teamNameX = 50 // X position for the team name
-        val scoreX = 50 + teamBoxWidth - 25 // X position for the score
+        val teamNameX = 0 // X position for the team name
+        val scoreX = teamBoxWidth - 25 // X position for the score
         val clockInfoBoxX = scoreX + scoreBoxWidth // X position for the clock info box
 
         // Draw Home Team Box
@@ -76,34 +96,56 @@ class ScorebugService(
 
         // Draw Possession Indicators as a white circle
         if (game.possession == TeamSide.HOME) {
-            drawCircle(g, teamBoxWidth, homeTeamY + infoBoxHeight / 2) // Home possession
+            drawCircle(g, teamBoxWidth - 45, homeTeamY + infoBoxHeight / 2) // Home possession
         } else if (game.possession == TeamSide.AWAY) {
-            drawCircle(g, teamBoxWidth, awayTeamY + infoBoxHeight / 2) // Away possession
+            drawCircle(g, teamBoxWidth - 45, awayTeamY + infoBoxHeight / 2) // Away possession
         }
 
         // Font setup for team names and scores
         // Load the custom font
-        val customFontPath = "/Proxima Nova Bold.otf" // Path relative to the resources folder
-        val fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+        val customFontPath = "/ProximaNovaBold.otf" // Path relative to the resources folder
 
-        try {
-            g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(35f)
-        } catch (e: Exception) {
-            Logger.info("Error loading custom font: ${e.message}")
+        var fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+        if (fontInputStream == null) {
+            Logger.info("Error loading custom font: Font file not found at $customFontPath")
             g.font = Font("Arial", Font.BOLD, 35)
+        } else {
+            try {
+                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(35f)
+            } catch (e: Exception) {
+                Logger.info("Error loading custom font: ${e.message}")
+                g.font = Font("Arial", Font.BOLD, 35)
+            } finally {
+                fontInputStream.close()
+            }
         }
 
         // Draw Home Team Name
         g.color = Color.WHITE
         drawCenteredText(g, game.homeTeam.toString(), teamNameX, homeTeamY - 10, teamBoxWidth - 30, infoBoxHeight)
 
-        // Draw Home Team Score
-        g.color = Color.WHITE
-        drawCenteredText(g, game.homeScore.toString(), scoreX, homeTeamY, scoreBoxWidth, infoBoxHeight)
-
         // Draw Away Team Name
         g.color = Color.WHITE
         drawCenteredText(g, game.awayTeam.toString(), teamNameX, awayTeamY - 10, teamBoxWidth - 30, infoBoxHeight)
+
+        fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+        if (fontInputStream == null) {
+            Logger.info("Error loading custom font: Font file not found at $customFontPath")
+            g.font = Font("Arial", Font.BOLD, 35)
+        } else {
+            try {
+                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(35f)
+            } catch (e: Exception) {
+                Logger.info("Error loading custom font: ${e.message}")
+                g.font = Font("Arial", Font.BOLD, 35)
+            } finally {
+                fontInputStream.close()
+            }
+        }
+
+        // Draw Home Team Score
+        g.color = Color.WHITE
+        drawCenteredText(g, game.homeScore.toString(), scoreX, homeTeamY, scoreBoxWidth, infoBoxHeight)
 
         // Draw Away Team Score
         g.color = Color.WHITE
@@ -130,11 +172,19 @@ class ScorebugService(
         drawCenteredText(g, game.clock.toString(), clockInfoBoxX, awayTeamY, clockInfoBoxWidth, infoBoxHeight) // Draw clock text
 
         // Draw Down & Distance Box
-        try {
-            g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
-        } catch (e: Exception) {
-            Logger.info("Error loading custom font: ${e.message}")
+        fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+        if (fontInputStream == null) {
+            Logger.info("Error loading custom font: Font file not found at $customFontPath")
             g.font = Font("Arial", Font.BOLD, 30)
+        } else {
+            try {
+                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
+            } catch (e: Exception) {
+                Logger.info("Error loading custom font: ${e.message}")
+                g.font = Font("Arial", Font.BOLD, 30)
+            } finally {
+                fontInputStream.close()
+            }
         }
         val downDistanceText = when (game.down) {
             1 -> "1st"
@@ -157,10 +207,19 @@ class ScorebugService(
         g.fillRect(clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Ball location box
 
         // Determine ball location text
-        try {
-            g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(20f)
-        } catch (e: Exception) {
-            g.font = Font("Arial", Font.BOLD, 20)
+        fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+        if (fontInputStream == null) {
+            Logger.info("Error loading custom font: Font file not found at $customFontPath")
+            g.font = Font("Arial", Font.BOLD, 25)
+        } else {
+            try {
+                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(25f)
+            } catch (e: Exception) {
+                Logger.info("Error loading custom font: ${e.message}")
+                g.font = Font("Arial", Font.BOLD, 25)
+            } finally {
+                fontInputStream.close()
+            }
         }
         val ballLocationText = when {
             game.ballLocation == 50 -> "50 yard line"
@@ -185,11 +244,25 @@ class ScorebugService(
         g.stroke = BasicStroke(3f)
         g.drawLine(teamNameX + 1, bottomBoxY, clockInfoBoxX + clockInfoBoxWidth - 2, bottomBoxY)
 
+        // Create a new BufferedImage for the smaller version
+        val scaledWidth = (width * 0.75).toInt() // 25% smaller
+        val scaledHeight = (height * 0.75).toInt() // 25% smaller
+        val scaledImage = BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB)
+        val gScaled: Graphics2D = scaledImage.createGraphics()
+
+        // Enable anti-aliasing for smoother scaling
+        gScaled.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        gScaled.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+
+        // Draw the original image onto the scaled image
+        gScaled.drawImage(image, 0, 0, scaledWidth, scaledHeight, null)
+
         // Dispose graphics context
         g.dispose()
+        gScaled.dispose()
 
         // Save image to file
-        ImageIO.write(image, "png", File("scorebug.png"))
+        return scaledImage
     }
 
     /**
@@ -202,7 +275,7 @@ class ScorebugService(
 
         for (i in 0 until timeouts) {
             // Calculate the x position for each timeout box
-            val xPos = (235 - (i * (boxWidth + 5))) // Adjust spacing as needed
+            val xPos = (185 - (i * (boxWidth + 5))) // Adjust spacing as needed
             // Draw each timeout box
             g.fillRect(xPos, timeoutY, boxWidth, boxHeight) // Adjust y position as needed
         }
