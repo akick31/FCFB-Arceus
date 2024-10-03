@@ -80,6 +80,8 @@ class PlayService(
                     game.awayTeam,
                     0,
                     timeoutCalled,
+                    false,
+                    timeoutCalled,
                     game.homeTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of home timeouts"), HttpStatus.BAD_REQUEST),
                     game.awayTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of away timeouts"), HttpStatus.BAD_REQUEST),
                     false
@@ -124,10 +126,23 @@ class PlayService(
             val clockStopped = game.clockStopped ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the clock was stopped"), HttpStatus.BAD_REQUEST)
 
             val defensiveTimeoutCalled = gamePlay.timeoutUsed ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the timeout was used"), HttpStatus.BAD_REQUEST)
-            var timeoutCalled = false
-            if (offensiveTimeoutCalled || defensiveTimeoutCalled) {
-                timeoutCalled = true
+            var timeoutUsed = false
+            var homeTimeoutCalled = false
+            var awayTimeoutcalled = false
+            if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.homeTimeouts!! > 0 && !clockStopped) {
+                timeoutUsed = true
+                homeTimeoutCalled = true
+            } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.awayTimeouts!! > 0 && !clockStopped) {
+                timeoutUsed = true
+                awayTimeoutcalled = true
+            } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.awayTimeouts!! > 0 && !clockStopped) {
+                timeoutUsed = true
+                awayTimeoutcalled = true
+            } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.homeTimeouts!! > 0 && !clockStopped) {
+                timeoutUsed = true
+                homeTimeoutCalled = true
             }
+
             when (playCall) {
                 PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL -> gamePlay = playHandler.runNormalPlay(
                     gamePlay,
@@ -135,7 +150,7 @@ class PlayService(
                     game,
                     playCall,
                     runoffType,
-                    timeoutCalled,
+                    timeoutUsed,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running a normal play"), HttpStatus.BAD_REQUEST)
@@ -165,8 +180,8 @@ class PlayService(
                 gamePlay,
                 playCall,
                 clockStopped,
-                offensiveTimeoutCalled,
-                defensiveTimeoutCalled
+                homeTimeoutCalled,
+                awayTimeoutcalled
             )
 
             // stats = gameStats.updateGameStats(stats, gamePlay);
@@ -176,6 +191,8 @@ class PlayService(
 
             // Mark play as finished, set the timeouts, save the play
             gamePlay.playFinished = true
+            gamePlay.offensiveTimeoutCalled = offensiveTimeoutCalled
+            gamePlay.defensiveTimeoutCalled = defensiveTimeoutCalled
             playRepository.save(gamePlay)
             return ResponseEntity(gamePlay, HttpStatus.OK)
             // }

@@ -127,6 +127,14 @@ class Play {
     var timeoutUsed: Boolean? = null
 
     @Basic
+    @Column(name = "offensive_timeout_called")
+    var offensiveTimeoutCalled: Boolean? = null
+
+    @Basic
+    @Column(name = "defensive_timeout_called")
+    var defensiveTimeoutCalled: Boolean? = null
+
+    @Basic
     @Column(name = "home_timeouts")
     var homeTimeouts: Int? = null
 
@@ -164,6 +172,8 @@ class Play {
         awayTeam: String?,
         difference: Int,
         timeoutUsed: Boolean?,
+        offensiveTimeoutCalled: Boolean?,
+        defensiveTimeoutCalled: Boolean?,
         homeTimeouts: Int,
         awayTimeouts: Int,
         playFinished: Boolean?,
@@ -193,6 +203,8 @@ class Play {
         this.awayTeam = awayTeam
         this.difference = difference
         this.timeoutUsed = timeoutUsed
+        this.offensiveTimeoutCalled = offensiveTimeoutCalled
+        this.defensiveTimeoutCalled = defensiveTimeoutCalled
         this.homeTimeouts = homeTimeouts
         this.awayTimeouts = awayTimeouts
         this.playFinished = playFinished
@@ -235,6 +247,8 @@ class Play {
             awayTeam,
             playId,
             timeoutUsed,
+            offensiveTimeoutCalled,
+            defensiveTimeoutCalled,
             homeTimeouts,
             awayTimeouts,
             playFinished
@@ -268,6 +282,8 @@ class Play {
           "awayTeam": "$awayTeam",
           "difference": "$difference",
           "timeoutUsed": "$timeoutUsed",
+          "offensiveTimeoutCalled": "$offensiveTimeoutCalled",
+          "defensiveTimeoutCalled": "$defensiveTimeoutCalled",
           "homeTimeouts": "$homeTimeouts",
           "awayTimeouts": "$awayTimeouts",
           "playFinished": "$playFinished",

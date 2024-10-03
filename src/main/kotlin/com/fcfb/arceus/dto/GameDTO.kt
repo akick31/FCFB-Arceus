@@ -23,8 +23,8 @@ class GameDTO(
         play: Play,
         playCall: PlayCall,
         clockStopped: Boolean,
-        offensiveTimeout: Boolean,
-        defensiveTimeout: Boolean
+        homeTimeoutCalled: Boolean,
+        awayTimeoutCalled: Boolean
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
@@ -36,17 +36,10 @@ class GameDTO(
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
-        val possession = game.possession
-        if (!clockStopped) {
-            if (possession == TeamSide.HOME && defensiveTimeout) {
-                game.awayTimeouts = game.awayTimeouts!! - 1
-            } else if (possession == TeamSide.HOME && offensiveTimeout) {
-                game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == TeamSide.AWAY && defensiveTimeout) {
-                game.homeTimeouts = game.homeTimeouts!! - 1
-            } else if (possession == TeamSide.AWAY && offensiveTimeout) {
-                game.awayTimeouts = game.awayTimeouts!! - 1
-            }
+        if (homeTimeoutCalled) {
+            game.homeTimeouts = game.homeTimeouts!! - 1
+        } else if (awayTimeoutCalled) {
+            game.awayTimeouts = game.awayTimeouts!! - 1
         }
 
         // If game quarter is 0, then the game is over
@@ -64,7 +57,8 @@ class GameDTO(
         }
 
         // Update the play type
-        if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
+        if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
             (playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || playCall == PlayCall.PAT || playCall == PlayCall.TWO_POINT

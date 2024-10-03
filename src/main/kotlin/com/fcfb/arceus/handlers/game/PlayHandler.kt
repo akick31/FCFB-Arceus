@@ -37,7 +37,7 @@ class PlayHandler(
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
-        timeoutCalled: Boolean,
+        timeoutUsed: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
     ): Play? {
@@ -68,7 +68,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         var runoffTime = 0
-        if (!clockStopped!! && !timeoutCalled) {
+        if (!clockStopped!! && !timeoutUsed) {
             when {
                 playCall == PlayCall.SPIKE -> runoffTime = 3
                 playCall == PlayCall.KNEEL -> runoffTime = 30
@@ -157,6 +157,9 @@ class PlayHandler(
                     actualResult = ActualResult.TURNOVER_ON_DOWNS
                     ballLocation = 100 - ballLocation
                 }
+            }
+            Scenario.TOUCHDOWN -> {
+                actualResult = ActualResult.TOUCHDOWN
             }
             else -> {
                 yards = result?.description?.toInt()!!
@@ -273,7 +276,7 @@ class PlayHandler(
         gamePlay.runoffTime = runoffTime
         gamePlay.winProbability = gamePlay.winProbability
         gamePlay.difference = difference
-        gamePlay.timeoutUsed = !clockStopped && timeoutCalled
+        gamePlay.timeoutUsed = timeoutUsed
         return gamePlay
     }
 
@@ -319,11 +322,11 @@ class PlayHandler(
                 actualResult = ActualResult.MUFFED_KICK
                 ballLocation = 75
             }
-            Scenario.FIVE_YARD_LINE, Scenario.TEN_YARD_LINE, Scenario.TWENTY_YARD_LINE, Scenario.THIRTY_YARD_LINE,
-            Scenario.THIRTY_FIVE_YARD_LINE, Scenario.FOURTY_YARD_LINE, Scenario.FOURTY_FIVE_YARD_LINE,
-            Scenario.FIFTY_YARD_LINE, Scenario.SIXTY_FIVE_YARD_LINE -> {
+            Scenario.FIVE_YARD_RETURN, Scenario.TEN_YARD_RETURN, Scenario.TWENTY_YARD_RETURN, Scenario.THIRTY_YARD_RETURN,
+            Scenario.THIRTY_FIVE_YARD_RETURN, Scenario.FOURTY_YARD_RETURN, Scenario.FOURTY_FIVE_YARD_RETURN,
+            Scenario.FIFTY_YARD_RETURN, Scenario.SIXTY_FIVE_YARD_RETURN -> {
                 actualResult = ActualResult.KICKOFF
-                ballLocation = result.description.substringBefore(" YARD LINE").toInt()
+                ballLocation = result.description.substringBefore(" YARD RETURN").toInt()
             }
             Scenario.TOUCHBACK -> {
                 actualResult = ActualResult.KICKOFF

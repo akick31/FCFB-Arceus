@@ -1,6 +1,7 @@
 package com.fcfb.arceus.service.game
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.TeamRepository
@@ -171,67 +172,96 @@ class ScorebugService(
         g.color = Color.WHITE
         drawCenteredText(g, game.clock.toString(), clockInfoBoxX, awayTeamY, clockInfoBoxWidth, infoBoxHeight) // Draw clock text
 
-        // Draw Down & Distance Box
-        fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
-        if (fontInputStream == null) {
-            Logger.info("Error loading custom font: Font file not found at $customFontPath")
-            g.font = Font("Arial", Font.BOLD, 30)
-        } else {
-            try {
-                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
-            } catch (e: Exception) {
-                Logger.info("Error loading custom font: ${e.message}")
+        if (game.currentPlayType == PlayType.NORMAL) {
+            fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+            if (fontInputStream == null) {
+                Logger.info("Error loading custom font: Font file not found at $customFontPath")
                 g.font = Font("Arial", Font.BOLD, 30)
-            } finally {
-                fontInputStream.close()
+            } else {
+                try {
+                    g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
+                } catch (e: Exception) {
+                    Logger.info("Error loading custom font: ${e.message}")
+                    g.font = Font("Arial", Font.BOLD, 30)
+                } finally {
+                    fontInputStream.close()
+                }
             }
-        }
-        val downDistanceText = when (game.down) {
-            1 -> "1st"
-            2 -> "2nd"
-            3 -> "3rd"
-            4 -> "4th"
-            else -> game.down.toString()
-        } + " & " + when {
-            (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
-            else -> game.yardsToGo.toString()
-        }
 
-        g.color = Color.DARK_GRAY.darker()
-        g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth, bottomBoxHeight) // Down & distance box
-        g.color = Color.WHITE
-        drawCenteredText(g, downDistanceText, teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth - 30, bottomBoxHeight) // Center the down and distance text
+            val downDistanceText = when (game.down) {
+                    1 -> "1st"
+                    2 -> "2nd"
+                    3 -> "3rd"
+                    4 -> "4th"
+                    else -> game.down.toString()
+                } + " & " + when {
+                    (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
+                    else -> game.yardsToGo.toString()
+                }
 
-        // Draw Ball Location Box
-        g.color = Color.DARK_GRAY.darker()
-        g.fillRect(clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Ball location box
+            g.color = Color.DARK_GRAY.darker()
+            g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth, bottomBoxHeight) // Down & distance box
+            g.color = Color.WHITE
+            drawCenteredText(g, downDistanceText, teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth - 30, bottomBoxHeight) // Center the down and distance text
 
-        // Determine ball location text
-        fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
-        if (fontInputStream == null) {
-            Logger.info("Error loading custom font: Font file not found at $customFontPath")
-            g.font = Font("Arial", Font.BOLD, 25)
-        } else {
-            try {
-                g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(25f)
-            } catch (e: Exception) {
-                Logger.info("Error loading custom font: ${e.message}")
+            // Determine ball location text
+            fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+            if (fontInputStream == null) {
+                Logger.info("Error loading custom font: Font file not found at $customFontPath")
                 g.font = Font("Arial", Font.BOLD, 25)
-            } finally {
-                fontInputStream.close()
+            } else {
+                try {
+                    g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(25f)
+                } catch (e: Exception) {
+                    Logger.info("Error loading custom font: ${e.message}")
+                    g.font = Font("Arial", Font.BOLD, 25)
+                } finally {
+                    fontInputStream.close()
+                }
             }
-        }
-        val ballLocationText = when {
-            game.ballLocation == 50 -> "50 yard line"
-            game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.HOME -> "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
-            game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.AWAY -> "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
-            game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.AWAY -> "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
-            game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.HOME -> "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
-            else -> "Unknown Location"
-        }
 
-        g.color = Color.WHITE
-        drawCenteredText(g, ballLocationText, clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+            val ballLocationText = when {
+                game.ballLocation == 50 -> "50 yard line"
+                game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.HOME -> "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
+                game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.AWAY -> "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
+                game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.HOME -> "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
+                game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.AWAY -> "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
+                else -> "Unknown Location"
+            }
+
+            // Draw Ball Location Box
+            g.color = Color.DARK_GRAY.darker()
+            g.fillRect(clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Ball location box
+            g.color = Color.WHITE
+            drawCenteredText(g, ballLocationText, clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+        } else {
+            fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
+            if (fontInputStream == null) {
+                Logger.info("Error loading custom font: Font file not found at $customFontPath")
+                g.font = Font("Arial", Font.BOLD, 30)
+            } else {
+                try {
+                    g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
+                } catch (e: Exception) {
+                    Logger.info("Error loading custom font: ${e.message}")
+                    g.font = Font("Arial", Font.BOLD, 30)
+                } finally {
+                    fontInputStream.close()
+                }
+            }
+
+            val text = when (game.currentPlayType) {
+                PlayType.KICKOFF -> "KICKOFF"
+                PlayType.PAT -> "PAT"
+                else -> "Unknown"
+            }
+
+            // Draw Info Box
+            g.color = Color.DARK_GRAY.darker()
+            g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Ball location box
+            g.color = Color.WHITE
+            drawCenteredText(g, text, teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+        }
 
         // Draw Timeout Boxes for Home Team
         drawTimeoutBoxes(g, homeTeamY + infoBoxHeight - 10, game.homeTimeouts!!)
@@ -245,8 +275,8 @@ class ScorebugService(
         g.drawLine(teamNameX + 1, bottomBoxY, clockInfoBoxX + clockInfoBoxWidth - 2, bottomBoxY)
 
         // Create a new BufferedImage for the smaller version
-        val scaledWidth = (width * 0.75).toInt() // 25% smaller
-        val scaledHeight = (height * 0.75).toInt() // 25% smaller
+        val scaledWidth = (width * 0.65).toInt() // 35% smaller
+        val scaledHeight = (height * 0.65).toInt() // 35% smaller
         val scaledImage = BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB)
         val gScaled: Graphics2D = scaledImage.createGraphics()
 
