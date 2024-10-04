@@ -1,11 +1,12 @@
 package com.fcfb.arceus.service.game
 
+import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.dto.GameDTO
 import com.fcfb.arceus.handlers.game.GameHandler
+import com.fcfb.arceus.handlers.game.StatsHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
 import com.fcfb.arceus.service.game.ScorebugService
 import com.fcfb.arceus.repositories.GameRepository
@@ -20,10 +21,9 @@ import org.springframework.stereotype.Component
 class PlayService(
     private var gameRepository: GameRepository,
     private var playRepository: PlayRepository,
-    private var gameDTO: GameDTO,
     private var playHandler: PlayHandler,
     private var gameHandler: GameHandler,
-    private var scorebugService: ScorebugService,
+    private var statsHandler: StatsHandler,
     private var encryptionUtils: EncryptionUtils,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
@@ -118,10 +118,6 @@ class PlayService(
             var gamePlay = playRepository.findByPlayId(game.currentPlayId!!) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue finding the play"), HttpStatus.NOT_FOUND)
 
             val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(headers.add("Error-Message", "There was an issue decrypting the defensive number"), HttpStatus.BAD_REQUEST))
-            // Optional<GameStatsEntity> statsData = gameStatsRepository.findById(gamePlay.getGameId());
-
-            // if (statsData.isPresent()) {
-            // GameStatsEntity stats = statsData.get();
 
             val clockStopped = game.clockStopped ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the clock was stopped"), HttpStatus.BAD_REQUEST)
 
@@ -175,7 +171,7 @@ class PlayService(
                 PlayCall.PUNT -> {}
             }
 
-            val updated_game = gameDTO.updateGameInformation(
+            gameHandler.updateGameInformation(
                 game,
                 gamePlay,
                 playCall,
@@ -184,10 +180,11 @@ class PlayService(
                 awayTimeoutcalled
             )
 
-            // stats = gameStats.updateGameStats(stats, gamePlay);
-
-            gameRepository.save(updated_game)
-            // gameStatsRepository.save(stats);
+            val gameStats = statsHandler.updateGameStats(
+                game,
+                gamePlay,
+                playCall
+            )
 
             // Mark play as finished, set the timeouts, save the play
             gamePlay.playFinished = true

@@ -550,7 +550,9 @@ class Game {
         NO_GOOD("NO GOOD"),
         DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
         SUCCESS("SUCCESS"),
-        FAILED("NO FAILED")
+        FAILED("NO FAILED"),
+        SPIKE("SPIKE"),
+        KNEEL("KNEEL");
     }
 
     enum class RunoffType(val description: String) {
@@ -638,7 +640,9 @@ class Game {
         TOUCHBACK("TOUCHBACK"),
         RETURN_TOUCHDOWN("RETURN TOUCHDOWN"),
         RECOVERED("RECOVERED"),
-        DEFENSE_TWO_POINT("DEFENSE TWO POINT");
+        DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
+        SPIKE("SPIKE"),
+        KNEEL("KNEEL");
 
         companion object {
             fun fromString(description: String): Scenario? {

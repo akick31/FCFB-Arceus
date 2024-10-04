@@ -61,7 +61,7 @@ class PlayHandler(
                 PlayType.NORMAL.description,
                 offensivePlaybook.description,
                 defensivePlaybook.description,
-                Scenario.INCOMPLETE,
+                Scenario.SPIKE,
                 0,
                 0,
                 0
@@ -72,7 +72,7 @@ class PlayHandler(
                 PlayType.NORMAL.description,
                 offensivePlaybook.description,
                 defensivePlaybook.description,
-                Scenario.NO_GAIN,
+                Scenario.KNEEL,
                 0,
                 0,
                 0
@@ -185,6 +185,23 @@ class PlayHandler(
             Scenario.TOUCHDOWN -> {
                 actualResult = ActualResult.TOUCHDOWN
             }
+            Scenario.SPIKE -> {
+                actualResult = ActualResult.SPIKE
+                down += 1
+                if (down > 4) {
+                    actualResult = ActualResult.TURNOVER_ON_DOWNS
+                    ballLocation = 100 - ballLocation
+                }
+            }
+            Scenario.KNEEL -> {
+                yards = -3
+                actualResult = ActualResult.KNEEL
+                down += 1
+                if (down > 4) {
+                    actualResult = ActualResult.TURNOVER_ON_DOWNS
+                    ballLocation = 100 - ballLocation
+                }
+            }
             else -> {
                 yards = result?.description?.toInt()!!
                 ballLocation += yards
@@ -251,6 +268,8 @@ class PlayHandler(
             ActualResult.FIRST_DOWN -> {}
             ActualResult.GAIN -> {}
             ActualResult.NO_GAIN -> {}
+            ActualResult.SPIKE -> {}
+            ActualResult.KNEEL -> {}
             else -> handleException(ExceptionType.INVALID_ACTUAL_RESULT)
         }
 
@@ -279,6 +298,7 @@ class PlayHandler(
             } else {
                 5
             }
+            clock = 0
         }
         gamePlay.homeScore = homeScore
         gamePlay.awayScore = awayScore
