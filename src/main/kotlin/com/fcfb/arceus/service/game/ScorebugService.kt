@@ -238,13 +238,13 @@ class ScorebugService(
             fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
             if (fontInputStream == null) {
                 Logger.info("Error loading custom font: Font file not found at $customFontPath")
-                g.font = Font("Arial", Font.BOLD, 30)
+                g.font = Font("Arial", Font.BOLD, 35)
             } else {
                 try {
-                    g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(30f)
+                    g.font = Font.createFont(Font.TRUETYPE_FONT, fontInputStream).deriveFont(35f)
                 } catch (e: Exception) {
                     Logger.info("Error loading custom font: ${e.message}")
-                    g.font = Font("Arial", Font.BOLD, 30)
+                    g.font = Font("Arial", Font.BOLD, 35)
                 } finally {
                     fontInputStream.close()
                 }

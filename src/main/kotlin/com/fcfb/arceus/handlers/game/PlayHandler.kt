@@ -55,13 +55,37 @@ class PlayHandler(
             offensivePlaybook = game.awayOffensivePlaybook
             defensivePlaybook = game.homeDefensivePlaybook
         }
-        println(defensivePlaybook.toString())
-        val resultInformation: Ranges = rangesRepository.findNormalResult(
-            playCall.description,
-            offensivePlaybook.description,
-            defensivePlaybook.description,
-            difference.toString()
-        ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+
+        val resultInformation = if (playCall == PlayCall.SPIKE) {
+            Ranges(
+                PlayType.NORMAL.description,
+                offensivePlaybook.description,
+                defensivePlaybook.description,
+                Scenario.INCOMPLETE,
+                0,
+                0,
+                0
+            )
+        }
+        else if (playCall == PlayCall.KNEEL) {
+            Ranges(
+                PlayType.NORMAL.description,
+                offensivePlaybook.description,
+                defensivePlaybook.description,
+                Scenario.NO_GAIN,
+                0,
+                0,
+                0
+            )
+        }
+        else {
+            rangesRepository.findNormalResult(
+                playCall.description,
+                offensivePlaybook.description,
+                defensivePlaybook.description,
+                difference.toString()
+            ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+        }
 
         val result = resultInformation.result
         val playTime = resultInformation.playTime
@@ -456,26 +480,27 @@ class PlayHandler(
         val actualResult = when (result) {
             Scenario.GOOD -> ActualResult.GOOD
             Scenario.NO_GOOD -> ActualResult.NO_GOOD
+            Scenario.SUCCESS -> ActualResult.SUCCESS
+            Scenario.FAILED -> ActualResult.FAILED
             Scenario.DEFENSE_TWO_POINT -> ActualResult.DEFENSE_TWO_POINT
             else -> handleException(ExceptionType.INVALID_RESULT)
         }
         when (actualResult) {
             ActualResult.GOOD -> {
-                if (playCall == PlayCall.PAT) {
-                    if (possession == TeamSide.HOME) {
-                        homeScore += 1
-                    } else {
-                        awayScore += 1
-                    }
+                if (possession == TeamSide.HOME) {
+                    homeScore += 1
                 } else {
-                    if (possession == TeamSide.HOME) {
-                        homeScore += 2
-                    } else {
-                        awayScore += 2
-                    }
+                    awayScore += 1
                 }
             }
             ActualResult.NO_GOOD -> {}
+            ActualResult.SUCCESS ->
+                if (possession == TeamSide.HOME) {
+                    homeScore += 2
+                } else {
+                    awayScore += 2
+                }
+            ActualResult.FAILED -> {}
             ActualResult.DEFENSE_TWO_POINT -> {
                 if (possession == TeamSide.HOME) {
                     awayScore += 2

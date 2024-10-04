@@ -548,7 +548,9 @@ class Game {
         FAILED_ONSIDE("FAILED ONSIDE"),
         GOOD("GOOD"),
         NO_GOOD("NO GOOD"),
-        DEFENSE_TWO_POINT("DEFENSE TWO POINT")
+        DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
+        SUCCESS("SUCCESS"),
+        FAILED("NO FAILED")
     }
 
     enum class RunoffType(val description: String) {
@@ -567,6 +569,8 @@ class Game {
         DM_NUMBER_REQUEST("DM NUMBER REQUEST"),
         GOOD("GOOD"),
         NO_GOOD("NO GOOD"),
+        SUCCESS("SUCCESS"),
+        FAILED("FAILED"),
         NO_GAIN("NO GAIN"),
         INCOMPLETE("INCOMPLETE"),
         LOSS_OF_10_YARDS("-10"),
