@@ -85,7 +85,9 @@ class PlayService(
                     timeoutCalled,
                     game.homeTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of home timeouts"), HttpStatus.BAD_REQUEST),
                     game.awayTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of away timeouts"), HttpStatus.BAD_REQUEST),
-                    false
+                    false,
+                    null, //TODO: Add response speed
+                    null //TODO: Add response speed
                 )
             ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue saving the play"), HttpStatus.BAD_REQUEST)
 

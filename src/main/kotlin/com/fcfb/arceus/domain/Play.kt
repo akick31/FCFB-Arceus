@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
+import java.math.BigInteger
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -150,6 +151,14 @@ class Play {
     @Column(name = "play_finished")
     var playFinished: Boolean? = null
 
+    @Basic
+    @Column(name = "offensive_response_speed")
+    var offensiveResponseSpeed: BigInteger? = null
+
+    @Basic
+    @Column(name = "defensive_response_speed")
+    var defensiveResponseSpeed: BigInteger? = null
+
     constructor(
         gameId: Int,
         playNumber: Int,
@@ -182,6 +191,8 @@ class Play {
         homeTimeouts: Int,
         awayTimeouts: Int,
         playFinished: Boolean?,
+        offensiveResponseSpeed: BigInteger?,
+        defensiveResponseSpeed: BigInteger?,
     ) {
         this.gameId = gameId
         this.playNumber = playNumber
@@ -214,6 +225,8 @@ class Play {
         this.homeTimeouts = homeTimeouts
         this.awayTimeouts = awayTimeouts
         this.playFinished = playFinished
+        this.offensiveResponseSpeed = offensiveResponseSpeed
+        this.defensiveResponseSpeed = defensiveResponseSpeed
     }
 
     constructor()
@@ -222,7 +235,7 @@ class Play {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as com.fcfb.arceus.domain.Play
-        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && winProbabilityAdded == that.winProbabilityAdded && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
+        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && winProbabilityAdded == that.winProbabilityAdded && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished && offensiveTimeoutCalled == that.offensiveTimeoutCalled && defensiveTimeoutCalled == that.defensiveTimeoutCalled && offensiveResponseSpeed == that.offensiveResponseSpeed && defensiveResponseSpeed == that.defensiveResponseSpeed
     }
 
     override fun hashCode(): Int {
@@ -258,7 +271,9 @@ class Play {
             defensiveTimeoutCalled,
             homeTimeouts,
             awayTimeouts,
-            playFinished
+            playFinished,
+            offensiveResponseSpeed,
+            defensiveResponseSpeed
         )
     }
 
@@ -285,7 +300,7 @@ class Play {
           "playTime": "$playTime",
           "runoffTime": "$runoffTime",
           "winProbability": "$winProbability",
-            "winProbabilityAdded": "$winProbabilityAdded",
+          "winProbabilityAdded": "$winProbabilityAdded",
           "homeTeam": "$homeTeam",
           "awayTeam": "$awayTeam",
           "difference": "$difference",
@@ -295,6 +310,8 @@ class Play {
           "homeTimeouts": "$homeTimeouts",
           "awayTimeouts": "$awayTimeouts",
           "playFinished": "$playFinished",
+          "offensiveResponseSpeed": "$offensiveResponseSpeed",
+          "defensiveResponseSpeed": "$defensiveResponseSpeed"
         }"""
     }
 }
