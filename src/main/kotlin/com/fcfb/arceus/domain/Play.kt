@@ -115,6 +115,10 @@ class Play {
     var winProbability: Double? = null
 
     @Basic
+    @Column(name = "win_probability_added")
+    var winProbabilityAdded: Double? = null
+
+    @Basic
     @Column(name = "home_team")
     var homeTeam: String? = null
 
@@ -168,6 +172,7 @@ class Play {
         playTime: Int,
         runoffTime: Int,
         winProbability: Double?,
+        winProbabilityAdded: Double,
         homeTeam: String?,
         awayTeam: String?,
         difference: Int,
@@ -199,6 +204,7 @@ class Play {
         this.playTime = playTime
         this.runoffTime = runoffTime
         this.winProbability = winProbability
+        this.winProbabilityAdded = winProbabilityAdded
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
         this.difference = difference
@@ -216,7 +222,7 @@ class Play {
         if (this === o) return true
         if (o == null || javaClass != o.javaClass) return false
         val that = o as com.fcfb.arceus.domain.Play
-        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
+        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && winProbabilityAdded == that.winProbabilityAdded && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
     }
 
     override fun hashCode(): Int {
@@ -243,6 +249,7 @@ class Play {
             playTime,
             runoffTime,
             winProbability,
+            winProbabilityAdded,
             homeTeam,
             awayTeam,
             playId,
@@ -278,6 +285,7 @@ class Play {
           "playTime": "$playTime",
           "runoffTime": "$runoffTime",
           "winProbability": "$winProbability",
+            "winProbabilityAdded": "$winProbabilityAdded",
           "homeTeam": "$homeTeam",
           "awayTeam": "$awayTeam",
           "difference": "$difference",

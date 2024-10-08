@@ -76,6 +76,7 @@ class PlayService(
                     0,
                     0,
                     game.winProbability,
+                    0.0,
                     game.homeTeam,
                     game.awayTeam,
                     0,

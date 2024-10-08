@@ -17,7 +17,7 @@ import org.springframework.web.client.RestTemplate
 class DiscordService(
     private val restTemplate: RestTemplate
 ) {
-    private var discordBotUrl = "http://0.0.0.0:1212/zebstrika"
+    private var discordBotUrl = "http://0.0.0.0:1212/fcfb_discord_ref_bot"
 
     @Value("\${discord.guild.id}")
     private val guildId: String? = null
