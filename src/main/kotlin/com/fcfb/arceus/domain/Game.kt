@@ -265,11 +265,6 @@ class Game {
     var currentPlayId: Int? = null
 
     @Basic
-    @Column(name = "scrimmage")
-    @JsonProperty("scrimmage")
-    var scrimmage: Boolean? = null
-
-    @Basic
     @Column(name = "clock_stopped")
     @JsonProperty("clock_stopped")
     var clockStopped: Boolean? = null
@@ -279,6 +274,12 @@ class Game {
     @Column(name = "game_status")
     @JsonProperty("game_status")
     var gameStatus: GameStatus? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_type")
+    @JsonProperty("game_type")
+    var gameType: GameType? = null
 
     constructor(
         homeTeam: String,
@@ -327,9 +328,9 @@ class Game {
         gameTimer: String?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
-        scrimmage: Boolean?,
         clockStopped: Boolean?,
-        gameStatus: GameStatus?
+        gameStatus: GameStatus?,
+        gameType: GameType?
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -377,19 +378,12 @@ class Game {
         this.gameTimer = gameTimer
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
-        this.scrimmage = scrimmage
         this.clockStopped = clockStopped
         this.gameStatus = gameStatus
+        this.gameType = gameType
     }
 
     constructor()
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as Game
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeCoachDiscordId == that.homeCoachDiscordId && awayCoachDiscordId == that.awayCoachDiscordId && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped && gameStatus == that.gameStatus
-    }
 
     override fun hashCode(): Int {
         return Objects.hash(
@@ -440,9 +434,9 @@ class Game {
             gameTimer,
             currentPlayType,
             currentPlayId,
-            scrimmage,
             clockStopped,
-            gameStatus
+            gameStatus,
+            gameType
         )
     }
 
@@ -548,11 +542,16 @@ class Game {
         FAILED_ONSIDE("FAILED ONSIDE"),
         GOOD("GOOD"),
         NO_GOOD("NO GOOD"),
+        BLOCKED("BLOCKED"),
+        BLOCKED_TOUCHDOWN("BLOCKED TOUCHDOWN"),
         DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
         SUCCESS("SUCCESS"),
         FAILED("NO FAILED"),
         SPIKE("SPIKE"),
-        KNEEL("KNEEL");
+        KNEEL("KNEEL"),
+        PUNT_RETURN_TOUCHDOWN("PUNT RETURN TOUCHDOWN"),
+        PUNT_TEAM_TOUCHDOWN("PUNT TEAM TOUCHDOWN"),
+        MUFFED_PUNT("MUFFED PUNT");
     }
 
     enum class RunoffType(val description: String) {
@@ -642,7 +641,21 @@ class Game {
         RECOVERED("RECOVERED"),
         DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
         SPIKE("SPIKE"),
-        KNEEL("KNEEL");
+        KNEEL("KNEEL"),
+        FIVE_YARD_PUNT("5 YARD PUNT"),
+        TEN_YARD_PUNT("10 YARD PUNT"),
+        FIFTEEN_YARD_PUNT("15 YARD PUNT"),
+        TWENTY_YARD_PUNT("20 YARD PUNT"),
+        TWENTY_FIVE_YARD_PUNT("25 YARD PUNT"),
+        THIRTY_YARD_PUNT("30 YARD PUNT"),
+        THIRTY_FIVE_YARD_PUNT("35 YARD PUNT"),
+        FOURTY_YARD_PUNT("40 YARD PUNT"),
+        FOURTY_FIVE_YARD_PUNT("45 YARD PUNT"),
+        FIFTY_YARD_PUNT("50 YARD PUNT"),
+        FIFTY_FIVE_YARD_PUNT("55 YARD PUNT"),
+        SIXTY_YARD_PUNT("60 YARD PUNT"),
+        SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
+        SEVENTY_YARD_PUNT("70 YARD PUNT");
 
         companion object {
             fun fromString(description: String): Scenario? {
@@ -668,6 +681,22 @@ class Game {
         companion object {
             fun fromString(description: String): CoinTossCall? {
                 return entries.find { it.description == description }
+            }
+        }
+    }
+
+    enum class GameType(val description: String) {
+        OUT_OF_CONFERENCE("Out of Conference"),
+        CONFERENCE_GAME("Conference Game"),
+        CONFERENCE_CHAMPIONSHIP("Conference Championship"),
+        PLAYOFFS("Playoffs"),
+        NATIONAL_CHAMPIONSHIP("National Championship"),
+        BOWL("Bowl"),
+        SCRIMMAGE("Scrimmage");
+
+        companion object {
+            fun fromString(description: String): GameType? {
+                return GameType.values().find { it.description == description }
             }
         }
     }

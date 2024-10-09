@@ -1,6 +1,7 @@
 package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
+import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TVChannel
@@ -127,8 +128,8 @@ class GameStats (
     var homeRushAttempts: Int? = 0,
 
     @Basic
-    @Column(name = "home_rush_3_yards_or_more")
-    var homeRush3YardsOrMore: Int? = 0,
+    @Column(name = "home_rush_successes")
+    var homeRushSuccesses: Int? = 0,
 
     @Basic
     @Column(name = "home_rush_success_percentage")
@@ -143,8 +144,8 @@ class GameStats (
     var awayRushAttempts: Int? = 0,
 
     @Basic
-    @Column(name = "away_rush_3_yards_or_more")
-    var awayRush3YardsOrMore: Int? = 0,
+    @Column(name = "away_rush_successes")
+    var awayRushSuccesses: Int? = 0,
 
     @Basic
     @Column(name = "away_rush_success_percentage")
@@ -167,32 +168,64 @@ class GameStats (
     var homeInterceptionsLost: Int? = 0,
 
     @Basic
+    @Column(name = "home_interceptions_forced")
+    var homeInterceptionsForced: Int? = 0,
+
+    @Basic
     @Column(name = "home_fumbles_lost")
     var homeFumblesLost: Int? = 0,
+
+    @Basic
+    @Column(name = "home_fumbles_forced")
+    var homeFumblesForced: Int? = 0,
 
     @Basic
     @Column(name = "home_turnovers_lost")
     var homeTurnoversLost: Int? = 0,
 
     @Basic
+    @Column(name = "home_turnovers_forced")
+    var homeTurnoversForced: Int? = 0,
+
+    @Basic
     @Column(name = "home_turnover_touchdowns_lost")
     var homeTurnoverTouchdownsLost: Int? = 0,
+
+    @Basic
+    @Column(name = "home_turnover_touchdowns_forced")
+    var homeTurnoverTouchdownsForced: Int? = 0,
 
     @Basic
     @Column(name = "away_interceptions_lost")
     var awayInterceptionsLost: Int? = 0,
 
     @Basic
-    @Column(name = "away_home_fumbles_lost")
-    var awayHomeFumblesLost: Int? = 0,
+    @Column(name = "away_interceptions_forced")
+    var awayInterceptionsForced: Int? = 0,
 
     @Basic
-    @Column(name = "away_home_turnovers_lost")
-    var awayHomeTurnoversLost: Int? = 0,
+    @Column(name = "away_fumbles_lost")
+    var awayFumblesLost: Int? = 0,
+
+    @Basic
+    @Column(name = "away_fumbles_forced")
+    var awayFumblesForced: Int? = 0,
+
+    @Basic
+    @Column(name = "away_turnovers_lost")
+    var awayTurnoversLost: Int? = 0,
+
+    @Basic
+    @Column(name = "away_turnovers_forced")
+    var awayTurnoversForced: Int? = 0,
 
     @Basic
     @Column(name = "away_turnover_touchdowns_lost")
     var awayTurnoverTouchdownsLost: Int? = 0,
+
+    @Basic
+    @Column(name = "away_turnover_touchdowns_forced")
+    var awayTurnoverTouchdownsForced: Int? = 0,
 
     @Basic
     @Column(name = "home_field_goal_made")
@@ -367,72 +400,8 @@ class GameStats (
     var homeNumberOfDrives: Int? = 0,
 
     @Basic
-    @Column(name = "home_number_of_td_drives")
-    var homeNumberOfTdDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "home_td_drive_percentage")
-    var homeTdDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "home_number_of_fg_drives")
-    var homeNumberOfFgDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "home_fg_drive_percentage")
-    var homeFgDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "home_number_of_punt_drives")
-    var homeNumberOfPuntDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "home_punt_drive_percentage")
-    var homePuntDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "home_number_of_turnover_drives")
-    var homeNumberOfTurnoverDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "home_turnover_drive_percentage")
-    var homeTurnoverDrivePercentage: Double? = 0.0,
-
-    @Basic
     @Column(name = "away_number_of_drives")
     var awayNumberOfDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "away_number_of_td_drives")
-    var awayNumberOfTdDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "away_td_drive_percentage")
-    var awayTdDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "away_number_of_fg_drives")
-    var awayNumberOfFgDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "away_fg_drive_percentage")
-    var awayFgDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "away_number_of_punt_drives")
-    var awayNumberOfPuntDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "away_punt_drive_percentage")
-    var awayPuntDrivePercentage: Double? = 0.0,
-
-    @Basic
-    @Column(name = "away_number_of_turnover_drives")
-    var awayNumberOfTurnoverDrives: Int? = 0,
-
-    @Basic
-    @Column(name = "away_turnover_drive_percentage")
-    var awayTurnoverDrivePercentage: Double? = 0.0,
 
     @Basic
     @Column(name = "home_time_of_possession")
@@ -491,26 +460,6 @@ class GameStats (
     var awayTouchdowns: Int? = 0,
 
     @Basic
-    @Column(name = "is_bowl")
-    var isBowl: Boolean? = false,
-
-    @Basic
-    @Column(name = "is_playoffs")
-    var isPlayoffs: Boolean? = false,
-
-    @Basic
-    @Column(name = "is_national_championship")
-    var isNationalChampionship: Boolean? = false,
-
-    @Basic
-    @Column(name = "is_conference_game")
-    var isConferenceGame: Boolean? = false,
-
-    @Basic
-    @Column(name = "is_division_game")
-    var isDivisionGame: Boolean? = false,
-
-    @Basic
     @Column(name = "scorebug")
     var scorebug: String? = null,
 
@@ -535,8 +484,12 @@ class GameStats (
     var averageHomeDefensiveDiff: Double? = 0.0,
 
     @Basic
-    @Column(name = "average_home_specialteams_diff")
-    var averageHomeSpecialteamsDiff: Double? = 0.0,
+    @Column(name = "average_home_offensive_special_teams_diff")
+    var averageHomeOffensiveSpecialTeamsDiff: Double? = 0.0,
+
+    @Basic
+    @Column(name = "average_home_defensive_special_teams_diff")
+    var averageHomeDefensiveSpecialTeamsDiff: Double? = 0.0,
 
     @Basic
     @Column(name = "average_away_offensive_diff")
@@ -547,8 +500,12 @@ class GameStats (
     var averageAwayDefensiveDiff: Double? = 0.0,
 
     @Basic
-    @Column(name = "average_away_specialteams_diff")
-    var averageAwaySpecialteamsDiff: Double? = 0.0,
+    @Column(name = "average_away_offensive_special_teams_diff")
+    var averageAwayOffensiveSpecialTeamsDiff: Double? = 0.0,
+
+    @Basic
+    @Column(name = "average_away_defensive_special_teams_diff")
+    var averageAwayDefensiveSpecialTeamsDiff: Double? = 0.0,
 
     @Basic
     @Column(name = "home_average_yards_per_play")
@@ -615,6 +572,14 @@ class GameStats (
     var awayLargestLead: Int? = 0,
 
     @Basic
+    @Column(name = "home_largest_deficit")
+    var homeLargestDeficit: Int? = 0,
+
+    @Basic
+    @Column(name = "away_largest_deficit")
+    var awayLargestDeficit: Int? = 0,
+
+    @Basic
     @Column(name = "home_pass_touchdowns")
     var homePassTouchdowns: Int? = 0,
 
@@ -647,20 +612,97 @@ class GameStats (
     var awayRecord: String? = null,
 
     @Basic
-    @Column(name = "is_scrimmage")
-    var isScrimmage: Boolean? = false,
+    @Column(name = "game_type")
+    var gameType: Game.GameType? = GameType.SCRIMMAGE,
 
     @Basic
-    @Column(name = "is_final")
-    var isFinal: Boolean? = false
-) {
+    @Column(name = "game_status")
+    var gameStatus: Game.GameStatus? = null,
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as GameStats
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeTeamRank == that.homeTeamRank && awayTeamRank == that.awayTeamRank && startTime == that.startTime && location == that.location && tvChannel == that.tvChannel && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && season == that.season && week == that.week && subdivision == that.subdivision && homeScore == that.homeScore && awayScore == that.awayScore && homePassAttempts == that.homePassAttempts && homePassCompletions == that.homePassCompletions && homePassCompletionPercentage == that.homePassCompletionPercentage && homePassYards == that.homePassYards && awayPassAttempts == that.awayPassAttempts && awayPassCompletions == that.awayPassCompletions && awayPassCompletionPercentage == that.awayPassCompletionPercentage && awayPassYards == that.awayPassYards && homeRushAttempts == that.homeRushAttempts && homeRush3YardsOrMore == that.homeRush3YardsOrMore && homeRushSuccessPercentage == that.homeRushSuccessPercentage && homeRushYards == that.homeRushYards && awayRushAttempts == that.awayRushAttempts && awayRush3YardsOrMore == that.awayRush3YardsOrMore && awayRushSuccessPercentage == that.awayRushSuccessPercentage && awayRushYards == that.awayRushYards && homeTotalYards == that.homeTotalYards && awayTotalYards == that.awayTotalYards && homeInterceptionsLost == that.homeInterceptionsLost && homeFumblesLost == that.homeFumblesLost && homeTurnoversLost == that.homeTurnoversLost && homeTurnoverTouchdownsLost == that.homeTurnoverTouchdownsLost && awayInterceptionsLost == that.awayInterceptionsLost && awayHomeFumblesLost == that.awayHomeFumblesLost && awayHomeTurnoversLost == that.awayHomeTurnoversLost && awayTurnoverTouchdownsLost == that.awayTurnoverTouchdownsLost && homeFieldGoalMade == that.homeFieldGoalMade && homeFieldGoalAttempts == that.homeFieldGoalAttempts && homeFieldGoalPercentage == that.homeFieldGoalPercentage && homeLongestFieldGoal == that.homeLongestFieldGoal && homeBlockedOpponentFieldGoals == that.homeBlockedOpponentFieldGoals && homeFieldGoalTouchdown == that.homeFieldGoalTouchdown && awayFieldGoalMade == that.awayFieldGoalMade && awayFieldGoalAttempts == that.awayFieldGoalAttempts && awayFieldGoalPercentage == that.awayFieldGoalPercentage && awayLongestFieldGoal == that.awayLongestFieldGoal && awayBlockedOpponentFieldGoals == that.awayBlockedOpponentFieldGoals && awayFieldGoalTouchdown == that.awayFieldGoalTouchdown && homePuntsAttempted == that.homePuntsAttempted && homeLongestPunt == that.homeLongestPunt && homeAveragePuntLength == that.homeAveragePuntLength && homeBlockedOpponentPunt == that.homeBlockedOpponentPunt && homePuntReturnTd == that.homePuntReturnTd && homePuntReturnTdPercentage == that.homePuntReturnTdPercentage && awayPuntsAttempted == that.awayPuntsAttempted && awayLongestPunt == that.awayLongestPunt && awayAveragePuntLength == that.awayAveragePuntLength && awayBlockedOpponentPunt == that.awayBlockedOpponentPunt && awayPuntReturnTd == that.awayPuntReturnTd && awayPuntReturnTdPercentage == that.awayPuntReturnTdPercentage && homeNumberOfKickoffs == that.homeNumberOfKickoffs && homeOnsideAttempts == that.homeOnsideAttempts && homeOnsideSuccess == that.homeOnsideSuccess && homeOnsideSuccessPercentage == that.homeOnsideSuccessPercentage && homeNormalKickoffAttempts == that.homeNormalKickoffAttempts && homeTouchbacks == that.homeTouchbacks && homeTouchbackPercentage == that.homeTouchbackPercentage && homeKickReturnTd == that.homeKickReturnTd && homeKickReturnTdPercentage == that.homeKickReturnTdPercentage && awayNumberOfKickoffs == that.awayNumberOfKickoffs && awayOnsideAttempts == that.awayOnsideAttempts && awayOnsideSuccess == that.awayOnsideSuccess && awayOnsideSuccessPercentage == that.awayOnsideSuccessPercentage && awayNormalKickoffAttempts == that.awayNormalKickoffAttempts && awayTouchbacks == that.awayTouchbacks && awayTouchbackPercentage == that.awayTouchbackPercentage && awayKickReturnTd == that.awayKickReturnTd && awayKickReturnTdPercentage == that.awayKickReturnTdPercentage && homeNumberOfDrives == that.homeNumberOfDrives && homeNumberOfTdDrives == that.homeNumberOfTdDrives && homeTdDrivePercentage == that.homeTdDrivePercentage && homeNumberOfFgDrives == that.homeNumberOfFgDrives && homeFgDrivePercentage == that.homeFgDrivePercentage && homeNumberOfPuntDrives == that.homeNumberOfPuntDrives && homePuntDrivePercentage == that.homePuntDrivePercentage && homeNumberOfTurnoverDrives == that.homeNumberOfTurnoverDrives && homeTurnoverDrivePercentage == that.homeTurnoverDrivePercentage && awayNumberOfDrives == that.awayNumberOfDrives && awayNumberOfTdDrives == that.awayNumberOfTdDrives && awayTdDrivePercentage == that.awayTdDrivePercentage && awayNumberOfFgDrives == that.awayNumberOfFgDrives && awayFgDrivePercentage == that.awayFgDrivePercentage && awayNumberOfPuntDrives == that.awayNumberOfPuntDrives && awayPuntDrivePercentage == that.awayPuntDrivePercentage && awayNumberOfTurnoverDrives == that.awayNumberOfTurnoverDrives && awayTurnoverDrivePercentage == that.awayTurnoverDrivePercentage && homeTimeOfPossession == that.homeTimeOfPossession && awayTimeOfPossession == that.awayTimeOfPossession && q1HomeScore == that.q1HomeScore && q2HomeScore == that.q2HomeScore && q3HomeScore == that.q3HomeScore && q4HomeScore == that.q4HomeScore && otHomeScore == that.otHomeScore && q1AwayScore == that.q1AwayScore && q2AwayScore == that.q2AwayScore && q3AwayScore == that.q3AwayScore && q4AwayScore == that.q4AwayScore && otAwayScore == that.otAwayScore && homeTouchdowns == that.homeTouchdowns && awayTouchdowns == that.awayTouchdowns && isBowl == that.isBowl && isPlayoffs == that.isPlayoffs && isNationalChampionship == that.isNationalChampionship && isConferenceGame == that.isConferenceGame && isDivisionGame == that.isDivisionGame && scorebug == that.scorebug && winProbabilityPlot == that.winProbabilityPlot && scorePlotGraph == that.scorePlotGraph && isFinal == that.isFinal && statsUpdated == that.statsUpdated && averageHomeOffensiveDiff == that.averageHomeOffensiveDiff && averageHomeDefensiveDiff == that.averageHomeDefensiveDiff && averageHomeSpecialteamsDiff == that.averageHomeSpecialteamsDiff && averageAwayOffensiveDiff == that.averageAwayOffensiveDiff && averageAwayDefensiveDiff == that.averageAwayDefensiveDiff && averageAwaySpecialteamsDiff == that.averageAwaySpecialteamsDiff && homeAverageYardsPerPlay == that.homeAverageYardsPerPlay && awayAverageYardsPerPlay == that.awayAverageYardsPerPlay && homeThirdDownConversionSuccess == that.homeThirdDownConversionSuccess && homeThirdDownConversionAttempts == that.homeThirdDownConversionAttempts && homeThirdDownConversionPercentage == that.homeThirdDownConversionPercentage && homeFourthDownConversionSuccess == that.homeFourthDownConversionSuccess && homeFourthDownConversionAttempts == that.homeFourthDownConversionAttempts && homeFourthDownConversionPercentage == that.homeFourthDownConversionPercentage && awayThirdDownConversionSuccess == that.awayThirdDownConversionSuccess && awayThirdDownConversionAttempts == that.awayThirdDownConversionAttempts && awayThirdDownConversionPercentage == that.awayThirdDownConversionPercentage && awayFourthDownConversionSuccess == that.awayFourthDownConversionSuccess && awayFourthDownConversionAttempts == that.awayFourthDownConversionAttempts && awayFourthDownConversionPercentage == that.awayFourthDownConversionPercentage && homeLargestLead == that.homeLargestLead && awayLargestLead == that.awayLargestLead && homePassTouchdowns == that.homePassTouchdowns && homeRushTouchdowns == that.homeRushTouchdowns && awayPassTouchdowns == that.awayPassTouchdowns && awayRushTouchdowns == that.awayRushTouchdowns && homeBlockedOpponentPuntTd == that.homeBlockedOpponentPuntTd && awayBlockedOpponentPuntTd == that.awayBlockedOpponentPuntTd && homeRecord == that.homeRecord && awayRecord == that.awayRecord && isScrimmage == that.isScrimmage
-    }
+    @Basic
+    @Column(name = "home_red_zone_attempts")
+    var homeRedZoneAttempts: Int? = 0,
+
+    @Basic
+    @Column(name = "home_red_zone_successes")
+    var homeRedZoneSuccesses: Int? = 0,
+
+    @Basic
+    @Column(name = "home_red_zone_success_percentage")
+    var homeRedZoneSuccessPercentage: Double? = 0.0,
+
+    @Basic
+    @Column(name = "away_red_zone_attempts")
+    var awayRedZoneAttempts: Int? = 0,
+
+    @Basic
+    @Column(name = "away_red_zone_successes")
+    var awayRedZoneSuccesses: Int? = 0,
+
+    @Basic
+    @Column(name = "away_red_zone_success_percentage")
+    var awayRedZoneSuccessPercentage: Double? = 0.0,
+
+    @Basic
+    @Column(name = "average_diff")
+    var averageDiff: Double? = 0.9,
+
+    @Basic
+    @Column(name = "home_turnover_differential")
+    var homeTurnoverDifferential: Int? = 0,
+
+    @Basic
+    @Column(name = "away_turnover_differential")
+    var awayTurnoverDifferential: Int? = 0,
+
+    @Basic
+    @Column(name = "home_pick_sixes_thrown")
+    var homePickSixesThrown: Int? = 0,
+
+    @Basic
+    @Column(name = "home_pick_sixes_forced")
+    var homePickSixesForced: Int? = 0,
+
+    @Basic
+    @Column(name = "away_pick_sixes_thrown")
+    var awayPickSixesThrown: Int? = 0,
+
+    @Basic
+    @Column(name = "away_pick_sixes_forced")
+    var awayPickSixesForced: Int? = 0,
+
+    @Basic
+    @Column(name = "home_fumble_return_tds_committed")
+    var homeFumbleReturnTdsCommitted: Int? = 0,
+
+    @Basic
+    @Column(name = "home_fumble_return_tds_forced")
+    var homeFumbleReturnTdsForced: Int? = 0,
+
+    @Basic
+    @Column(name = "away_fumble_return_tds_committed")
+    var awayFumbleReturnTdsCommitted: Int? = 0,
+
+    @Basic
+    @Column(name = "away_fumble_return_tds_forced")
+    var awayFumbleReturnTdsForced: Int? = 0,
+
+    @Basic
+    @Column(name = "home_safeties_forced")
+    var homeSafetiesForced: Int? = 0,
+
+    @Basic
+    @Column(name = "home_safeties_committed")
+    var homeSafetiesCommitted: Int? = 0,
+
+    @Basic
+    @Column(name = "away_safeties_forced")
+    var awaySafetiesForced: Int? = 0,
+
+    @Basic
+    @Column(name = "away_safeties_committed")
+    var awaySafetiesCommitted: Int? = 0,
+) {
 
     override fun hashCode(): Int {
         return Objects.hash(
@@ -692,23 +734,31 @@ class GameStats (
             awayPassCompletionPercentage,
             awayPassYards,
             homeRushAttempts,
-            homeRush3YardsOrMore,
+            homeRushSuccesses,
             homeRushSuccessPercentage,
             homeRushYards,
             awayRushAttempts,
-            awayRush3YardsOrMore,
+            awayRushSuccesses,
             awayRushSuccessPercentage,
             awayRushYards,
             homeTotalYards,
             awayTotalYards,
             homeInterceptionsLost,
+            homeInterceptionsForced,
             homeFumblesLost,
+            homeFumblesForced,
             homeTurnoversLost,
+            homeTurnoversForced,
             homeTurnoverTouchdownsLost,
+            homeTurnoverTouchdownsForced,
             awayInterceptionsLost,
-            awayHomeFumblesLost,
-            awayHomeTurnoversLost,
+            awayInterceptionsForced,
+            awayFumblesLost,
+            awayFumblesForced,
+            awayTurnoversLost,
+            awayTurnoversForced,
             awayTurnoverTouchdownsLost,
+            awayTurnoverTouchdownsForced,
             homeFieldGoalMade,
             homeFieldGoalAttempts,
             homeFieldGoalPercentage,
@@ -752,23 +802,7 @@ class GameStats (
             awayKickReturnTd,
             awayKickReturnTdPercentage,
             homeNumberOfDrives,
-            homeNumberOfTdDrives,
-            homeTdDrivePercentage,
-            homeNumberOfFgDrives,
-            homeFgDrivePercentage,
-            homeNumberOfPuntDrives,
-            homePuntDrivePercentage,
-            homeNumberOfTurnoverDrives,
-            homeTurnoverDrivePercentage,
             awayNumberOfDrives,
-            awayNumberOfTdDrives,
-            awayTdDrivePercentage,
-            awayNumberOfFgDrives,
-            awayFgDrivePercentage,
-            awayNumberOfPuntDrives,
-            awayPuntDrivePercentage,
-            awayNumberOfTurnoverDrives,
-            awayTurnoverDrivePercentage,
             homeTimeOfPossession,
             awayTimeOfPossession,
             q1HomeScore,
@@ -783,22 +817,22 @@ class GameStats (
             otAwayScore,
             homeTouchdowns,
             awayTouchdowns,
-            isBowl,
-            isPlayoffs,
-            isNationalChampionship,
-            isConferenceGame,
-            isDivisionGame,
             scorebug,
             winProbabilityPlot,
             scorePlotGraph,
-            isFinal,
+            gameStatus,
+            gameType,
             statsUpdated,
+            homeRecord,
+            awayRecord,
             averageHomeOffensiveDiff,
             averageHomeDefensiveDiff,
-            averageHomeSpecialteamsDiff,
+            averageHomeOffensiveSpecialTeamsDiff,
+            averageHomeDefensiveSpecialTeamsDiff,
             averageAwayOffensiveDiff,
             averageAwayDefensiveDiff,
-            averageAwaySpecialteamsDiff,
+            averageAwayOffensiveSpecialTeamsDiff,
+            averageAwayDefensiveSpecialTeamsDiff,
             homeAverageYardsPerPlay,
             awayAverageYardsPerPlay,
             homeThirdDownConversionSuccess,
@@ -815,15 +849,36 @@ class GameStats (
             awayFourthDownConversionPercentage,
             homeLargestLead,
             awayLargestLead,
+            homeLargestDeficit,
+            awayLargestDeficit,
             homePassTouchdowns,
             homeRushTouchdowns,
             awayPassTouchdowns,
             awayRushTouchdowns,
             homeBlockedOpponentPuntTd,
             awayBlockedOpponentPuntTd,
-            homeRecord,
-            awayRecord,
-            isScrimmage
+            homeRedZoneAttempts,
+            homeRedZoneSuccesses,
+            homeRedZoneSuccessPercentage,
+            awayRedZoneAttempts,
+            awayRedZoneSuccesses,
+            awayRedZoneSuccessPercentage,
+            homeTurnoverDifferential,
+            awayTurnoverDifferential,
+            homePickSixesThrown,
+            homePickSixesForced,
+            awayPickSixesThrown,
+            awayPickSixesForced,
+            homeFumbleReturnTdsCommitted,
+            homeFumbleReturnTdsForced,
+            awayFumbleReturnTdsCommitted,
+            awayFumbleReturnTdsForced,
+            homeSafetiesForced,
+            homeSafetiesCommitted,
+            awaySafetiesForced,
+            awaySafetiesCommitted,
+            homeTimeOfPossession,
+            awayTimeOfPossession
         )
     }
 }

@@ -145,7 +145,7 @@ class GameService(
                     gameTimer = formattedDateTime,
                     currentPlayType = PlayType.KICKOFF,
                     currentPlayId = 0,
-                    scrimmage = startRequest.scrimmage,
+                    gameType = startRequest.gameType,
                     clockStopped = true,
                     gameStatus = GameStatus.PREGAME
                 )
