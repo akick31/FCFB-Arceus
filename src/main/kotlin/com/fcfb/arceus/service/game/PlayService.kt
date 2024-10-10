@@ -170,8 +170,24 @@ class PlayService(
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the kickoff play"), HttpStatus.BAD_REQUEST)
 
-                PlayCall.FIELD_GOAL -> {}
-                PlayCall.PUNT -> {}
+                PlayCall.FIELD_GOAL -> gamePlay = playHandler.runFieldGoalPlay(
+                    gamePlay,
+                    game,
+                    playCall,
+                    offensiveNumber.toString(),
+                    decryptedDefensiveNumber
+                ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the field goal play"), HttpStatus.BAD_REQUEST)
+
+                PlayCall.PUNT -> gamePlay = playHandler.runPuntPlay(
+                    gamePlay,
+                    clockStopped,
+                    game,
+                    playCall,
+                    runoffType,
+                    timeoutUsed,
+                    offensiveNumber.toString(),
+                    decryptedDefensiveNumber
+                ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the punt play"), HttpStatus.BAD_REQUEST)
             }
 
             gameHandler.updateGameInformation(

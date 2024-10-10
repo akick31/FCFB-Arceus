@@ -30,4 +30,14 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         playType: String?,
         difference: String
     ): Ranges?
+
+    @Query(
+        value = "SELECT * FROM ranges WHERE play_type = ? AND ball_location = ? AND ? BETWEEN lower_range AND upper_range;",
+        nativeQuery = true
+    )
+    fun findPuntResult(
+        playType: String?,
+        ballLocation: String,
+        difference: String
+    ): Ranges?
 }

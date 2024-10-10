@@ -11,6 +11,7 @@ enum class ExceptionType(val description: String) {
     INVALID_RESULT("The result is invalid"),
     INVALID_ACTUAL_RESULT("The actual result is invalid"),
     INVALID_BALL_LOCATION("The ball location is invalid"),
+    INVALID_POSSESSION("The possession is invalid"),
     HOME_USER_NOT_FOUND("The home user was not found"),
     AWAY_USER_NOT_FOUND("The away user was not found"),
     RESULT_NOT_FOUND("The result was not found in the ranges")

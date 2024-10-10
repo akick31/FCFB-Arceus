@@ -56,7 +56,6 @@ class StatsHandler(
             stats.homeLongestPunt = calculateLongestPunt(play, stats.homeLongestPunt ?: 0)
             stats.homeAveragePuntLength = calculateAveragePuntLength(allPlays, TeamSide.HOME)
             stats.awayBlockedOpponentPunt = calculateBlockedOpponentPunt(play, stats.awayBlockedOpponentPunt ?: 0)
-            stats.awayBlockedOpponentPuntTd = calculateBlockedOpponentPuntTd(play, stats.awayBlockedOpponentPuntTd ?: 0)
             stats.awayPuntReturnTd = calculatePuntReturnTd(play, stats.awayPuntReturnTd ?: 0)
             stats.awayPuntReturnTdPercentage = calculatePercentage(stats.awayPuntReturnTd ?: 0, stats.awayPuntsAttempted ?: 0)
             stats.homeNumberOfKickoffs = calculateNumberOfKickoffs(play, stats.homeNumberOfKickoffs ?: 0)
@@ -125,7 +124,6 @@ class StatsHandler(
             stats.awayLongestPunt = calculateLongestPunt(play, stats.awayLongestPunt ?: 0)
             stats.awayAveragePuntLength = calculateAveragePuntLength(allPlays, TeamSide.AWAY)
             stats.homeBlockedOpponentPunt = calculateBlockedOpponentPunt(play, stats.homeBlockedOpponentPunt ?: 0)
-            stats.homeBlockedOpponentPuntTd = calculateBlockedOpponentPuntTd(play, stats.homeBlockedOpponentPuntTd ?: 0)
             stats.homePuntReturnTd = calculatePuntReturnTd(play, stats.homePuntReturnTd ?: 0)
             stats.homePuntReturnTdPercentage = calculatePercentage(stats.homePuntReturnTd ?: 0, stats.homePuntsAttempted ?: 0)
             stats.awayNumberOfKickoffs = calculateNumberOfKickoffs(play, stats.awayNumberOfKickoffs ?: 0)
@@ -407,7 +405,7 @@ class StatsHandler(
         play: Play,
         currentFieldGoalTouchdown: Int
     ): Int {
-        if (play.playCall == PlayCall.FIELD_GOAL && play.actualResult == ActualResult.BLOCKED_TOUCHDOWN) {
+        if (play.playCall == PlayCall.FIELD_GOAL && play.actualResult == ActualResult.BLOCKED_FIELD_GOAL_TOUCHDOWN) {
             return currentFieldGoalTouchdown + 1
         }
         return currentFieldGoalTouchdown
@@ -565,6 +563,7 @@ class StatsHandler(
         }.sumOf { (it.playTime ?: 0) + (it.runoffTime ?: 0) }
     }
 
+    //TODO Handle defensive possession touchdowns
     fun calculateTouchdowns(
         play: Play,
         currentTouchdowns: Int
@@ -746,16 +745,6 @@ class StatsHandler(
         return currentRushTouchdowns
     }
 
-    fun calculateBlockedOpponentPuntTd(
-        play: Play,
-        currentBlockedOpponentPuntTd: Int
-    ): Int {
-        if (play.playCall == PlayCall.PUNT && play.actualResult == ActualResult.BLOCKED_TOUCHDOWN) {
-            return currentBlockedOpponentPuntTd + 1
-        }
-        return currentBlockedOpponentPuntTd
-    }
-
     fun calculateRedZoneAttempts(
         allPlays: List<Play>,
         possession: TeamSide
@@ -842,7 +831,7 @@ class StatsHandler(
         }
         if (play.possession != possession) {
             if (play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN
-                || play.actualResult == ActualResult.BLOCKED_TOUCHDOWN || play.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN) {
+                || play.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN || play.actualResult == ActualResult.BLOCKED_FIELD_GOAL_TOUCHDOWN) {
                 return currentQuarterScore + 6
             }
             if (play.playCall == PlayCall.PAT && play.actualResult == ActualResult.DEFENSE_TWO_POINT) {

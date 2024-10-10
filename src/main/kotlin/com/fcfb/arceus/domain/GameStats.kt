@@ -596,14 +596,6 @@ class GameStats (
     var awayRushTouchdowns: Int? = 0,
 
     @Basic
-    @Column(name = "home_blocked_opponent_punt_td")
-    var homeBlockedOpponentPuntTd: Int? = 0,
-
-    @Basic
-    @Column(name = "away_blocked_opponent_punt_td")
-    var awayBlockedOpponentPuntTd: Int? = 0,
-
-    @Basic
     @Column(name = "home_record")
     var homeRecord: String? = null,
 
@@ -855,8 +847,6 @@ class GameStats (
             homeRushTouchdowns,
             awayPassTouchdowns,
             awayRushTouchdowns,
-            homeBlockedOpponentPuntTd,
-            awayBlockedOpponentPuntTd,
             homeRedZoneAttempts,
             homeRedZoneSuccesses,
             homeRedZoneSuccessPercentage,
