@@ -13,14 +13,16 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.models.ExceptionType
 import com.fcfb.arceus.models.handleException
+import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.repositories.RangesRepository
-import io.ktor.util.reflect.instanceOf
 import org.springframework.stereotype.Component
 
 @Component
 class PlayHandler(
+    private var playRepository: PlayRepository,
     private var rangesRepository: RangesRepository,
-    private var gameHandler: GameHandler
+    private var gameHandler: GameHandler,
+    private var statsHandler: StatsHandler
 ) {
     /**
      * Runs the play, returns the updated gamePlay
@@ -33,11 +35,10 @@ class PlayHandler(
      */
     fun runNormalPlay(
         gamePlay: Play,
-        clockStopped: Boolean?,
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
-        timeoutUsed: Boolean,
+        offensiveTimeoutCalled: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
     ): Play? {
@@ -47,12 +48,16 @@ class PlayHandler(
         val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val (offensivePlaybook, defensivePlaybook) = getPlaybooks(game, possession ?: handleException(ExceptionType.INVALID_POSSESSION))
+        val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = if (playCall == PlayCall.SPIKE) {
             Ranges(
                 PlayType.NORMAL.description,
                 offensivePlaybook.description,
                 defensivePlaybook.description,
+                0,
+                0,
+                0,
                 Scenario.SPIKE,
                 0,
                 0,
@@ -64,6 +69,9 @@ class PlayHandler(
                 PlayType.NORMAL.description,
                 offensivePlaybook.description,
                 defensivePlaybook.description,
+                0,
+                0,
+                0,
                 Scenario.KNEEL,
                 0,
                 0,
@@ -83,7 +91,8 @@ class PlayHandler(
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
-        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook, defensivePlaybook,)
+        val clockStopped = game.clockStopped ?: handleException(ExceptionType.INVALID_CLOCK_STOPPED)
+        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
 
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
@@ -259,7 +268,7 @@ class PlayHandler(
             playCall,
             result,
             actualResult,
-            possession ?: handleException(ExceptionType.INVALID_POSSESSION),
+            possession,
             homeScore,
             awayScore,
             runoffTime,
@@ -271,7 +280,136 @@ class PlayHandler(
             offensiveNumber,
             difference,
             yards,
-            timeoutUsed
+            timeoutUsed,
+            homeTimeoutCalled,
+            awayTimeoutCalled
+        )
+    }
+
+    /**
+     * Runs the field goal play, returns the updated gamePlay
+     *
+     */
+    fun runFieldGoalPlay(
+        gamePlay: Play,
+        game: Game,
+        playCall: PlayCall,
+        runoffType: RunoffType,
+        offensiveTimeoutCalled: Boolean,
+        offensiveNumber: String,
+        decryptedDefensiveNumber: String
+    ): Play? {
+        if (game.currentPlayType != PlayType.NORMAL) {
+            return null
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        var possession = gamePlay.possession
+        var ballLocation = game.ballLocation ?: handleException(ExceptionType.INVALID_BALL_LOCATION)
+        val (offensivePlaybook, defensivePlaybook) = getPlaybooks(game, possession ?: handleException(ExceptionType.INVALID_POSSESSION))
+        val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
+
+        val resultInformation = rangesRepository.findFieldGoalResult(
+            playCall.description,
+            ((100-ballLocation) + 17).toString(),
+            difference.toString()
+        ) ?: handleException(ExceptionType.RESULT_NOT_FOUND)
+
+        val result = resultInformation.result
+        val playTime = resultInformation.playTime
+
+        // Determine runoff time between plays
+        val clockStopped = game.clockStopped ?: handleException(ExceptionType.INVALID_CLOCK_STOPPED)
+        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
+
+        var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
+        var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
+        var down = game.down
+        var yardsToGo = game.yardsToGo
+        val yards = 0
+        val actualResult: ActualResult
+        when (result) {
+            Scenario.KICK_SIX -> {
+                actualResult = ActualResult.KICK_SIX
+                ballLocation = 97
+            }
+            Scenario.BLOCKED_FIELD_GOAL -> {
+                actualResult = ActualResult.BLOCKED
+                ballLocation = 100 - ballLocation
+            }
+            Scenario.NO_GOOD -> {
+                actualResult = ActualResult.NO_GOOD
+                ballLocation = 100 - ballLocation
+            }
+            Scenario.GOOD -> {
+                actualResult = ActualResult.GOOD
+                ballLocation = 35
+            }
+            else -> handleException(ExceptionType.INVALID_RESULT)
+        }
+        when (actualResult) {
+            ActualResult.KICK_SIX -> {
+                if (possession == TeamSide.HOME) {
+                    possession = TeamSide.AWAY
+                    awayScore += 6
+                } else {
+                    possession = TeamSide.HOME
+                    homeScore += 6
+                }
+                down = 1
+                yardsToGo = 10
+            }
+            ActualResult.BLOCKED -> {
+                possession = if (possession == TeamSide.HOME) {
+                    TeamSide.AWAY
+                } else {
+                    TeamSide.HOME
+                }
+                down = 1
+                yardsToGo = 10
+            }
+            ActualResult.NO_GOOD -> {
+                possession = if (possession == TeamSide.HOME) {
+                    TeamSide.AWAY
+                } else {
+                    TeamSide.HOME
+                }
+                down = 1
+                yardsToGo = 10
+            }
+            ActualResult.GOOD -> {
+                if (possession == TeamSide.HOME) {
+                    homeScore += 3
+                } else {
+                    awayScore += 3
+                }
+                down = 1
+                yardsToGo = 10
+            }
+            else -> handleException(ExceptionType.INVALID_ACTUAL_RESULT)
+        }
+
+        return updatePlayValues(
+            game,
+            gamePlay,
+            playCall,
+            result,
+            actualResult,
+            possession,
+            homeScore,
+            awayScore,
+            runoffTime,
+            playTime ?: handleException(ExceptionType.INVALID_PLAY_TIME),
+            ballLocation,
+            down,
+            yardsToGo,
+            decryptedDefensiveNumber,
+            offensiveNumber,
+            difference,
+            0,
+            timeoutUsed,
+            homeTimeoutCalled,
+            awayTimeoutCalled
         )
     }
 
@@ -285,11 +423,10 @@ class PlayHandler(
      */
     fun runPuntPlay(
         gamePlay: Play,
-        clockStopped: Boolean?,
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
-        timeoutUsed: Boolean,
+        offensiveTimeoutCalled: Boolean,
         offensiveNumber: String,
         decryptedDefensiveNumber: String
     ): Play? {
@@ -301,6 +438,7 @@ class PlayHandler(
         var possession = gamePlay.possession
         var ballLocation = game.ballLocation ?: handleException(ExceptionType.INVALID_BALL_LOCATION)
         val (offensivePlaybook, defensivePlaybook) = getPlaybooks(game, possession ?: handleException(ExceptionType.INVALID_POSSESSION))
+        val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesRepository.findPuntResult(
             playCall.description,
@@ -312,7 +450,8 @@ class PlayHandler(
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
-        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook, defensivePlaybook,)
+        val clockStopped = game.clockStopped ?: handleException(ExceptionType.INVALID_CLOCK_STOPPED)
+        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
 
         var homeScore = game.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
         var awayScore = game.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
@@ -333,17 +472,19 @@ class PlayHandler(
                 actualResult = ActualResult.PUNT
                 ballLocation = 20
             }
-            Scenario.PUNT_TO_THE_FIVE, Scenario.PUNT_TO_THE_TEN, Scenario.PUNT_TO_THE_FIFTEEN, Scenario.PUNT_TO_THE_TWENTY,
-            Scenario.PUNT_TO_THE_TWENTY_FIVE, Scenario.PUNT_TO_THE_THIRTY, Scenario.PUNT_TO_THE_THIRTY_FIVE,
-            Scenario.PUNT_TO_THE_FORTY, Scenario.PUNT_TO_THE_FORTY_FIVE, Scenario.PUNT_TO_THE_FIFTY,
-            Scenario.PUNT_TO_THE_FIFTY_FIVE, Scenario.PUNT_TO_THE_SIXTY, Scenario.PUNT_TO_THE_SIXTY_FIVE,
-            Scenario.PUNT_TO_THE_SEVENTY -> {
+            Scenario.FIVE_YARD_PUNT, Scenario.TEN_YARD_PUNT, Scenario.FIFTEEN_YARD_PUNT, Scenario.TWENTY_YARD_PUNT,
+            Scenario.TWENTY_FIVE_YARD_PUNT, Scenario.THIRTY_YARD_PUNT, Scenario.THIRTY_FIVE_YARD_PUNT,
+            Scenario.FORTY_YARD_PUNT, Scenario.FORTY_FIVE_YARD_PUNT, Scenario.FIFTY_YARD_PUNT, Scenario.FIFTY_FIVE_YARD_PUNT,
+            Scenario.SIXTY_YARD_PUNT, Scenario.SIXTY_FIVE_YARD_PUNT, Scenario.SEVENTY_YARD_PUNT -> {
                 actualResult = ActualResult.PUNT
-                ballLocation = result.description.substringAfter("PUNT TO THE ").substringBefore(" YARD").toInt()
+                ballLocation = 100 - (ballLocation + result.description.substringBefore(" YARD PUNT").toInt())
             }
             Scenario.FUMBLE -> {
                 actualResult = ActualResult.MUFFED_PUNT
-                ballLocation = 100 - (ballLocation + 40)
+                ballLocation += 40
+                if (ballLocation >= 100) {
+                    ballLocation = 99
+                }
             }
             Scenario.TOUCHDOWN -> {
                 actualResult = ActualResult.PUNT_TEAM_TOUCHDOWN
@@ -408,7 +549,7 @@ class PlayHandler(
             playCall,
             result,
             actualResult,
-            possession ?: handleException(ExceptionType.INVALID_POSSESSION),
+            possession,
             homeScore,
             awayScore,
             runoffTime,
@@ -420,7 +561,9 @@ class PlayHandler(
             offensiveNumber,
             difference,
             0,
-            timeoutUsed
+            timeoutUsed,
+            homeTimeoutCalled,
+            awayTimeoutCalled
         )
     }
 
@@ -467,7 +610,7 @@ class PlayHandler(
                 ballLocation = 75
             }
             Scenario.FIVE_YARD_RETURN, Scenario.TEN_YARD_RETURN, Scenario.TWENTY_YARD_RETURN, Scenario.THIRTY_YARD_RETURN,
-            Scenario.THIRTY_FIVE_YARD_RETURN, Scenario.FOURTY_YARD_RETURN, Scenario.FOURTY_FIVE_YARD_RETURN,
+            Scenario.THIRTY_FIVE_YARD_RETURN, Scenario.FORTY_YARD_RETURN, Scenario.FORTY_FIVE_YARD_RETURN,
             Scenario.FIFTY_YARD_RETURN, Scenario.SIXTY_FIVE_YARD_RETURN -> {
                 actualResult = ActualResult.KICKOFF
                 ballLocation = result.description.substringBefore(" YARD RETURN").toInt()
@@ -534,6 +677,8 @@ class PlayHandler(
             offensiveNumber,
             difference,
             0,
+            false,
+            false,
             false
         )
     }
@@ -623,6 +768,8 @@ class PlayHandler(
             offensiveNumber,
             difference,
             0,
+            false,
+            false,
             false
         )
     }
@@ -632,8 +779,7 @@ class PlayHandler(
         timeoutUsed: Boolean,
         playCall: PlayCall,
         runoffType: RunoffType,
-        offensivePlaybook: OffensivePlaybook,
-        defensivePlaybook: DefensivePlaybook
+        offensivePlaybook: OffensivePlaybook
     ): Int {
         // Determine runoff time between plays
         return if (!clockStopped!! && !timeoutUsed) {
@@ -688,7 +834,7 @@ class PlayHandler(
             actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN &&
             actualResult != ActualResult.PUNT_RETURN_TOUCHDOWN &&
             actualResult != ActualResult.PUNT_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.BLOCKED_FIELD_GOAL_TOUCHDOWN
+            actualResult != ActualResult.KICK_SIX
         ) {
             quarter += 1
             clock = 420
@@ -703,8 +849,8 @@ class PlayHandler(
             actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN &&
             actualResult != ActualResult.PUNT_RETURN_TOUCHDOWN &&
             actualResult != ActualResult.PUNT_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.BLOCKED_FIELD_GOAL_TOUCHDOWN &&
-            gamePlay.gameQuarter == 4
+            actualResult != ActualResult.KICK_SIX &&
+            gamePlay.quarter == 4
         ) {
             // Check if game is over or needs to go to OT
             quarter = if (homeScore > awayScore || awayScore > homeScore) {
@@ -715,6 +861,32 @@ class PlayHandler(
             clock = 0
         }
         return Triple(possession, clock, quarter)
+    }
+
+    private fun getTimeoutUsage(
+        game: Game,
+        gamePlay: Play,
+        offensiveTimeoutCalled: Boolean,
+    ): Triple<Boolean, Boolean, Boolean> {
+        val clockStopped = game.clockStopped!!
+        val defensiveTimeoutCalled = gamePlay.timeoutUsed ?: false // Defensive timeout is already called if it is true
+        var timeoutUsed = false
+        var homeTimeoutCalled = false
+        var awayTimeoutCalled = false
+        if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.homeTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            homeTimeoutCalled = true
+        } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.awayTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            awayTimeoutCalled = true
+        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.awayTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            awayTimeoutCalled = true
+        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.homeTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            homeTimeoutCalled = true
+        }
+        return Triple(timeoutUsed, homeTimeoutCalled, awayTimeoutCalled)
     }
 
     private fun updatePlayValues(
@@ -735,13 +907,15 @@ class PlayHandler(
         offensiveNumber: String,
         difference: Int,
         yards: Int,
-        timeoutUsed: Boolean
+        timeoutUsed: Boolean,
+        homeTimeoutCalled: Boolean,
+        awayTimeoutcalled: Boolean
     ) : Play {
         var clock = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK)) - (playTime)
-        var quarter = gamePlay.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
+        var quarter = gamePlay.quarter ?: handleException(ExceptionType.INVALID_QUARTER)
         var possession = initialPossession
 
-        if(playCall != PlayCall.PUNT && playCall == PlayCall.TWO_POINT) {
+        if(playCall != PlayCall.PAT && playCall != PlayCall.TWO_POINT) {
             val (updatedPossession, updatedClock, updatedQuarter) = handleEndOfQuarterScenarios(
                 game,
                 gamePlay,
@@ -757,14 +931,7 @@ class PlayHandler(
             quarter = updatedQuarter
         }
 
-        gamePlay.homeScore = homeScore
-        gamePlay.awayScore = awayScore
-        gamePlay.possession = possession
-        gamePlay.gameQuarter = quarter
-        gamePlay.clock = clock
-        gamePlay.ballLocation = ballLocation
-        gamePlay.down = down
-        gamePlay.yardsToGo = yardsToGo
+        // Update gamePlay values
         gamePlay.defensiveNumber = decryptedDefensiveNumber
         gamePlay.offensiveNumber = offensiveNumber
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
@@ -775,9 +942,40 @@ class PlayHandler(
         gamePlay.yards = yards
         gamePlay.playTime = playTime
         gamePlay.runoffTime = runoffTime
-        gamePlay.winProbability = gamePlay.winProbability
         gamePlay.difference = difference
         gamePlay.timeoutUsed = timeoutUsed
+        gamePlay.playFinished = true
+
+        if (initialPossession == TeamSide.HOME) {
+            gamePlay.offensiveTimeoutCalled = homeTimeoutCalled
+            gamePlay.defensiveTimeoutCalled = awayTimeoutcalled
+        } else {
+            gamePlay.offensiveTimeoutCalled = awayTimeoutcalled
+            gamePlay.defensiveTimeoutCalled = homeTimeoutCalled
+        }
+
+        // Save the play and then update the game and stats
+        playRepository.save(gamePlay)
+
+        gameHandler.updateGameInformation(
+            game,
+            gamePlay,
+            homeScore,
+            awayScore,
+            possession,
+            clock,
+            quarter,
+            ballLocation,
+            down,
+            yardsToGo,
+            homeTimeoutCalled,
+            awayTimeoutcalled
+        )
+
+        statsHandler.updateGameStats(
+            game,
+            gamePlay
+        )
         return gamePlay
     }
 }

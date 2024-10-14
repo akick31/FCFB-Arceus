@@ -31,6 +31,18 @@ class Ranges {
     var defensivePlaybook: String? = null
 
     @Basic
+    @Column(name = "ball_location_lower")
+    var ballLocationLower: Int? = null
+
+    @Basic
+    @Column(name = "ball_location_upper")
+    var ballLocationUpper: Int? = null
+
+    @Basic
+    @Column(name = "distance")
+    var distance: Int? = null
+
+    @Basic
     @Column(name = "result")
     var result: Scenario? = null
 
@@ -50,6 +62,9 @@ class Ranges {
         playType: String?,
         offensivePlaybook: String?,
         defensivePlaybook: String?,
+        ballLocationLower: Int?,
+        ballLocationUpper: Int?,
+        distance: Int?,
         result: Scenario?,
         playTime: Int?,
         lowerRange: Int?,
@@ -58,6 +73,9 @@ class Ranges {
         this.playType = playType
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
+        this.ballLocationLower = ballLocationLower
+        this.ballLocationUpper = ballLocationUpper
+        this.distance = distance
         this.result = result
         this.playTime = playTime
         this.lowerRange = lowerRange
@@ -66,19 +84,15 @@ class Ranges {
 
     constructor()
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as Ranges
-        return id == that.id && playType == that.playType && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && result == that.result && playTime == that.playTime && lowerRange == that.lowerRange && upperRange == that.upperRange
-    }
-
     override fun hashCode(): Int {
         return Objects.hash(
             id,
             playType,
             offensivePlaybook,
             defensivePlaybook,
+            ballLocationLower,
+            ballLocationUpper,
+            distance,
             result,
             playTime,
             lowerRange,

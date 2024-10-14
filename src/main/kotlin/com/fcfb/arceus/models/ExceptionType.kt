@@ -8,6 +8,7 @@ enum class ExceptionType(val description: String) {
     INVALID_YARDS_TO_GO("The yards to go is invalid"),
     INVALID_PLAY_TIME("The play time is invalid"),
     INVALID_CLOCK("The clock is invalid"),
+    INVALID_CLOCK_STOPPED("The clock stopped value is invalid"),
     INVALID_RESULT("The result is invalid"),
     INVALID_ACTUAL_RESULT("The actual result is invalid"),
     INVALID_BALL_LOCATION("The ball location is invalid"),

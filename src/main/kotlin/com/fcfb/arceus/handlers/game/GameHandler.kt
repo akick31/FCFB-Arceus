@@ -21,8 +21,14 @@ class GameHandler(
     fun updateGameInformation(
         game: Game,
         play: Play,
-        playCall: PlayCall,
-        clockStopped: Boolean,
+        homeScore: Int,
+        awayScore: Int,
+        possession: TeamSide,
+        quarter: Int,
+        clock: Int,
+        ballLocation: Int,
+        down: Int,
+        yardsToGo: Int,
         homeTimeoutCalled: Boolean,
         awayTimeoutCalled: Boolean
     ): Game {
@@ -43,14 +49,14 @@ class GameHandler(
         }
 
         // If game quarter is 0, then the game is over
-        if (play.gameQuarter == 0) {
+        if (quarter == 0) {
             game.gameStatus = GameStatus.FINAL
-        } else if (play.gameQuarter!! >= 5) {
+        } else if (quarter >= 5) {
             game.gameStatus = GameStatus.END_OF_REGULATION
         }
 
         // Update waiting on
-        val waitingOn = if (play.possession == TeamSide.HOME){
+        val waitingOn = if (possession == TeamSide.HOME){
             TeamSide.AWAY
         } else {
             TeamSide.HOME
@@ -61,7 +67,7 @@ class GameHandler(
             play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
-            (playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || playCall == PlayCall.PAT || playCall == PlayCall.TWO_POINT
+            (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || play.playCall == PlayCall.PAT || play.playCall == PlayCall.TWO_POINT
         ) {
             game.currentPlayType = PlayType.KICKOFF
         } else {
@@ -74,7 +80,7 @@ class GameHandler(
         }
 
         // Handle halftime
-        if (game.quarter == 3 && play.clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+        if (game.quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
             game.gameStatus = GameStatus.HALFTIME
             game.currentPlayType = PlayType.KICKOFF
             game.ballLocation = 35
@@ -84,14 +90,15 @@ class GameHandler(
         }
 
         // Update everything else
-        game.homeScore = play.homeScore ?: handleException(ExceptionType.INVALID_HOME_SCORE)
-        game.awayScore = play.awayScore ?: handleException(ExceptionType.INVALID_AWAY_SCORE)
-        game.possession = play.possession
-        game.quarter = play.gameQuarter ?: handleException(ExceptionType.INVALID_QUARTER)
-        game.clock = convertClockToString(play.clock ?: 420)
-        game.ballLocation = play.ballLocation
-        game.down = play.down ?: handleException(ExceptionType.INVALID_DOWN)
-        game.yardsToGo = play.yardsToGo ?: handleException(ExceptionType.INVALID_YARDS_TO_GO)
+        game.homeScore = homeScore
+        game.awayScore = awayScore
+        game.possession = possession
+        game.quarter = quarter
+        game.clock = convertClockToString(clock)
+        game.ballLocation = ballLocation
+        game.down = down
+        game.yardsToGo = yardsToGo
+        game.winProbability = play.winProbability
         game.numPlays = play.playNumber
         game.waitingOn = waitingOn
 

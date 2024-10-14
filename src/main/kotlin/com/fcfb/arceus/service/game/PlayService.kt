@@ -122,34 +122,13 @@ class PlayService(
 
             val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(headers.add("Error-Message", "There was an issue decrypting the defensive number"), HttpStatus.BAD_REQUEST))
 
-            val clockStopped = game.clockStopped ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the clock was stopped"), HttpStatus.BAD_REQUEST)
-
-            val defensiveTimeoutCalled = gamePlay.timeoutUsed ?: return ResponseEntity(headers.add("Error-Message", "There was an issue getting if the timeout was used"), HttpStatus.BAD_REQUEST)
-            var timeoutUsed = false
-            var homeTimeoutCalled = false
-            var awayTimeoutcalled = false
-            if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.homeTimeouts!! > 0 && !clockStopped) {
-                timeoutUsed = true
-                homeTimeoutCalled = true
-            } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.awayTimeouts!! > 0 && !clockStopped) {
-                timeoutUsed = true
-                awayTimeoutcalled = true
-            } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.awayTimeouts!! > 0 && !clockStopped) {
-                timeoutUsed = true
-                awayTimeoutcalled = true
-            } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.homeTimeouts!! > 0 && !clockStopped) {
-                timeoutUsed = true
-                homeTimeoutCalled = true
-            }
-
             when (playCall) {
                 PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL -> gamePlay = playHandler.runNormalPlay(
                     gamePlay,
-                    clockStopped,
                     game,
                     playCall,
                     runoffType,
-                    timeoutUsed,
+                    offensiveTimeoutCalled,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running a normal play"), HttpStatus.BAD_REQUEST)
@@ -174,44 +153,24 @@ class PlayService(
                     gamePlay,
                     game,
                     playCall,
+                    runoffType,
+                    offensiveTimeoutCalled,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the field goal play"), HttpStatus.BAD_REQUEST)
 
                 PlayCall.PUNT -> gamePlay = playHandler.runPuntPlay(
                     gamePlay,
-                    clockStopped,
                     game,
                     playCall,
                     runoffType,
-                    timeoutUsed,
+                    offensiveTimeoutCalled,
                     offensiveNumber.toString(),
                     decryptedDefensiveNumber
                 ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue running the punt play"), HttpStatus.BAD_REQUEST)
             }
 
-            gameHandler.updateGameInformation(
-                game,
-                gamePlay,
-                playCall,
-                clockStopped,
-                homeTimeoutCalled,
-                awayTimeoutcalled
-            )
-
-            val gameStats = statsHandler.updateGameStats(
-                game,
-                gamePlay,
-                playCall
-            )
-
-            // Mark play as finished, set the timeouts, save the play
-            gamePlay.playFinished = true
-            gamePlay.offensiveTimeoutCalled = offensiveTimeoutCalled
-            gamePlay.defensiveTimeoutCalled = defensiveTimeoutCalled
-            playRepository.save(gamePlay)
             return ResponseEntity(gamePlay, HttpStatus.OK)
-            // }
         } catch (e: Exception) {
             ResponseEntity(headers.add("Error-Message", e.message ?: "Unknown error"), HttpStatus.BAD_REQUEST)
         }

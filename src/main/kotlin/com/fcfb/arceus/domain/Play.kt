@@ -42,7 +42,7 @@ class Play {
 
     @Basic
     @Column(name = "game_quarter")
-    var gameQuarter: Int? = null
+    var quarter: Int? = null
 
     @Basic
     @Column(name = "clock")
@@ -198,7 +198,7 @@ class Play {
         this.playNumber = playNumber
         this.homeScore = homeScore
         this.awayScore = awayScore
-        this.gameQuarter = quarter
+        this.quarter = quarter
         this.clock = clock
         this.ballLocation = ballLocation
         this.possession = possession
@@ -231,20 +231,13 @@ class Play {
 
     constructor()
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as com.fcfb.arceus.domain.Play
-        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && winProbabilityAdded == that.winProbabilityAdded && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished && offensiveTimeoutCalled == that.offensiveTimeoutCalled && defensiveTimeoutCalled == that.defensiveTimeoutCalled && offensiveResponseSpeed == that.offensiveResponseSpeed && defensiveResponseSpeed == that.defensiveResponseSpeed
-    }
-
     override fun hashCode(): Int {
         return Objects.hash(
             gameId,
             playNumber,
             homeScore,
             awayScore,
-            gameQuarter,
+            quarter,
             clock,
             ballLocation,
             possession,
@@ -283,7 +276,7 @@ class Play {
           "playNumber": "$playNumber",
           "homeScore": "$homeScore",
           "awayScore": "$awayScore",
-          "quarter": "$gameQuarter",
+          "quarter": "$quarter",
           "clock": "$clock",
           "ballLocation": "$ballLocation",
           "possession": "$possession",
