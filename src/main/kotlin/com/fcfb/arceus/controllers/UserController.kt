@@ -1,6 +1,8 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.service.user.UserService
+import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.domain.User.Role
+import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -20,6 +22,11 @@ class UserController(
     fun getUserById(
         @RequestParam id: Long
     ) = userService.getUserById(id)
+
+    @GetMapping("/discord")
+    fun getUserByDiscordId(
+        @RequestParam id: String
+    ) = userService.getUserByDiscordId(id)
 
     @GetMapping("/team")
     fun getUserByTeam(
@@ -55,13 +62,13 @@ class UserController(
     @PutMapping("/update/role")
     fun updateUserRole(
         @RequestParam("id") id: Long,
-        @RequestParam newRole: String?
+        @RequestParam newRole: Role?
     ) = userService.updateUserRole(id, newRole)
 
     @PutMapping("/update/position")
     fun updateUserPosition(
         @RequestParam("id") id: Long,
-        @RequestParam newPosition: String?
+        @RequestParam newPosition: CoachPosition?
     ) = userService.updateUserPosition(id, newPosition)
 
     @PutMapping("/update/reddit-username")

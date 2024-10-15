@@ -48,12 +48,20 @@ class GameStats (
     var tvChannel: TVChannel? = null,
 
     @Basic
-    @Column(name = "home_coach")
-    var homeCoach: String? = null,
+    @Column(name = "home_coach1")
+    var homeCoach1: String? = null,
 
     @Basic
-    @Column(name = "away_coach")
-    var awayCoach: String? = null,
+    @Column(name = "home_coach2")
+    var homeCoach2: String? = null,
+
+    @Basic
+    @Column(name = "away_coach1")
+    var awayCoach1: String? = null,
+
+    @Basic
+    @Column(name = "away_coach2")
+    var awayCoach2: String? = null,
 
     @Basic
     @Column(name = "home_offensive_playbook")
@@ -706,8 +714,10 @@ class GameStats (
             startTime,
             location,
             tvChannel,
-            homeCoach,
-            awayCoach,
+            homeCoach1,
+            homeCoach2,
+            awayCoach1,
+            awayCoach2,
             homeOffensivePlaybook,
             awayOffensivePlaybook,
             homeDefensivePlaybook,

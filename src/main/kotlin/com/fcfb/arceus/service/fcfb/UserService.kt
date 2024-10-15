@@ -1,6 +1,8 @@
-package com.fcfb.arceus.service.user
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.domain.User.Role
 import com.fcfb.arceus.repositories.UserRepository
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
@@ -18,6 +20,11 @@ class UserService {
 
     fun getUserById(id: Long): ResponseEntity<User> {
         val userData: User = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        return ResponseEntity(userData, HttpStatus.OK)
+    }
+
+    fun getUserByDiscordId(discordId: String): ResponseEntity<User> {
+        val userData: User = usersRepository?.findByDiscordId(discordId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         return ResponseEntity(userData, HttpStatus.OK)
     }
 
@@ -75,7 +82,7 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserRole(id: Long, newRole: String?): ResponseEntity<User> {
+    fun updateUserRole(id: Long, newRole: Role?): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newRole == null) {
@@ -87,7 +94,7 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserPosition(id: Long, newPosition: String?): ResponseEntity<User> {
+    fun updateUserPosition(id: Long, newPosition: CoachPosition?): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newPosition == null) {

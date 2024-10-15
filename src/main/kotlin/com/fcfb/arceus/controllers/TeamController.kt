@@ -1,7 +1,8 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.service.team.TeamService
+import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -42,6 +43,13 @@ class TeamController(
         @PathVariable("name") name: String?,
         @RequestBody team: Team
     ) = teamService.updateTeam(name, team)
+
+    @PostMapping("/{name}/hire")
+    suspend fun hireCoach(
+        @PathVariable("name") name: String?,
+        @RequestParam discordId: String,
+        @RequestParam coachPosition: CoachPosition
+    ) = teamService.hireCoach(name, discordId, coachPosition)
 
     @DeleteMapping("/{id}")
     fun deleteTeam(

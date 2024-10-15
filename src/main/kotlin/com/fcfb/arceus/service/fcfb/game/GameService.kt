@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
@@ -30,6 +30,11 @@ class GameService(
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
+    /**
+     * Get an ongoing game by id
+     * @param id
+     * @return
+     */
     fun getGameById(
         id: Int
     ): ResponseEntity<Game> {
@@ -37,6 +42,11 @@ class GameService(
         return ResponseEntity(ongoingGameData, HttpStatus.OK)
     }
 
+    /**
+     * Get an ongoing game by platform id
+     * @param channelId
+     * @return
+     */
     fun getOngoingGameByDiscordChannelId(
         channelId: String?
     ): ResponseEntity<Game> {
@@ -47,16 +57,28 @@ class GameService(
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun getOngoingGameByDiscordUserId(
-        userId: String?
+    /**
+     * Get an ongoing game by Discord user id
+     * @param discordId
+     * @return
+     */
+    fun getOngoingGameByDiscordId(
+        discordId: String?
     ): ResponseEntity<Game> {
-        val ongoingGameData = gameRepository.findByHomeCoachDiscordId(userId)
-            ?: gameRepository.findByAwayCoachDiscordId(userId)
+        val ongoingGameData = gameRepository.findByHomeCoachDiscordId1(discordId)
+            ?: gameRepository.findByHomeCoachDiscordId2(discordId)
+            ?: gameRepository.findByAwayCoachDiscordId1(discordId)
+            ?: gameRepository.findByAwayCoachDiscordId2(discordId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
+    /**
+     * Start a game
+     * @param startRequest
+     * @return
+     */
     fun startGame(
         startRequest: StartRequest
     ): ResponseEntity<Game> {
@@ -84,10 +106,40 @@ class GameService(
             // Validate request fields
             val homeTeam = startRequest.homeTeam ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val awayTeam = startRequest.awayTeam ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val homeCoachUsername = homeTeamData.coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val awayCoachUsername = awayTeamData.coachUsername ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val homeCoachDiscordId = homeTeamData.coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val awayCoachDiscordId = awayTeamData.coachDiscordId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+
+            // If the second coach username is not null, there is a coordinator
+            var homeCoachUsername1: String?
+            var homeCoachUsername2: String?
+            var homeCoachDiscordId1: String?
+            var homeCoachDiscordId2: String?
+            var awayCoachUsername1: String?
+            var awayCoachUsername2: String?
+            var awayCoachDiscordId1: String?
+            var awayCoachDiscordId2: String?
+            if (homeTeamData.coachUsername2 != null) {
+                homeCoachUsername1 = homeTeamData.coachUsername1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                homeCoachUsername2 = homeTeamData.coachUsername2 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                homeCoachDiscordId1 = homeTeamData.coachDiscordId1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                homeCoachDiscordId2 = homeTeamData.coachDiscordId2 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            } else {
+                homeCoachUsername1 = homeTeamData.coachUsername1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                homeCoachUsername2 = null
+                homeCoachDiscordId1 = homeTeamData.coachDiscordId1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                homeCoachDiscordId2 = null
+            }
+
+            if (awayTeamData.coachUsername2 != null) {
+                awayCoachUsername1 = awayTeamData.coachUsername1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                awayCoachUsername2 = awayTeamData.coachUsername2 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                awayCoachDiscordId1 = awayTeamData.coachDiscordId1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                awayCoachDiscordId2 = awayTeamData.coachDiscordId2 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            } else {
+                awayCoachUsername1 = awayTeamData.coachUsername1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                awayCoachUsername2 = null
+                awayCoachDiscordId1 = awayTeamData.coachDiscordId1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                awayCoachDiscordId2 = null
+            }
+
             val homeOffensivePlaybook = homeTeamData.offensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val awayOffensivePlaybook = awayTeamData.offensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
@@ -101,10 +153,14 @@ class GameService(
                 Game(
                     homeTeam = homeTeam,
                     awayTeam = awayTeam,
-                    homeCoach = homeCoachUsername,
-                    awayCoach = awayCoachUsername,
-                    homeCoachDiscordId = homeCoachDiscordId,
-                    awayCoachDiscordId = awayCoachDiscordId,
+                    homeCoach1 = homeCoachUsername1,
+                    homeCoach2 = homeCoachUsername2,
+                    awayCoach1 = awayCoachUsername1,
+                    awayCoach2 = awayCoachUsername2,
+                    homeCoachDiscordId1 = homeCoachDiscordId1,
+                    homeCoachDiscordId2 = homeCoachDiscordId2,
+                    awayCoachDiscordId1 = awayCoachDiscordId1,
+                    awayCoachDiscordId2 = awayCoachDiscordId2,
                     homeOffensivePlaybook = homeOffensivePlaybook,
                     awayOffensivePlaybook = awayOffensivePlaybook,
                     homeDefensivePlaybook = homeDefensivePlaybook,
@@ -179,6 +235,12 @@ class GameService(
         }
     }
 
+    /**
+     * Run a coin toss
+     * @param gameId
+     * @param coinTossCall
+     * @return
+     */
     fun runCoinToss(
         gameId: String,
         coinTossCall: CoinTossCall
@@ -202,6 +264,12 @@ class GameService(
         }
     }
 
+    /**
+     * Make a coin toss choice
+     * @param gameId
+     * @param coinTossChoice
+     * @return
+     */
     fun makeCoinTossChoice(
         gameId: String,
         coinTossChoice: CoinTossChoice

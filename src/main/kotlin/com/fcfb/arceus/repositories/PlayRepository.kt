@@ -13,6 +13,6 @@ interface PlayRepository : CrudRepository<Play?, Int?> {
     @Query(value = "SELECT * FROM play WHERE game_id = ? AND play_id < ? ORDER BY play_id DESC LIMIT 1", nativeQuery = true)
     fun findPreviousPlay(gameId: Int, playId: Int): Play?
 
-    @Query(value = "SELECT * FROM play WHERE game_id = ? ORDER BY play_id DESC LIMIT 1", nativeQuery = true)
+    @Query(value = "SELECT * FROM play WHERE game_id = ? ORDER BY play_id DESC", nativeQuery = true)
     fun findAllByGameId(gameId: Int): List<Play>?
 }

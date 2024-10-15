@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameStatus

@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.GameStats
@@ -16,7 +16,7 @@ class GameStatsService(
 ) {
     fun createGameStats(
         game: Game
-    ): GameStats? {
+    ): GameStats {
 
         val homeTeam = teamRepository.findByName(game.homeTeam ?: throw Exception("Could not create game stats, could not get home team")) ?: throw Exception("Could not create game stats, could not get home team")
         val awayTeam = teamRepository.findByName(game.awayTeam ?: throw Exception("Could not create game stats, could not get away team")) ?: throw Exception("Could not create game stats, could not get away team")
@@ -30,8 +30,10 @@ class GameStatsService(
             startTime = game.startTime,
             location = game.location,
             tvChannel = game.tvChannel,
-            homeCoach = game.homeCoach,
-            awayCoach = game.awayCoach,
+            homeCoach1 = game.homeCoach1,
+            homeCoach2 = game.homeCoach2,
+            awayCoach1 = game.awayCoach1,
+            awayCoach2 = game.awayCoach2,
             homeOffensivePlaybook = game.homeOffensivePlaybook,
             awayOffensivePlaybook = game.awayOffensivePlaybook,
             homeDefensivePlaybook = game.homeDefensivePlaybook,

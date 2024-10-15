@@ -80,7 +80,7 @@ class GameHandler(
         }
 
         // Handle halftime
-        if (game.quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+        if (quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
             game.gameStatus = GameStatus.HALFTIME
             game.currentPlayType = PlayType.KICKOFF
             game.ballLocation = 35

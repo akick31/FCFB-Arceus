@@ -32,44 +32,60 @@ class Game {
     var awayTeam: String? = "away team"
 
     @Basic
-    @Column(name = "home_coach")
-    @JsonProperty("home_coach")
-    var homeCoach: String? = "home coach"
+    @Column(name = "home_coach1")
+    @JsonProperty("home_coach1")
+    var homeCoach1: String? = "home coach"
 
     @Basic
-    @Column(name = "away_coach")
-    @JsonProperty("away_coach")
-    var awayCoach: String? = "away coach"
+    @Column(name = "home_coach2")
+    @JsonProperty("home_coach2")
+    var homeCoach2: String? = null
 
     @Basic
-    @Column(name = "home_coach_discord_id")
-    @JsonProperty("home_coach_discord_id")
-    var homeCoachDiscordId: String? = null
+    @Column(name = "away_coach1")
+    @JsonProperty("away_coach1")
+    var awayCoach1: String? = "away coach"
 
     @Basic
-    @Column(name = "away_coach_discord_id")
-    @JsonProperty("away_coach_discord_id")
-    var awayCoachDiscordId: String? = null
+    @Column(name = "away_coach2")
+    @JsonProperty("away_coach2")
+    var awayCoach2: String? = null
 
-    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "home_coach_discord_id1")
+    @JsonProperty("home_coach_discord_id1")
+    var homeCoachDiscordId1: String? = null
+
+    @Basic
+    @Column(name = "home_coach_discord_id2")
+    @JsonProperty("home_coach_discord_id2")
+    var homeCoachDiscordId2: String? = null
+
+    @Basic
+    @Column(name = "away_coach_discord_id1")
+    @JsonProperty("away_coach_discord_id1")
+    var awayCoachDiscordId1: String? = null
+
+    @Basic
+    @Column(name = "away_coach_discord_id2")
+    @JsonProperty("away_coach_discord_id2")
+    var awayCoachDiscordId2: String? = null
+
     @Basic
     @Column(name = "home_offensive_playbook")
     @JsonProperty("home_offensive_playbook")
     lateinit var homeOffensivePlaybook: OffensivePlaybook
 
-    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_offensive_playbook")
     @JsonProperty("away_offensive_playbook")
     lateinit var awayOffensivePlaybook: OffensivePlaybook
 
-    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "home_defensive_playbook")
     @JsonProperty("home_defensive_playbook")
     lateinit var homeDefensivePlaybook: DefensivePlaybook
 
-    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_defensive_playbook")
     @JsonProperty("away_defensive_playbook")
@@ -284,10 +300,14 @@ class Game {
     constructor(
         homeTeam: String,
         awayTeam: String,
-        homeCoach: String,
-        awayCoach: String,
-        homeCoachDiscordId: String,
-        awayCoachDiscordId: String,
+        homeCoach1: String,
+        homeCoach2: String?,
+        awayCoach1: String,
+        awayCoach2: String?,
+        homeCoachDiscordId1: String,
+        homeCoachDiscordId2: String?,
+        awayCoachDiscordId1: String,
+        awayCoachDiscordId2: String?,
         homeOffensivePlaybook: OffensivePlaybook,
         awayOffensivePlaybook: OffensivePlaybook,
         homeDefensivePlaybook: DefensivePlaybook,
@@ -334,10 +354,14 @@ class Game {
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
-        this.homeCoach = homeCoach
-        this.awayCoach = awayCoach
-        this.homeCoachDiscordId = homeCoachDiscordId
-        this.awayCoachDiscordId = awayCoachDiscordId
+        this.homeCoach1 = homeCoach1
+        this.homeCoach2 = homeCoach2
+        this.awayCoach1 = awayCoach1
+        this.awayCoach2 = awayCoach2
+        this.homeCoachDiscordId1 = homeCoachDiscordId1
+        this.homeCoachDiscordId2 = homeCoachDiscordId2
+        this.awayCoachDiscordId1 = awayCoachDiscordId1
+        this.awayCoachDiscordId2 = awayCoachDiscordId2
         this.homeOffensivePlaybook = homeOffensivePlaybook
         this.awayOffensivePlaybook = awayOffensivePlaybook
         this.homeDefensivePlaybook = homeDefensivePlaybook
@@ -384,61 +408,6 @@ class Game {
     }
 
     constructor()
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            gameId,
-            homeTeam,
-            awayTeam,
-            homeCoach,
-            awayCoach,
-            homeCoachDiscordId,
-            awayCoachDiscordId,
-            homeOffensivePlaybook,
-            awayOffensivePlaybook,
-            homeDefensivePlaybook,
-            awayDefensivePlaybook,
-            homeScore,
-            awayScore,
-            possession,
-            quarter,
-            clock,
-            ballLocation,
-            down,
-            yardsToGo,
-            tvChannel,
-            startTime,
-            location,
-            homeWins,
-            homeLosses,
-            awayWins,
-            awayLosses,
-            scorebug,
-            subdivision,
-            timestamp,
-            winProbability,
-            season,
-            week,
-            waitingOn,
-            winProbabilityPlot,
-            scorePlot,
-            numPlays,
-            homeTimeouts,
-            awayTimeouts,
-            coinTossWinner,
-            coinTossChoice,
-            homePlatform,
-            homePlatformId,
-            awayPlatform,
-            awayPlatformId,
-            gameTimer,
-            currentPlayType,
-            currentPlayId,
-            clockStopped,
-            gameStatus,
-            gameType
-        )
-    }
 
     enum class GameStatus(val description: String) {
         PREGAME("PREGAME"),

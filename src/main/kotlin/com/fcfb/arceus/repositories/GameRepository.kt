@@ -13,11 +13,17 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE away_platform = ? && away_platform_id = ?", nativeQuery = true)
     fun findByAwayPlatformId(platform: String?, platformId: String?): Game?
 
-    @Query(value = "SELECT * FROM game WHERE home_coach_discord_id = ?", nativeQuery = true)
-    fun findByHomeCoachDiscordId(homeCoachDiscordId: String?): Game?
+    @Query(value = "SELECT * FROM game WHERE home_coach_discord_id1 = ?", nativeQuery = true)
+    fun findByHomeCoachDiscordId1(homeCoachDiscordId: String?): Game?
 
-    @Query(value = "SELECT * FROM game WHERE away_coach_discord_id = ?", nativeQuery = true)
-    fun findByAwayCoachDiscordId(awayCoachDiscordId: String?): Game?
+    @Query(value = "SELECT * FROM game WHERE home_coach_discord_id2 = ?", nativeQuery = true)
+    fun findByHomeCoachDiscordId2(homeCoachDiscordId: String?): Game?
+
+    @Query(value = "SELECT * FROM game WHERE away_coach_discord_id1 = ?", nativeQuery = true)
+    fun findByAwayCoachDiscordId1(awayCoachDiscordId: String?): Game?
+
+    @Query(value = "SELECT * FROM game WHERE away_coach_discord_id2 = ?", nativeQuery = true)
+    fun findByAwayCoachDiscordId2(awayCoachDiscordId: String?): Game?
 
     @Query(value = "SELECT * FROM game WHERE game_id =?", nativeQuery = true)
     fun findByGameId(gameId: Int): Game?

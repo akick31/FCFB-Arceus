@@ -2,7 +2,7 @@ package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.RunoffType
-import com.fcfb.arceus.service.game.PlayService
+import com.fcfb.arceus.service.fcfb.game.PlayService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
@@ -25,9 +25,10 @@ class PlayController(
     @PostMapping("/submit_defense")
     fun defensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
+        @RequestParam("defensiveSubmitter") defensiveSubmitter: String,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean?
-    ) = playService.defensiveNumberSubmitted(gameId, defensiveNumber, timeoutCalled)
+    ) = playService.defensiveNumberSubmitted(gameId, defensiveSubmitter, defensiveNumber, timeoutCalled)
 
     /**
      * The offensive number was submitted, run the play
@@ -41,9 +42,12 @@ class PlayController(
     @PutMapping("/submit_offense")
     fun offensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
+        @RequestParam("offensiveSubmitter") offensiveSubmitter: String,
         @RequestParam("offensiveNumber") offensiveNumber: Int,
         @RequestParam("playCall") playCall: PlayCall,
         @RequestParam("runoffType") runoffType: RunoffType,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean,
-    ) = playService.offensiveNumberSubmitted(gameId, offensiveNumber, playCall, runoffType, timeoutCalled)
+    ) = playService.offensiveNumberSubmitted(gameId, offensiveSubmitter, offensiveNumber, playCall, runoffType, timeoutCalled)
+
+    //TODO: Rollback play
 }

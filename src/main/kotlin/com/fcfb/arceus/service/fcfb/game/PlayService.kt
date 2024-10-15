@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.PlayCall
@@ -8,7 +8,7 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.StatsHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
-import com.fcfb.arceus.service.game.ScorebugService
+import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
@@ -31,26 +31,20 @@ class PlayService(
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
      * @param gameId
+     * @param defensiveSubmitter
      * @param defensiveNumber
+     * @param timeoutCalled
      * @return
      */
     fun defensiveNumberSubmitted(
         gameId: Int,
+        defensiveSubmitter: String,
         defensiveNumber: Int,
         timeoutCalled: Boolean?
     ): ResponseEntity<Any> {
         return try {
             val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(headers.add("Error-Message", "Could not find game with game ID"), HttpStatus.NOT_FOUND)
 
-            val offensiveSubmitter: String?
-            val defensiveSubmitter: String?
-            if (game.possession == TeamSide.HOME) {
-                offensiveSubmitter = game.homeCoach
-                defensiveSubmitter = game.awayCoach
-            } else {
-                offensiveSubmitter = game.awayCoach
-                defensiveSubmitter = game.homeCoach
-            }
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
             val clock: Int = gameHandler.convertClockToSeconds(game.clock ?: return ResponseEntity(headers.add("Error-Message", "Could not find clock for game"), HttpStatus.BAD_REQUEST))
             val gamePlay: Play = playRepository.save(
@@ -67,7 +61,7 @@ class PlayService(
                     game.yardsToGo,
                     encryptedDefensiveNumber,
                     "0",
-                    offensiveSubmitter,
+                    null,
                     defensiveSubmitter,
                     null,
                     null,
@@ -102,7 +96,8 @@ class PlayService(
 
     /**
      * The offensive number was submitted, run the play
-     * @param playId
+     * @param gameId
+     * @param offensiveSubmitter
      * @param offensiveNumber
      * @param playCall
      * @param runoffType
@@ -111,6 +106,7 @@ class PlayService(
      */
     fun offensiveNumberSubmitted(
         gameId: Int,
+        offensiveSubmitter: String,
         offensiveNumber: Int,
         playCall: PlayCall,
         runoffType: RunoffType,
@@ -119,6 +115,7 @@ class PlayService(
         return try {
             val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue finding the game"), HttpStatus.NOT_FOUND)
             var gamePlay = playRepository.findByPlayId(game.currentPlayId!!) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue finding the play"), HttpStatus.NOT_FOUND)
+            gamePlay.offensiveSubmitter = offensiveSubmitter
 
             val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: return ResponseEntity(headers.add("Error-Message", "There was an issue decrypting the defensive number"), HttpStatus.BAD_REQUEST))
 

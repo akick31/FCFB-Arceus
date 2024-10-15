@@ -41,7 +41,7 @@ class Play {
     var awayScore: Int? = null
 
     @Basic
-    @Column(name = "game_quarter")
+    @Column(name = "quarter")
     var quarter: Int? = null
 
     @Basic
@@ -230,81 +230,4 @@ class Play {
     }
 
     constructor()
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            gameId,
-            playNumber,
-            homeScore,
-            awayScore,
-            quarter,
-            clock,
-            ballLocation,
-            possession,
-            down,
-            yardsToGo,
-            defensiveNumber,
-            offensiveNumber,
-            defensiveSubmitter,
-            offensiveSubmitter,
-            playCall,
-            result,
-            difference,
-            actualResult,
-            yards,
-            playTime,
-            runoffTime,
-            winProbability,
-            winProbabilityAdded,
-            homeTeam,
-            awayTeam,
-            playId,
-            timeoutUsed,
-            offensiveTimeoutCalled,
-            defensiveTimeoutCalled,
-            homeTimeouts,
-            awayTimeouts,
-            playFinished,
-            offensiveResponseSpeed,
-            defensiveResponseSpeed
-        )
-    }
-
-    override fun toString(): String {
-        return """{
-          "gameId": "$gameId",
-          "playNumber": "$playNumber",
-          "homeScore": "$homeScore",
-          "awayScore": "$awayScore",
-          "quarter": "$quarter",
-          "clock": "$clock",
-          "ballLocation": "$ballLocation",
-          "possession": "$possession",
-          "down": "$down",
-          "yardsToGo": "$yardsToGo",
-          "defensiveNumber": "$defensiveNumber",
-          "offensiveNumber": "$offensiveNumber",
-          "offensiveSubmitter": "$offensiveSubmitter",
-          "defensiveSubmitter": "$defensiveSubmitter",
-          "playCall": "$playCall",
-          "result": "$result",
-          "actualResult": "$actualResult",
-          "yards": "$yards",
-          "playTime": "$playTime",
-          "runoffTime": "$runoffTime",
-          "winProbability": "$winProbability",
-          "winProbabilityAdded": "$winProbabilityAdded",
-          "homeTeam": "$homeTeam",
-          "awayTeam": "$awayTeam",
-          "difference": "$difference",
-          "timeoutUsed": "$timeoutUsed",
-          "offensiveTimeoutCalled": "$offensiveTimeoutCalled",
-          "defensiveTimeoutCalled": "$defensiveTimeoutCalled",
-          "homeTimeouts": "$homeTimeouts",
-          "awayTimeouts": "$awayTimeouts",
-          "playFinished": "$playFinished",
-          "offensiveResponseSpeed": "$offensiveResponseSpeed",
-          "defensiveResponseSpeed": "$defensiveResponseSpeed"
-        }"""
-    }
 }

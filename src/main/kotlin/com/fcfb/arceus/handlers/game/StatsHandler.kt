@@ -437,8 +437,12 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val puntList = allPlays.filter { it.playCall == PlayCall.PUNT && it.possession == possession }
-        val average = puntList.map { it.result?.description?.substringBefore(" YARD PUNT")?.toInt() ?: 0}.average()
+        val average = allPlays.filter {
+            it.playCall == PlayCall.PUNT && it.possession == possession
+            && it.result?.description?.contains(" YARD PUNT") ?: false
+        }.map {
+            it.result?.description?.substringBefore(" YARD PUNT")?.toInt() ?: 0
+        }.average()
         return if (average.isNaN()) {
             0.0
         } else {
