@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.game
+package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.repositories.GameWriteupRepository
 import org.springframework.stereotype.Component
@@ -8,6 +8,7 @@ class GameWriteupService(
     private var gameWriteupRepository: GameWriteupRepository?
 ) {
     fun getGameMessageByScenario(
-        scenario: String
-    ) = gameWriteupRepository?.findByScenario(scenario)?.message
+        scenario: String,
+        passOrRun: String?
+    ) = gameWriteupRepository?.findByScenario(scenario, passOrRun)?.message
 }

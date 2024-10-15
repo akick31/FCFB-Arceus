@@ -1,7 +1,5 @@
 package com.fcfb.arceus.service.discord
 
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
@@ -19,7 +17,7 @@ import org.springframework.web.client.RestTemplate
 class DiscordService(
     private val restTemplate: RestTemplate
 ) {
-    private var discordBotUrl = "http://0.0.0.0:1212/zebstrika"
+    private var discordBotUrl = "http://0.0.0.0:1212/fcfb_discord_ref_bot"
 
     @Value("\${discord.guild.id}")
     private val guildId: String? = null
@@ -32,7 +30,7 @@ class DiscordService(
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)
-        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).toString()
+        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).body!!
     }
 
     suspend fun getUserByDiscordTag(

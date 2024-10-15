@@ -1,13 +1,16 @@
 package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.Result
 import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Possession
+import com.fcfb.arceus.domain.Game.Scenario
+import com.fcfb.arceus.domain.Game.TeamSide
+import java.math.BigInteger
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -38,8 +41,8 @@ class Play {
     var awayScore: Int? = null
 
     @Basic
-    @Column(name = "game_quarter")
-    var gameQuarter: Int? = null
+    @Column(name = "quarter")
+    var quarter: Int? = null
 
     @Basic
     @Column(name = "clock")
@@ -49,9 +52,10 @@ class Play {
     @Column(name = "ball_location")
     var ballLocation: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
-    var possession: Possession? = null
+    var possession: TeamSide? = null
 
     @Basic
     @Column(name = "down")
@@ -77,18 +81,20 @@ class Play {
     @Column(name = "offensive_submitter")
     var offensiveSubmitter: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "play_call")
     var playCall: PlayCall? = null
 
     @Basic
     @Column(name = "result")
-    var result: Result? = null
+    var result: Scenario? = null
 
     @Basic
     @Column(name = "difference")
     var difference: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "actual_result")
     var actualResult: ActualResult? = null
@@ -110,6 +116,10 @@ class Play {
     var winProbability: Double? = null
 
     @Basic
+    @Column(name = "win_probability_added")
+    var winProbabilityAdded: Double? = null
+
+    @Basic
     @Column(name = "home_team")
     var homeTeam: String? = null
 
@@ -120,6 +130,14 @@ class Play {
     @Basic
     @Column(name = "timeout_used")
     var timeoutUsed: Boolean? = null
+
+    @Basic
+    @Column(name = "offensive_timeout_called")
+    var offensiveTimeoutCalled: Boolean? = null
+
+    @Basic
+    @Column(name = "defensive_timeout_called")
+    var defensiveTimeoutCalled: Boolean? = null
 
     @Basic
     @Column(name = "home_timeouts")
@@ -133,6 +151,14 @@ class Play {
     @Column(name = "play_finished")
     var playFinished: Boolean? = null
 
+    @Basic
+    @Column(name = "offensive_response_speed")
+    var offensiveResponseSpeed: BigInteger? = null
+
+    @Basic
+    @Column(name = "defensive_response_speed")
+    var defensiveResponseSpeed: BigInteger? = null
+
     constructor(
         gameId: Int,
         playNumber: Int,
@@ -141,7 +167,7 @@ class Play {
         quarter: Int?,
         clock: Int?,
         ballLocation: Int?,
-        possession: Possession?,
+        possession: TeamSide?,
         down: Int?,
         yardsToGo: Int?,
         defensiveNumber: String?,
@@ -149,25 +175,30 @@ class Play {
         offensiveSubmitter: String?,
         defensiveSubmitter: String?,
         playCall: PlayCall?,
-        result: Result?,
+        result: Scenario?,
         actualResult: ActualResult?,
         yards: Int,
         playTime: Int,
         runoffTime: Int,
         winProbability: Double?,
+        winProbabilityAdded: Double,
         homeTeam: String?,
         awayTeam: String?,
         difference: Int,
         timeoutUsed: Boolean?,
+        offensiveTimeoutCalled: Boolean?,
+        defensiveTimeoutCalled: Boolean?,
         homeTimeouts: Int,
         awayTimeouts: Int,
-        playFinished: Boolean?
+        playFinished: Boolean?,
+        offensiveResponseSpeed: BigInteger?,
+        defensiveResponseSpeed: BigInteger?,
     ) {
         this.gameId = gameId
         this.playNumber = playNumber
         this.homeScore = homeScore
         this.awayScore = awayScore
-        gameQuarter = quarter
+        this.quarter = quarter
         this.clock = clock
         this.ballLocation = ballLocation
         this.possession = possession
@@ -184,88 +215,19 @@ class Play {
         this.playTime = playTime
         this.runoffTime = runoffTime
         this.winProbability = winProbability
+        this.winProbabilityAdded = winProbabilityAdded
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
         this.difference = difference
         this.timeoutUsed = timeoutUsed
+        this.offensiveTimeoutCalled = offensiveTimeoutCalled
+        this.defensiveTimeoutCalled = defensiveTimeoutCalled
         this.homeTimeouts = homeTimeouts
         this.awayTimeouts = awayTimeouts
         this.playFinished = playFinished
+        this.offensiveResponseSpeed = offensiveResponseSpeed
+        this.defensiveResponseSpeed = defensiveResponseSpeed
     }
 
     constructor()
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as com.fcfb.arceus.domain.Play
-        return playNumber == that.playNumber && gameId == that.gameId && homeScore == that.homeScore && awayScore == that.awayScore && gameQuarter == that.gameQuarter && clock == that.clock && ballLocation == that.ballLocation && possession == that.possession && down == that.down && yardsToGo == that.yardsToGo && defensiveNumber == that.defensiveNumber && offensiveNumber == that.offensiveNumber && defensiveSubmitter == that.defensiveSubmitter && offensiveSubmitter == that.offensiveSubmitter && playCall == that.playCall && result == that.result && difference == that.difference && actualResult == that.actualResult && yards == that.yards && playTime == that.playTime && runoffTime == that.runoffTime && winProbability == that.winProbability && homeTeam == that.homeTeam && awayTeam == that.awayTeam && playId == that.playId && timeoutUsed == that.timeoutUsed && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && playFinished == that.playFinished
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            gameId,
-            playNumber,
-            homeScore,
-            awayScore,
-            gameQuarter,
-            clock,
-            ballLocation,
-            possession,
-            down,
-            yardsToGo,
-            defensiveNumber,
-            offensiveNumber,
-            defensiveSubmitter,
-            offensiveSubmitter,
-            playCall,
-            result,
-            difference,
-            actualResult,
-            yards,
-            playTime,
-            runoffTime,
-            winProbability,
-            homeTeam,
-            awayTeam,
-            playId,
-            timeoutUsed,
-            homeTimeouts,
-            awayTimeouts,
-            playFinished
-        )
-    }
-
-    override fun toString(): String {
-        return """{
-  "gameId": "$gameId",
-  "playNumber": "$playNumber",
-  "homeScore": "$homeScore",
-  "awayScore": "$awayScore",
-  "quarter": "$gameQuarter",
-  "clock": "$clock",
-  "ballLocation": "$ballLocation",
-  "possession": "$possession",
-  "down": "$down",
-  "yardsToGo": "$yardsToGo",
-  "defensiveNumber": "$defensiveNumber",
-  "offensiveNumber": "$offensiveNumber",
-  "offensiveSubmitter": "$offensiveSubmitter",
-  "defensiveSubmitter": "$defensiveSubmitter",
-  "playCall": "$playCall",
-  "result": "$result",
-  "actualResult": "$actualResult",
-  "yards": "$yards",
-  "playTime": "$playTime",
-  "runoffTime": "$runoffTime",
-  "winProbability": "$winProbability",
-  "homeTeam": "$homeTeam",
-  "awayTeam": "$awayTeam",
-  "difference": "$difference",
-  "timeoutUsed": "$timeoutUsed",
-  "homeTimeouts": "$homeTimeouts",
-  "awayTimeouts": "$awayTimeouts",
-  "playFinished": "$playFinished"
-}"""
-    }
 }

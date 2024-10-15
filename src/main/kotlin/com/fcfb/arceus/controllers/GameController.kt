@@ -4,7 +4,10 @@ import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.discord.DiscordService
-import com.fcfb.arceus.service.game.GameService
+import com.fcfb.arceus.service.fcfb.game.GameService
+import org.springframework.http.HttpHeaders
+import org.springframework.http.HttpStatus
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -34,14 +37,20 @@ class GameController(
     ) = gamesService.getGameById(id)
 
     /**
-     * Get an ongoing game by platform id
+     * Get an ongoing game by channel or user id
      * @param channelId
+     * @param discordId
      * @return
      */
     @GetMapping("/discord")
-    fun getOngoingGameByDiscordChannelId(
-        @RequestParam("channelId") channelId: String?
-    ) = gamesService.getOngoingGameByDiscordChannelId(channelId)
+    fun getOngoingGame(
+        @RequestParam("channelId", required = false) channelId: String?,
+        @RequestParam("userId", required = false) discordId: String?
+    ) = when {
+            channelId != null -> gamesService.getOngoingGameByDiscordChannelId(channelId)
+            discordId != null -> gamesService.getOngoingGameByDiscordId(discordId)
+            else -> ResponseEntity(HttpHeaders(), HttpStatus.BAD_REQUEST)
+        }
 
     /**
      * Start a game
@@ -71,23 +80,11 @@ class GameController(
      * @param coinTossChoice
      * @return
      */
-    @PutMapping("/coin_toss_choice")
-    fun updateCoinTossChoice(
+    @PutMapping("/make_coin_toss_choice")
+    fun updateGame(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice
-    ) = gamesService.updateCoinTossChoice(gameId, coinTossChoice)
-
-    /**
-     * Update the user being waited on, also update the game timer
-     * @param gameId
-     * @param username
-     * @return
-     */
-    @PutMapping("/update_waiting_on")
-    fun updateWaitingOn(
-        @RequestParam("gameId") gameId: String,
-        @RequestParam("username") username: String
-    ) = gamesService.updateWaitingOn(gameId, username)
+    ) = gamesService.makeCoinTossChoice(gameId, coinTossChoice)
 
     /**
      * Delete an ongoing game
@@ -98,4 +95,6 @@ class GameController(
     fun deleteOngoingGame(
         @PathVariable("id") id: Int
     ) = gamesService.deleteOngoingGame(id)
+
+    //TODO: end game
 }

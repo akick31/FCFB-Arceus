@@ -5,6 +5,8 @@ import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -30,24 +32,44 @@ class Game {
     var awayTeam: String? = "away team"
 
     @Basic
-    @Column(name = "home_coach")
-    @JsonProperty("home_coach")
-    var homeCoach: String? = "home coach"
+    @Column(name = "home_coach1")
+    @JsonProperty("home_coach1")
+    var homeCoach1: String? = "home coach"
 
     @Basic
-    @Column(name = "away_coach")
-    @JsonProperty("away_coach")
-    var awayCoach: String? = "away coach"
+    @Column(name = "home_coach2")
+    @JsonProperty("home_coach2")
+    var homeCoach2: String? = null
 
     @Basic
-    @Column(name = "home_coach_discord_id")
-    @JsonProperty("home_coach_discord_id")
-    var homeCoachDiscordId: String? = null
+    @Column(name = "away_coach1")
+    @JsonProperty("away_coach1")
+    var awayCoach1: String? = "away coach"
 
     @Basic
-    @Column(name = "away_coach_discord_id")
-    @JsonProperty("away_coach_discord_id")
-    var awayCoachDiscordId: String? = null
+    @Column(name = "away_coach2")
+    @JsonProperty("away_coach2")
+    var awayCoach2: String? = null
+
+    @Basic
+    @Column(name = "home_coach_discord_id1")
+    @JsonProperty("home_coach_discord_id1")
+    var homeCoachDiscordId1: String? = null
+
+    @Basic
+    @Column(name = "home_coach_discord_id2")
+    @JsonProperty("home_coach_discord_id2")
+    var homeCoachDiscordId2: String? = null
+
+    @Basic
+    @Column(name = "away_coach_discord_id1")
+    @JsonProperty("away_coach_discord_id1")
+    var awayCoachDiscordId1: String? = null
+
+    @Basic
+    @Column(name = "away_coach_discord_id2")
+    @JsonProperty("away_coach_discord_id2")
+    var awayCoachDiscordId2: String? = null
 
     @Basic
     @Column(name = "home_offensive_playbook")
@@ -79,10 +101,11 @@ class Game {
     @JsonProperty("away_score")
     var awayScore: Int? = 0
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
     @JsonProperty("possession")
-    var possession: Possession? = null
+    var possession: TeamSide? = null
 
     @Basic
     @Column(name = "quarter")
@@ -109,6 +132,7 @@ class Game {
     @JsonProperty("yards_to_go")
     var yardsToGo: Int? = 10
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "tv_channel")
     @JsonProperty("tv_channel")
@@ -149,6 +173,7 @@ class Game {
     @JsonProperty("scorebug")
     var scorebug: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "subdivision")
     @JsonProperty("subdivision")
@@ -165,16 +190,6 @@ class Game {
     var winProbability: Double? = null
 
     @Basic
-    @Column(name = "final")
-    @JsonProperty("final")
-    var final: Boolean? = false
-
-    @Basic
-    @Column(name = "ot")
-    @JsonProperty("ot")
-    var ot: Boolean? = false
-
-    @Basic
     @Column(name = "season")
     @JsonProperty("season")
     var season: Int? = null
@@ -184,10 +199,11 @@ class Game {
     @JsonProperty("week")
     var week: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "waiting_on")
     @JsonProperty("waiting_on")
-    var waitingOn: String? = "away"
+    var waitingOn: TeamSide? = TeamSide.AWAY
 
     @Basic
     @Column(name = "win_probability_plot")
@@ -214,16 +230,19 @@ class Game {
     @JsonProperty("away_timeouts")
     var awayTimeouts: Int? = 3
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "coin_toss_winner")
     @JsonProperty("coin_toss_winner")
-    var coinTossWinner: CoinTossWinner? = null
+    var coinTossWinner: TeamSide? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "coin_toss_choice")
     @JsonProperty("coin_toss_choice")
     var coinTossChoice: CoinTossChoice? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "home_platform")
     @JsonProperty("home_platform")
@@ -234,6 +253,7 @@ class Game {
     @JsonProperty("home_platform_id")
     var homePlatformId: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "away_platform")
     @JsonProperty("away_platform")
@@ -249,6 +269,7 @@ class Game {
     @JsonProperty("game_timer")
     var gameTimer: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "current_play_type")
     @JsonProperty("current_play_type")
@@ -260,29 +281,40 @@ class Game {
     var currentPlayId: Int? = null
 
     @Basic
-    @Column(name = "scrimmage")
-    @JsonProperty("scrimmage")
-    var scrimmage: Boolean? = null
-
-    @Basic
     @Column(name = "clock_stopped")
     @JsonProperty("clock_stopped")
     var clockStopped: Boolean? = null
 
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_status")
+    @JsonProperty("game_status")
+    var gameStatus: GameStatus? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_type")
+    @JsonProperty("game_type")
+    var gameType: GameType? = null
+
     constructor(
         homeTeam: String,
         awayTeam: String,
-        homeCoach: String,
-        awayCoach: String,
-        homeCoachDiscordId: String,
-        awayCoachDiscordId: String,
+        homeCoach1: String,
+        homeCoach2: String?,
+        awayCoach1: String,
+        awayCoach2: String?,
+        homeCoachDiscordId1: String,
+        homeCoachDiscordId2: String?,
+        awayCoachDiscordId1: String,
+        awayCoachDiscordId2: String?,
         homeOffensivePlaybook: OffensivePlaybook,
         awayOffensivePlaybook: OffensivePlaybook,
         homeDefensivePlaybook: DefensivePlaybook,
         awayDefensivePlaybook: DefensivePlaybook,
         homeScore: Int,
         awayScore: Int,
-        possession: Possession?,
+        possession: TeamSide?,
         quarter: Int,
         clock: String,
         ballLocation: Int?,
@@ -299,17 +331,15 @@ class Game {
         subdivision: Subdivision,
         timestamp: String?,
         winProbability: Double?,
-        final: Boolean,
-        ot: Boolean,
         season: Int?,
         week: Int?,
-        waitingOn: String,
+        waitingOn: TeamSide,
         winProbabilityPlot: String?,
         scorePlot: String?,
         numPlays: Int,
         homeTimeouts: Int,
         awayTimeouts: Int,
-        coinTossWinner: CoinTossWinner?,
+        coinTossWinner: TeamSide?,
         coinTossChoice: CoinTossChoice?,
         homePlatform: Platform,
         homePlatformId: String?,
@@ -318,15 +348,20 @@ class Game {
         gameTimer: String?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
-        scrimmage: Boolean?,
-        clockStopped: Boolean?
+        clockStopped: Boolean?,
+        gameStatus: GameStatus?,
+        gameType: GameType?
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
-        this.homeCoach = homeCoach
-        this.awayCoach = awayCoach
-        this.homeCoachDiscordId = homeCoachDiscordId
-        this.awayCoachDiscordId = awayCoachDiscordId
+        this.homeCoach1 = homeCoach1
+        this.homeCoach2 = homeCoach2
+        this.awayCoach1 = awayCoach1
+        this.awayCoach2 = awayCoach2
+        this.homeCoachDiscordId1 = homeCoachDiscordId1
+        this.homeCoachDiscordId2 = homeCoachDiscordId2
+        this.awayCoachDiscordId1 = awayCoachDiscordId1
+        this.awayCoachDiscordId2 = awayCoachDiscordId2
         this.homeOffensivePlaybook = homeOffensivePlaybook
         this.awayOffensivePlaybook = awayOffensivePlaybook
         this.homeDefensivePlaybook = homeDefensivePlaybook
@@ -350,8 +385,6 @@ class Game {
         this.subdivision = subdivision
         this.timestamp = timestamp
         this.winProbability = winProbability
-        this.final = final
-        this.ot = ot
         this.season = season
         this.week = week
         this.waitingOn = waitingOn
@@ -369,73 +402,21 @@ class Game {
         this.gameTimer = gameTimer
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
-        this.scrimmage = scrimmage
         this.clockStopped = clockStopped
+        this.gameStatus = gameStatus
+        this.gameType = gameType
     }
 
     constructor()
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as Game
-        return gameId == that.gameId && homeTeam == that.homeTeam && awayTeam == that.awayTeam && homeCoach == that.homeCoach && awayCoach == that.awayCoach && homeCoachDiscordId == that.homeCoachDiscordId && awayCoachDiscordId == that.awayCoachDiscordId && homeOffensivePlaybook == that.homeOffensivePlaybook && awayOffensivePlaybook == that.awayOffensivePlaybook && homeDefensivePlaybook == that.homeDefensivePlaybook && awayDefensivePlaybook == that.awayDefensivePlaybook && homeScore == that.homeScore && awayScore == that.awayScore && possession == that.possession && quarter == that.quarter && clock == that.clock && ballLocation == that.ballLocation && down == that.down && yardsToGo == that.yardsToGo && tvChannel == that.tvChannel && startTime == that.startTime && location == that.location && homeWins == that.homeWins && homeLosses == that.homeLosses && awayWins == that.awayWins && awayLosses == that.awayLosses && scorebug == that.scorebug && subdivision == that.subdivision && timestamp == that.timestamp && winProbability == that.winProbability && final == that.final && ot == that.ot && season == that.season && week == that.week && waitingOn == that.waitingOn && winProbabilityPlot == that.winProbabilityPlot && scorePlot == that.scorePlot && numPlays == that.numPlays && homeTimeouts == that.homeTimeouts && awayTimeouts == that.awayTimeouts && coinTossWinner == that.coinTossWinner && coinTossChoice == that.coinTossChoice && homePlatform == that.homePlatform && homePlatformId == that.homePlatformId && awayPlatform == that.awayPlatform && awayPlatformId == that.awayPlatformId && gameTimer == that.gameTimer && currentPlayType == that.currentPlayType && currentPlayId == that.currentPlayId && scrimmage == that.scrimmage && clockStopped == that.clockStopped
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            gameId,
-            homeTeam,
-            awayTeam,
-            homeCoach,
-            awayCoach,
-            homeCoachDiscordId,
-            awayCoachDiscordId,
-            homeOffensivePlaybook,
-            awayOffensivePlaybook,
-            homeDefensivePlaybook,
-            awayDefensivePlaybook,
-            homeScore,
-            awayScore,
-            possession,
-            quarter,
-            clock,
-            ballLocation,
-            down,
-            yardsToGo,
-            tvChannel,
-            startTime,
-            location,
-            homeWins,
-            homeLosses,
-            awayWins,
-            awayLosses,
-            scorebug,
-            subdivision,
-            timestamp,
-            winProbability,
-            final,
-            ot,
-            season,
-            week,
-            waitingOn,
-            winProbabilityPlot,
-            scorePlot,
-            numPlays,
-            homeTimeouts,
-            awayTimeouts,
-            coinTossWinner,
-            coinTossChoice,
-            homePlatform,
-            homePlatformId,
-            awayPlatform,
-            awayPlatformId,
-            gameTimer,
-            currentPlayType,
-            currentPlayId,
-            scrimmage,
-            clockStopped
-        )
+    enum class GameStatus(val description: String) {
+        PREGAME("PREGAME"),
+        OPENING_KICKOFF("OPENING KICKOFF"),
+        IN_PROGRESS("IN PROGRESS"),
+        HALFTIME("HALFTIME"),
+        FINAL("FINAL"),
+        END_OF_REGULATION("END OF REGULATION"),
+        OVERTIME("OVERTIME");
     }
 
     enum class Subdivision(val description: String) {
@@ -444,21 +425,21 @@ class Game {
 
         companion object {
             fun fromString(description: String): Subdivision? {
-                return Subdivision.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
 
     enum class OffensivePlaybook(val description: String) {
-        FLEXBONE("Flexbone"),
-        AIR_RAID("Air Raid"),
-        PRO("Pro"),
-        SPREAD("Spread"),
-        WEST_COAST("West Coast");
+        FLEXBONE("FLEXBONE"),
+        AIR_RAID("AIR RAID"),
+        PRO("PRO"),
+        SPREAD("SPREAD"),
+        WEST_COAST("WEST COAST");
 
         companion object {
             fun fromString(description: String): OffensivePlaybook? {
-                return OffensivePlaybook.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -472,7 +453,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): DefensivePlaybook? {
-                return DefensivePlaybook.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -498,12 +479,12 @@ class Game {
         PASS("PASS"),
         SPIKE("SPIKE"),
         KNEEL("KNEEL"),
-        FIELD_GOAL("FIELD GOAL"),
+        FIELD_GOAL("FIELD_GOAL"),
         PAT("PAT"),
-        TWO_POINT("TWO POINT"),
-        KICKOFF_NORMAL("KICKOFF NORMAL"),
-        KICKOFF_ONSIDE("KICKOFF ONSIDE"),
-        KICKOFF_SQUIB("KICKOFF SQUIB"),
+        TWO_POINT("TWO_POINT"),
+        KICKOFF_NORMAL("KICKOFF_NORMAL"),
+        KICKOFF_ONSIDE("KICKOFF_ONSIDE"),
+        KICKOFF_SQUIB("KICKOFF_SQUIB"),
         PUNT("PUNT"),
     }
 
@@ -513,9 +494,54 @@ class Game {
         PAT("PAT"),
     }
 
-    enum class Result(val description: String) {
+    enum class ActualResult(val description: String) {
+        FIRST_DOWN("FIRST DOWN"),
+        GAIN("GAIN"),
+        NO_GAIN("NO GAIN"),
+        TURNOVER_ON_DOWNS("TURNOVER ON DOWNS"),
+        TOUCHDOWN("TOUCHDOWN"),
+        SAFETY("SAFETY"),
+        TURNOVER("TURNOVER"),
+        TURNOVER_TOUCHDOWN("TURNOVER TOUCHDOWN"),
+        KICKING_TEAM_TOUCHDOWN("KICKING TEAM TOUCHDOWN"),
+        RETURN_TOUCHDOWN("KICKING TEAM TOUCHDOWN"),
+        MUFFED_KICK("MUFFED KICK"),
+        KICKOFF("KICKOFF"),
+        SUCCESSFUL_ONSIDE("SUCCESSFUL ONSIDE"),
+        FAILED_ONSIDE("FAILED ONSIDE"),
         GOOD("GOOD"),
         NO_GOOD("NO GOOD"),
+        BLOCKED("BLOCKED"),
+        KICK_SIX("KICK SIX"),
+        DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
+        SUCCESS("SUCCESS"),
+        FAILED("NO FAILED"),
+        SPIKE("SPIKE"),
+        KNEEL("KNEEL"),
+        PUNT("PUNT"),
+        PUNT_RETURN_TOUCHDOWN("PUNT RETURN TOUCHDOWN"),
+        PUNT_TEAM_TOUCHDOWN("PUNT TEAM TOUCHDOWN"),
+        MUFFED_PUNT("MUFFED PUNT");
+    }
+
+    enum class RunoffType(val description: String) {
+        CHEW("CHEW"),
+        HURRY("HURRY"),
+        NORMAL("NORMAL"),
+    }
+
+    enum class Scenario(val description: String) {
+        GAME_START("GAME START"),
+        PLAY_RESULT("PLAY RESULT"),
+        COIN_TOSS("COIN_TOSS"),
+        COIN_TOSS_CHOICE("COIN TOSS CHOICE"),
+        KICKOFF_NUMBER_REQUEST("KICKOFF NUMBER REQUEST"),
+        NORMAL_NUMBER_REQUEST("NORMAL NUMBER REQUEST"),
+        DM_NUMBER_REQUEST("DM NUMBER REQUEST"),
+        GOOD("GOOD"),
+        NO_GOOD("NO GOOD"),
+        SUCCESS("SUCCESS"),
+        FAILED("FAILED"),
         NO_GAIN("NO GAIN"),
         INCOMPLETE("INCOMPLETE"),
         LOSS_OF_10_YARDS("-10"),
@@ -557,126 +583,62 @@ class Game {
         GAIN_OF_85_YARDS("85"),
         GAIN_OF_90_YARDS("90"),
         GAIN_OF_95_YARDS("95"),
-        TURNOVER_PLUS_20_YARDS("TURNOVER + 20 YARDS"),
-        TURNOVER_PLUS_15_YARDS("TURNOVER + 15 YARDS"),
-        TURNOVER_PLUS_10_YARDS("TURNOVER + 10 YARDS"),
-        TURNOVER_PLUS_5_YARDS("TURNOVER + 5 YARDS"),
-        TURNOVER("TURNOVER"),
-        TURNOVER_MINUS_5_YARDS("TURNOVER - 5 YARDS"),
-        TURNOVER_MINUS_10_YARDS("TURNOVER - 10 YARDS"),
-        TURNOVER_MINUS_15_YARDS("TURNOVER - 15 YARDS"),
-        TURNOVER_MINUS_20_YARDS("TURNOVER - 20 YARDS"),
+        TURNOVER_PLUS_20_YARDS("TO + 20 YARDS"),
+        TURNOVER_PLUS_15_YARDS("TO + 15 YARDS"),
+        TURNOVER_PLUS_10_YARDS("TO + 10 YARDS"),
+        TURNOVER_PLUS_5_YARDS("TO + 5 YARDS"),
+        TURNOVER("TO"),
+        TURNOVER_MINUS_5_YARDS("TO - 5 YARDS"),
+        TURNOVER_MINUS_10_YARDS("TO - 10 YARDS"),
+        TURNOVER_MINUS_15_YARDS("TO - 15 YARDS"),
+        TURNOVER_MINUS_20_YARDS("TO - 20 YARDS"),
         TURNOVER_ON_DOWNS("TURNOVER ON DOWNS"),
-        TURNOVER_TOUCHDOWN("PICK/FUMBLE SIX"),
+        TURNOVER_TOUCHDOWN("TURNOVER TOUCHDOWN"),
         TOUCHDOWN("TOUCHDOWN"),
         SAFETY("SAFETY"),
         FUMBLE("FUMBLE"),
-        FIVE_YARD_LINE("5"),
-        TEN_YARD_LINE("10"),
-        TWENTY_YARD_LINE("20"),
-        THIRTY_YARD_LINE("30"),
-        THIRTY_FIVE_YARD_LINE("35"),
-        FOURTY_YARD_LINE("40"),
-        FOURTY_FIVE_YARD_LINE("45"),
-        FIFTY_YARD_LINE("50"),
-        SIXTY_FIVE_YARD_LINE("65"),
+        FIVE_YARD_RETURN("5 YARD RETURN"),
+        TEN_YARD_RETURN("10 YARD RETURN"),
+        TWENTY_YARD_RETURN("20 YARD RETURN"),
+        THIRTY_YARD_RETURN("30 YARD RETURN"),
+        THIRTY_FIVE_YARD_RETURN("35 YARD RETURN"),
+        FORTY_YARD_RETURN("40 YARD RETURN"),
+        FORTY_FIVE_YARD_RETURN("45 YARD RETURN"),
+        FIFTY_YARD_RETURN("50 YARD RETURN"),
+        SIXTY_FIVE_YARD_RETURN("65 YARD RETURN"),
         TOUCHBACK("TOUCHBACK"),
         RETURN_TOUCHDOWN("RETURN TOUCHDOWN"),
         RECOVERED("RECOVERED"),
-        DEFENSE_TWO_POINT("DEFENSE TWO POINT");
+        DEFENSE_TWO_POINT("DEFENSE TWO POINT"),
+        SPIKE("SPIKE"),
+        KNEEL("KNEEL"),
+        BLOCKED_PUNT("BLOCKED PUNT"),
+        PUNT_RETURN_TOUCHDOWN("PUNT RETURN TOUCHDOWN"),
+        BLOCKED_FIELD_GOAL("BLOCKED FIELD GOAL"),
+        KICK_SIX("KICK SIX"),
+        FIVE_YARD_PUNT("5 YARD PUNT"),
+        TEN_YARD_PUNT("10 YARD PUNT"),
+        FIFTEEN_YARD_PUNT("15 YARD PUNT"),
+        TWENTY_YARD_PUNT("20 YARD PUNT"),
+        TWENTY_FIVE_YARD_PUNT("25 YARD PUNT"),
+        THIRTY_YARD_PUNT("30 YARD PUNT"),
+        THIRTY_FIVE_YARD_PUNT("35 YARD PUNT"),
+        FORTY_YARD_PUNT("40 YARD PUNT"),
+        FORTY_FIVE_YARD_PUNT("45 YARD PUNT"),
+        FIFTY_YARD_PUNT("50 YARD PUNT"),
+        FIFTY_FIVE_YARD_PUNT("55 YARD PUNT"),
+        SIXTY_YARD_PUNT("60 YARD PUNT"),
+        SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
+        SEVENTY_YARD_PUNT("70 YARD PUNT");
 
         companion object {
-            fun fromString(description: String): Result? {
-                return Result.values().find { it.description == description }
+            fun fromString(description: String): Scenario? {
+                return Scenario.entries.find { it.description == description }
             }
         }
     }
 
-    enum class ActualResult(val description: String) {
-        FIRST_DOWN("FIRST DOWN"),
-        GAIN("GAIN"),
-        NO_GAIN("NO GAIN"),
-        TURNOVER_ON_DOWNS("TURNOVER ON DOWNS"),
-        TOUCHDOWN("TOUCHDOWN"),
-        SAFETY("SAFETY"),
-        TURNOVER("TURNOVER"),
-        TURNOVER_TOUCHDOWN("TURNOVER TOUCHDOWN"),
-        KICKING_TEAM_TOUCHDOWN("KICKING TEAM TOUCHDOWN"),
-        RETURN_TOUCHDOWN("KICKING TEAM TOUCHDOWN"),
-        MUFFED_KICK("MUFFED KICK"),
-        KICKOFF("KICKOFF"),
-        SUCCESSFUL_ONSIDE("SUCCESSFUL ONSIDE"),
-        FAILED_ONSIDE("FAILED ONSIDE"),
-        GOOD("GOOD"),
-        NO_GOOD("NO GOOD"),
-        DEFENSE_TWO_POINT("DEFENSE TWO POINT")
-    }
-
-    enum class RunoffType(val description: String) {
-        CHEW("CHEW"),
-        HURRY("HURRY"),
-        NORMAL("NORMAL"),
-    }
-
-    enum class Scenario(val description: String) {
-        GAME_START("GAME_START"),
-        COIN_TOSS("COIN_TOSS"),
-        TURNOVER_TOUCHDOWN("TURNOVER_TOUCHDOWN"),
-        TURNOVER_PLUS_20("TURNOVER_PLUS_20"),
-        TURNOVER_PLUS_15("TURNOVER_PLUS_15"),
-        TURNOVER_PLUS_10("TURNOVER_PLUS_10"),
-        TURNOVER_PLUS_5("TURNOVER_PLUS_5"),
-        TURNOVER("TURNOVER"),
-        TURNOVER_MINUS_5("TURNOVER_MINUS_5"),
-        TURNOVER_MINUS_10("TURNOVER_MINUS_10"),
-        TURNOVER_MINUS_15("TURNOVER_MINUS_15"),
-        TURNOVER_MINUS_20("TURNOVER_MINUS_20"),
-        LOSS_OF_10("LOSS_OF_10"),
-        LOSS_OF_5("LOSS_OF_5"),
-        LOSS_OF_3("LOSS_OF_3"),
-        LOSS_OF_1("LOSS_OF_1"),
-        NO_GAIN("NO_GAIN"),
-        INCOMPLETE("INCOMPLETE"),
-        GAIN_OF_1("GAIN_OF_1"),
-        GAIN_OF_2("GAIN_OF_2"),
-        GAIN_OF_3("GAIN_OF_3"),
-        GAIN_OF_4("GAIN_OF_4"),
-        GAIN_OF_5("GAIN_OF_5"),
-        GAIN_OF_6("GAIN_OF_6"),
-        GAIN_OF_7("GAIN_OF_7"),
-        GAIN_OF_8("GAIN_OF_8"),
-        GAIN_OF_9("GAIN_OF_9"),
-        GAIN_OF_10("GAIN_OF_10"),
-        GAIN_OF_11("GAIN_OF_11"),
-        GAIN_OF_12("GAIN_OF_12"),
-        GAIN_OF_13("GAIN_OF_13"),
-        GAIN_OF_14("GAIN_OF_14"),
-        GAIN_OF_15("GAIN_OF_15"),
-        GAIN_OF_16("GAIN_OF_16"),
-        GAIN_OF_17("GAIN_OF_17"),
-        GAIN_OF_18("GAIN_OF_18"),
-        GAIN_OF_19("GAIN_OF_19"),
-        GAIN_OF_20("GAIN_OF_20"),
-        GAIN_OF_25("GAIN_OF_25"),
-        GAIN_OF_30("GAIN_OF_30"),
-        GAIN_OF_35("GAIN_OF_35"),
-        GAIN_OF_40("GAIN_OF_40"),
-        GAIN_OF_45("GAIN_OF_45"),
-        GAIN_OF_50("GAIN_OF_50"),
-        GAIN_OF_55("GAIN_OF_55"),
-        GAIN_OF_60("GAIN_OF_60"),
-        GAIN_OF_65("GAIN_OF_65"),
-        GAIN_OF_70("GAIN_OF_70"),
-        GAIN_OF_75("GAIN_OF_75"),
-        GAIN_OF_80("GAIN_OF_80"),
-        GAIN_OF_85("GAIN_OF_85"),
-        GAIN_OF_90("GAIN_OF_90"),
-        GAIN_OF_95("GAIN_OF_95"),
-        TOUCHDOWN("TOUCHDOWN"),
-        // TODO: Add kickoffs, punts, field goals, etc
-    }
-
-    enum class Possession(val description: String) {
+    enum class TeamSide(val description: String) {
         HOME("home"),
         AWAY("away")
     }
@@ -686,13 +648,30 @@ class Game {
         DEFER("defer")
     }
 
-    enum class CoinTossWinner(val description: String) {
-        HOME("home"),
-        AWAY("away")
-    }
-
     enum class CoinTossCall(val description: String) {
         HEADS("heads"),
-        TAILS("tails")
+        TAILS("tails");
+
+        companion object {
+            fun fromString(description: String): CoinTossCall? {
+                return entries.find { it.description == description }
+            }
+        }
+    }
+
+    enum class GameType(val description: String) {
+        OUT_OF_CONFERENCE("Out of Conference"),
+        CONFERENCE_GAME("Conference Game"),
+        CONFERENCE_CHAMPIONSHIP("Conference Championship"),
+        PLAYOFFS("Playoffs"),
+        NATIONAL_CHAMPIONSHIP("National Championship"),
+        BOWL("Bowl"),
+        SCRIMMAGE("Scrimmage");
+
+        companion object {
+            fun fromString(description: String): GameType? {
+                return GameType.values().find { it.description == description }
+            }
+        }
     }
 }

@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.service.game.GameWriteupService
+import com.fcfb.arceus.service.fcfb.game.GameWriteupService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
@@ -13,8 +13,9 @@ import org.springframework.web.bind.annotation.RestController
 class GameWriteupController(
     private var gameMessagesService: GameWriteupService
 ) {
-    @GetMapping("/{scenario}")
+    @GetMapping("/{scenario}/{passOrRun}")
     fun getGameMessageByScenario(
-        @PathVariable scenario: String
-    ) = gameMessagesService.getGameMessageByScenario(scenario)
+        @PathVariable scenario: String,
+        @PathVariable passOrRun: String
+    ) = gameMessagesService.getGameMessageByScenario(scenario, passOrRun)
 }

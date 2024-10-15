@@ -16,10 +16,10 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         nativeQuery = true
     )
     fun findNormalResult(
-        playType: PlayCall?,
-        offensivePlaybook: OffensivePlaybook?,
-        defensivePlaybook: DefensivePlaybook?,
-        difference: Int
+        playType: String?,
+        offensivePlaybook: String?,
+        defensivePlaybook: String?,
+        difference: String
     ): Ranges?
 
     @Query(
@@ -27,7 +27,27 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         nativeQuery = true
     )
     fun findNonNormalResult(
-        playType: PlayCall?,
-        difference: Int
+        playType: String?,
+        difference: String
+    ): Ranges?
+
+    @Query(
+        value = "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN ball_location_lower AND ball_location_upper AND ? BETWEEN lower_range AND upper_range;",
+        nativeQuery = true
+    )
+    fun findPuntResult(
+        playType: String?,
+        ballLocation: String,
+        difference: String
+    ): Ranges?
+
+    @Query(
+        value = "SELECT * FROM ranges WHERE play_type = ? AND distance = ? AND ? BETWEEN lower_range AND upper_range;",
+        nativeQuery = true
+    )
+    fun findFieldGoalResult(
+        playType: String?,
+        distance: String,
+        difference: String
     ): Ranges?
 }

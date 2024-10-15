@@ -6,11 +6,14 @@ import com.fcfb.arceus.converter.SubdivisionConverter
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Subdivision
+import com.fcfb.arceus.domain.User.Role
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Convert
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -29,20 +32,36 @@ class Team {
     var logo: String? = null
 
     @Basic
-    @Column(name = "coach_username")
-    var coachUsername: String? = null
+    @Column(name = "coach_username1")
+    var coachUsername1: String? = null
 
     @Basic
-    @Column(name = "coach_name")
-    var coachName: String? = null
+    @Column(name = "coach_name1")
+    var coachName1: String? = null
 
     @Basic
-    @Column(name = "coach_discord_tag")
-    var coachDiscordTag: String? = null
+    @Column(name = "coach_discord_tag1")
+    var coachDiscordTag1: String? = null
 
     @Basic
-    @Column(name = "coach_discord_id")
-    var coachDiscordId: String? = null
+    @Column(name = "coach_discord_id1")
+    var coachDiscordId1: String? = null
+
+    @Basic
+    @Column(name = "coach_username2")
+    var coachUsername2: String? = null
+
+    @Basic
+    @Column(name = "coach_name2")
+    var coachName2: String? = null
+
+    @Basic
+    @Column(name = "coach_discord_tag2")
+    var coachDiscordTag2: String? = null
+
+    @Basic
+    @Column(name = "coach_discord_id2")
+    var coachDiscordId2: String? = null
 
     @Basic
     @Column(name = "coaches_poll_ranking")
@@ -55,6 +74,10 @@ class Team {
     @Basic
     @Column(name = "playoff_committee_ranking")
     var playoffCommitteeRanking: Int? = null
+
+    @Basic
+    @Column(name = "abbreviation")
+    var abbreviation: String? = null
 
     @Basic
     @Column(name = "primary_color")
@@ -76,9 +99,10 @@ class Team {
     @Column(name = "defensive_playbook")
     var defensivePlaybook: DefensivePlaybook? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "conference")
-    var conference: String? = null
+    var conference: Conference? = null
 
     @Basic
     @Column(name = "current_wins")
@@ -114,19 +138,24 @@ class Team {
 
     constructor(
         logo: String?,
-        coachUsername: String?,
-        coachName: String?,
-        coachDiscordTag: String?,
-        coachDiscordId: String?,
+        coachUsername1: String?,
+        coachName1: String?,
+        coachDiscordTag1: String?,
+        coachDiscordId1: String?,
+        coachUsername2: String?,
+        coachName2: String?,
+        coachDiscordTag2: String?,
+        coachDiscordId2: String?,
         coachesPollRanking: Int?,
         name: String?,
         playoffCommitteeRanking: Int?,
+        abbreviation: String?,
         primaryColor: String?,
         secondaryColor: String?,
         subdivision: Subdivision?,
         offensivePlaybook: OffensivePlaybook?,
         defensivePlaybook: DefensivePlaybook?,
-        conference: String?,
+        conference: Conference?,
         currentWins: Int?,
         currentLosses: Int?,
         overallWins: Int?,
@@ -137,13 +166,18 @@ class Team {
         overallConferenceLosses: Int?
     ) {
         this.logo = logo
-        this.coachUsername = coachUsername
-        this.coachName = coachName
-        this.coachDiscordTag = coachDiscordTag
-        this.coachDiscordId = coachDiscordId
+        this.coachUsername1 = coachUsername1
+        this.coachName1 = coachName1
+        this.coachDiscordTag1 = coachDiscordTag1
+        this.coachDiscordId1 = coachDiscordId1
+        this.coachUsername2 = coachUsername2
+        this.coachName2 = coachName2
+        this.coachDiscordTag2 = coachDiscordTag2
+        this.coachDiscordId2 = coachDiscordId2
         this.coachesPollRanking = coachesPollRanking
         this.name = name
         this.playoffCommitteeRanking = playoffCommitteeRanking
+        this.abbreviation = abbreviation
         this.primaryColor = primaryColor
         this.secondaryColor = secondaryColor
         this.subdivision = subdivision
@@ -162,38 +196,34 @@ class Team {
 
     constructor()
 
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as Team
-        return id == that.id && logo == that.logo && coachUsername == that.coachUsername && coachName == that.coachName && coachDiscordTag == that.coachDiscordTag && coachDiscordId == that.coachDiscordId && coachesPollRanking == that.coachesPollRanking && name == that.name && playoffCommitteeRanking == that.playoffCommitteeRanking && primaryColor == that.primaryColor && secondaryColor == that.secondaryColor && subdivision == that.subdivision && offensivePlaybook == that.offensivePlaybook && defensivePlaybook == that.defensivePlaybook && conference == that.conference && currentWins == that.currentWins && currentLosses == that.currentLosses && overallWins == that.overallWins && overallLosses == that.overallLosses && currentConferenceWins == that.currentConferenceWins && currentConferenceLosses == that.currentConferenceLosses && overallConferenceWins == that.overallConferenceWins && overallConferenceLosses == that.overallConferenceLosses
-    }
+    enum class Conference(val description: String) {
+        ACC("ACC"),
+        AMERICAN("American"),
+        BIG_12("Big 12"),
+        BIG_TEN("Big Ten"),
+        CUSA("C-USA"),
+        FBS_INDEPENDENT("FBS Independent"),
+        MAC("MAC"),
+        MOUNTAIN_WEST("Mountain West"),
+        PAC_12("Pac-12"),
+        SEC("SEC"),
+        SUN_BELT("Sun Belt"),
+        ATLANTIC_SUN("Atlantic Sun"),
+        BIG_SKY("Big Sky"),
+        CAROLINA_FOOTBALL_CONFERENCE("Carolina Football Conference"),
+        MISSOURI_VALLEY("Missouri Valley"),
+        COLONIAL("Colonial"),
+        NEC("NEC"),
+        IVY_LEAGUE("Ivy League"),
+        MID_ATLANTIC("Mid-Atlantic"),
+        SOUTHLAND("Southland"),
+        OHIO_VALLEY("Ohio Valley"),
+        SWAC("SWAC");
 
-    override fun hashCode(): Int {
-        return Objects.hash(
-            id,
-            logo,
-            coachUsername,
-            coachName,
-            coachDiscordTag,
-            coachDiscordId,
-            coachesPollRanking,
-            name,
-            playoffCommitteeRanking,
-            primaryColor,
-            secondaryColor,
-            subdivision,
-            offensivePlaybook,
-            defensivePlaybook,
-            conference,
-            currentWins,
-            currentLosses,
-            overallWins,
-            overallLosses,
-            currentConferenceWins,
-            currentConferenceLosses,
-            overallConferenceWins,
-            overallConferenceLosses
-        )
+        companion object {
+            fun fromString(description: String): Conference? {
+                return Conference.values().find { it.description == description }
+            }
+        }
     }
 }
