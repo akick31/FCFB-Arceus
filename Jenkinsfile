@@ -21,6 +21,13 @@ pipeline {
             }
         }
 
+        stage('Build') {
+            echo 'Building the Arceus with gradle...'
+            steps {
+                sh './gradlew clean build'
+            }
+        }
+
         stage('Build New Docker Image') {
             steps {
                 script {
@@ -32,7 +39,7 @@ pipeline {
             }
         }
 
-        stage('Run New Pong Bot Container') {
+        stage('Run New Arceus Container') {
             steps {
                 script {
                     echo 'Starting the new Arceus container...'
