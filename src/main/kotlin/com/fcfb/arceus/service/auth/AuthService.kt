@@ -9,16 +9,13 @@ import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
-import org.springframework.stereotype.Service
 import java.time.LocalDateTime
 import java.util.UUID
-import javax.transaction.Transactional
 
 @Component
 class AuthService(

@@ -9,8 +9,6 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.models.ExceptionType
-import com.fcfb.arceus.models.handleException
 import com.fcfb.arceus.repositories.GameRepository
 import org.springframework.stereotype.Component
 
@@ -34,12 +32,12 @@ class GameHandler(
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
-                play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
-                play.actualResult == ActualResult.TOUCHDOWN || play.playCall == PlayCall.FIELD_GOAL ||
-                play.playCall == PlayCall.PAT || play.playCall == PlayCall.KICKOFF_NORMAL ||
-                play.playCall == PlayCall.KICKOFF_ONSIDE || play.playCall == PlayCall.KICKOFF_SQUIB ||
-                play.playCall == PlayCall.PUNT || play.actualResult == ActualResult.TURNOVER ||
-                play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
+            play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
+            play.actualResult == ActualResult.TOUCHDOWN || play.playCall == PlayCall.FIELD_GOAL ||
+            play.playCall == PlayCall.PAT || play.playCall == PlayCall.KICKOFF_NORMAL ||
+            play.playCall == PlayCall.KICKOFF_ONSIDE || play.playCall == PlayCall.KICKOFF_SQUIB ||
+            play.playCall == PlayCall.PUNT || play.actualResult == ActualResult.TURNOVER ||
+            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
         if (homeTimeoutCalled) {
@@ -56,7 +54,7 @@ class GameHandler(
         }
 
         // Update waiting on
-        val waitingOn = if (possession == TeamSide.HOME){
+        val waitingOn = if (possession == TeamSide.HOME) {
             TeamSide.AWAY
         } else {
             TeamSide.HOME
@@ -64,7 +62,8 @@ class GameHandler(
 
         // Update the play type
         if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-            play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN) {
+            play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN
+        ) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
             (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || play.playCall == PlayCall.PAT || play.playCall == PlayCall.TWO_POINT

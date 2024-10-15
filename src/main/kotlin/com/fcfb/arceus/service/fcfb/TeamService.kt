@@ -2,9 +2,15 @@ package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
+import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
+import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
+import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.service.discord.DiscordService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -16,7 +22,7 @@ class TeamService(
     var teamRepository: TeamRepository,
     var userRepository: UserRepository,
     private val discordService: DiscordService
-){
+) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
     fun getTeamById(id: Int): ResponseEntity<Team> {
@@ -111,45 +117,53 @@ class TeamService(
         teamRepository.save(existingTeam)
         return ResponseEntity(existingTeam, HttpStatus.OK)
     }
-    
+
     suspend fun hireCoach(
         name: String?,
         discordId: String,
         coachPosition: CoachPosition
     ): ResponseEntity<Team> {
         val updatedName = name?.replace("_", " ")
-        val existingTeam = teamRepository.findByName(updatedName) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        val user = userRepository.findByDiscordId(discordId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        val discordId = discordService.getUserByDiscordTag(user.discordTag)?.id
-        if (coachPosition == CoachPosition.HEAD_COACH) {
-            existingTeam.coachUsername1 = user.username
-            existingTeam.coachName1 = user.coachName
-            existingTeam.coachDiscordTag1 = user.discordTag
-            existingTeam.coachDiscordId1 = discordId.toString()
-            existingTeam.offensivePlaybook = user.offensivePlaybook
-            existingTeam.defensivePlaybook = user.defensivePlaybook
+        val existingTeam = withContext(Dispatchers.IO) {
+            teamRepository.findByName(updatedName)
+        } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        val user = withContext(Dispatchers.IO) {
+            userRepository.findByDiscordId(discordId)
+        } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        when (coachPosition) {
+            HEAD_COACH -> {
+                existingTeam.coachUsername1 = user.username
+                existingTeam.coachName1 = user.coachName
+                existingTeam.coachDiscordTag1 = user.discordTag
+                existingTeam.coachDiscordId1 = discordId
+                existingTeam.offensivePlaybook = user.offensivePlaybook
+                existingTeam.defensivePlaybook = user.defensivePlaybook
+            }
+            OFFENSIVE_COORDINATOR -> {
+                existingTeam.coachUsername1 = user.username
+                existingTeam.coachName1 = user.coachName
+                existingTeam.coachDiscordTag1 = user.discordTag
+                existingTeam.coachDiscordId1 = discordId
+                existingTeam.offensivePlaybook = user.offensivePlaybook
+            }
+            DEFENSIVE_COORDINATOR -> {
+                existingTeam.coachUsername2 = user.username
+                existingTeam.coachName2 = user.coachName
+                existingTeam.coachDiscordTag2 = user.discordTag
+                existingTeam.coachDiscordId2 = discordId
+                existingTeam.defensivePlaybook = user.defensivePlaybook
+            }
+            RETIRED -> {}
         }
-        else if (coachPosition == CoachPosition.OFFENSIVE_COORDINATOR) {
-            existingTeam.coachUsername1 = user.username
-            existingTeam.coachName1 = user.coachName
-            existingTeam.coachDiscordTag1 = user.discordTag
-            existingTeam.coachDiscordId1 = discordId.toString()
-            existingTeam.offensivePlaybook = user.offensivePlaybook
+        withContext(Dispatchers.IO) {
+            teamRepository.save(existingTeam)
         }
-        else if (coachPosition == CoachPosition.DEFENSIVE_COORDINATOR) {
-            existingTeam.coachUsername2 = user.username
-            existingTeam.coachName2 = user.coachName
-            existingTeam.coachDiscordTag2 = user.discordTag
-            existingTeam.coachDiscordId2 = discordId.toString()
-            existingTeam.defensivePlaybook = user.defensivePlaybook
-        }
-        teamRepository.save(existingTeam)
         return ResponseEntity(existingTeam, HttpStatus.OK)
     }
 
     fun deleteTeam(id: Int): ResponseEntity<HttpStatus> {
         teamRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!teamRepository.findById(id)!!.isPresent) {
+        if (!teamRepository.findById(id).isPresent) {
             return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
         teamRepository.deleteById(id)

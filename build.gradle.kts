@@ -26,7 +26,7 @@ repositories {
 }
 
 dependencies {
-    implementation("ch.qos.logback:logback-classic:1.2.0")
+    implementation("ch.qos.logback:logback-classic:1.4.12")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")

@@ -1,6 +1,5 @@
 package com.fcfb.arceus.domain
 
-import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -40,20 +39,4 @@ class GameWriteup {
     }
 
     constructor()
-
-    override fun equals(o: Any?): Boolean {
-        if (this === o) return true
-        if (o == null || javaClass != o.javaClass) return false
-        val that = o as GameWriteup
-        return id == that.id && scenario == that.scenario && passOrRun == that.passOrRun && message == that.message
-    }
-
-    override fun hashCode(): Int {
-        return Objects.hash(
-            id,
-            scenario,
-            passOrRun,
-            message
-        )
-    }
 }

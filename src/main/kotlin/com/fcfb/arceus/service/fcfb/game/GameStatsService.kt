@@ -2,11 +2,8 @@ package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.GameStats
-import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameStatsRepository
 import com.fcfb.arceus.repositories.TeamRepository
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component

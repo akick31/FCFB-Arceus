@@ -20,8 +20,6 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
-import java.io.File
-import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 @Component
@@ -74,7 +72,7 @@ class ScorebugService(
         val clockInfoBoxWidth = scoreBoxWidth + 50 // Width for the clock info box
         val bottomBoxHeight = 50 // Height for the bottom info box
         val homeTeamY = 0 // Y position for the home team box row
-        val awayTeamY = homeTeamY + infoBoxHeight  // Y position for the away team box row
+        val awayTeamY = homeTeamY + infoBoxHeight // Y position for the away team box row
         val bottomBoxY = awayTeamY + infoBoxHeight // Y position for the down & distance box
         val teamNameX = 0 // X position for the team name
         val scoreX = teamBoxWidth - 25 // X position for the score
@@ -180,8 +178,7 @@ class ScorebugService(
             g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Ball location box
             g.color = Color.WHITE
             drawCenteredText(g, "FINAL", teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
-        }
-        else {
+        } else {
             // Draw Quarter Box
             val quarterText = when (game.quarter) {
                 5 -> "OT" // Overtime
@@ -219,15 +216,15 @@ class ScorebugService(
                 }
 
                 val downDistanceText = when (game.down) {
-                        1 -> "1st"
-                        2 -> "2nd"
-                        3 -> "3rd"
-                        4 -> "4th"
-                        else -> game.down.toString()
-                    } + " & " + when {
-                        (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
-                        else -> game.yardsToGo.toString()
-                    }
+                    1 -> "1st"
+                    2 -> "2nd"
+                    3 -> "3rd"
+                    4 -> "4th"
+                    else -> game.down.toString()
+                } + " & " + when {
+                    (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
+                    else -> game.yardsToGo.toString()
+                }
 
                 g.color = Color.DARK_GRAY.darker()
                 g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth, bottomBoxHeight) // Down & distance box
@@ -351,7 +348,6 @@ class ScorebugService(
     fun drawCenteredText(g: Graphics2D, text: String, x: Int, y: Int, boxWidth: Int, boxHeight: Int) {
         val metrics = g.fontMetrics
         val textWidth = metrics.stringWidth(text)
-        val textHeight = metrics.height
 
         // Scale the font if the text is too wide for the box
         if (textWidth > boxWidth) {
@@ -361,7 +357,7 @@ class ScorebugService(
         // Recalculate after scaling (if applied)
         val updatedMetrics = g.fontMetrics
         val updatedTextWidth = updatedMetrics.stringWidth(text)
-        val updatedTextHeight = updatedMetrics.ascent  // For vertical centering
+        val updatedTextHeight = updatedMetrics.ascent // For vertical centering
 
         val centerX = x + (boxWidth - updatedTextWidth) / 2
         val centerY = y + (boxHeight - updatedTextHeight) / 2 + updatedTextHeight // Adjust for vertical centering

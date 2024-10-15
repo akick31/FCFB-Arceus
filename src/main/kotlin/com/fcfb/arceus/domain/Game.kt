@@ -1,7 +1,6 @@
 package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity

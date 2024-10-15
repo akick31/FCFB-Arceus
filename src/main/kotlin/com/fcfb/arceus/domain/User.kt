@@ -1,9 +1,7 @@
 package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity

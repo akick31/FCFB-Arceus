@@ -5,7 +5,6 @@ import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import java.math.BigInteger
-import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity

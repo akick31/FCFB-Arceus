@@ -6,8 +6,6 @@ import com.fcfb.arceus.converter.SubdivisionConverter
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.User.Role
-import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Convert

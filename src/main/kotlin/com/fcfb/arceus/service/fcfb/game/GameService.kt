@@ -7,10 +7,8 @@ import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
-import com.fcfb.arceus.repositories.GameStatsRepository
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.http.HttpHeaders

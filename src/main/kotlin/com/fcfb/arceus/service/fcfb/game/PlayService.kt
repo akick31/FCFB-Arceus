@@ -1,14 +1,10 @@
 package com.fcfb.arceus.service.fcfb.game
 
-import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
-import com.fcfb.arceus.handlers.game.StatsHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
-import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
@@ -23,7 +19,6 @@ class PlayService(
     private var playRepository: PlayRepository,
     private var playHandler: PlayHandler,
     private var gameHandler: GameHandler,
-    private var statsHandler: StatsHandler,
     private var encryptionUtils: EncryptionUtils,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
@@ -80,8 +75,8 @@ class PlayService(
                     game.homeTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of home timeouts"), HttpStatus.BAD_REQUEST),
                     game.awayTimeouts ?: return ResponseEntity(headers.add("Error-Message", "Could not get the number of away timeouts"), HttpStatus.BAD_REQUEST),
                     false,
-                    null, //TODO: Add response speed
-                    null //TODO: Add response speed
+                    null, // TODO: Add response speed
+                    null // TODO: Add response speed
                 )
             ) ?: return ResponseEntity(headers.add("Error-Message", "There was an issue saving the play"), HttpStatus.BAD_REQUEST)
 

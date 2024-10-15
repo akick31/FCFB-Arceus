@@ -47,10 +47,10 @@ class GameController(
         @RequestParam("channelId", required = false) channelId: String?,
         @RequestParam("userId", required = false) discordId: String?
     ) = when {
-            channelId != null -> gamesService.getOngoingGameByDiscordChannelId(channelId)
-            discordId != null -> gamesService.getOngoingGameByDiscordId(discordId)
-            else -> ResponseEntity(HttpHeaders(), HttpStatus.BAD_REQUEST)
-        }
+        channelId != null -> gamesService.getOngoingGameByDiscordChannelId(channelId)
+        discordId != null -> gamesService.getOngoingGameByDiscordId(discordId)
+        else -> ResponseEntity(HttpHeaders(), HttpStatus.BAD_REQUEST)
+    }
 
     /**
      * Start a game
@@ -96,5 +96,5 @@ class GameController(
         @PathVariable("id") id: Int
     ) = gamesService.deleteOngoingGame(id)
 
-    //TODO: end game
+    // TODO: end game
 }
