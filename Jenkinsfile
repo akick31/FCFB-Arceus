@@ -22,8 +22,8 @@ pipeline {
         }
 
         stage('Build') {
-            echo 'Building the Arceus with gradle...'
             steps {
+                echo 'Building the Arceus project...'
                 sh './gradlew clean build'
             }
         }
