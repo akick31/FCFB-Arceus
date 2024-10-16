@@ -24,7 +24,7 @@ class GameService(
     private var gameRepository: GameRepository,
     private var teamRepository: TeamRepository,
     private var discordService: DiscordService,
-    private var gameStatsService: GameStatsService
+    private var gameStatsService: GameStatsService,
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
@@ -33,9 +33,7 @@ class GameService(
      * @param id
      * @return
      */
-    fun getGameById(
-        id: Int
-    ): ResponseEntity<Game> {
+    fun getGameById(id: Int): ResponseEntity<Game> {
         val ongoingGameData = gameRepository.findByGameId(id)
         return ResponseEntity(ongoingGameData, HttpStatus.OK)
     }
@@ -45,11 +43,10 @@ class GameService(
      * @param channelId
      * @return
      */
-    fun getOngoingGameByDiscordChannelId(
-        channelId: String?
-    ): ResponseEntity<Game> {
-        val ongoingGameData = gameRepository.findByHomePlatformId("Discord", channelId)
-            ?: gameRepository.findByAwayPlatformId("Discord", channelId)
+    fun getOngoingGameByDiscordChannelId(channelId: String?): ResponseEntity<Game> {
+        val ongoingGameData =
+            gameRepository.findByHomePlatformId("Discord", channelId)
+                ?: gameRepository.findByAwayPlatformId("Discord", channelId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
@@ -60,13 +57,12 @@ class GameService(
      * @param discordId
      * @return
      */
-    fun getOngoingGameByDiscordId(
-        discordId: String?
-    ): ResponseEntity<Game> {
-        val ongoingGameData = gameRepository.findByHomeCoachDiscordId1(discordId)
-            ?: gameRepository.findByHomeCoachDiscordId2(discordId)
-            ?: gameRepository.findByAwayCoachDiscordId1(discordId)
-            ?: gameRepository.findByAwayCoachDiscordId2(discordId)
+    fun getOngoingGameByDiscordId(discordId: String?): ResponseEntity<Game> {
+        val ongoingGameData =
+            gameRepository.findByHomeCoachDiscordId1(discordId)
+                ?: gameRepository.findByHomeCoachDiscordId2(discordId)
+                ?: gameRepository.findByAwayCoachDiscordId1(discordId)
+                ?: gameRepository.findByAwayCoachDiscordId2(discordId)
         return ongoingGameData?.let {
             ResponseEntity(it, HttpStatus.OK)
         } ?: ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
@@ -77,16 +73,16 @@ class GameService(
      * @param startRequest
      * @return
      */
-    fun startGame(
-        startRequest: StartRequest
-    ): ResponseEntity<Game> {
+    fun startGame(startRequest: StartRequest): ResponseEntity<Game> {
         println("Deserialized StartRequest: $startRequest")
         return try {
-            val homeTeamData = teamRepository.findByName(startRequest.homeTeam)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val homeTeamData =
+                teamRepository.findByName(startRequest.homeTeam)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
-            val awayTeamData = teamRepository.findByName(startRequest.awayTeam)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val awayTeamData =
+                teamRepository.findByName(startRequest.awayTeam)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Set the DOG timer
             // Get the current date and time
@@ -147,63 +143,64 @@ class GameService(
             val awayPlatform = startRequest.awayPlatform ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Create and save the Game object and Stats object
-            val newGame = gameRepository.save(
-                Game(
-                    homeTeam = homeTeam,
-                    awayTeam = awayTeam,
-                    homeCoach1 = homeCoachUsername1,
-                    homeCoach2 = homeCoachUsername2,
-                    awayCoach1 = awayCoachUsername1,
-                    awayCoach2 = awayCoachUsername2,
-                    homeCoachDiscordId1 = homeCoachDiscordId1,
-                    homeCoachDiscordId2 = homeCoachDiscordId2,
-                    awayCoachDiscordId1 = awayCoachDiscordId1,
-                    awayCoachDiscordId2 = awayCoachDiscordId2,
-                    homeOffensivePlaybook = homeOffensivePlaybook,
-                    awayOffensivePlaybook = awayOffensivePlaybook,
-                    homeDefensivePlaybook = homeDefensivePlaybook,
-                    awayDefensivePlaybook = awayDefensivePlaybook,
-                    homeScore = 0,
-                    awayScore = 0,
-                    possession = TeamSide.HOME,
-                    quarter = 1,
-                    clock = "7:00",
-                    ballLocation = 35,
-                    down = 1,
-                    yardsToGo = 10,
-                    tvChannel = startRequest.tvChannel,
-                    startTime = startRequest.startTime,
-                    location = startRequest.location,
-                    homeWins = homeTeamData.currentWins,
-                    homeLosses = homeTeamData.currentLosses,
-                    awayWins = awayTeamData.currentWins,
-                    awayLosses = awayTeamData.currentLosses,
-                    scorebug = "none_scorebug.png",
-                    subdivision = subdivision,
-                    timestamp = LocalDateTime.now().toString(),
-                    winProbability = 0.0,
-                    season = startRequest.season?.toInt(),
-                    week = startRequest.week?.toInt(),
-                    waitingOn = TeamSide.AWAY,
-                    winProbabilityPlot = "none_winprob.png",
-                    scorePlot = "none_scoreplot.png",
-                    numPlays = 0,
-                    homeTimeouts = 3,
-                    awayTimeouts = 3,
-                    coinTossWinner = null,
-                    coinTossChoice = null,
-                    homePlatform = homePlatform,
-                    homePlatformId = null,
-                    awayPlatform = awayPlatform,
-                    awayPlatformId = null,
-                    gameTimer = formattedDateTime,
-                    currentPlayType = PlayType.KICKOFF,
-                    currentPlayId = 0,
-                    gameType = startRequest.gameType,
-                    clockStopped = true,
-                    gameStatus = GameStatus.PREGAME
-                )
-            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val newGame =
+                gameRepository.save(
+                    Game(
+                        homeTeam = homeTeam,
+                        awayTeam = awayTeam,
+                        homeCoach1 = homeCoachUsername1,
+                        homeCoach2 = homeCoachUsername2,
+                        awayCoach1 = awayCoachUsername1,
+                        awayCoach2 = awayCoachUsername2,
+                        homeCoachDiscordId1 = homeCoachDiscordId1,
+                        homeCoachDiscordId2 = homeCoachDiscordId2,
+                        awayCoachDiscordId1 = awayCoachDiscordId1,
+                        awayCoachDiscordId2 = awayCoachDiscordId2,
+                        homeOffensivePlaybook = homeOffensivePlaybook,
+                        awayOffensivePlaybook = awayOffensivePlaybook,
+                        homeDefensivePlaybook = homeDefensivePlaybook,
+                        awayDefensivePlaybook = awayDefensivePlaybook,
+                        homeScore = 0,
+                        awayScore = 0,
+                        possession = TeamSide.HOME,
+                        quarter = 1,
+                        clock = "7:00",
+                        ballLocation = 35,
+                        down = 1,
+                        yardsToGo = 10,
+                        tvChannel = startRequest.tvChannel,
+                        startTime = startRequest.startTime,
+                        location = startRequest.location,
+                        homeWins = homeTeamData.currentWins,
+                        homeLosses = homeTeamData.currentLosses,
+                        awayWins = awayTeamData.currentWins,
+                        awayLosses = awayTeamData.currentLosses,
+                        scorebug = "none_scorebug.png",
+                        subdivision = subdivision,
+                        timestamp = LocalDateTime.now().toString(),
+                        winProbability = 0.0,
+                        season = startRequest.season?.toInt(),
+                        week = startRequest.week?.toInt(),
+                        waitingOn = TeamSide.AWAY,
+                        winProbabilityPlot = "none_winprob.png",
+                        scorePlot = "none_scoreplot.png",
+                        numPlays = 0,
+                        homeTimeouts = 3,
+                        awayTimeouts = 3,
+                        coinTossWinner = null,
+                        coinTossChoice = null,
+                        homePlatform = homePlatform,
+                        homePlatformId = null,
+                        awayPlatform = awayPlatform,
+                        awayPlatformId = null,
+                        gameTimer = formattedDateTime,
+                        currentPlayType = PlayType.KICKOFF,
+                        currentPlayId = 0,
+                        gameType = startRequest.gameType,
+                        clockStopped = true,
+                        gameStatus = GameStatus.PREGAME,
+                    ),
+                ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // Create image names
             val gameId: String = java.lang.String.valueOf(newGame.gameId)
@@ -241,19 +238,21 @@ class GameService(
      */
     fun runCoinToss(
         gameId: String,
-        coinTossCall: CoinTossCall
+        coinTossCall: CoinTossCall,
     ): ResponseEntity<Game> {
         return try {
-            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val game: Game =
+                gameRepository.findById(gameId.toInt()).orElse(null)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             val result = Random().nextInt(2)
             // 1 is heads, away team called tails, they lose
-            val coinTossWinner = if (result == 1 && coinTossCall === CoinTossCall.TAILS) {
-                TeamSide.HOME
-            } else {
-                TeamSide.AWAY
-            }
+            val coinTossWinner =
+                if (result == 1 && coinTossCall === CoinTossCall.TAILS) {
+                    TeamSide.HOME
+                } else {
+                    TeamSide.AWAY
+                }
             game.coinTossWinner = coinTossWinner
 
             return ResponseEntity(gameRepository.save(game), HttpStatus.OK)
@@ -270,11 +269,12 @@ class GameService(
      */
     fun makeCoinTossChoice(
         gameId: String,
-        coinTossChoice: CoinTossChoice
+        coinTossChoice: CoinTossChoice,
     ): ResponseEntity<Game> {
         return try {
-            val game: Game = gameRepository.findById(gameId.toInt()).orElse(null)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            val game: Game =
+                gameRepository.findById(gameId.toInt()).orElse(null)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
             game.coinTossChoice = coinTossChoice
             if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
@@ -302,9 +302,7 @@ class GameService(
      * @param id
      * @return
      */
-    fun deleteOngoingGame(
-        id: Int
-    ): ResponseEntity<HttpStatus> {
+    fun deleteOngoingGame(id: Int): ResponseEntity<HttpStatus> {
         gameRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         if (!gameRepository.findById(id).isPresent) {
             return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)

@@ -9,7 +9,6 @@ import java.time.LocalDateTime
 
 @Component
 class SessionCleanupTask {
-
     @Autowired
     private lateinit var sessionRepository: SessionRepository
 

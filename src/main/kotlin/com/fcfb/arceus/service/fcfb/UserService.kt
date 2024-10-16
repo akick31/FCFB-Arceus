@@ -46,7 +46,10 @@ class UserService {
         return ResponseEntity(userData, HttpStatus.OK)
     }
 
-    fun updateUserPassword(id: Long, newPassword: String?): ResponseEntity<User> {
+    fun updateUserPassword(
+        id: Long,
+        newPassword: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         val passwordEncoder = BCryptPasswordEncoder()
@@ -58,7 +61,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserUsername(id: Long, newUsername: String?): ResponseEntity<User> {
+    fun updateUserUsername(
+        id: Long,
+        newUsername: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newUsername == null) {
@@ -70,7 +76,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserEmail(id: Long, newEmail: String?): ResponseEntity<User> {
+    fun updateUserEmail(
+        id: Long,
+        newEmail: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newEmail == null) {
@@ -82,7 +91,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserRole(id: Long, newRole: Role?): ResponseEntity<User> {
+    fun updateUserRole(
+        id: Long,
+        newRole: Role?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newRole == null) {
@@ -94,7 +106,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserPosition(id: Long, newPosition: CoachPosition?): ResponseEntity<User> {
+    fun updateUserPosition(
+        id: Long,
+        newPosition: CoachPosition?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newPosition == null) {
@@ -106,7 +121,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserRedditUsername(id: Long, newRedditUsername: String?): ResponseEntity<User> {
+    fun updateUserRedditUsername(
+        id: Long,
+        newRedditUsername: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newRedditUsername == null) {
@@ -118,7 +136,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserTeam(id: Long, newTeam: String?): ResponseEntity<User> {
+    fun updateUserTeam(
+        id: Long,
+        newTeam: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newTeam == null) {
@@ -130,7 +151,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserWins(id: Long, newWins: Int?): ResponseEntity<User> {
+    fun updateUserWins(
+        id: Long,
+        newWins: Int?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newWins == null) {
@@ -143,7 +167,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserLosses(id: Long, newLosses: Int?): ResponseEntity<User> {
+    fun updateUserLosses(
+        id: Long,
+        newLosses: Int?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newLosses == null) {
@@ -156,7 +183,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserCoachName(id: Long, newCoachName: String?): ResponseEntity<User> {
+    fun updateUserCoachName(
+        id: Long,
+        newCoachName: String?,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         if (newCoachName == null) {
@@ -168,7 +198,10 @@ class UserService {
         return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserDiscordTag(id: Long, newDiscordTag: String): ResponseEntity<User> {
+    fun updateUserDiscordTag(
+        id: Long,
+        newDiscordTag: String,
+    ): ResponseEntity<User> {
         val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
 
         user.discordTag = newDiscordTag

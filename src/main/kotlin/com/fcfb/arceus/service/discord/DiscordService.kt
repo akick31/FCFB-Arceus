@@ -15,7 +15,7 @@ import org.springframework.web.client.RestTemplate
 
 @Service
 class DiscordService(
-    private val restTemplate: RestTemplate
+    private val restTemplate: RestTemplate,
 ) {
     private var discordBotUrl = "http://0.0.0.0:1212/fcfb_discord_ref_bot"
 
@@ -33,9 +33,7 @@ class DiscordService(
         return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).body!!
     }
 
-    suspend fun getUserByDiscordTag(
-        tag: String
-    ): User? {
+    suspend fun getUserByDiscordTag(tag: String): User? {
         return try {
             val client = Kord(botToken!!)
             val guild = client.getGuild(Snowflake(guildId!!))

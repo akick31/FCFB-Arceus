@@ -5,10 +5,10 @@ import org.springframework.stereotype.Component
 
 @Component
 class GameWriteupService(
-    private var gameWriteupRepository: GameWriteupRepository?
+    private var gameWriteupRepository: GameWriteupRepository?,
 ) {
     fun getGameMessageByScenario(
         scenario: String,
-        passOrRun: String?
+        passOrRun: String?,
     ) = gameWriteupRepository?.findByScenario(scenario, passOrRun)?.message
 }

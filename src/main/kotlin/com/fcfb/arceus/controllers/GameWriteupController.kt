@@ -11,11 +11,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/game_writeup")
 class GameWriteupController(
-    private var gameMessagesService: GameWriteupService
+    private var gameMessagesService: GameWriteupService,
 ) {
     @GetMapping("/{scenario}/{passOrRun}")
     fun getGameMessageByScenario(
         @PathVariable scenario: String,
-        @PathVariable passOrRun: String
+        @PathVariable passOrRun: String,
     ) = gameMessagesService.getGameMessageByScenario(scenario, passOrRun)
 }

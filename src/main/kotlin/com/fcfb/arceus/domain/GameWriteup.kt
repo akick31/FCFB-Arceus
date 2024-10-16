@@ -31,7 +31,7 @@ class GameWriteup {
     constructor(
         scenario: String?,
         passOrRun: String?,
-        message: String?
+        message: String?,
     ) {
         this.scenario = scenario
         this.passOrRun = passOrRun

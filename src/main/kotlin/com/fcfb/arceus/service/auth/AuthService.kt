@@ -23,7 +23,7 @@ class AuthService(
     private val emailService: EmailService,
     private val discordService: DiscordService,
     private val usersRepository: UserRepository,
-    private val sessionRepository: SessionRepository
+    private val sessionRepository: SessionRepository,
 ) {
     private val emptyHeaders = HttpHeaders()
 
@@ -38,32 +38,34 @@ class AuthService(
             val salt = passwordEncoder.encode(user.password)
             val verificationToken = UUID.randomUUID().toString()
 
-            val discordUser = discordService.getUserByDiscordTag(user.discordTag)
-                ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val discordUser =
+                discordService.getUserByDiscordTag(user.discordTag)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             val discordId = discordUser.id.toString()
 
-            val newUser: User = usersRepository.save(
-                User(
-                    user.username,
-                    user.coachName,
-                    user.discordTag,
-                    discordId,
-                    user.email,
-                    passwordEncoder.encode(user.password),
-                    user.position,
-                    user.redditUsername,
-                    Role.USER,
-                    salt,
-                    null,
-                    0,
-                    0,
-                    0.0,
-                    user.offensivePlaybook,
-                    user.defensivePlaybook,
-                    0,
-                    verificationToken
-                )
-            ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val newUser: User =
+                usersRepository.save(
+                    User(
+                        user.username,
+                        user.coachName,
+                        user.discordTag,
+                        discordId,
+                        user.email,
+                        passwordEncoder.encode(user.password),
+                        user.position,
+                        user.redditUsername,
+                        Role.USER,
+                        salt,
+                        null,
+                        0,
+                        0,
+                        0.0,
+                        user.offensivePlaybook,
+                        user.defensivePlaybook,
+                        0,
+                        verificationToken,
+                    ),
+                ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             emailService.sendVerificationEmail(newUser.email, newUser.id!!, verificationToken)
             Logger.debug("User ${user.username} registered successfully. Verification email sent.")
@@ -79,7 +81,10 @@ class AuthService(
      * @param password
      * @return
      */
-    fun loginUser(usernameOrEmail: String, password: String): ResponseEntity<Session> {
+    fun loginUser(
+        usernameOrEmail: String,
+        password: String,
+    ): ResponseEntity<Session> {
         val user = usersRepository.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         val passwordEncoder = BCryptPasswordEncoder()
         return if (passwordEncoder.matches(password, user.password)) {

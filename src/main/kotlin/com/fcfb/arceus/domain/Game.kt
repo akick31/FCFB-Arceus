@@ -349,7 +349,7 @@ class Game {
         currentPlayId: Int?,
         clockStopped: Boolean?,
         gameStatus: GameStatus?,
-        gameType: GameType?
+        gameType: GameType?,
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -415,12 +415,13 @@ class Game {
         HALFTIME("HALFTIME"),
         FINAL("FINAL"),
         END_OF_REGULATION("END OF REGULATION"),
-        OVERTIME("OVERTIME");
+        OVERTIME("OVERTIME"),
     }
 
     enum class Subdivision(val description: String) {
         FBS("FBS"),
-        FCS("FCS");
+        FCS("FCS"),
+        ;
 
         companion object {
             fun fromString(description: String): Subdivision? {
@@ -434,7 +435,8 @@ class Game {
         AIR_RAID("AIR RAID"),
         PRO("PRO"),
         SPREAD("SPREAD"),
-        WEST_COAST("WEST COAST");
+        WEST_COAST("WEST COAST"),
+        ;
 
         companion object {
             fun fromString(description: String): OffensivePlaybook? {
@@ -448,7 +450,8 @@ class Game {
         THREE_FOUR("3-4"),
         FIVE_TWO("5-2"),
         FOUR_FOUR("4-4"),
-        THREE_THREE_FIVE("3-3-5");
+        THREE_THREE_FIVE("3-3-5"),
+        ;
 
         companion object {
             fun fromString(description: String): DefensivePlaybook? {
@@ -520,7 +523,7 @@ class Game {
         PUNT("PUNT"),
         PUNT_RETURN_TOUCHDOWN("PUNT RETURN TOUCHDOWN"),
         PUNT_TEAM_TOUCHDOWN("PUNT TEAM TOUCHDOWN"),
-        MUFFED_PUNT("MUFFED PUNT");
+        MUFFED_PUNT("MUFFED PUNT"),
     }
 
     enum class RunoffType(val description: String) {
@@ -628,7 +631,8 @@ class Game {
         FIFTY_FIVE_YARD_PUNT("55 YARD PUNT"),
         SIXTY_YARD_PUNT("60 YARD PUNT"),
         SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
-        SEVENTY_YARD_PUNT("70 YARD PUNT");
+        SEVENTY_YARD_PUNT("70 YARD PUNT"),
+        ;
 
         companion object {
             fun fromString(description: String): Scenario? {
@@ -639,17 +643,18 @@ class Game {
 
     enum class TeamSide(val description: String) {
         HOME("home"),
-        AWAY("away")
+        AWAY("away"),
     }
 
     enum class CoinTossChoice(val description: String) {
         RECEIVE("receive"),
-        DEFER("defer")
+        DEFER("defer"),
     }
 
     enum class CoinTossCall(val description: String) {
         HEADS("heads"),
-        TAILS("tails");
+        TAILS("tails"),
+        ;
 
         companion object {
             fun fromString(description: String): CoinTossCall? {
@@ -665,7 +670,8 @@ class Game {
         PLAYOFFS("Playoffs"),
         NATIONAL_CHAMPIONSHIP("National Championship"),
         BOWL("Bowl"),
-        SCRIMMAGE("Scrimmage");
+        SCRIMMAGE("Scrimmage"),
+        ;
 
         companion object {
             fun fromString(description: String): GameType? {

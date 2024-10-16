@@ -16,21 +16,21 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/user")
 class UserController(
-    private var userService: UserService
+    private var userService: UserService,
 ) {
     @GetMapping("id")
     fun getUserById(
-        @RequestParam id: Long
+        @RequestParam id: Long,
     ) = userService.getUserById(id)
 
     @GetMapping("/discord")
     fun getUserByDiscordId(
-        @RequestParam id: String
+        @RequestParam id: String,
     ) = userService.getUserByDiscordId(id)
 
     @GetMapping("/team")
     fun getUserByTeam(
-        @RequestParam team: String?
+        @RequestParam team: String?,
     ) = userService.getUserByTeam(team)
 
     @GetMapping("")
@@ -38,77 +38,77 @@ class UserController(
 
     @GetMapping("/name")
     fun getUserByName(
-        @RequestParam name: String?
+        @RequestParam name: String?,
     ) = userService.getUserByName(name)
 
     @PutMapping("/update/password")
     fun updateUserPassword(
         @RequestParam("id") id: Long,
-        @RequestParam newPassword: String?
+        @RequestParam newPassword: String?,
     ) = userService.updateUserPassword(id, newPassword)
 
     @PutMapping("/username")
     fun updateUserUsername(
         @RequestParam("id") id: Long,
-        @RequestParam newUsername: String?
+        @RequestParam newUsername: String?,
     ) = userService.updateUserUsername(id, newUsername)
 
     @PutMapping("/update/email")
     fun updateUserEmail(
         @RequestParam("id") id: Long,
-        @RequestParam newEmail: String?
+        @RequestParam newEmail: String?,
     ) = userService.updateUserEmail(id, newEmail)
 
     @PutMapping("/update/role")
     fun updateUserRole(
         @RequestParam("id") id: Long,
-        @RequestParam newRole: Role?
+        @RequestParam newRole: Role?,
     ) = userService.updateUserRole(id, newRole)
 
     @PutMapping("/update/position")
     fun updateUserPosition(
         @RequestParam("id") id: Long,
-        @RequestParam newPosition: CoachPosition?
+        @RequestParam newPosition: CoachPosition?,
     ) = userService.updateUserPosition(id, newPosition)
 
     @PutMapping("/update/reddit-username")
     fun updateUserRedditUsername(
         @RequestParam("id") id: Long,
-        @RequestParam newRedditUsername: String?
+        @RequestParam newRedditUsername: String?,
     ) = userService.updateUserRedditUsername(id, newRedditUsername)
 
     @PutMapping("/update/team")
     fun updateUserTeam(
         @RequestParam("id") id: Long,
-        @RequestParam newTeam: String?
+        @RequestParam newTeam: String?,
     ) = userService.updateUserTeam(id, newTeam)
 
     @PutMapping("/update/wins")
     fun updateUserWins(
         @RequestParam("id") id: Long,
-        @RequestParam newWins: Int?
+        @RequestParam newWins: Int?,
     ) = userService.updateUserWins(id, newWins)
 
     @PutMapping("/update/losses")
     fun updateUserLosses(
         @RequestParam("id") id: Long,
-        @RequestParam newLosses: Int?
+        @RequestParam newLosses: Int?,
     ) = userService.updateUserLosses(id, newLosses)
 
     @PutMapping("/update/coach-name")
     fun updateUserCoachName(
         @RequestParam("id") id: Long,
-        @RequestParam newCoachName: String?
+        @RequestParam newCoachName: String?,
     ) = userService.updateUserCoachName(id, newCoachName)
 
     @PutMapping("/update/discord-tag")
     fun updateUserDiscordTag(
         @RequestParam("id") id: Long,
-        @RequestParam newDiscordTag: String
+        @RequestParam newDiscordTag: String,
     ) = userService.updateUserDiscordTag(id, newDiscordTag)
 
     @DeleteMapping("/{id}")
     fun deleteTeam(
-        @PathVariable("id") id: String
+        @PathVariable("id") id: String,
     ) = userService.deleteUser(id)
 }

@@ -9,5 +9,5 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/discord")
 class DiscordController(
-    private var discordService: DiscordService
+    private var discordService: DiscordService,
 )

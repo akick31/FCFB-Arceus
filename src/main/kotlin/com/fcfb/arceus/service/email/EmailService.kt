@@ -8,16 +8,20 @@ import org.springframework.stereotype.Service
 
 @Service
 class EmailService(private val mailSender: JavaMailSender) {
-
     @Value("\${domain.url}")
     private lateinit var domainUrl: String
 
     /**
      * Send a verification email
      */
-    fun sendVerificationEmail(email: String, userId: Long, verificationToken: String) {
+    fun sendVerificationEmail(
+        email: String,
+        userId: Long,
+        verificationToken: String,
+    ) {
         val subject = "Welcome to Fake College Football! Please verify your email and join Discord."
-        val emailBody = """
+        val emailBody =
+            """
             Dear User,
             
             Thank you for registering with Fake College Football! To complete your registration and gain full access to the game, please verify your email address by clicking on the following link:
@@ -32,7 +36,7 @@ class EmailService(private val mailSender: JavaMailSender) {
             
             Best regards,
             The Fake College Football Team
-        """.trimIndent()
+            """.trimIndent()
 
         sendEmail(email, subject, emailBody)
     }
@@ -40,7 +44,11 @@ class EmailService(private val mailSender: JavaMailSender) {
     /**
      * Send an email
      */
-    fun sendEmail(to: String, subject: String, text: String) {
+    fun sendEmail(
+        to: String,
+        subject: String,
+        text: String,
+    ) {
         try {
             val message = SimpleMailMessage()
             message.setTo(to)

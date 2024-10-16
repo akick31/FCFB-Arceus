@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 @Component
 class StatsHandler(
     private val gameStatsRepository: GameStatsRepository,
-    private val playRepository: PlayRepository
+    private val playRepository: PlayRepository,
 ) {
     fun updateGameStats(
         game: Game,
@@ -25,139 +25,493 @@ class StatsHandler(
 
         if (game.possession == TeamSide.HOME) {
             stats.homeScore = game.homeScore
-            stats.homePassAttempts = calculatePassAttempts(play, stats.homePassAttempts ?: 0)
-            stats.homePassCompletions = calculatePassCompletions(play, stats.homePassCompletions ?: 0)
-            stats.homePassCompletionPercentage = calculatePercentage(stats.homePassCompletions ?: 0, stats.homePassAttempts ?: 0)
-            stats.homePassYards = calculatePassYards(play, stats.homePassYards ?: 0)
-            stats.homeRushAttempts = calculateRushAttempts(play, stats.homeRushAttempts ?: 0)
-            stats.homeRushSuccesses = calculateRushSuccesses(play, stats.homeRushSuccesses ?: 0)
-            stats.homeRushSuccessPercentage = calculatePercentage(stats.homeRushSuccesses ?: 0, stats.homeRushAttempts ?: 0)
-            stats.homeRushYards = calculateRushYards(play, stats.homeRushYards ?: 0)
-            stats.homeTotalYards = calculateTotalYards(stats.homePassYards ?: 0, stats.homeRushYards ?: 0)
-            stats.homeInterceptionsLost = calculateInterceptionsLost(play, stats.homeInterceptionsLost ?: 0)
+            stats.homePassAttempts =
+                calculatePassAttempts(
+                    play, stats.homePassAttempts ?: 0,
+                )
+            stats.homePassCompletions =
+                calculatePassCompletions(
+                    play, stats.homePassCompletions ?: 0,
+                )
+            stats.homePassCompletionPercentage =
+                calculatePercentage(
+                    stats.homePassCompletions ?: 0, stats.homePassAttempts ?: 0,
+                )
+            stats.homePassYards =
+                calculatePassYards(
+                    play, stats.homePassYards ?: 0,
+                )
+            stats.homeRushAttempts =
+                calculateRushAttempts(
+                    play, stats.homeRushAttempts ?: 0,
+                )
+            stats.homeRushSuccesses =
+                calculateRushSuccesses(
+                    play, stats.homeRushSuccesses ?: 0,
+                )
+            stats.homeRushSuccessPercentage =
+                calculatePercentage(
+                    stats.homeRushSuccesses ?: 0, stats.homeRushAttempts ?: 0,
+                )
+            stats.homeRushYards =
+                calculateRushYards(
+                    play, stats.homeRushYards ?: 0,
+                )
+            stats.homeTotalYards =
+                calculateTotalYards(
+                    stats.homePassYards ?: 0, stats.homeRushYards ?: 0,
+                )
+            stats.homeInterceptionsLost =
+                calculateInterceptionsLost(
+                    play, stats.homeInterceptionsLost ?: 0,
+                )
             stats.awayInterceptionsForced = stats.homeInterceptionsLost
-            stats.homeFumblesLost = calculateFumblesLost(play, stats.homeFumblesLost ?: 0)
+            stats.homeFumblesLost =
+                calculateFumblesLost(
+                    play, stats.homeFumblesLost ?: 0,
+                )
             stats.awayFumblesForced = stats.homeFumblesLost
-            stats.homeTurnoversLost = calculateTurnoversLost(stats.homeInterceptionsLost ?: 0, stats.homeFumblesLost ?: 0)
+            stats.homeTurnoversLost =
+                calculateTurnoversLost(
+                    stats.homeInterceptionsLost ?: 0, stats.homeFumblesLost ?: 0,
+                )
             stats.awayTurnoversForced = stats.homeTurnoversLost
-            stats.homeTurnoverTouchdownsLost = calculateTurnoverTouchdownsLost(play, stats.homeTurnoverTouchdownsLost ?: 0)
+            stats.homeTurnoverTouchdownsLost =
+                calculateTurnoverTouchdownsLost(
+                    play, stats.homeTurnoverTouchdownsLost ?: 0,
+                )
             stats.awayTurnoverTouchdownsForced = stats.homeTurnoverTouchdownsLost
-            stats.homeFieldGoalMade = calculateFieldGoalMade(play, stats.homeFieldGoalMade ?: 0)
-            stats.homeFieldGoalAttempts = calculateFieldGoalAttempts(play, stats.homeFieldGoalAttempts ?: 0)
-            stats.homeFieldGoalPercentage = calculatePercentage(stats.homeFieldGoalMade ?: 0, stats.homeFieldGoalAttempts ?: 0)
-            stats.homeLongestFieldGoal = calculateLongestFieldGoal(play, stats.homeLongestFieldGoal ?: 0)
-            stats.awayBlockedOpponentFieldGoals = calculateBlockedOpponentFieldGoals(play, stats.awayBlockedOpponentFieldGoals ?: 0)
-            stats.homeFieldGoalTouchdown = calculateFieldGoalTouchdown(play, stats.homeFieldGoalTouchdown ?: 0)
-            stats.homePuntsAttempted = calculatePuntsAttempted(play, stats.homePuntsAttempted ?: 0)
-            stats.homeLongestPunt = calculateLongestPunt(play, stats.homeLongestPunt ?: 0)
-            stats.homeAveragePuntLength = calculateAveragePuntLength(allPlays, TeamSide.HOME)
-            stats.awayBlockedOpponentPunt = calculateBlockedOpponentPunt(play, stats.awayBlockedOpponentPunt ?: 0)
-            stats.awayPuntReturnTd = calculatePuntReturnTd(play, stats.awayPuntReturnTd ?: 0)
-            stats.awayPuntReturnTdPercentage = calculatePercentage(stats.awayPuntReturnTd ?: 0, stats.awayPuntsAttempted ?: 0)
-            stats.homeNumberOfKickoffs = calculateNumberOfKickoffs(play, stats.homeNumberOfKickoffs ?: 0)
-            stats.homeOnsideAttempts = calculateOnsideAttempts(play, stats.homeOnsideAttempts ?: 0)
-            stats.homeOnsideSuccess = calculateOnsideSuccess(play, stats.homeOnsideSuccess ?: 0)
-            stats.homeOnsideSuccessPercentage = calculatePercentage(stats.homeOnsideSuccess ?: 0, stats.homeOnsideAttempts ?: 0)
-            stats.homeNormalKickoffAttempts = calculateNormalKickoffAttempts(play, stats.homeNormalKickoffAttempts ?: 0)
-            stats.homeTouchbacks = calculateTouchbacks(play, stats.homeTouchbacks ?: 0)
-            stats.homeTouchbackPercentage = calculatePercentage(stats.homeTouchbacks ?: 0, stats.homeNormalKickoffAttempts ?: 0)
-            stats.awayKickReturnTd = calculateKickReturnTd(play, stats.awayKickReturnTd ?: 0)
-            stats.awayKickReturnTdPercentage = calculatePercentage(stats.awayKickReturnTd ?: 0, stats.awayNumberOfKickoffs ?: 0)
-            stats.homeNumberOfDrives = calculateNumberOfDrives(allPlays, TeamSide.HOME)
-            stats.homeTimeOfPossession = calculateTimeOfPossession(allPlays, TeamSide.HOME)
-            stats.homeTouchdowns = calculateTouchdowns(allPlays, TeamSide.HOME)
-            stats.averageHomeOffensiveDiff = calculateAverageOffensiveDiff(allPlays, TeamSide.HOME)
-            stats.averageHomeDefensiveDiff = calculateAverageDefensiveDiff(allPlays, TeamSide.HOME)
-            stats.averageHomeOffensiveSpecialTeamsDiff = calculateAverageOffensiveSpecialTeamsDiff(allPlays, TeamSide.HOME)
-            stats.averageHomeDefensiveSpecialTeamsDiff = calculateAverageDefensiveSpecialTeamsDiff(allPlays, TeamSide.HOME)
-            stats.homeAverageYardsPerPlay = calculateAverageYardsPerPlay(allPlays, TeamSide.HOME)
-            stats.homeThirdDownConversionSuccess = calculateThirdDownConversionSuccess(play, stats.homeThirdDownConversionSuccess ?: 0)
-            stats.homeThirdDownConversionAttempts = calculateThirdDownConversionAttempts(play, stats.homeThirdDownConversionAttempts ?: 0)
-            stats.homeThirdDownConversionPercentage = calculatePercentage(stats.homeThirdDownConversionSuccess ?: 0, stats.homeThirdDownConversionAttempts ?: 0)
-            stats.homeFourthDownConversionSuccess = calculateFourthDownConversionSuccess(play, stats.homeFourthDownConversionSuccess ?: 0)
-            stats.homeFourthDownConversionAttempts = calculateFourthDownConversionAttempts(play, stats.homeFourthDownConversionAttempts ?: 0)
-            stats.homeFourthDownConversionPercentage = calculatePercentage(stats.homeFourthDownConversionSuccess ?: 0, stats.homeFourthDownConversionAttempts ?: 0)
-            stats.homeLargestLead = calculateLargestLead(game, stats.homeLargestLead ?: 0, TeamSide.HOME)
-            stats.homeLargestDeficit = calculateLargestDeficit(game, stats.homeLargestDeficit ?: 0, TeamSide.AWAY)
-            stats.homePassTouchdowns = calculatePassTouchdowns(play, stats.homePassTouchdowns ?: 0)
-            stats.homeRushTouchdowns = calculateRushTouchdowns(play, stats.homeRushTouchdowns ?: 0)
-            stats.homeRedZoneAttempts = calculateRedZoneAttempts(allPlays, TeamSide.HOME)
-            stats.homeRedZoneSuccesses = calculateRedZoneSuccesses(allPlays, TeamSide.HOME)
-            stats.homeRedZoneSuccessPercentage = calculatePercentage(stats.homeRedZoneSuccesses ?: 0, stats.homeRedZoneAttempts ?: 0)
-            stats.homeTurnoverDifferential = calculateTurnoverDifferential(stats.homeTurnoversLost ?: 0, stats.homeTurnoversForced ?: 0)
-            stats.homePickSixesThrown = calculatePickSixes(play, stats.homePickSixesThrown ?: 0)
+            stats.homeFieldGoalMade =
+                calculateFieldGoalMade(
+                    play, stats.homeFieldGoalMade ?: 0,
+                )
+            stats.homeFieldGoalAttempts =
+                calculateFieldGoalAttempts(
+                    play, stats.homeFieldGoalAttempts ?: 0,
+                )
+            stats.homeFieldGoalPercentage =
+                calculatePercentage(
+                    stats.homeFieldGoalMade ?: 0, stats.homeFieldGoalAttempts ?: 0,
+                )
+            stats.homeLongestFieldGoal =
+                calculateLongestFieldGoal(
+                    play, stats.homeLongestFieldGoal ?: 0,
+                )
+            stats.awayBlockedOpponentFieldGoals =
+                calculateBlockedOpponentFieldGoals(
+                    play, stats.awayBlockedOpponentFieldGoals ?: 0,
+                )
+            stats.homeFieldGoalTouchdown =
+                calculateFieldGoalTouchdown(
+                    play, stats.homeFieldGoalTouchdown ?: 0,
+                )
+            stats.homePuntsAttempted =
+                calculatePuntsAttempted(
+                    play, stats.homePuntsAttempted ?: 0,
+                )
+            stats.homeLongestPunt =
+                calculateLongestPunt(
+                    play, stats.homeLongestPunt ?: 0,
+                )
+            stats.homeAveragePuntLength =
+                calculateAveragePuntLength(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.awayBlockedOpponentPunt =
+                calculateBlockedOpponentPunt(
+                    play, stats.awayBlockedOpponentPunt ?: 0,
+                )
+            stats.awayPuntReturnTd =
+                calculatePuntReturnTd(
+                    play, stats.awayPuntReturnTd ?: 0,
+                )
+            stats.awayPuntReturnTdPercentage =
+                calculatePercentage(
+                    stats.awayPuntReturnTd ?: 0, stats.awayPuntsAttempted ?: 0,
+                )
+            stats.homeNumberOfKickoffs =
+                calculateNumberOfKickoffs(
+                    play, stats.homeNumberOfKickoffs ?: 0,
+                )
+            stats.homeOnsideAttempts =
+                calculateOnsideAttempts(
+                    play, stats.homeOnsideAttempts ?: 0,
+                )
+            stats.homeOnsideSuccess =
+                calculateOnsideSuccess(
+                    play, stats.homeOnsideSuccess ?: 0,
+                )
+            stats.homeOnsideSuccessPercentage =
+                calculatePercentage(
+                    stats.homeOnsideSuccess ?: 0, stats.homeOnsideAttempts ?: 0,
+                )
+            stats.homeNormalKickoffAttempts =
+                calculateNormalKickoffAttempts(
+                    play, stats.homeNormalKickoffAttempts ?: 0,
+                )
+            stats.homeTouchbacks =
+                calculateTouchbacks(
+                    play, stats.homeTouchbacks ?: 0,
+                )
+            stats.homeTouchbackPercentage =
+                calculatePercentage(
+                    stats.homeTouchbacks ?: 0, stats.homeNormalKickoffAttempts ?: 0,
+                )
+            stats.awayKickReturnTd =
+                calculateKickReturnTd(
+                    play, stats.awayKickReturnTd ?: 0,
+                )
+            stats.awayKickReturnTdPercentage =
+                calculatePercentage(
+                    stats.awayKickReturnTd ?: 0, stats.awayNumberOfKickoffs ?: 0,
+                )
+            stats.homeNumberOfDrives =
+                calculateNumberOfDrives(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeTimeOfPossession =
+                calculateTimeOfPossession(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeTouchdowns =
+                calculateTouchdowns(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.averageHomeOffensiveDiff =
+                calculateAverageOffensiveDiff(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.averageHomeDefensiveDiff =
+                calculateAverageDefensiveDiff(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.averageHomeOffensiveSpecialTeamsDiff =
+                calculateAverageOffensiveSpecialTeamsDiff(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.averageHomeDefensiveSpecialTeamsDiff =
+                calculateAverageDefensiveSpecialTeamsDiff(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeAverageYardsPerPlay =
+                calculateAverageYardsPerPlay(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeThirdDownConversionSuccess =
+                calculateThirdDownConversionSuccess(
+                    play, stats.homeThirdDownConversionSuccess ?: 0,
+                )
+            stats.homeThirdDownConversionAttempts =
+                calculateThirdDownConversionAttempts(
+                    play, stats.homeThirdDownConversionAttempts ?: 0,
+                )
+            stats.homeThirdDownConversionPercentage =
+                calculatePercentage(
+                    stats.homeThirdDownConversionSuccess ?: 0, stats.homeThirdDownConversionAttempts ?: 0,
+                )
+            stats.homeFourthDownConversionSuccess =
+                calculateFourthDownConversionSuccess(
+                    play, stats.homeFourthDownConversionSuccess ?: 0,
+                )
+            stats.homeFourthDownConversionAttempts =
+                calculateFourthDownConversionAttempts(
+                    play, stats.homeFourthDownConversionAttempts ?: 0,
+                )
+            stats.homeFourthDownConversionPercentage =
+                calculatePercentage(
+                    stats.homeFourthDownConversionSuccess ?: 0, stats.homeFourthDownConversionAttempts ?: 0,
+                )
+            stats.homeLargestLead =
+                calculateLargestLead(
+                    game, stats.homeLargestLead ?: 0, TeamSide.HOME,
+                )
+            stats.homeLargestDeficit =
+                calculateLargestDeficit(
+                    game, stats.homeLargestDeficit ?: 0, TeamSide.AWAY,
+                )
+            stats.homePassTouchdowns =
+                calculatePassTouchdowns(
+                    play, stats.homePassTouchdowns ?: 0,
+                )
+            stats.homeRushTouchdowns =
+                calculateRushTouchdowns(
+                    play, stats.homeRushTouchdowns ?: 0,
+                )
+            stats.homeRedZoneAttempts =
+                calculateRedZoneAttempts(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeRedZoneSuccesses =
+                calculateRedZoneSuccesses(
+                    allPlays, TeamSide.HOME,
+                )
+            stats.homeRedZoneSuccessPercentage =
+                calculatePercentage(
+                    stats.homeRedZoneSuccesses ?: 0, stats.homeRedZoneAttempts ?: 0,
+                )
+            stats.homeTurnoverDifferential =
+                calculateTurnoverDifferential(
+                    stats.homeTurnoversLost ?: 0, stats.homeTurnoversForced ?: 0,
+                )
+            stats.homePickSixesThrown =
+                calculatePickSixes(
+                    play, stats.homePickSixesThrown ?: 0,
+                )
             stats.awayPickSixesForced = stats.homePickSixesThrown
-            stats.homeFumbleReturnTdsCommitted = calculateFumbleReturnTds(play, stats.homeFumbleReturnTdsCommitted ?: 0)
+            stats.homeFumbleReturnTdsCommitted =
+                calculateFumbleReturnTds(
+                    play, stats.homeFumbleReturnTdsCommitted ?: 0,
+                )
             stats.awayFumbleReturnTdsForced = stats.homeFumbleReturnTdsCommitted
-            stats.homeSafetiesCommitted = calculateSafeties(play, stats.homeSafetiesCommitted ?: 0)
+            stats.homeSafetiesCommitted =
+                calculateSafeties(
+                    play, stats.homeSafetiesCommitted ?: 0,
+                )
             stats.awaySafetiesForced = stats.homeSafetiesCommitted
         } else {
             stats.awayScore = game.awayScore
-            stats.awayPassAttempts = calculatePassAttempts(play, stats.awayPassAttempts ?: 0)
-            stats.awayPassCompletions = calculatePassCompletions(play, stats.awayPassCompletions ?: 0)
-            stats.awayPassCompletionPercentage = calculatePercentage(stats.awayPassCompletions ?: 0, stats.awayPassAttempts ?: 0)
-            stats.awayPassYards = calculatePassYards(play, stats.awayPassYards ?: 0)
-            stats.awayRushAttempts = calculateRushAttempts(play, stats.awayRushAttempts ?: 0)
-            stats.awayRushSuccesses = calculateRushSuccesses(play, stats.awayRushSuccesses ?: 0)
-            stats.awayRushSuccessPercentage = calculatePercentage(stats.awayRushSuccesses ?: 0, stats.awayRushAttempts ?: 0)
-            stats.awayRushYards = calculateRushYards(play, stats.awayRushYards ?: 0)
-            stats.awayTotalYards = calculateTotalYards(stats.awayPassYards ?: 0, stats.awayRushYards ?: 0)
-            stats.awayInterceptionsLost = calculateInterceptionsLost(play, stats.awayInterceptionsLost ?: 0)
+            stats.awayPassAttempts =
+                calculatePassAttempts(
+                    play, stats.awayPassAttempts ?: 0,
+                )
+            stats.awayPassCompletions =
+                calculatePassCompletions(
+                    play, stats.awayPassCompletions ?: 0,
+                )
+            stats.awayPassCompletionPercentage =
+                calculatePercentage(
+                    stats.awayPassCompletions ?: 0, stats.awayPassAttempts ?: 0,
+                )
+            stats.awayPassYards =
+                calculatePassYards(
+                    play, stats.awayPassYards ?: 0,
+                )
+            stats.awayRushAttempts =
+                calculateRushAttempts(
+                    play, stats.awayRushAttempts ?: 0,
+                )
+            stats.awayRushSuccesses =
+                calculateRushSuccesses(
+                    play, stats.awayRushSuccesses ?: 0,
+                )
+            stats.awayRushSuccessPercentage =
+                calculatePercentage(
+                    stats.awayRushSuccesses ?: 0, stats.awayRushAttempts ?: 0,
+                )
+            stats.awayRushYards =
+                calculateRushYards(
+                    play, stats.awayRushYards ?: 0,
+                )
+            stats.awayTotalYards =
+                calculateTotalYards(
+                    stats.awayPassYards ?: 0, stats.awayRushYards ?: 0,
+                )
+            stats.awayInterceptionsLost =
+                calculateInterceptionsLost(
+                    play, stats.awayInterceptionsLost ?: 0,
+                )
             stats.homeInterceptionsForced = stats.awayInterceptionsLost
-            stats.awayFumblesLost = calculateFumblesLost(play, stats.awayFumblesLost ?: 0)
+            stats.awayFumblesLost =
+                calculateFumblesLost(
+                    play, stats.awayFumblesLost ?: 0,
+                )
             stats.homeFumblesForced = stats.awayFumblesLost
-            stats.awayTurnoversLost = calculateTurnoversLost(stats.awayInterceptionsLost ?: 0, stats.awayFumblesLost ?: 0)
+            stats.awayTurnoversLost =
+                calculateTurnoversLost(
+                    stats.awayInterceptionsLost ?: 0, stats.awayFumblesLost ?: 0,
+                )
             stats.homeTurnoversForced = stats.awayTurnoversLost
-            stats.awayTurnoverTouchdownsLost = calculateTurnoverTouchdownsLost(play, stats.awayTurnoverTouchdownsLost ?: 0)
+            stats.awayTurnoverTouchdownsLost =
+                calculateTurnoverTouchdownsLost(
+                    play, stats.awayTurnoverTouchdownsLost ?: 0,
+                )
             stats.homeTurnoverTouchdownsForced = stats.awayTurnoverTouchdownsLost
-            stats.awayFieldGoalMade = calculateFieldGoalMade(play, stats.awayFieldGoalMade ?: 0)
-            stats.awayFieldGoalAttempts = calculateFieldGoalAttempts(play, stats.awayFieldGoalAttempts ?: 0)
-            stats.awayFieldGoalPercentage = calculatePercentage(stats.awayFieldGoalMade ?: 0, stats.awayFieldGoalAttempts ?: 0)
-            stats.awayLongestFieldGoal = calculateLongestFieldGoal(play, stats.awayLongestFieldGoal ?: 0)
-            stats.homeBlockedOpponentFieldGoals = calculateBlockedOpponentFieldGoals(play, stats.homeBlockedOpponentFieldGoals ?: 0)
-            stats.homeFieldGoalTouchdown = calculateFieldGoalTouchdown(play, stats.homeFieldGoalTouchdown ?: 0)
-            stats.awayPuntsAttempted = calculatePuntsAttempted(play, stats.awayPuntsAttempted ?: 0)
-            stats.awayLongestPunt = calculateLongestPunt(play, stats.awayLongestPunt ?: 0)
-            stats.awayAveragePuntLength = calculateAveragePuntLength(allPlays, TeamSide.AWAY)
-            stats.homeBlockedOpponentPunt = calculateBlockedOpponentPunt(play, stats.homeBlockedOpponentPunt ?: 0)
-            stats.homePuntReturnTd = calculatePuntReturnTd(play, stats.homePuntReturnTd ?: 0)
-            stats.homePuntReturnTdPercentage = calculatePercentage(stats.homePuntReturnTd ?: 0, stats.homePuntsAttempted ?: 0)
-            stats.awayNumberOfKickoffs = calculateNumberOfKickoffs(play, stats.awayNumberOfKickoffs ?: 0)
-            stats.awayOnsideAttempts = calculateOnsideAttempts(play, stats.awayOnsideAttempts ?: 0)
-            stats.awayOnsideSuccess = calculateOnsideSuccess(play, stats.awayOnsideSuccess ?: 0)
-            stats.awayOnsideSuccessPercentage = calculatePercentage(stats.awayOnsideSuccess ?: 0, stats.awayOnsideAttempts ?: 0)
-            stats.awayNormalKickoffAttempts = calculateNormalKickoffAttempts(play, stats.awayNormalKickoffAttempts ?: 0)
-            stats.awayTouchbacks = calculateTouchbacks(play, stats.awayTouchbacks ?: 0)
-            stats.awayTouchbackPercentage = calculatePercentage(stats.awayTouchbacks ?: 0, stats.awayNormalKickoffAttempts ?: 0)
-            stats.homeKickReturnTd = calculateKickReturnTd(play, stats.homeKickReturnTd ?: 0)
-            stats.homeKickReturnTdPercentage = calculatePercentage(stats.homeKickReturnTd ?: 0, stats.homeNumberOfKickoffs ?: 0)
-            stats.awayNumberOfDrives = calculateNumberOfDrives(allPlays, TeamSide.AWAY)
-            stats.awayTimeOfPossession = calculateTimeOfPossession(allPlays, TeamSide.AWAY)
-            stats.awayTouchdowns = calculateTouchdowns(allPlays, TeamSide.AWAY)
-            stats.averageAwayOffensiveDiff = calculateAverageOffensiveDiff(allPlays, TeamSide.AWAY)
-            stats.averageAwayDefensiveDiff = calculateAverageDefensiveDiff(allPlays, TeamSide.AWAY)
-            stats.averageAwayOffensiveSpecialTeamsDiff = calculateAverageOffensiveSpecialTeamsDiff(allPlays, TeamSide.AWAY)
-            stats.averageAwayDefensiveSpecialTeamsDiff = calculateAverageDefensiveSpecialTeamsDiff(allPlays, TeamSide.AWAY)
-            stats.awayAverageYardsPerPlay = calculateAverageYardsPerPlay(allPlays, TeamSide.AWAY)
-            stats.awayThirdDownConversionSuccess = calculateThirdDownConversionSuccess(play, stats.awayThirdDownConversionSuccess ?: 0)
-            stats.awayThirdDownConversionAttempts = calculateThirdDownConversionAttempts(play, stats.awayThirdDownConversionAttempts ?: 0)
-            stats.awayThirdDownConversionPercentage = calculatePercentage(stats.awayThirdDownConversionSuccess ?: 0, stats.awayThirdDownConversionAttempts ?: 0)
-            stats.awayFourthDownConversionSuccess = calculateFourthDownConversionSuccess(play, stats.awayFourthDownConversionSuccess ?: 0)
-            stats.awayFourthDownConversionAttempts = calculateFourthDownConversionAttempts(play, stats.awayFourthDownConversionAttempts ?: 0)
-            stats.awayFourthDownConversionPercentage = calculatePercentage(stats.awayFourthDownConversionSuccess ?: 0, stats.awayFourthDownConversionAttempts ?: 0)
-            stats.awayLargestLead = calculateLargestLead(game, stats.awayLargestLead ?: 0, TeamSide.AWAY)
-            stats.awayLargestDeficit = calculateLargestDeficit(game, stats.awayLargestDeficit ?: 0, TeamSide.HOME)
-            stats.awayPassTouchdowns = calculatePassTouchdowns(play, stats.awayPassTouchdowns ?: 0)
-            stats.awayRushTouchdowns = calculateRushTouchdowns(play, stats.awayRushTouchdowns ?: 0)
-            stats.awayRedZoneAttempts = calculateRedZoneAttempts(allPlays, TeamSide.AWAY)
-            stats.awayRedZoneSuccesses = calculateRedZoneSuccesses(allPlays, TeamSide.AWAY)
-            stats.awayRedZoneSuccessPercentage = calculatePercentage(stats.awayRedZoneSuccesses ?: 0, stats.awayRedZoneAttempts ?: 0)
-            stats.awayTurnoverDifferential = calculateTurnoverDifferential(stats.awayTurnoversLost ?: 0, stats.awayTurnoversForced ?: 0)
-            stats.awayPickSixesThrown = calculatePickSixes(play, stats.awayPickSixesThrown ?: 0)
+            stats.awayFieldGoalMade =
+                calculateFieldGoalMade(
+                    play, stats.awayFieldGoalMade ?: 0,
+                )
+            stats.awayFieldGoalAttempts =
+                calculateFieldGoalAttempts(
+                    play, stats.awayFieldGoalAttempts ?: 0,
+                )
+            stats.awayFieldGoalPercentage =
+                calculatePercentage(
+                    stats.awayFieldGoalMade ?: 0, stats.awayFieldGoalAttempts ?: 0,
+                )
+            stats.awayLongestFieldGoal =
+                calculateLongestFieldGoal(
+                    play, stats.awayLongestFieldGoal ?: 0,
+                )
+            stats.homeBlockedOpponentFieldGoals =
+                calculateBlockedOpponentFieldGoals(
+                    play, stats.homeBlockedOpponentFieldGoals ?: 0,
+                )
+            stats.homeFieldGoalTouchdown =
+                calculateFieldGoalTouchdown(
+                    play, stats.homeFieldGoalTouchdown ?: 0,
+                )
+            stats.awayPuntsAttempted =
+                calculatePuntsAttempted(
+                    play, stats.awayPuntsAttempted ?: 0,
+                )
+            stats.awayLongestPunt =
+                calculateLongestPunt(
+                    play, stats.awayLongestPunt ?: 0,
+                )
+            stats.awayAveragePuntLength =
+                calculateAveragePuntLength(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.homeBlockedOpponentPunt =
+                calculateBlockedOpponentPunt(
+                    play, stats.homeBlockedOpponentPunt ?: 0,
+                )
+            stats.homePuntReturnTd =
+                calculatePuntReturnTd(
+                    play, stats.homePuntReturnTd ?: 0,
+                )
+            stats.homePuntReturnTdPercentage =
+                calculatePercentage(
+                    stats.homePuntReturnTd ?: 0, stats.homePuntsAttempted ?: 0,
+                )
+            stats.awayNumberOfKickoffs =
+                calculateNumberOfKickoffs(
+                    play, stats.awayNumberOfKickoffs ?: 0,
+                )
+            stats.awayOnsideAttempts =
+                calculateOnsideAttempts(
+                    play, stats.awayOnsideAttempts ?: 0,
+                )
+            stats.awayOnsideSuccess =
+                calculateOnsideSuccess(
+                    play, stats.awayOnsideSuccess ?: 0,
+                )
+            stats.awayOnsideSuccessPercentage =
+                calculatePercentage(
+                    stats.awayOnsideSuccess ?: 0, stats.awayOnsideAttempts ?: 0,
+                )
+            stats.awayNormalKickoffAttempts =
+                calculateNormalKickoffAttempts(
+                    play, stats.awayNormalKickoffAttempts ?: 0,
+                )
+            stats.awayTouchbacks =
+                calculateTouchbacks(
+                    play, stats.awayTouchbacks ?: 0,
+                )
+            stats.awayTouchbackPercentage =
+                calculatePercentage(
+                    stats.awayTouchbacks ?: 0, stats.awayNormalKickoffAttempts ?: 0,
+                )
+            stats.homeKickReturnTd =
+                calculateKickReturnTd(
+                    play, stats.homeKickReturnTd ?: 0,
+                )
+            stats.homeKickReturnTdPercentage =
+                calculatePercentage(
+                    stats.homeKickReturnTd ?: 0, stats.homeNumberOfKickoffs ?: 0,
+                )
+            stats.awayNumberOfDrives =
+                calculateNumberOfDrives(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayTimeOfPossession =
+                calculateTimeOfPossession(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayTouchdowns =
+                calculateTouchdowns(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.averageAwayOffensiveDiff =
+                calculateAverageOffensiveDiff(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.averageAwayDefensiveDiff =
+                calculateAverageDefensiveDiff(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.averageAwayOffensiveSpecialTeamsDiff =
+                calculateAverageOffensiveSpecialTeamsDiff(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.averageAwayDefensiveSpecialTeamsDiff =
+                calculateAverageDefensiveSpecialTeamsDiff(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayAverageYardsPerPlay =
+                calculateAverageYardsPerPlay(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayThirdDownConversionSuccess =
+                calculateThirdDownConversionSuccess(
+                    play, stats.awayThirdDownConversionSuccess ?: 0,
+                )
+            stats.awayThirdDownConversionAttempts =
+                calculateThirdDownConversionAttempts(
+                    play, stats.awayThirdDownConversionAttempts ?: 0,
+                )
+            stats.awayThirdDownConversionPercentage =
+                calculatePercentage(
+                    stats.awayThirdDownConversionSuccess ?: 0, stats.awayThirdDownConversionAttempts ?: 0,
+                )
+            stats.awayFourthDownConversionSuccess =
+                calculateFourthDownConversionSuccess(
+                    play, stats.awayFourthDownConversionSuccess ?: 0,
+                )
+            stats.awayFourthDownConversionAttempts =
+                calculateFourthDownConversionAttempts(
+                    play, stats.awayFourthDownConversionAttempts ?: 0,
+                )
+            stats.awayFourthDownConversionPercentage =
+                calculatePercentage(
+                    stats.awayFourthDownConversionSuccess ?: 0, stats.awayFourthDownConversionAttempts ?: 0,
+                )
+            stats.awayLargestLead =
+                calculateLargestLead(
+                    game, stats.awayLargestLead ?: 0, TeamSide.AWAY,
+                )
+            stats.awayLargestDeficit =
+                calculateLargestDeficit(
+                    game, stats.awayLargestDeficit ?: 0, TeamSide.HOME,
+                )
+            stats.awayPassTouchdowns =
+                calculatePassTouchdowns(
+                    play, stats.awayPassTouchdowns ?: 0,
+                )
+            stats.awayRushTouchdowns =
+                calculateRushTouchdowns(
+                    play, stats.awayRushTouchdowns ?: 0,
+                )
+            stats.awayRedZoneAttempts =
+                calculateRedZoneAttempts(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayRedZoneSuccesses =
+                calculateRedZoneSuccesses(
+                    allPlays, TeamSide.AWAY,
+                )
+            stats.awayRedZoneSuccessPercentage =
+                calculatePercentage(
+                    stats.awayRedZoneSuccesses ?: 0, stats.awayRedZoneAttempts ?: 0,
+                )
+            stats.awayTurnoverDifferential =
+                calculateTurnoverDifferential(
+                    stats.awayTurnoversLost ?: 0, stats.awayTurnoversForced ?: 0,
+                )
+            stats.awayPickSixesThrown =
+                calculatePickSixes(
+                    play, stats.awayPickSixesThrown ?: 0,
+                )
             stats.homePickSixesForced = stats.awayPickSixesThrown
-            stats.awayFumbleReturnTdsCommitted = calculateFumbleReturnTds(play, stats.awayFumbleReturnTdsCommitted ?: 0)
+            stats.awayFumbleReturnTdsCommitted =
+                calculateFumbleReturnTds(
+                    play, stats.awayFumbleReturnTdsCommitted ?: 0,
+                )
             stats.homeFumbleReturnTdsForced = stats.awayFumbleReturnTdsCommitted
-            stats.awaySafetiesCommitted = calculateSafeties(play, stats.awaySafetiesCommitted ?: 0)
+            stats.awaySafetiesCommitted =
+                calculateSafeties(
+                    play, stats.awaySafetiesCommitted ?: 0,
+                )
             stats.homeSafetiesForced = stats.awaySafetiesCommitted
         }
         if (play.quarter == 1) {
@@ -190,14 +544,14 @@ class StatsHandler(
 
     private fun calculatePassAttempts(
         play: Play,
-        currentPassAttempts: Int
+        currentPassAttempts: Int,
     ): Int {
         // Don't count sacks as pass attempts
         if (play.playCall == PlayCall.PASS && (
-            play.result != Scenario.LOSS_OF_10_YARDS ||
-                play.result != Scenario.LOSS_OF_5_YARDS ||
-                play.result != Scenario.LOSS_OF_3_YARDS ||
-                play.result != Scenario.LOSS_OF_1_YARD
+                play.result != Scenario.LOSS_OF_10_YARDS ||
+                    play.result != Scenario.LOSS_OF_5_YARDS ||
+                    play.result != Scenario.LOSS_OF_3_YARDS ||
+                    play.result != Scenario.LOSS_OF_1_YARD
             )
         ) {
             return currentPassAttempts
@@ -210,25 +564,25 @@ class StatsHandler(
 
     private fun calculatePassCompletions(
         play: Play,
-        currentPassCompletions: Int
+        currentPassCompletions: Int,
     ): Int {
         if (play.playCall == PlayCall.PASS && (
-            play.result != Scenario.INCOMPLETE ||
-                play.result != Scenario.LOSS_OF_10_YARDS ||
-                play.result != Scenario.LOSS_OF_5_YARDS ||
-                play.result != Scenario.LOSS_OF_3_YARDS ||
-                play.result != Scenario.LOSS_OF_1_YARD ||
-                play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
-                play.result != Scenario.TURNOVER ||
-                play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
-                play.result != Scenario.TURNOVER_TOUCHDOWN ||
-                play.result != Scenario.SAFETY
+                play.result != Scenario.INCOMPLETE ||
+                    play.result != Scenario.LOSS_OF_10_YARDS ||
+                    play.result != Scenario.LOSS_OF_5_YARDS ||
+                    play.result != Scenario.LOSS_OF_3_YARDS ||
+                    play.result != Scenario.LOSS_OF_1_YARD ||
+                    play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
+                    play.result != Scenario.TURNOVER ||
+                    play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
+                    play.result != Scenario.TURNOVER_TOUCHDOWN ||
+                    play.result != Scenario.SAFETY
             )
         ) {
             return currentPassCompletions + 1
@@ -238,14 +592,14 @@ class StatsHandler(
 
     private fun calculatePassYards(
         play: Play,
-        currentPassYards: Int
+        currentPassYards: Int,
     ): Int {
         // Don't count sacks towards passing yards
         if (play.playCall == PlayCall.PASS && (
-            play.result != Scenario.LOSS_OF_10_YARDS ||
-                play.result != Scenario.LOSS_OF_5_YARDS ||
-                play.result != Scenario.LOSS_OF_3_YARDS ||
-                play.result != Scenario.LOSS_OF_1_YARD
+                play.result != Scenario.LOSS_OF_10_YARDS ||
+                    play.result != Scenario.LOSS_OF_5_YARDS ||
+                    play.result != Scenario.LOSS_OF_3_YARDS ||
+                    play.result != Scenario.LOSS_OF_1_YARD
             )
         ) {
             return currentPassYards
@@ -258,7 +612,7 @@ class StatsHandler(
 
     private fun calculateRushAttempts(
         play: Play,
-        currentRushAttempts: Int
+        currentRushAttempts: Int,
     ): Int {
         if (play.playCall == PlayCall.RUN) {
             return currentRushAttempts + 1
@@ -268,7 +622,7 @@ class StatsHandler(
 
     private fun calculateRushSuccesses(
         play: Play,
-        currentRushSuccesses: Int
+        currentRushSuccesses: Int,
     ): Int {
         if (play.playCall != PlayCall.RUN) return currentRushSuccesses
 
@@ -276,12 +630,13 @@ class StatsHandler(
         val yardsGained = play.yards ?: 0
         val down = play.down ?: 1
 
-        val isSuccess = when (down) {
-            1 -> yardsGained >= (yardsToGo * 0.5)
-            2 -> yardsGained >= (yardsToGo * 0.7)
-            3, 4 -> yardsGained >= yardsToGo
-            else -> false
-        }
+        val isSuccess =
+            when (down) {
+                1 -> yardsGained >= (yardsToGo * 0.5)
+                2 -> yardsGained >= (yardsToGo * 0.7)
+                3, 4 -> yardsGained >= yardsToGo
+                else -> false
+            }
 
         return if (isSuccess || play.actualResult == ActualResult.TOUCHDOWN) {
             currentRushSuccesses + 1
@@ -292,30 +647,30 @@ class StatsHandler(
 
     private fun calculateRushYards(
         play: Play,
-        currentRushYards: Int
+        currentRushYards: Int,
     ): Int {
         // Count sacks towards rushing yards
         if (play.playCall == PlayCall.PASS && (
-            play.result != Scenario.LOSS_OF_10_YARDS ||
-                play.result != Scenario.LOSS_OF_5_YARDS ||
-                play.result != Scenario.LOSS_OF_3_YARDS ||
-                play.result != Scenario.LOSS_OF_1_YARD
+                play.result != Scenario.LOSS_OF_10_YARDS ||
+                    play.result != Scenario.LOSS_OF_5_YARDS ||
+                    play.result != Scenario.LOSS_OF_3_YARDS ||
+                    play.result != Scenario.LOSS_OF_1_YARD
             )
         ) {
             return currentRushYards + (play.yards ?: 0)
         }
         if (play.playCall == PlayCall.RUN && (
-            play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
-                play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
-                play.result != Scenario.TURNOVER ||
-                play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
-                play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
-                play.result != Scenario.TURNOVER_TOUCHDOWN ||
-                play.result != Scenario.SAFETY
+                play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
+                    play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
+                    play.result != Scenario.TURNOVER ||
+                    play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
+                    play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
+                    play.result != Scenario.TURNOVER_TOUCHDOWN ||
+                    play.result != Scenario.SAFETY
             )
         ) {
             return currentRushYards + (play.yards ?: 0)
@@ -325,16 +680,20 @@ class StatsHandler(
 
     private fun calculateTotalYards(
         passingYards: Int,
-        rushingYards: Int
+        rushingYards: Int,
     ): Int {
         return passingYards + rushingYards
     }
 
     private fun calculateInterceptionsLost(
         play: Play,
-        currentInterceptionsLost: Int
+        currentInterceptionsLost: Int,
     ): Int {
-        if (play.playCall == PlayCall.PASS && (play.actualResult == ActualResult.TURNOVER || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN)) {
+        if (play.playCall == PlayCall.PASS && (
+                play.actualResult == ActualResult.TURNOVER ||
+                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN
+            )
+        ) {
             return currentInterceptionsLost + 1
         }
         return currentInterceptionsLost
@@ -342,9 +701,14 @@ class StatsHandler(
 
     private fun calculateFumblesLost(
         play: Play,
-        currentFumblesLost: Int
+        currentFumblesLost: Int,
     ): Int {
-        if (play.playCall == PlayCall.RUN && (play.actualResult == ActualResult.TURNOVER || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN)) {
+        if (play.playCall == PlayCall.RUN &&
+            (
+                play.actualResult == ActualResult.TURNOVER ||
+                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN
+            )
+        ) {
             return currentFumblesLost + 1
         }
         return currentFumblesLost
@@ -352,14 +716,14 @@ class StatsHandler(
 
     private fun calculateTurnoversLost(
         interceptionsLost: Int,
-        fumblesLost: Int
+        fumblesLost: Int,
     ): Int {
         return interceptionsLost + fumblesLost
     }
 
     private fun calculateTurnoverTouchdownsLost(
         play: Play,
-        currentTurnoverTouchdownsLost: Int
+        currentTurnoverTouchdownsLost: Int,
     ): Int {
         if (play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             return currentTurnoverTouchdownsLost + 1
@@ -369,7 +733,7 @@ class StatsHandler(
 
     private fun calculateFieldGoalMade(
         play: Play,
-        currentFieldGoalMade: Int
+        currentFieldGoalMade: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) {
             return currentFieldGoalMade + 1
@@ -379,7 +743,7 @@ class StatsHandler(
 
     private fun calculateFieldGoalAttempts(
         play: Play,
-        currentFieldGoalAttempts: Int
+        currentFieldGoalAttempts: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL) {
             return currentFieldGoalAttempts + 1
@@ -389,10 +753,10 @@ class StatsHandler(
 
     private fun calculateLongestFieldGoal(
         play: Play,
-        currentLongestFieldGoal: Int
+        currentLongestFieldGoal: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD && (
-            ((play.ballLocation ?: 0) + 17) > currentLongestFieldGoal
+                ((play.ballLocation ?: 0) + 17) > currentLongestFieldGoal
             )
         ) {
             return (play.ballLocation ?: 0) + 17
@@ -402,7 +766,7 @@ class StatsHandler(
 
     private fun calculateBlockedOpponentFieldGoals(
         play: Play,
-        currentBlockedOpponentFieldGoals: Int
+        currentBlockedOpponentFieldGoals: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.actualResult == ActualResult.BLOCKED) {
             return currentBlockedOpponentFieldGoals + 1
@@ -412,7 +776,7 @@ class StatsHandler(
 
     private fun calculateFieldGoalTouchdown(
         play: Play,
-        currentFieldGoalTouchdown: Int
+        currentFieldGoalTouchdown: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.actualResult == ActualResult.KICK_SIX) {
             return currentFieldGoalTouchdown + 1
@@ -422,7 +786,7 @@ class StatsHandler(
 
     private fun calculatePuntsAttempted(
         play: Play,
-        currentPuntsAttempted: Int
+        currentPuntsAttempted: Int,
     ): Int {
         if (play.playCall == PlayCall.PUNT) {
             return currentPuntsAttempted + 1
@@ -432,14 +796,16 @@ class StatsHandler(
 
     private fun calculateLongestPunt(
         play: Play,
-        currentLongestPunt: Int
+        currentLongestPunt: Int,
     ): Int {
-        val puntDisances = listOf(
-            Scenario.FIVE_YARD_PUNT, Scenario.TEN_YARD_PUNT, Scenario.FIFTEEN_YARD_PUNT, Scenario.TWENTY_YARD_PUNT,
-            Scenario.TWENTY_FIVE_YARD_PUNT, Scenario.THIRTY_YARD_PUNT, Scenario.THIRTY_FIVE_YARD_PUNT,
-            Scenario.FORTY_YARD_PUNT, Scenario.FORTY_FIVE_YARD_PUNT, Scenario.FIFTY_YARD_PUNT, Scenario.FIFTY_FIVE_YARD_PUNT,
-            Scenario.SIXTY_YARD_PUNT, Scenario.SIXTY_FIVE_YARD_PUNT, Scenario.SEVENTY_YARD_PUNT
-        )
+        val puntDisances =
+            listOf(
+                Scenario.FIVE_YARD_PUNT, Scenario.TEN_YARD_PUNT, Scenario.FIFTEEN_YARD_PUNT, Scenario.TWENTY_YARD_PUNT,
+                Scenario.TWENTY_FIVE_YARD_PUNT, Scenario.THIRTY_YARD_PUNT, Scenario.THIRTY_FIVE_YARD_PUNT,
+                Scenario.FORTY_YARD_PUNT, Scenario.FORTY_FIVE_YARD_PUNT, Scenario.FIFTY_YARD_PUNT,
+                Scenario.FIFTY_FIVE_YARD_PUNT, Scenario.SIXTY_YARD_PUNT, Scenario.SIXTY_FIVE_YARD_PUNT,
+                Scenario.SEVENTY_YARD_PUNT,
+            )
         if (play.result in puntDisances) {
             val puntDistance = play.result?.description?.substringBefore(" YARD PUNT")?.toInt()
             if ((puntDistance ?: 0) > currentLongestPunt) {
@@ -453,12 +819,13 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.playCall == PlayCall.PUNT && it.possession == possession &&
-                it.result?.description?.contains(" YARD PUNT") ?: false
-        }.map {
-            it.result?.description?.substringBefore(" YARD PUNT")?.toInt() ?: 0
-        }.average()
+        val average =
+            allPlays.filter {
+                it.playCall == PlayCall.PUNT && it.possession == possession &&
+                    it.result?.description?.contains(" YARD PUNT") ?: false
+            }.map {
+                it.result?.description?.substringBefore(" YARD PUNT")?.toInt() ?: 0
+            }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -468,7 +835,7 @@ class StatsHandler(
 
     private fun calculateBlockedOpponentPunt(
         play: Play,
-        currentBlockedOpponentPunt: Int
+        currentBlockedOpponentPunt: Int,
     ): Int {
         if (play.playCall == PlayCall.PUNT && play.actualResult == ActualResult.BLOCKED) {
             return currentBlockedOpponentPunt + 1
@@ -478,7 +845,7 @@ class StatsHandler(
 
     private fun calculatePuntReturnTd(
         play: Play,
-        currentPuntReturnTd: Int
+        currentPuntReturnTd: Int,
     ): Int {
         if (play.playCall == PlayCall.PUNT && play.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN) {
             return currentPuntReturnTd + 1
@@ -488,9 +855,12 @@ class StatsHandler(
 
     private fun calculateNumberOfKickoffs(
         play: Play,
-        currentNumberOfKickoffs: Int
+        currentNumberOfKickoffs: Int,
     ): Int {
-        if (play.playCall == PlayCall.KICKOFF_NORMAL || play.playCall == PlayCall.KICKOFF_ONSIDE || play.playCall == PlayCall.KICKOFF_SQUIB) {
+        if (play.playCall == PlayCall.KICKOFF_NORMAL ||
+            play.playCall == PlayCall.KICKOFF_ONSIDE ||
+            play.playCall == PlayCall.KICKOFF_SQUIB
+        ) {
             return currentNumberOfKickoffs + 1
         }
         return currentNumberOfKickoffs
@@ -498,7 +868,7 @@ class StatsHandler(
 
     private fun calculateOnsideAttempts(
         play: Play,
-        currentOnsideAttempts: Int
+        currentOnsideAttempts: Int,
     ): Int {
         if (play.playCall == PlayCall.KICKOFF_ONSIDE) {
             return currentOnsideAttempts + 1
@@ -508,16 +878,17 @@ class StatsHandler(
 
     private fun calculateOnsideSuccess(
         play: Play,
-        currentOnsideSuccess: Int
+        currentOnsideSuccess: Int,
     ): Int {
         if (play.playCall == PlayCall.KICKOFF_ONSIDE && play.result == Scenario.RECOVERED) {
             return currentOnsideSuccess + 1
         }
         return currentOnsideSuccess
     }
+
     private fun calculateNormalKickoffAttempts(
         play: Play,
-        currentNormalKickoffAttempts: Int
+        currentNormalKickoffAttempts: Int,
     ): Int {
         if (play.playCall == PlayCall.KICKOFF_NORMAL) {
             return currentNormalKickoffAttempts + 1
@@ -527,7 +898,7 @@ class StatsHandler(
 
     private fun calculateTouchbacks(
         play: Play,
-        currentTouchbacks: Int
+        currentTouchbacks: Int,
     ): Int {
         if (play.playCall == PlayCall.KICKOFF_NORMAL && play.result == Scenario.TOUCHBACK) {
             return currentTouchbacks + 1
@@ -537,7 +908,7 @@ class StatsHandler(
 
     private fun calculateKickReturnTd(
         play: Play,
-        currentKickReturnTd: Int
+        currentKickReturnTd: Int,
     ): Int {
         if (play.playCall == PlayCall.KICKOFF_NORMAL && play.actualResult == ActualResult.RETURN_TOUCHDOWN) {
             return currentKickReturnTd + 1
@@ -559,7 +930,7 @@ class StatsHandler(
                     play.playCall == PlayCall.KICKOFF_NORMAL ||
                         play.playCall == PlayCall.KICKOFF_ONSIDE ||
                         play.playCall == PlayCall.KICKOFF_SQUIB
-                    ) && play.possession == possession -> {
+                ) && play.possession == possession -> {
                     isDriveInProgress = false
                 }
 
@@ -571,7 +942,9 @@ class StatsHandler(
                 }
 
                 // If possession changes to another player or a turnover happens
-                play.possession != possession || play.actualResult == ActualResult.TURNOVER || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN -> {
+                play.possession != possession ||
+                    play.actualResult == ActualResult.TURNOVER ||
+                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN -> {
                     // End the current drive
                     isDriveInProgress = false
                 }
@@ -595,25 +968,27 @@ class StatsHandler(
 
     private fun calculateTouchdowns(
         allPlays: List<Play>,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
-        val offensiveTouchdowns = allPlays.filter {
-            it.possession == possession &&
-                (
-                    it.actualResult == ActualResult.TOUCHDOWN ||
-                        it.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
-                        it.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN
+        val offensiveTouchdowns =
+            allPlays.filter {
+                it.possession == possession &&
+                    (
+                        it.actualResult == ActualResult.TOUCHDOWN ||
+                            it.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+                            it.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN
                     )
-        }.count()
-        val defensiveTouchdowns = allPlays.filter {
-            it.possession != possession &&
-                (
-                    it.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                        it.actualResult == ActualResult.RETURN_TOUCHDOWN ||
-                        it.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
-                        it.actualResult == ActualResult.KICK_SIX
+            }.count()
+        val defensiveTouchdowns =
+            allPlays.filter {
+                it.possession != possession &&
+                    (
+                        it.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                            it.actualResult == ActualResult.RETURN_TOUCHDOWN ||
+                            it.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+                            it.actualResult == ActualResult.KICK_SIX
                     )
-        }.count()
+            }.count()
         return offensiveTouchdowns + defensiveTouchdowns
     }
 
@@ -621,16 +996,17 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.possession == possession &&
-                it.playCall != PlayCall.KICKOFF_NORMAL &&
-                it.playCall != PlayCall.KICKOFF_ONSIDE &&
-                it.playCall != PlayCall.KICKOFF_SQUIB &&
-                it.playCall != PlayCall.PAT &&
-                it.playCall != PlayCall.TWO_POINT &&
-                it.playCall != PlayCall.KNEEL &&
-                it.playCall != PlayCall.SPIKE
-        }.map { it.difference ?: 0 }.average()
+        val average =
+            allPlays.filter {
+                it.possession == possession &&
+                    it.playCall != PlayCall.KICKOFF_NORMAL &&
+                    it.playCall != PlayCall.KICKOFF_ONSIDE &&
+                    it.playCall != PlayCall.KICKOFF_SQUIB &&
+                    it.playCall != PlayCall.PAT &&
+                    it.playCall != PlayCall.TWO_POINT &&
+                    it.playCall != PlayCall.KNEEL &&
+                    it.playCall != PlayCall.SPIKE
+            }.map { it.difference ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -642,16 +1018,17 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.possession != possession &&
-                it.playCall != PlayCall.KICKOFF_NORMAL &&
-                it.playCall != PlayCall.KICKOFF_ONSIDE &&
-                it.playCall != PlayCall.KICKOFF_SQUIB &&
-                it.playCall != PlayCall.PAT &&
-                it.playCall != PlayCall.TWO_POINT &&
-                it.playCall != PlayCall.KNEEL &&
-                it.playCall != PlayCall.SPIKE
-        }.map { it.difference ?: 0 }.average()
+        val average =
+            allPlays.filter {
+                it.possession != possession &&
+                    it.playCall != PlayCall.KICKOFF_NORMAL &&
+                    it.playCall != PlayCall.KICKOFF_ONSIDE &&
+                    it.playCall != PlayCall.KICKOFF_SQUIB &&
+                    it.playCall != PlayCall.PAT &&
+                    it.playCall != PlayCall.TWO_POINT &&
+                    it.playCall != PlayCall.KNEEL &&
+                    it.playCall != PlayCall.SPIKE
+            }.map { it.difference ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -663,16 +1040,17 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.possession == possession &&
-                (
-                    it.playCall == PlayCall.KICKOFF_NORMAL ||
-                        it.playCall == PlayCall.KICKOFF_ONSIDE ||
-                        it.playCall == PlayCall.KICKOFF_SQUIB ||
-                        it.playCall == PlayCall.FIELD_GOAL ||
-                        it.playCall == PlayCall.PUNT
+        val average =
+            allPlays.filter {
+                it.possession == possession &&
+                    (
+                        it.playCall == PlayCall.KICKOFF_NORMAL ||
+                            it.playCall == PlayCall.KICKOFF_ONSIDE ||
+                            it.playCall == PlayCall.KICKOFF_SQUIB ||
+                            it.playCall == PlayCall.FIELD_GOAL ||
+                            it.playCall == PlayCall.PUNT
                     )
-        }.map { it.difference ?: 0 }.average()
+            }.map { it.difference ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -684,16 +1062,17 @@ class StatsHandler(
         allPlays: List<Play>,
         possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.possession != possession &&
-                (
-                    it.playCall == PlayCall.KICKOFF_NORMAL ||
-                        it.playCall == PlayCall.KICKOFF_ONSIDE ||
-                        it.playCall == PlayCall.KICKOFF_SQUIB ||
-                        it.playCall == PlayCall.FIELD_GOAL ||
-                        it.playCall == PlayCall.PUNT
+        val average =
+            allPlays.filter {
+                it.possession != possession &&
+                    (
+                        it.playCall == PlayCall.KICKOFF_NORMAL ||
+                            it.playCall == PlayCall.KICKOFF_ONSIDE ||
+                            it.playCall == PlayCall.KICKOFF_SQUIB ||
+                            it.playCall == PlayCall.FIELD_GOAL ||
+                            it.playCall == PlayCall.PUNT
                     )
-        }.map { it.difference ?: 0 }.average()
+            }.map { it.difference ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -703,16 +1082,17 @@ class StatsHandler(
 
     private fun calculateAverageYardsPerPlay(
         allPlays: List<Play>,
-        possession: TeamSide
+        possession: TeamSide,
     ): Double {
-        val average = allPlays.filter {
-            it.possession == possession &&
-                it.playCall != PlayCall.KICKOFF_NORMAL &&
-                it.playCall != PlayCall.KICKOFF_ONSIDE &&
-                it.playCall != PlayCall.KICKOFF_SQUIB &&
-                it.playCall != PlayCall.PAT &&
-                it.playCall != PlayCall.TWO_POINT
-        }.map { it.yards ?: 0 }.average()
+        val average =
+            allPlays.filter {
+                it.possession == possession &&
+                    it.playCall != PlayCall.KICKOFF_NORMAL &&
+                    it.playCall != PlayCall.KICKOFF_ONSIDE &&
+                    it.playCall != PlayCall.KICKOFF_SQUIB &&
+                    it.playCall != PlayCall.PAT &&
+                    it.playCall != PlayCall.TWO_POINT
+            }.map { it.yards ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -722,7 +1102,7 @@ class StatsHandler(
 
     private fun calculateThirdDownConversionSuccess(
         play: Play,
-        currentThirdDownConversionSuccess: Int
+        currentThirdDownConversionSuccess: Int,
     ): Int {
         if (play.down == 3 && (play.yards ?: 0) > (play.yardsToGo ?: 0)) {
             return currentThirdDownConversionSuccess + 1
@@ -732,7 +1112,7 @@ class StatsHandler(
 
     private fun calculateThirdDownConversionAttempts(
         play: Play,
-        currentThirdDownConversionAttempts: Int
+        currentThirdDownConversionAttempts: Int,
     ): Int {
         if (play.down == 3) {
             return currentThirdDownConversionAttempts + 1
@@ -742,7 +1122,7 @@ class StatsHandler(
 
     private fun calculateFourthDownConversionSuccess(
         play: Play,
-        currentFourthDownConversionSuccess: Int
+        currentFourthDownConversionSuccess: Int,
     ): Int {
         if (play.down == 4 && (play.yards ?: 0) > (play.yardsToGo ?: 0)) {
             return currentFourthDownConversionSuccess + 1
@@ -752,7 +1132,7 @@ class StatsHandler(
 
     private fun calculateFourthDownConversionAttempts(
         play: Play,
-        currentFourthDownConversionAttempts: Int
+        currentFourthDownConversionAttempts: Int,
     ): Int {
         if (play.down == 4 && (play.playCall == PlayCall.RUN || play.playCall == PlayCall.PASS)) {
             return currentFourthDownConversionAttempts + 1
@@ -763,7 +1143,7 @@ class StatsHandler(
     private fun calculateLargestLead(
         game: Game,
         currentLargestLead: Int,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
         if (possession == TeamSide.HOME) {
             if ((game.homeScore ?: 0) - (game.awayScore ?: 0) > currentLargestLead) {
@@ -780,7 +1160,7 @@ class StatsHandler(
     private fun calculateLargestDeficit(
         game: Game,
         currentLargestDeficit: Int,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
         if (possession == TeamSide.HOME) {
             if ((game.awayScore ?: 0) - (game.homeScore ?: 0) > currentLargestDeficit) {
@@ -796,7 +1176,7 @@ class StatsHandler(
 
     private fun calculatePassTouchdowns(
         play: Play,
-        currentPassTouchdowns: Int
+        currentPassTouchdowns: Int,
     ): Int {
         if (play.playCall == PlayCall.PASS && play.actualResult == ActualResult.TOUCHDOWN) {
             return currentPassTouchdowns + 1
@@ -806,7 +1186,7 @@ class StatsHandler(
 
     private fun calculateRushTouchdowns(
         play: Play,
-        currentRushTouchdowns: Int
+        currentRushTouchdowns: Int,
     ): Int {
         if (play.playCall == PlayCall.RUN && play.actualResult == ActualResult.TOUCHDOWN) {
             return currentRushTouchdowns + 1
@@ -816,7 +1196,7 @@ class StatsHandler(
 
     private fun calculateRedZoneAttempts(
         allPlays: List<Play>,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
         return allPlays.count {
             it.possession == possession &&
@@ -826,7 +1206,7 @@ class StatsHandler(
 
     private fun calculateRedZoneSuccesses(
         allPlays: List<Play>,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
         return allPlays.count {
             it.possession == possession &&
@@ -835,9 +1215,7 @@ class StatsHandler(
         }
     }
 
-    private fun calculateAverageDiff(
-        allPlays: List<Play>
-    ): Double {
+    private fun calculateAverageDiff(allPlays: List<Play>): Double {
         val average = allPlays.map { it.difference ?: 0 }.average()
         return if (average.isNaN()) {
             0.0
@@ -848,14 +1226,14 @@ class StatsHandler(
 
     private fun calculateTurnoverDifferential(
         turnoversLost: Int,
-        turnoversForced: Int
+        turnoversForced: Int,
     ): Int {
         return turnoversForced - turnoversLost
     }
 
     private fun calculatePickSixes(
         play: Play,
-        currentPickSixes: Int
+        currentPickSixes: Int,
     ): Int {
         if (play.playCall == PlayCall.PASS && play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             return currentPickSixes + 1
@@ -865,7 +1243,7 @@ class StatsHandler(
 
     private fun calculateFumbleReturnTds(
         play: Play,
-        currentFumbleReturnTds: Int
+        currentFumbleReturnTds: Int,
     ): Int {
         if (play.playCall == PlayCall.RUN && play.actualResult == ActualResult.TURNOVER_TOUCHDOWN) {
             return currentFumbleReturnTds + 1
@@ -875,7 +1253,7 @@ class StatsHandler(
 
     private fun calculateSafeties(
         play: Play,
-        currentSafeties: Int
+        currentSafeties: Int,
     ): Int {
         if (play.actualResult == ActualResult.SAFETY) {
             return currentSafeties + 1
@@ -886,7 +1264,7 @@ class StatsHandler(
     private fun calculateQuarterScore(
         play: Play,
         currentQuarterScore: Int,
-        possession: TeamSide
+        possession: TeamSide,
     ): Int {
         if (play.possession == possession) {
             if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
@@ -925,7 +1303,7 @@ class StatsHandler(
 
     private fun calculatePercentage(
         successes: Int,
-        attempts: Int
+        attempts: Int,
     ): Double {
         if (attempts == 0) {
             return 0.0

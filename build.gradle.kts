@@ -1,8 +1,11 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+
 plugins {
-    id("org.springframework.boot") version "2.7.0"
-    id("io.spring.dependency-management") version "1.1.4"
-    id("org.jlleitschuh.gradle.ktlint") version "10.1.0"
-    kotlin("jvm") version "1.9.22"
+    id("org.springframework.boot") version "2.7.18"
+    id("io.spring.dependency-management") version "1.1.6"
+    id("org.jlleitschuh.gradle.ktlint") version "12.1.1"
+    kotlin("jvm") version "2.0.21"
     application
 }
 
@@ -27,7 +30,8 @@ repositories {
 
 dependencies {
     implementation("org.slf4j:slf4j-api:1.7.36")
-    implementation("ch.qos.logback:logback-classic:1.2.11")
+    implementation("ch.qos.logback:logback-classic:1.2.13")
+    implementation("ch.qos.logback:logback-core:1.2.13")
     implementation("org.springframework.boot:spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-starter-data-jpa")
     implementation("org.springframework.boot:spring-boot-starter-web")
@@ -42,33 +46,33 @@ dependencies {
     implementation("javax.persistence:javax.persistence-api")
     implementation("dev.kord:kord-core:0.13.1")
     implementation("org.reactivestreams:reactive-streams:1.0.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.7.3")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.7.3")
-    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.1.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core-jvm:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactor:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-slf4j:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.9.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-jdk8:1.9.0")
+    implementation("io.projectreactor.kotlin:reactor-kotlin-extensions:1.2.3")
     implementation("com.kotlindiscord.kord.extensions:kord-extensions:1.6.0")
-    implementation("com.google.code.gson:gson:2.8.9")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.12.3")
-    implementation("org.apache.httpcomponents:httpclient:4.5.13")
+    implementation("com.google.code.gson:gson:2.11.0")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.18.0")
+    implementation("org.apache.httpcomponents:httpclient:4.5.14")
     testImplementation("org.springframework.boot:spring-boot-starter-test")
     testImplementation("org.junit.jupiter:junit-jupiter")
     testImplementation("org.jetbrains.kotlin:kotlin-test")
 }
 
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>() {
-    kotlinOptions {
-        jvmTarget = "17"
+tasks.withType<KotlinJvmCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_17)
+        freeCompilerArgs.add("-opt-in=kotlin.RequiresOptIn")
     }
 }
-
-tasks.withType<JavaCompile>() {
+tasks.withType<JavaCompile> {
     options.encoding = "UTF-8"
 }
 
-tasks.withType<Javadoc>() {
+tasks.withType<Javadoc> {
     options.encoding = "UTF-8"
 }

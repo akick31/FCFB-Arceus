@@ -21,7 +21,7 @@ import java.util.Optional
 class TeamService(
     var teamRepository: TeamRepository,
     var userRepository: UserRepository,
-    private val discordService: DiscordService
+    private val discordService: DiscordService,
 ) {
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
@@ -48,44 +48,48 @@ class TeamService(
 
     fun createTeam(team: Team): ResponseEntity<Team> {
         return try {
-            val newTeam: Team? = teamRepository.save(
-                Team(
-                    team.logo,
-                    team.coachUsername1,
-                    team.coachName1,
-                    team.coachDiscordTag1,
-                    team.coachDiscordId1,
-                    team.coachUsername2,
-                    team.coachName2,
-                    team.coachDiscordTag2,
-                    team.coachDiscordId2,
-                    0,
-                    team.name,
-                    0,
-                    team.abbreviation,
-                    team.primaryColor,
-                    team.secondaryColor,
-                    team.subdivision,
-                    team.offensivePlaybook,
-                    team.defensivePlaybook,
-                    team.conference,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0,
-                    0
+            val newTeam: Team? =
+                teamRepository.save(
+                    Team(
+                        team.logo,
+                        team.coachUsername1,
+                        team.coachName1,
+                        team.coachDiscordTag1,
+                        team.coachDiscordId1,
+                        team.coachUsername2,
+                        team.coachName2,
+                        team.coachDiscordTag2,
+                        team.coachDiscordId2,
+                        0,
+                        team.name,
+                        0,
+                        team.abbreviation,
+                        team.primaryColor,
+                        team.secondaryColor,
+                        team.subdivision,
+                        team.offensivePlaybook,
+                        team.defensivePlaybook,
+                        team.conference,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                    ),
                 )
-            )
             ResponseEntity(newTeam, HttpStatus.CREATED)
         } catch (e: Exception) {
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }
 
-    fun updateTeam(name: String?, team: Team): ResponseEntity<Team> {
+    fun updateTeam(
+        name: String?,
+        team: Team,
+    ): ResponseEntity<Team> {
         val existingTeam = teamRepository.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         existingTeam.apply {
             this.name = team.name
@@ -121,15 +125,17 @@ class TeamService(
     suspend fun hireCoach(
         name: String?,
         discordId: String,
-        coachPosition: CoachPosition
+        coachPosition: CoachPosition,
     ): ResponseEntity<Team> {
         val updatedName = name?.replace("_", " ")
-        val existingTeam = withContext(Dispatchers.IO) {
-            teamRepository.findByName(updatedName)
-        } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        val user = withContext(Dispatchers.IO) {
-            userRepository.findByDiscordId(discordId)
-        } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        val existingTeam =
+            withContext(Dispatchers.IO) {
+                teamRepository.findByName(updatedName)
+            } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        val user =
+            withContext(Dispatchers.IO) {
+                userRepository.findByDiscordId(discordId)
+            } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         when (coachPosition) {
             HEAD_COACH -> {
                 existingTeam.coachUsername1 = user.username

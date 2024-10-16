@@ -161,7 +161,7 @@ class Team {
         currentConferenceWins: Int?,
         currentConferenceLosses: Int?,
         overallConferenceWins: Int?,
-        overallConferenceLosses: Int?
+        overallConferenceLosses: Int?,
     ) {
         this.logo = logo
         this.coachUsername1 = coachUsername1
@@ -216,7 +216,8 @@ class Team {
         MID_ATLANTIC("Mid-Atlantic"),
         SOUTHLAND("Southland"),
         OHIO_VALLEY("Ohio Valley"),
-        SWAC("SWAC");
+        SWAC("SWAC"),
+        ;
 
         companion object {
             fun fromString(description: String): Conference? {

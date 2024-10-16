@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component
 
 @Component
 class GameHandler(
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -28,7 +28,7 @@ class GameHandler(
         down: Int,
         yardsToGo: Int,
         homeTimeoutCalled: Boolean,
-        awayTimeoutCalled: Boolean
+        awayTimeoutCalled: Boolean,
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
@@ -54,19 +54,24 @@ class GameHandler(
         }
 
         // Update waiting on
-        val waitingOn = if (possession == TeamSide.HOME) {
-            TeamSide.AWAY
-        } else {
-            TeamSide.HOME
-        }
+        val waitingOn =
+            if (possession == TeamSide.HOME) {
+                TeamSide.AWAY
+            } else {
+                TeamSide.HOME
+            }
 
         // Update the play type
-        if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-            play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN || play.actualResult == ActualResult.RETURN_TOUCHDOWN
+        if (play.actualResult == ActualResult.TOUCHDOWN ||
+            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+            play.actualResult == ActualResult.RETURN_TOUCHDOWN
         ) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||
-            (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) || play.playCall == PlayCall.PAT || play.playCall == PlayCall.TWO_POINT
+            (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) ||
+            play.playCall == PlayCall.PAT ||
+            play.playCall == PlayCall.TWO_POINT
         ) {
             game.currentPlayType = PlayType.KICKOFF
         } else {
@@ -83,8 +88,7 @@ class GameHandler(
             game.gameStatus = GameStatus.HALFTIME
             game.currentPlayType = PlayType.KICKOFF
             game.ballLocation = 35
-        } // Change game status back to in progress after first play of the second half
-        else if (game.gameStatus == GameStatus.HALFTIME) {
+        } else if (game.gameStatus == GameStatus.HALFTIME) {
             game.gameStatus = GameStatus.IN_PROGRESS
         }
 
@@ -113,7 +117,7 @@ class GameHandler(
      */
     fun getDifference(
         offensiveNumber: Int,
-        defesiveNumber: Int
+        defesiveNumber: Int,
     ): Int {
         var difference = Math.abs(defesiveNumber - offensiveNumber)
         if (difference > 750) {
@@ -127,9 +131,7 @@ class GameHandler(
      * @param clock
      * @return
      */
-    fun convertClockToSeconds(
-        clock: String
-    ): Int {
+    fun convertClockToSeconds(clock: String): Int {
         val clockArray = clock.split(":".toRegex()).dropLastWhile { it.isEmpty() }.toTypedArray()
         val minutes = clockArray[0].toInt()
         val seconds = clockArray[1].toInt()
@@ -141,17 +143,13 @@ class GameHandler(
      * @param seconds
      * @return
      */
-    fun convertClockToString(
-        seconds: Int
-    ): String {
+    fun convertClockToString(seconds: Int): String {
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60
         return String.format("%d:%02d", minutes, remainingSeconds)
     }
 
-    fun handleHalfTimePossessionChange(
-        game: Game
-    ): TeamSide? {
+    fun handleHalfTimePossessionChange(game: Game): TeamSide? {
         var possession: TeamSide? = null
         if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
             possession = TeamSide.AWAY

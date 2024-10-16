@@ -68,7 +68,7 @@ class Ranges {
         result: Scenario?,
         playTime: Int?,
         lowerRange: Int?,
-        upperRange: Int?
+        upperRange: Int?,
     ) {
         this.playType = playType
         this.offensivePlaybook = offensivePlaybook
@@ -96,7 +96,7 @@ class Ranges {
             result,
             playTime,
             lowerRange,
-            upperRange
+            upperRange,
         )
     }
 }

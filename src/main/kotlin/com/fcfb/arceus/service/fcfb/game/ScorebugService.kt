@@ -25,11 +25,9 @@ import javax.imageio.ImageIO
 @Component
 class ScorebugService(
     private val teamRepository: TeamRepository,
-    private val gameRepository: GameRepository
+    private val gameRepository: GameRepository,
 ) {
-    fun getScorebugByGameId(
-        gameId: Int
-    ): ResponseEntity<ByteArray>? {
+    fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray>? {
         val game = gameRepository.findByGameId(gameId) ?: return null
         val image = generateScorebug(game)
 
@@ -39,10 +37,11 @@ class ScorebugService(
         val imageBytes = outputStream.toByteArray()
 
         // Set the response headers
-        val headers = HttpHeaders().apply {
-            contentType = MediaType.IMAGE_PNG
-            contentLength = imageBytes.size.toLong()
-        }
+        val headers =
+            HttpHeaders().apply {
+                contentType = MediaType.IMAGE_PNG
+                contentLength = imageBytes.size.toLong()
+            }
 
         // Return the image in the response
         return ResponseEntity(imageBytes, headers, HttpStatus.OK)
@@ -122,7 +121,14 @@ class ScorebugService(
 
         // Draw Home Team Name
         g.color = Color.WHITE
-        drawCenteredText(g, game.homeTeam.toString(), teamNameX, homeTeamY - 10, teamBoxWidth - 30, infoBoxHeight)
+        drawCenteredText(
+            g,
+            game.homeTeam.toString(),
+            teamNameX,
+            homeTeamY - 10,
+            teamBoxWidth - 30,
+            infoBoxHeight,
+        )
 
         // Draw Away Team Name
         g.color = Color.WHITE
@@ -152,15 +158,16 @@ class ScorebugService(
         drawCenteredText(g, game.awayScore.toString(), scoreX, awayTeamY, scoreBoxWidth, infoBoxHeight)
 
         if (game.gameStatus == GameStatus.FINAL) {
-            val quarterText = when (game.quarter) {
-                5 -> "OT" // Overtime
-                4 -> "4th"
-                3 -> "3rd"
-                2 -> "2nd"
-                1 -> "1st"
-                0 -> "4th"
-                else -> "Unknown"
-            }
+            val quarterText =
+                when (game.quarter) {
+                    5 -> "OT" // Overtime
+                    4 -> "4th"
+                    3 -> "3rd"
+                    2 -> "2nd"
+                    1 -> "1st"
+                    0 -> "4th"
+                    else -> "Unknown"
+                }
 
             g.color = Color.DARK_GRAY.darker()
             g.fillRect(clockInfoBoxX, homeTeamY, clockInfoBoxWidth, infoBoxHeight) // Quarter box
@@ -177,17 +184,25 @@ class ScorebugService(
             g.color = Color.DARK_GRAY.darker()
             g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Ball location box
             g.color = Color.WHITE
-            drawCenteredText(g, "FINAL", teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+            drawCenteredText(
+                g,
+                "FINAL",
+                teamNameX,
+                bottomBoxY,
+                teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth,
+                bottomBoxHeight,
+            ) // Center the ball location text
         } else {
             // Draw Quarter Box
-            val quarterText = when (game.quarter) {
-                5 -> "OT" // Overtime
-                4 -> "4th"
-                3 -> "3rd"
-                2 -> "2nd"
-                1 -> "1st"
-                else -> "Unknown"
-            }
+            val quarterText =
+                when (game.quarter) {
+                    5 -> "OT" // Overtime
+                    4 -> "4th"
+                    3 -> "3rd"
+                    2 -> "2nd"
+                    1 -> "1st"
+                    else -> "Unknown"
+                }
             g.color = Color.DARK_GRAY.darker()
             g.fillRect(clockInfoBoxX, homeTeamY, clockInfoBoxWidth, infoBoxHeight) // Quarter box
             g.color = Color.WHITE
@@ -215,21 +230,30 @@ class ScorebugService(
                     }
                 }
 
-                val downDistanceText = when (game.down) {
-                    1 -> "1st"
-                    2 -> "2nd"
-                    3 -> "3rd"
-                    4 -> "4th"
-                    else -> game.down.toString()
-                } + " & " + when {
-                    (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
-                    else -> game.yardsToGo.toString()
-                }
+                val downDistanceText =
+                    when (game.down) {
+                        1 -> "1st"
+                        2 -> "2nd"
+                        3 -> "3rd"
+                        4 -> "4th"
+                        else -> game.down.toString()
+                    } + " & " +
+                        when {
+                            (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
+                            else -> game.yardsToGo.toString()
+                        }
 
                 g.color = Color.DARK_GRAY.darker()
                 g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth, bottomBoxHeight) // Down & distance box
                 g.color = Color.WHITE
-                drawCenteredText(g, downDistanceText, teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth - 30, bottomBoxHeight) // Center the down and distance text
+                drawCenteredText(
+                    g,
+                    downDistanceText,
+                    teamNameX,
+                    bottomBoxY,
+                    teamBoxWidth + scoreBoxWidth - 30,
+                    bottomBoxHeight,
+                ) // Center the down and distance text
 
                 // Determine ball location text
                 fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
@@ -247,20 +271,40 @@ class ScorebugService(
                     }
                 }
 
-                val ballLocationText = when {
-                    game.ballLocation == 50 -> "50 yard line"
-                    game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.HOME -> "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
-                    game.ballLocation != null && game.ballLocation!! < 50 && game.possession == TeamSide.AWAY -> "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
-                    game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.HOME -> "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
-                    game.ballLocation != null && game.ballLocation!! > 50 && game.possession == TeamSide.AWAY -> "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
-                    else -> "Unknown Location"
-                }
+                val ballLocationText =
+                    when {
+                        game.ballLocation == 50 -> "50 yard line"
+                        game.ballLocation != null &&
+                            game.ballLocation!! < 50 &&
+                            game.possession == TeamSide.HOME ->
+                            "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
+                        game.ballLocation != null &&
+                            game.ballLocation!! < 50 &&
+                            game.possession == TeamSide.AWAY ->
+                            "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
+                        game.ballLocation != null &&
+                            game.ballLocation!! > 50 &&
+                            game.possession == TeamSide.HOME ->
+                            "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
+                        game.ballLocation != null &&
+                            game.ballLocation!! > 50 &&
+                            game.possession == TeamSide.AWAY ->
+                            "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
+                        else -> "Unknown Location"
+                    }
 
                 // Draw Ball Location Box
                 g.color = Color.DARK_GRAY.darker()
                 g.fillRect(clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Ball location box
                 g.color = Color.WHITE
-                drawCenteredText(g, ballLocationText, clockInfoBoxX, bottomBoxY, clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+                drawCenteredText(
+                    g,
+                    ballLocationText,
+                    clockInfoBoxX,
+                    bottomBoxY,
+                    clockInfoBoxWidth,
+                    bottomBoxHeight,
+                ) // Center the ball location text
             } else {
                 fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
                 if (fontInputStream == null) {
@@ -277,17 +321,30 @@ class ScorebugService(
                     }
                 }
 
-                val text = when (game.currentPlayType) {
-                    PlayType.KICKOFF -> "KICKOFF"
-                    PlayType.PAT -> "PAT"
-                    else -> "Unknown"
-                }
+                val text =
+                    when (game.currentPlayType) {
+                        PlayType.KICKOFF -> "KICKOFF"
+                        PlayType.PAT -> "PAT"
+                        else -> "Unknown"
+                    }
 
                 // Draw Info Box
                 g.color = Color.DARK_GRAY.darker()
-                g.fillRect(teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Ball location box
+                g.fillRect(
+                    teamNameX,
+                    bottomBoxY,
+                    teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth,
+                    bottomBoxHeight,
+                ) // Ball location box
                 g.color = Color.WHITE
-                drawCenteredText(g, text, teamNameX, bottomBoxY, teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth, bottomBoxHeight) // Center the ball location text
+                drawCenteredText(
+                    g,
+                    text,
+                    teamNameX,
+                    bottomBoxY,
+                    teamBoxWidth + scoreBoxWidth + clockInfoBoxWidth,
+                    bottomBoxHeight,
+                ) // Center the ball location text
             }
         }
 
@@ -326,7 +383,11 @@ class ScorebugService(
     /**
      * Draws timeout boxes for the given team.
      */
-    private fun drawTimeoutBoxes(g: Graphics2D, timeoutY: Int, timeouts: Int) {
+    private fun drawTimeoutBoxes(
+        g: Graphics2D,
+        timeoutY: Int,
+        timeouts: Int,
+    ) {
         g.color = Color.WHITE // Change to desired color for timeouts
         val boxWidth = 35 // Adjust width as needed
         val boxHeight = 5 // Adjust height as needed
@@ -339,13 +400,24 @@ class ScorebugService(
         }
     }
 
-    private fun drawCircle(g: Graphics2D, x: Int, y: Int) {
+    private fun drawCircle(
+        g: Graphics2D,
+        x: Int,
+        y: Int,
+    ) {
         val radius = 5 // Radius of the circle
         g.color = Color.WHITE // Circle color for possession
         g.fillOval(x - radius, y - radius, radius * 2, radius * 2) // Draw circle
     }
 
-    fun drawCenteredText(g: Graphics2D, text: String, x: Int, y: Int, boxWidth: Int, boxHeight: Int) {
+    fun drawCenteredText(
+        g: Graphics2D,
+        text: String,
+        x: Int,
+        y: Int,
+        boxWidth: Int,
+        boxHeight: Int,
+    ) {
         val metrics = g.fontMetrics
         val textWidth = metrics.stringWidth(text)
 

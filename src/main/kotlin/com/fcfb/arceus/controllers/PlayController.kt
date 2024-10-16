@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/play")
 class PlayController(
-    private var playService: PlayService
+    private var playService: PlayService,
 ) {
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
@@ -27,7 +27,7 @@ class PlayController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("defensiveSubmitter") defensiveSubmitter: String,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
-        @RequestParam("timeoutCalled") timeoutCalled: Boolean?
+        @RequestParam("timeoutCalled") timeoutCalled: Boolean?,
     ) = playService.defensiveNumberSubmitted(gameId, defensiveSubmitter, defensiveNumber, timeoutCalled)
 
     /**

@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/scorebug")
 class ScorebugController(
-    private var scorebugService: ScorebugService
+    private var scorebugService: ScorebugService,
 ) {
     @GetMapping("")
     fun updateGame(
-        @RequestParam("gameId") gameId: Int
+        @RequestParam("gameId") gameId: Int,
     ) = scorebugService.getScorebugByGameId(gameId)
 }

@@ -16,5 +16,5 @@ data class StartRequest(
     val tvChannel: TVChannel?,
     val startTime: String?,
     val location: String?,
-    val gameType: GameType?
+    val gameType: GameType?,
 )

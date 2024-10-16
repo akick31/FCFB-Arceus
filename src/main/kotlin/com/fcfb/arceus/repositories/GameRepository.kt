@@ -8,10 +8,16 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE home_platform = ? && home_platform_id = ?", nativeQuery = true)
-    fun findByHomePlatformId(platform: String?, platformId: String?): Game?
+    fun findByHomePlatformId(
+        platform: String?,
+        platformId: String?,
+    ): Game?
 
     @Query(value = "SELECT * FROM game WHERE away_platform = ? && away_platform_id = ?", nativeQuery = true)
-    fun findByAwayPlatformId(platform: String?, platformId: String?): Game?
+    fun findByAwayPlatformId(
+        platform: String?,
+        platformId: String?,
+    ): Game?
 
     @Query(value = "SELECT * FROM game WHERE home_coach_discord_id1 = ?", nativeQuery = true)
     fun findByHomeCoachDiscordId1(homeCoachDiscordId: String?): Game?

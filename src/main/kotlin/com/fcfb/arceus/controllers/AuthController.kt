@@ -15,32 +15,31 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/auth")
 class AuthController(
-    private val authService: AuthService
+    private val authService: AuthService,
 ) {
-
     @PostMapping("/register")
     suspend fun createUser(
-        @RequestBody user: User
+        @RequestBody user: User,
     ) = authService.createUser(user)
 
     @PostMapping("/login")
     fun loginUser(
         @RequestParam("usernameOrEmail") usernameOrEmail: String,
-        @RequestParam("password") password: String
+        @RequestParam("password") password: String,
     ) = authService.loginUser(usernameOrEmail, password)
 
     @PostMapping("/logout")
     fun logoutUser(
-        @RequestParam("token") token: String
+        @RequestParam("token") token: String,
     ) = authService.logoutUser(token)
 
     @GetMapping("/verify")
     fun verifyEmail(
-        @RequestParam("token") token: String
+        @RequestParam("token") token: String,
     ) = authService.verifyEmail(token)
 
     @PutMapping("/resend-verification-email")
     fun resetVerificationToken(
-        @RequestParam("id") id: Long
+        @RequestParam("id") id: Long,
     ) = authService.resetVerificationToken(id)
 }

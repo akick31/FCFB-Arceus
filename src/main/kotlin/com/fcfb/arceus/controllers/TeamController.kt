@@ -18,11 +18,11 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/team")
 class TeamController(
-    private var teamService: TeamService
+    private var teamService: TeamService,
 ) {
     @GetMapping("/id")
     fun getTeamById(
-        @RequestParam id: Int
+        @RequestParam id: Int,
     ) = teamService.getTeamById(id)
 
     @GetMapping("")
@@ -30,29 +30,29 @@ class TeamController(
 
     @GetMapping("/name")
     fun getTeamByName(
-        @RequestParam name: String?
+        @RequestParam name: String?,
     ) = teamService.getTeamByName(name)
 
     @PostMapping("")
     fun createTeam(
-        @RequestBody team: Team
+        @RequestBody team: Team,
     ) = teamService.createTeam(team)
 
     @PutMapping("/{name}")
     fun updateTeam(
         @PathVariable("name") name: String?,
-        @RequestBody team: Team
+        @RequestBody team: Team,
     ) = teamService.updateTeam(name, team)
 
     @PostMapping("/{name}/hire")
     suspend fun hireCoach(
         @PathVariable("name") name: String?,
         @RequestParam discordId: String,
-        @RequestParam coachPosition: CoachPosition
+        @RequestParam coachPosition: CoachPosition,
     ) = teamService.hireCoach(name, discordId, coachPosition)
 
     @DeleteMapping("/{id}")
     fun deleteTeam(
-        @PathVariable("id") id: Int
+        @PathVariable("id") id: Int,
     ) = teamService.deleteTeam(id)
 }

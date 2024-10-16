@@ -10,7 +10,6 @@ import javax.persistence.Converter
 
 @Converter(autoApply = true)
 class OffensivePlaybookConverter : AttributeConverter<OffensivePlaybook, String> {
-
     override fun convertToDatabaseColumn(attribute: OffensivePlaybook?): String? {
         return attribute?.description
     }
@@ -22,7 +21,6 @@ class OffensivePlaybookConverter : AttributeConverter<OffensivePlaybook, String>
 
 @Converter(autoApply = true)
 class DefensivePlaybookConverter : AttributeConverter<DefensivePlaybook, String> {
-
     override fun convertToDatabaseColumn(attribute: DefensivePlaybook?): String? {
         return attribute?.description
     }
@@ -34,7 +32,6 @@ class DefensivePlaybookConverter : AttributeConverter<DefensivePlaybook, String>
 
 @Converter(autoApply = true)
 class SubdivisionConverter : AttributeConverter<Subdivision, String> {
-
     override fun convertToDatabaseColumn(attribute: Subdivision?): String? {
         return attribute?.description
     }
@@ -46,7 +43,6 @@ class SubdivisionConverter : AttributeConverter<Subdivision, String> {
 
 @Converter(autoApply = true)
 class ResultConverter : AttributeConverter<Scenario, String> {
-
     override fun convertToDatabaseColumn(attribute: Scenario?): String? {
         return attribute?.description
     }
@@ -58,7 +54,6 @@ class ResultConverter : AttributeConverter<Scenario, String> {
 
 @Converter(autoApply = true)
 class CoinTossCallConverter : AttributeConverter<CoinTossCall, String> {
-
     override fun convertToDatabaseColumn(attribute: CoinTossCall?): String? {
         return attribute?.description
     }

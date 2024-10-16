@@ -7,7 +7,6 @@ import java.time.LocalDateTime
 
 @Repository
 interface SessionRepository : JpaRepository<Session, Long> {
-
     fun deleteByToken(token: String)
 
     fun findByExpirationTimeBefore(expirationTime: LocalDateTime): List<Session>

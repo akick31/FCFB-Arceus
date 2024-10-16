@@ -112,7 +112,7 @@ class User {
         offensivePlaybook: OffensivePlaybook?,
         defensivePlaybook: DefensivePlaybook?,
         approved: Byte,
-        verificationToken: String
+        verificationToken: String,
     ) {
         this.username = username
         this.coachName = coachName
@@ -140,7 +140,8 @@ class User {
         HEAD_COACH("Head Coach"),
         OFFENSIVE_COORDINATOR("Offensive Coordinator"),
         DEFENSIVE_COORDINATOR("Defensive Coordinator"),
-        RETIRED("Retired");
+        RETIRED("Retired"),
+        ;
 
         companion object {
             fun fromString(description: String): CoachPosition? {
@@ -152,7 +153,8 @@ class User {
     enum class Role(val description: String) {
         USER("User"),
         CONFERENCE_COMMISSIONER("Conference Commissioner"),
-        ADMIN("Admin");
+        ADMIN("Admin"),
+        ;
 
         companion object {
             fun fromString(description: String): Role? {

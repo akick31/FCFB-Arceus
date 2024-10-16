@@ -15,6 +15,7 @@ class EncryptionUtils {
 
     @Value("\${encryption.key}")
     private val encryptionKey: String? = null
+
     @Throws(Exception::class)
     fun encrypt(value: String): String {
         val secretKey: SecretKey = SecretKeySpec(encryptionKey!!.toByteArray(), algorithm)

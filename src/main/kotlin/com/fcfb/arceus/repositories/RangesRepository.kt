@@ -8,43 +8,46 @@ import org.springframework.stereotype.Repository
 @Repository
 interface RangesRepository : CrudRepository<Ranges?, Int?> {
     @Query(
-        value = "SELECT * FROM ranges WHERE play_type = ? AND offensive_playbook = ? " +
-            "AND defensive_playbook = ? AND ? BETWEEN lower_range AND upper_range;",
-        nativeQuery = true
+        value =
+            "SELECT * FROM ranges WHERE play_type = ? AND offensive_playbook = ? " +
+                "AND defensive_playbook = ? AND ? BETWEEN lower_range AND upper_range;",
+        nativeQuery = true,
     )
     fun findNormalResult(
         playType: String?,
         offensivePlaybook: String?,
         defensivePlaybook: String?,
-        difference: String
+        difference: String,
     ): Ranges?
 
     @Query(
         value = "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN lower_range AND upper_range;",
-        nativeQuery = true
+        nativeQuery = true,
     )
     fun findNonNormalResult(
         playType: String?,
-        difference: String
+        difference: String,
     ): Ranges?
 
     @Query(
-        value = "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN ball_location_lower AND ball_location_upper AND ? BETWEEN lower_range AND upper_range;",
-        nativeQuery = true
+        value =
+            "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN ball_location_lower AND ball_location_upper " +
+                "AND ? BETWEEN lower_range AND upper_range;",
+        nativeQuery = true,
     )
     fun findPuntResult(
         playType: String?,
         ballLocation: String,
-        difference: String
+        difference: String,
     ): Ranges?
 
     @Query(
         value = "SELECT * FROM ranges WHERE play_type = ? AND distance = ? AND ? BETWEEN lower_range AND upper_range;",
-        nativeQuery = true
+        nativeQuery = true,
     )
     fun findFieldGoalResult(
         playType: String?,
         distance: String,
-        difference: String
+        difference: String,
     ): Ranges?
 }
