@@ -69,6 +69,7 @@ pipeline {
                         # Domain configuration
                         domain.url=${env.DOMAIN_URL}
                         server.servlet.context-path=/arceus
+                        server.port=1212
 
                         # Spring Boot configuration
                         spring.datasource.url=${env.DB_URL}
