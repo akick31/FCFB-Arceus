@@ -20,6 +20,34 @@ pipeline {
     }
 
     stages {
+        stage('Checkout') {
+            steps {
+                echo 'Checking out the Arceus project...'
+                checkout scm
+            }
+        }
+        stage('Get Version') {
+            steps {
+                script {
+                    // Get the latest Git tag
+                    def latestTag = sh(script: "git describe --tags --abbrev=0", returnStdout: true).trim()
+
+                    // If there are no tags, default to 1.0.0
+                    if (!latestTag) {
+                        latestTag = '1.0.0'
+                    }
+
+                    // Print the version
+                    echo "Current Version: ${latestTag}"
+
+                    // Set the version to an environment variable for use in later stages
+                    env.VERSION = latestTag
+
+                    // Set the build description
+                    currentBuild.description = "Version: ${env.VERSION}"
+                }
+            }
+        }
         stage('Stop and Remove Existing Bot') {
             steps {
                 script {
