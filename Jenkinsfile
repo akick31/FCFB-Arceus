@@ -34,6 +34,7 @@ pipeline {
 
         stage('Build') {
             steps {
+                echo 'Creating the properties file...'
                 // Create the application.properties file on the fly
                 writeFile file: ${env.APP_PROPERTIES},
                 text: """
@@ -68,8 +69,7 @@ pipeline {
                 discord.guild.id=${env.DISCORD_GUILD_ID}
                 discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
                 """
-            }
-            steps {
+
                 echo 'Building the Arceus project...'
                 sh './gradlew clean build'
             }
