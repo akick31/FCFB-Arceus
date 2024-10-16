@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.service.fcfb.game.PlayService
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -49,5 +50,14 @@ class PlayController(
         @RequestParam("timeoutCalled") timeoutCalled: Boolean,
     ) = playService.offensiveNumberSubmitted(gameId, offensiveSubmitter, offensiveNumber, playCall, runoffType, timeoutCalled)
 
+    /**
+     * Get a play by its id
+     * @param playId
+     * @return
+     */
+    @GetMapping("")
+    fun getPlayById(
+        @RequestParam("playId") playId: Int,
+    ) = playService.getPlayById(playId)
     // TODO: Rollback play
 }

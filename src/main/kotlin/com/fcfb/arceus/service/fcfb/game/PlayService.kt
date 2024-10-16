@@ -288,4 +288,32 @@ class PlayService(
             )
         }
     }
+
+    /**
+     * Get a play by its id
+     * @param playId
+     * @return
+     */
+    fun getPlayById(playId: Int): ResponseEntity<Any> {
+        return try {
+            val play =
+                playRepository.findByPlayId(playId)
+                    ?: return ResponseEntity(
+                        headers.add(
+                            "Error-Message",
+                            "Could not find play with play ID",
+                        ),
+                        HttpStatus.NOT_FOUND,
+                    )
+            ResponseEntity(play, HttpStatus.OK)
+        } catch (e: Exception) {
+            ResponseEntity(
+                headers.add(
+                    "Error-Message",
+                    e.message ?: "Unknown error",
+                ),
+                HttpStatus.BAD_REQUEST,
+            )
+        }
+    }
 }

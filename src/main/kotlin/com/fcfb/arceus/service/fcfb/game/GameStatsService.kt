@@ -54,4 +54,9 @@ class GameStatsService(
         gameStatsRepository.save(gameStats) ?: throw Exception("Could not create game stats")
         return gameStats
     }
+
+    fun getGameStatsById(gameId: String): GameStats {
+        return gameStatsRepository.findByGameId(gameId.toInt())
+            ?: throw Exception("Could not get game stats by game id")
+    }
 }
