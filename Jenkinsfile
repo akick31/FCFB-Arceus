@@ -45,6 +45,7 @@ pipeline {
 
                     // Set the build description
                     currentBuild.description = "Version: ${env.VERSION}"
+                    currentBuild.displayName = "Build #${env.BUILD_NUMBER} - Version: ${env.VERSION}"
                 }
             }
         }
