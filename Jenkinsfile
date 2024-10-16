@@ -14,7 +14,7 @@ pipeline {
         EMAIL_PORT = credentials('EMAIL_PORT')
         EMAIL = credentials('EMAIL')
         EMAIL_PASSWORD = credentials('EMAIL_PASSWORD')
-        DISCORD_TOKEN = credentials('DISCORD_TOKEN')
+        DISCORD_TOKEN = credentials('REFBOT_DISCORD_TOKEN')
         DISCORD_GUILD_ID = credentials('DISCORD_GUILD_ID')
         DISCORD_FORUM_CHANNEL_ID = credentials('DISCORD_FORUM_CHANNEL_ID')
     }
