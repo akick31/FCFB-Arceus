@@ -15,11 +15,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
 
       # Step 3: Get the latest tag
       - name: Get latest tag
         id: get_latest_tag
         run: |
+          git fetch --tags  # Ensure all tags are fetched
           TAG=$(git describe --tags $(git rev-list --tags --max-count=1) 2>/dev/null || echo "1.0.0")
           echo "Latest tag: ${TAG}"
           echo "::set-output name=latest_tag::${TAG}"
@@ -29,10 +32,11 @@ jobs:
         id: calculate_version
         run: |
           LATEST_TAG=${{ steps.get_latest_tag.outputs.latest_tag }}
+          echo "Latest tag: ${LATEST_TAG}"
           
           # Split the tag into major, minor, and patch
           VERSION_REGEX="^([0-9]+)\.([0-9]+)\.([0-9]+)$"
-          if [[ "$LATEST_TAG" =~ $VERSION_REGEX ]]; then
+          if [[ $LATEST_TAG =~ $VERSION_REGEX ]]; then
             MAJOR="${BASH_REMATCH[1]}"
             MINOR="${BASH_REMATCH[2]}"
             PATCH="${BASH_REMATCH[3]}"
