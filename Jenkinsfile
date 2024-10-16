@@ -35,40 +35,42 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Creating the properties file...'
-                // Create the application.properties file on the fly
-                writeFile file: "${env.APP_PROPERTIES}",
-                text: """
-                # Domain configuration
-                domain.url=${env.DOMAIN_URL}
-                server.servlet.context-path=/arceus
+                script {
+                    def propertiesContent = """
+                        # Domain configuration
+                        domain.url=${env.DOMAIN_URL}
+                        server.servlet.context-path=/arceus
 
-                # Spring Boot configuration
-                spring.datasource.url=${env.DB_URL}
-                spring.datasource.username=${env.DB_USERNAME}
-                spring.datasource.password=${env.DB_PASSWORD}
-                spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
-                spring.jpa.hibernate.ddl-auto=update
-                spring.jpa.show-sql=true
-                spring.jackson.property-naming-strategy=SNAKE_CASE
-                management.security.enabled=false
+                        # Spring Boot configuration
+                        spring.datasource.url=${env.DB_URL}
+                        spring.datasource.username=${env.DB_USERNAME}
+                        spring.datasource.password=${env.DB_PASSWORD}
+                        spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
+                        spring.jpa.hibernate.ddl-auto=update
+                        spring.jpa.show-sql=true
+                        spring.jackson.property-naming-strategy=SNAKE_CASE
+                        management.security.enabled=false
 
-                # JWT configuration
-                encryption.key=${env.JWT_ENCRYPTION_KEY}
-                encryption.algorithm=aes
+                        # JWT configuration
+                        encryption.key=${env.JWT_ENCRYPTION_KEY}
+                        encryption.algorithm=aes
 
-                # Email configuration
-                spring.mail.host=${env.EMAIL_HOST}
-                spring.mail.port=${env.EMAIL_PORT}
-                spring.mail.username=${env.EMAIL}
-                spring.mail.password=${env.EMAIL_PASSWORD}
-                spring.mail.properties.mail.smtp.auth=true
-                spring.mail.properties.mail.smtp.starttls.enable=true
+                        # Email configuration
+                        spring.mail.host=${env.EMAIL_HOST}
+                        spring.mail.port=${env.EMAIL_PORT}
+                        spring.mail.username=${env.EMAIL}
+                        spring.mail.password=${env.EMAIL_PASSWORD}
+                        spring.mail.properties.mail.smtp.auth=true
+                        spring.mail.properties.mail.smtp.starttls.enable=true
 
-                # Discord configuration
-                discord.bot.token=${env.DISCORD_TOKEN}
-                discord.guild.id=${env.DISCORD_GUILD_ID}
-                discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
-                """
+                        # Discord configuration
+                        discord.bot.token=${env.DISCORD_TOKEN}
+                        discord.guild.id=${env.DISCORD_GUILD_ID}
+                        discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
+                    """.stripIndent()
+
+                    writeFile file: "${env.APP_PROPERTIES}", text: propertiesContent
+                }
 
                 echo 'Building the Arceus project...'
                 sh './gradlew clean build'
