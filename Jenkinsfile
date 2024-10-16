@@ -36,7 +36,7 @@ pipeline {
             steps {
                 echo 'Creating the properties file...'
                 // Create the application.properties file on the fly
-                writeFile file: ${env.APP_PROPERTIES},
+                writeFile file: "${env.APP_PROPERTIES}",
                 text: """
                 # Domain configuration
                 domain.url=${env.DOMAIN_URL}
