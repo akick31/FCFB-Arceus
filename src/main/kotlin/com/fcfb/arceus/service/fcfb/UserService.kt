@@ -1,10 +1,10 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.converter.DTOConverter
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.User.Role
+import com.fcfb.arceus.dto.UserDTO
 import com.fcfb.arceus.repositories.UserRepository
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
@@ -12,209 +12,220 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 
 @Service
-class UserService {
-    @Autowired
-    var usersRepository: UserRepository? = null
+class UserService(
+    private val userRepository: UserRepository,
+    private val dtoConverter: DTOConverter,
+) {
 
     private var emptyHeaders: HttpHeaders = HttpHeaders()
 
-    fun getUserById(id: Long): ResponseEntity<User> {
-        val userData: User = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        return ResponseEntity(userData, HttpStatus.OK)
-    }
-
-    fun getUserByDiscordId(discordId: String): ResponseEntity<User> {
-        val userData: User = usersRepository?.findByDiscordId(discordId) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        return ResponseEntity(userData, HttpStatus.OK)
-    }
-
-    fun getUserByTeam(team: String?): ResponseEntity<User> {
-        val userData: User = usersRepository?.findByTeam(team) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        return ResponseEntity(userData, HttpStatus.OK)
-    }
-
-    fun getAllUsers(): ResponseEntity<List<User>> {
-        val userData: MutableIterable<User?> = usersRepository?.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!userData.iterator().hasNext()) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun getUserById(id: Long): ResponseEntity<UserDTO> {
+        val userData = userRepository.findById(id)
+        return if (userData != null) {
+            ResponseEntity(dtoConverter.convertToUserDTO(userData), HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-        return ResponseEntity(userData.filterNotNull(), HttpStatus.OK)
     }
 
-    fun getUserByName(name: String?): ResponseEntity<User> {
-        val userData: User = usersRepository?.findByCoachName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        return ResponseEntity(userData, HttpStatus.OK)
-    }
-
-    fun updateUserPassword(
-        id: Long,
-        newPassword: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-        val passwordEncoder = BCryptPasswordEncoder()
-        val newSalt = passwordEncoder.encode(newPassword)
-        user.password = passwordEncoder.encode(newPassword)
-        user.salt = newSalt
-
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    fun updateUserUsername(
-        id: Long,
-        newUsername: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-        if (newUsername == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+    fun getUserByDiscordId(discordId: String): ResponseEntity<UserDTO> {
+        val userData = userRepository.findByDiscordId(discordId)
+        return if (userData != null) {
+            ResponseEntity(dtoConverter.convertToUserDTO(userData), HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-
-        user.username = newUsername
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserEmail(
-        id: Long,
-        newEmail: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-        if (newEmail == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+    fun getUserByTeam(team: String?): ResponseEntity<UserDTO> {
+        val userData = userRepository.findByTeam(team)
+        return if (userData != null) {
+            ResponseEntity(dtoConverter.convertToUserDTO(userData), HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-
-        user.email = newEmail
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserRole(
-        id: Long,
-        newRole: Role?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-        if (newRole == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+    fun getAllUsers(): ResponseEntity<List<UserDTO>> {
+        val userData = userRepository.findAll().filterNotNull()
+        return if (userData.isNotEmpty()) {
+            ResponseEntity(userData.map { dtoConverter.convertToUserDTO(it) }, HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-
-        user.role = newRole
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserPosition(
-        id: Long,
-        newPosition: CoachPosition?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-
-        if (newPosition == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+    fun getUserByName(name: String?): ResponseEntity<UserDTO> {
+        val userData = userRepository.findByCoachName(name)
+        return if (userData != null) {
+            ResponseEntity(dtoConverter.convertToUserDTO(userData), HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
         }
-
-        user.position = newPosition
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
     }
 
-    fun updateUserRedditUsername(
-        id: Long,
-        newRedditUsername: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserPassword(id: Long, newPassword: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newPassword.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        if (newRedditUsername == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            val passwordEncoder = BCryptPasswordEncoder()
+            user.password = passwordEncoder.encode(newPassword)
+            user.salt = passwordEncoder.encode(newPassword)
+
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-
-        user.redditUsername = newRedditUsername
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun updateUserTeam(
-        id: Long,
-        newTeam: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserUsername(id: Long, newUsername: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newUsername.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        if (newTeam == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            user.username = newUsername
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-
-        user.team = newTeam
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun updateUserWins(
-        id: Long,
-        newWins: Int?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserEmail(id: Long, newEmail: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newEmail.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        if (newWins == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            user.email = newEmail
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-
-        user.wins = newWins
-        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun updateUserLosses(
-        id: Long,
-        newLosses: Int?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserRole(id: Long, newRole: Role?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newRole == null) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        if (newLosses == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            user.role = newRole
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-
-        user.losses = newLosses
-        user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun updateUserCoachName(
-        id: Long,
-        newCoachName: String?,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserPosition(id: Long, newPosition: CoachPosition?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newPosition == null) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        if (newCoachName == null) {
-            return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            user.position = newPosition
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-
-        user.coachName = newCoachName
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
     }
 
-    fun updateUserDiscordTag(
-        id: Long,
-        newDiscordTag: String,
-    ): ResponseEntity<User> {
-        val user = usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun updateUserRedditUsername(id: Long, newRedditUsername: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newRedditUsername.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
 
-        user.discordTag = newDiscordTag
-        usersRepository!!.save(user)
-        return ResponseEntity(user, HttpStatus.OK)
-    }
-
-    fun deleteUser(id: String): ResponseEntity<HttpStatus> {
-        usersRepository?.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        if (!usersRepository?.findById(id)!!.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            user.redditUsername = newRedditUsername
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
         }
-        usersRepository?.deleteById(id)
-        return ResponseEntity(HttpStatus.OK)
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun updateUserTeam(id: Long, newTeam: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newTeam.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
+
+            user.team = newTeam
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
+        }
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun updateUserWins(id: Long, newWins: Int?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newWins == null) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
+
+            user.wins = newWins
+            user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
+        }
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun updateUserLosses(id: Long, newLosses: Int?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newLosses == null) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
+
+            user.losses = newLosses
+            user.winPercentage = user.wins!!.toDouble() / (user.wins!! + user.losses!!)
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
+        }
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun updateUserCoachName(id: Long, newCoachName: String?): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            if (newCoachName.isNullOrEmpty()) {
+                return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            }
+
+            user.coachName = newCoachName
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
+        }
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun updateUserDiscordTag(id: Long, newDiscordTag: String): ResponseEntity<UserDTO> {
+        val user = userRepository.findById(id)
+        if (user != null) {
+            user.discordTag = newDiscordTag
+            userRepository.save(user)
+            return ResponseEntity(dtoConverter.convertToUserDTO(user), HttpStatus.OK)
+        }
+        return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    }
+
+    fun deleteUser(id: Long): ResponseEntity<HttpStatus> {
+        val user = userRepository.findById(id)
+        return if (user != null) {
+            userRepository.deleteById(id.toString())
+            ResponseEntity(HttpStatus.OK)
+        } else {
+            ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        }
     }
 }

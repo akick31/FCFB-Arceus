@@ -109,6 +109,6 @@ class UserController(
 
     @DeleteMapping("/{id}")
     fun deleteTeam(
-        @PathVariable("id") id: String,
+        @PathVariable("id") id: Long,
     ) = userService.deleteUser(id)
 }
