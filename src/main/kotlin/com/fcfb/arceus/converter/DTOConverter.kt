@@ -21,7 +21,7 @@ class DTOConverter {
             losses = user.losses ?: 0,
             winPercentage = user.winPercentage ?: 0.0,
             offensivePlaybook = user.offensivePlaybook,
-            defensivePlaybook = user.defensivePlaybook
+            defensivePlaybook = user.defensivePlaybook,
         )
     }
 }
