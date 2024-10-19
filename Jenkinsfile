@@ -79,6 +79,7 @@ pipeline {
                         spring.jpa.hibernate.ddl-auto=update
                         spring.jpa.show-sql=true
                         spring.jackson.property-naming-strategy=SNAKE_CASE
+                        spring.main.headless=true
                         management.security.enabled=false
 
                         # JWT configuration
