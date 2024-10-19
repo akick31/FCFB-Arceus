@@ -9,5 +9,6 @@ import org.springframework.scheduling.annotation.EnableScheduling
 open class FcfbArceusApplication
 
 fun main(args: Array<String>) {
+    System.setProperty("java.awt.headless", "true")
     runApplication<FcfbArceusApplication>(*args)
 }
