@@ -3,7 +3,6 @@ package com.fcfb.arceus.controllers
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
-import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.game.GameService
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
