@@ -96,7 +96,7 @@ pipeline {
 
                         # Discord configuration
                         discord.bot.token=${env.DISCORD_TOKEN}
-                        discord.bot.url=http://127.17.0.7:1211/fcfb_discord_refbot
+                        discord.bot.url=http://FCFB-Discord-Ref-Bot:1211/fcfb_discord_refbot
                         discord.guild.id=${env.DISCORD_GUILD_ID}
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
                     """.stripIndent()
