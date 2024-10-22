@@ -102,14 +102,14 @@ class GameService(
             val awayTeam = startRequest.awayTeam ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             // If the second coach username is not null, there is a coordinator
-            var homeCoachUsername1: String?
-            var homeCoachUsername2: String?
-            var homeCoachDiscordId1: String?
-            var homeCoachDiscordId2: String?
-            var awayCoachUsername1: String?
-            var awayCoachUsername2: String?
-            var awayCoachDiscordId1: String?
-            var awayCoachDiscordId2: String?
+            val homeCoachUsername1: String?
+            val homeCoachUsername2: String?
+            val homeCoachDiscordId1: String?
+            val homeCoachDiscordId2: String?
+            val awayCoachUsername1: String?
+            val awayCoachUsername2: String?
+            val awayCoachDiscordId1: String?
+            val awayCoachDiscordId2: String?
             if (homeTeamData.coachUsername2 != null) {
                 homeCoachUsername1 = homeTeamData.coachUsername1 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
                 homeCoachUsername2 = homeTeamData.coachUsername2 ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)

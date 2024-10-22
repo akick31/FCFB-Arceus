@@ -23,7 +23,6 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/game")
 class GameController(
-    private var discordService: DiscordService,
     private var gamesService: GameService,
 ) {
     /**
