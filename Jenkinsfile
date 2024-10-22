@@ -96,7 +96,7 @@ pipeline {
 
                         # Discord configuration
                         discord.bot.token=${env.DISCORD_TOKEN}
-                        discord.bot.url=http://FCFB-Discord-Ref-Bot:1211/fcfb_discord_refbot
+                        discord.bot.url=http://51.81.32.234:1211/fcfb_discord
                         discord.guild.id=${env.DISCORD_GUILD_ID}
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
                     """.stripIndent()
@@ -125,7 +125,7 @@ pipeline {
                 script {
                     echo 'Starting the new Arceus container...'
                     sh """
-                        docker run -d -p 1212:1212 --restart=always --name ${CONTAINER_NAME} \\
+                        docker run --network="host" -d -p 1212:1212 --restart=always --name ${CONTAINER_NAME} \\
                             --env-file ${APP_PROPERTIES} \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """
