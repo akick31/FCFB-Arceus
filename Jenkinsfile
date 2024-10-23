@@ -72,7 +72,7 @@ pipeline {
                         server.port=1212
 
                         # Images configuration
-                        images.path=/app
+                        images.path=/
 
                         # Spring Boot configuration
                         spring.datasource.url=${env.DB_URL}

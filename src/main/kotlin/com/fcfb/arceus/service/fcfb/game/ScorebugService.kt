@@ -382,7 +382,7 @@ class ScorebugService(
         gScaled.dispose()
 
         // Save image to file
-        val outputfile = File("$imagePath/images/scorebugs/${game.gameId}_scorebug.png")
+        val outputfile = File("${imagePath}images/scorebugs/${game.gameId}_scorebug.png")
         ImageIO.write(scaledImage, "png", outputfile)
         return scaledImage
     }
