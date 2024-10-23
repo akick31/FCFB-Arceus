@@ -382,21 +382,19 @@ class ScorebugService(
         gScaled.dispose()
 
         // Save image to file
-        val path = System.getProperty("user.dir") // Current directory
-        println("Current directory: $path")
-        val directory = File(path)
-
-        // Check if the specified path is a directory
-        if (directory.isDirectory) {
-            // List all subdirectories
-            val subdirectories = directory.listFiles { file -> file.isDirectory }
-            subdirectories?.forEach { subdir ->
-                println("Subdirectory: ${subdir.name}")
-            } ?: println("No subdirectories found.")
-        } else {
-            println("$path is not a directory.")
-        }
         val outputfile = File("$imagePath/scorebugs/${game.gameId}_scorebug.png")
+
+        // Create directory if it does not exist
+        val directory = File("$imagePath/scorebugs")
+        if (!directory.exists()) {
+            // Create the directory and any necessary parent directories
+            if (directory.mkdirs()) {
+                Logger.info("Directory created: ${directory.absolutePath}")
+            } else {
+                Logger.error("Failed to create directory: ${directory.absolutePath}")
+            }
+        }
+
         ImageIO.write(scaledImage, "png", outputfile)
         return scaledImage
     }
