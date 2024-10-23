@@ -22,7 +22,6 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
-import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 @Component
@@ -397,7 +396,7 @@ class ScorebugService(
         } else {
             println("$path is not a directory.")
         }
-        val outputfile = File("${imagePath}/scorebugs/${game.gameId}_scorebug.png")
+        val outputfile = File("$imagePath/scorebugs/${game.gameId}_scorebug.png")
         ImageIO.write(scaledImage, "png", outputfile)
         return scaledImage
     }
