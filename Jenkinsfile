@@ -71,6 +71,9 @@ pipeline {
                         server.servlet.context-path=/arceus
                         server.port=1212
 
+                        # Images configuration
+                        images.path=/app
+
                         # Spring Boot configuration
                         spring.datasource.url=${env.DB_URL}
                         spring.datasource.username=${env.DB_USERNAME}
@@ -125,7 +128,8 @@ pipeline {
                 script {
                     echo 'Starting the new Arceus container...'
                     sh """
-                        docker run --network="host" -d -p 1212:1212 --restart=always --name ${CONTAINER_NAME} \\
+                        docker run --network="host" -d --restart=always --name ${CONTAINER_NAME} \\
+                            -v /var/images:/app/images \\
                             --env-file ${APP_PROPERTIES} \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """

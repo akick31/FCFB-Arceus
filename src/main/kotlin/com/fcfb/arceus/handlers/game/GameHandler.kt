@@ -10,11 +10,13 @@ import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameRepository
+import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import org.springframework.stereotype.Component
 
 @Component
 class GameHandler(
     private val gameRepository: GameRepository,
+    private val scorebugService: ScorebugService,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -106,6 +108,8 @@ class GameHandler(
         game.waitingOn = waitingOn
 
         gameRepository.save(game)
+        scorebugService.generateScorebug(game)
+
         return game
     }
 

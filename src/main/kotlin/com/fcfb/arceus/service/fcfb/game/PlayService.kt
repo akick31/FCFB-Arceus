@@ -20,6 +20,7 @@ class PlayService(
     private var playHandler: PlayHandler,
     private var gameHandler: GameHandler,
     private var encryptionUtils: EncryptionUtils,
+    private val scorebugService: ScorebugService,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 

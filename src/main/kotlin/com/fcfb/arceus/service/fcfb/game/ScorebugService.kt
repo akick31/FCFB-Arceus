@@ -7,6 +7,7 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.utils.Logger
+import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -20,6 +21,7 @@ import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
+import java.io.File
 import javax.imageio.ImageIO
 
 @Component
@@ -27,6 +29,9 @@ class ScorebugService(
     private val teamRepository: TeamRepository,
     private val gameRepository: GameRepository,
 ) {
+    @Value("\${images.path}")
+    private val imagePath: String? = null
+
     fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray>? {
         val game = gameRepository.findByGameId(gameId) ?: return null
         val image = generateScorebug(game)
@@ -377,6 +382,8 @@ class ScorebugService(
         gScaled.dispose()
 
         // Save image to file
+        val outputfile = File("$imagePath/images/scorebugs/${game.gameId}_scorebug.png")
+        ImageIO.write(scaledImage, "png", outputfile)
         return scaledImage
     }
 

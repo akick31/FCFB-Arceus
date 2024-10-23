@@ -204,9 +204,9 @@ class GameService(
 
             // Create image names
             val gameId: String = java.lang.String.valueOf(newGame.gameId)
-            val scorebugName = gameId + "_scorebug.png"
-            val winprobName = gameId + "_winprob.png"
-            val scoreplotName = gameId + "_scoreplot.png"
+            val scorebugName = "/images/scorebugs/{$gameId}_scorebug.png"
+            val winprobName = "/images/win_probability/{$gameId}_win_probability.png"
+            val scoreplotName = "/images/score_plot /{$gameId}_score_plot.png"
 
             // Update the entity with the new image names
             newGame.scorebug = scorebugName
