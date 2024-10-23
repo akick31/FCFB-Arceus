@@ -22,6 +22,7 @@ import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.ByteArrayOutputStream
 import java.io.File
+import java.nio.file.Paths
 import javax.imageio.ImageIO
 
 @Component
@@ -382,7 +383,21 @@ class ScorebugService(
         gScaled.dispose()
 
         // Save image to file
-        val outputfile = File("${imagePath}images/scorebugs/${game.gameId}_scorebug.png")
+        val path = System.getProperty("user.dir") // Current directory
+        println("Current directory: $path")
+        val directory = File(path)
+
+        // Check if the specified path is a directory
+        if (directory.isDirectory) {
+            // List all subdirectories
+            val subdirectories = directory.listFiles { file -> file.isDirectory }
+            subdirectories?.forEach { subdir ->
+                println("Subdirectory: ${subdir.name}")
+            } ?: println("No subdirectories found.")
+        } else {
+            println("$path is not a directory.")
+        }
+        val outputfile = File("${imagePath}/scorebugs/${game.gameId}_scorebug.png")
         ImageIO.write(scaledImage, "png", outputfile)
         return scaledImage
     }
