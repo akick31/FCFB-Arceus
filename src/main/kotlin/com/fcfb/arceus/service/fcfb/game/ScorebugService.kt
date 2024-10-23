@@ -32,24 +32,28 @@ class ScorebugService(
     @Value("\${images.path}")
     private val imagePath: String? = null
 
-    fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray>? {
-        val game = gameRepository.findByGameId(gameId) ?: return null
-        val image = generateScorebug(game)
+    fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
+        val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
 
-        // Convert BufferedImage to byte array
-        val outputStream = ByteArrayOutputStream()
-        ImageIO.write(image, "png", outputStream)
-        val imageBytes = outputStream.toByteArray()
+        val scorebug = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
 
         // Set the response headers
         val headers =
             HttpHeaders().apply {
                 contentType = MediaType.IMAGE_PNG
-                contentLength = imageBytes.size.toLong()
+                contentLength = scorebug.size.toLong()
             }
 
         // Return the image in the response
-        return ResponseEntity(imageBytes, headers, HttpStatus.OK)
+        return ResponseEntity(scorebug, headers, HttpStatus.OK)
+    }
+
+    fun generateScorebug(gameId: Int): ResponseEntity<String> {
+        val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity("Game not found", HttpStatus.NOT_FOUND)
+        generateScorebug(game) ?: return ResponseEntity("Failed to generate scorebug", HttpStatus.INTERNAL_SERVER_ERROR)
+
+        // Return the image in the response
+        return ResponseEntity("Scorebug generated for $gameId", HttpStatus.OK)
     }
 
     fun generateScorebug(game: Game): BufferedImage? {
