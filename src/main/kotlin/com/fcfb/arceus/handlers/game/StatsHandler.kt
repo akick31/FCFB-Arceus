@@ -554,9 +554,9 @@ class StatsHandler(
                     play.result != Scenario.LOSS_OF_1_YARD
             )
         ) {
-            return currentPassAttempts
+            return currentPassAttempts + 1
         }
-        if (play.playCall == PlayCall.PASS || play.playCall == PlayCall.SPIKE) {
+        if (play.playCall == PlayCall.SPIKE) {
             return currentPassAttempts + 1
         }
         return currentPassAttempts
