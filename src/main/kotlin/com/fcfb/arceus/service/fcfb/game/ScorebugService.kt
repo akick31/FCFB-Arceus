@@ -130,7 +130,7 @@ class ScorebugService(
 
         // Draw Home Team Name
         g.color = Color.WHITE
-        drawCenteredText(
+        drawTeamCenteredText(
             g,
             game.homeTeam.toString(),
             teamNameX,
@@ -141,7 +141,13 @@ class ScorebugService(
 
         // Draw Away Team Name
         g.color = Color.WHITE
-        drawCenteredText(g, game.awayTeam.toString(), teamNameX, awayTeamY - 10, teamBoxWidth - 30, infoBoxHeight)
+        drawTeamCenteredText(g,
+            game.awayTeam.toString(),
+            teamNameX,
+            awayTeamY - 10,
+            teamBoxWidth - 30,
+            infoBoxHeight
+        )
 
         fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
         if (fontInputStream == null) {
@@ -433,7 +439,7 @@ class ScorebugService(
         g.fillOval(x - radius, y - radius, radius * 2, radius * 2) // Draw circle
     }
 
-    fun drawCenteredText(
+    private fun drawCenteredText(
         g: Graphics2D,
         text: String,
         x: Int,
@@ -444,15 +450,43 @@ class ScorebugService(
         val metrics = g.fontMetrics
         val textWidth = metrics.stringWidth(text)
 
-        // Scale the font if the text is too wide for the box
         if (textWidth > boxWidth) {
-            g.font = g.font.deriveFont((g.font.size * boxWidth.toFloat() / textWidth))
+            g.font = g.font.deriveFont((g.font.size * (boxWidth).toFloat() / textWidth))
+        } else {
+            g.font = g.font.deriveFont(35f)
         }
 
         // Recalculate after scaling (if applied)
         val updatedMetrics = g.fontMetrics
         val updatedTextWidth = updatedMetrics.stringWidth(text)
         val updatedTextHeight = updatedMetrics.ascent // For vertical centering
+
+        val centerX = x + (boxWidth - updatedTextWidth) / 2
+        val centerY = y + (boxHeight - updatedTextHeight) / 2 + updatedTextHeight // Adjust for vertical centering
+        g.drawString(text, centerX, centerY)
+    }
+
+    private fun drawTeamCenteredText(
+        g: Graphics2D,
+        text: String,
+        x: Int,
+        y: Int,
+        boxWidth: Int,
+        boxHeight: Int,
+    ) {
+        val metrics = g.fontMetrics
+        val textWidth = metrics.stringWidth(text)
+
+        if (textWidth > boxWidth - 55) {
+            g.font = g.font.deriveFont((g.font.size * (boxWidth-55).toFloat() / textWidth))
+        } else {
+            g.font = g.font.deriveFont(35f)
+        }
+
+        // Recalculate after scaling (if applied)
+        val updatedMetrics = g.fontMetrics
+        val updatedTextWidth = updatedMetrics.stringWidth(text)
+        val updatedTextHeight = updatedMetrics.ascent + 10 // For vertical centering
 
         val centerX = x + (boxWidth - updatedTextWidth) / 2
         val centerY = y + (boxHeight - updatedTextHeight) / 2 + updatedTextHeight // Adjust for vertical centering
