@@ -136,6 +136,7 @@ class TeamService(
             withContext(Dispatchers.IO) {
                 userRepository.findByDiscordId(discordId)
             } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
                 existingTeam.coachUsername1 = user.username
@@ -163,6 +164,7 @@ class TeamService(
         }
         withContext(Dispatchers.IO) {
             teamRepository.save(existingTeam)
+            userRepository.save(user)
         }
         return ResponseEntity(existingTeam, HttpStatus.OK)
     }
