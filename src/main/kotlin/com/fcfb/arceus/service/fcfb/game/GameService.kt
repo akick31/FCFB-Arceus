@@ -228,9 +228,11 @@ class GameService(
 
             // Create a new Discord thread
             if (newGame.homePlatform == Platform.DISCORD) {
-                newGame.homePlatformId = discordService.startGameThread(newGame) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                newGame.homePlatformId = discordService.startGameThread(newGame)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             } else if (newGame.awayPlatform == Platform.DISCORD) {
-                newGame.awayPlatformId = discordService.startGameThread(newGame) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                newGame.awayPlatformId = discordService.startGameThread(newGame)
+                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
             }
 
             // Save the updated entity and create game stats
