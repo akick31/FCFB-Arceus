@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'fcfb-arceus'
-        CONTAINER_NAME = 'FCFB-Arceus'
+        IMAGE_NAME = 'fcfb-arceus_dev'
+        CONTAINER_NAME = 'FCFB-Arceus_DEV'
         DOCKERFILE = 'Dockerfile'
         APP_PROPERTIES = './src/main/resources/application.properties'
         DB_URL = credentials('DB_URL')
@@ -15,8 +15,8 @@ pipeline {
         EMAIL = credentials('EMAIL')
         EMAIL_PASSWORD = credentials('EMAIL_PASSWORD')
         DISCORD_TOKEN = credentials('REFBOT_DISCORD_TOKEN')
-        DISCORD_GUILD_ID = credentials('DISCORD_GUILD_ID')
-        DISCORD_FORUM_CHANNEL_ID = credentials('DISCORD_FORUM_CHANNEL_ID')
+        DISCORD_GUILD_ID = credentials('DEV_DISCORD_GUILD_ID')
+        DISCORD_FORUM_CHANNEL_ID = credentials('DEV_DISCORD_FORUM_CHANNEL_ID')
     }
 
     stages {
@@ -69,7 +69,7 @@ pipeline {
                         # Domain configuration
                         domain.url=${env.DOMAIN_URL}
                         server.servlet.context-path=/arceus
-                        server.port=1212
+                        server.port=1313
 
                         # Images configuration
                         images.path=/app/images
@@ -99,7 +99,7 @@ pipeline {
 
                         # Discord configuration
                         discord.bot.token=${env.DISCORD_TOKEN}
-                        discord.bot.url=http://51.81.32.234:1211/fcfb_discord
+                        discord.bot.url=http://51.81.32.234:1312/fcfb_discord
                         discord.guild.id=${env.DISCORD_GUILD_ID}
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
                     """.stripIndent()
