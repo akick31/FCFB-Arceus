@@ -68,9 +68,10 @@ class AuthService(
                 ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
 
             emailService.sendVerificationEmail(newUser.email, newUser.id!!, verificationToken)
-            Logger.debug("User ${user.username} registered successfully. Verification email sent.")
+            Logger.info("User ${user.username} registered successfully. Verification email sent.")
             ResponseEntity(newUser, HttpStatus.CREATED)
         } catch (e: Exception) {
+            Logger.error("Error creating user: ", e.message)
             ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
         }
     }

@@ -79,7 +79,7 @@ class GameController(
      * @return
      */
     @PutMapping("/make_coin_toss_choice")
-    fun updateGame(
+    fun makeCoinTossChoice(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice,
     ) = gamesService.makeCoinTossChoice(gameId, coinTossChoice)

@@ -176,7 +176,7 @@ class Game {
     @Basic
     @Column(name = "subdivision")
     @JsonProperty("subdivision")
-    lateinit var subdivision: Subdivision
+    var subdivision: Subdivision? = null
 
     @Basic
     @Column(name = "timestamp")
@@ -327,7 +327,7 @@ class Game {
         awayWins: Int?,
         awayLosses: Int?,
         scorebug: String?,
-        subdivision: Subdivision,
+        subdivision: Subdivision?,
         timestamp: String?,
         winProbability: Double?,
         season: Int?,
@@ -419,6 +419,7 @@ class Game {
     }
 
     enum class Subdivision(val description: String) {
+        FCFB("FCFB"),
         FBS("FBS"),
         FCS("FCS"),
         ;

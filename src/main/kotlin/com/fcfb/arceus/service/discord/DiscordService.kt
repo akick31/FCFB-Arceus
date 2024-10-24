@@ -26,12 +26,18 @@ class DiscordService(
     @Value("\${discord.bot.token}")
     private val botToken: String? = null
 
-    fun startGameThread(game: Game): String {
+    fun startGameThread(game: Game): String? {
         val discordBotUrl = "$discordBotUrl/start_game"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)
-        return restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java).body!!
+        try {
+            val response = restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
+            return response.body
+        } catch (e: Exception) {
+            Logger.error("There was an error starting the game thread for ${game.gameId}: " + e.message)
+            return null
+        }
     }
 
     suspend fun getUserByDiscordTag(tag: String): User? {

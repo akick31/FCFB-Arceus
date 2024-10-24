@@ -52,6 +52,7 @@ class ScorebugService(
         generateScorebug(game) ?: return ResponseEntity("Failed to generate scorebug", HttpStatus.INTERNAL_SERVER_ERROR)
 
         // Return the image in the response
+        Logger.info("Scorebug generated for $gameId")
         return ResponseEntity("Scorebug generated for $gameId", HttpStatus.OK)
     }
 
