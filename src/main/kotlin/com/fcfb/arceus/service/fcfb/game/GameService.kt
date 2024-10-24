@@ -35,10 +35,11 @@ class GameService(
      * @return
      */
     fun getGameById(id: Int): ResponseEntity<Game> {
-        val ongoingGameData = gameRepository.findByGameId(id) ?: run {
-            Logger.error("No game found with id $id")
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        }
+        val ongoingGameData =
+            gameRepository.findByGameId(id) ?: run {
+                Logger.error("No game found with id $id")
+                return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            }
         Logger.info("Found game ${ongoingGameData.gameId}")
         return ResponseEntity(ongoingGameData, HttpStatus.OK)
     }

@@ -59,7 +59,7 @@ class PlayService(
             val clock: Int =
                 gameHandler.convertClockToSeconds(
                     game.clock
-                        ?:  run {
+                        ?: run {
                             Logger.error("Could not find clock for game with id $gameId")
                             return ResponseEntity(
                                 headers.add(
@@ -68,7 +68,7 @@ class PlayService(
                                 ),
                                 HttpStatus.BAD_REQUEST,
                             )
-                        }
+                        },
                 )
             val gamePlay: Play =
                 playRepository.save(
