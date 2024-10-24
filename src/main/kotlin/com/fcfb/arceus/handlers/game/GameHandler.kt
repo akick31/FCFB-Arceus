@@ -87,6 +87,8 @@ class GameHandler(
 
         // Handle halftime
         if (quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+            game.homeTimeouts = 3
+            game.awayTimeouts = 3
             game.gameStatus = GameStatus.HALFTIME
             game.currentPlayType = PlayType.KICKOFF
             game.ballLocation = 35
