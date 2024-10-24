@@ -293,19 +293,35 @@ class ScorebugService(
                         game.ballLocation != null &&
                             game.ballLocation!! < 50 &&
                             game.possession == TeamSide.HOME ->
-                            "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
+                            if (homeTeam.abbreviation != awayTeam.abbreviation) {
+                                "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
+                            } else {
+                                "${homeTeam.name} ${game.ballLocation}"
+                            }
                         game.ballLocation != null &&
                             game.ballLocation!! < 50 &&
                             game.possession == TeamSide.AWAY ->
-                            "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
+                            if (homeTeam.abbreviation != awayTeam.abbreviation) {
+                                "${awayTeam.abbreviation ?: awayTeam.name} ${game.ballLocation}"
+                            } else {
+                                "${awayTeam.name} ${game.ballLocation}"
+                            }
                         game.ballLocation != null &&
                             game.ballLocation!! > 50 &&
                             game.possession == TeamSide.HOME ->
-                            "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
+                            if (homeTeam.abbreviation != awayTeam.abbreviation) {
+                                "${awayTeam.abbreviation ?: awayTeam.name} ${100 - game.ballLocation!!}"
+                            } else {
+                                "${awayTeam.name} ${game.ballLocation}"
+                            }
                         game.ballLocation != null &&
                             game.ballLocation!! > 50 &&
                             game.possession == TeamSide.AWAY ->
-                            "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
+                            if (homeTeam.abbreviation != awayTeam.abbreviation) {
+                                "${homeTeam.abbreviation ?: homeTeam.name} ${100 - game.ballLocation!!}"
+                            } else {
+                                "${homeTeam.name} ${game.ballLocation}"
+                            }
                         else -> "Unknown Location"
                     }
 
