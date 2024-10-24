@@ -14,7 +14,7 @@ pipeline {
         EMAIL_PORT = credentials('EMAIL_PORT')
         EMAIL = credentials('EMAIL')
         EMAIL_PASSWORD = credentials('EMAIL_PASSWORD')
-        DISCORD_TOKEN = credentials('REFBOT_DISCORD_TOKEN')
+        DISCORD_TOKEN = credentials('DEV_REFBOT_DISCORD_TOKEN')
         DISCORD_GUILD_ID = credentials('DEV_DISCORD_GUILD_ID')
         DISCORD_FORUM_CHANNEL_ID = credentials('DEV_DISCORD_FORUM_CHANNEL_ID')
     }
@@ -75,7 +75,7 @@ pipeline {
                         images.path=/app/images
 
                         # Spring Boot configuration
-                        spring.datasource.url=${env.DB_URL}
+                        spring.datasource.url=${env.DEV_DB_URL}
                         spring.datasource.username=${env.DB_USERNAME}
                         spring.datasource.password=${env.DB_PASSWORD}
                         spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
