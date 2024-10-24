@@ -494,8 +494,8 @@ class ScorebugService(
         val metrics = g.fontMetrics
         val textWidth = metrics.stringWidth(text)
 
-        if (textWidth > boxWidth - 55) {
-            g.font = g.font.deriveFont((g.font.size * (boxWidth - 55).toFloat() / textWidth))
+        if (textWidth > boxWidth - 60) {
+            g.font = g.font.deriveFont((g.font.size * (boxWidth - 60).toFloat() / textWidth))
         } else {
             g.font = g.font.deriveFont(35f)
         }
