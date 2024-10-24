@@ -51,8 +51,8 @@ class GameService(
      */
     fun getOngoingGameByDiscordChannelId(channelId: String?): ResponseEntity<Game> {
         val ongoingGameData =
-            gameRepository.findByHomePlatformId("Discord", channelId)
-                ?: gameRepository.findByAwayPlatformId("Discord", channelId)
+            gameRepository.findOngoingGameByHomePlatformId("Discord", channelId)
+                ?: gameRepository.findOngoingGameByAwayPlatformId("Discord", channelId)
         return ongoingGameData?.let {
             Logger.info("Found game ${ongoingGameData.gameId} for channel id $channelId")
             ResponseEntity(it, HttpStatus.OK)
@@ -69,10 +69,10 @@ class GameService(
      */
     fun getOngoingGameByDiscordId(discordId: String?): ResponseEntity<Game> {
         val ongoingGameData =
-            gameRepository.findByHomeCoachDiscordId1(discordId)
-                ?: gameRepository.findByHomeCoachDiscordId2(discordId)
-                ?: gameRepository.findByAwayCoachDiscordId1(discordId)
-                ?: gameRepository.findByAwayCoachDiscordId2(discordId)
+            gameRepository.findOngoingGameByHomeCoachDiscordId1(discordId)
+                ?: gameRepository.findOngoingGameByHomeCoachDiscordId2(discordId)
+                ?: gameRepository.findOngoingGameByAwayCoachDiscordId1(discordId)
+                ?: gameRepository.findOngoingGameByAwayCoachDiscordId2(discordId)
         return ongoingGameData?.let {
             Logger.info("Found game ${ongoingGameData.gameId} with Discord user id $discordId")
             ResponseEntity(it, HttpStatus.OK)
@@ -217,9 +217,9 @@ class GameService(
 
             // Create image names
             val gameId: String = java.lang.String.valueOf(newGame.gameId)
-            val scorebugName = "/images/scorebugs/{$gameId}_scorebug.png"
-            val winprobName = "/images/win_probability/{$gameId}_win_probability.png"
-            val scoreplotName = "/images/score_plot /{$gameId}_score_plot.png"
+            val scorebugName = "/images/scorebugs/${gameId}_scorebug.png"
+            val winprobName = "/images/win_probability/${gameId}_win_probability.png"
+            val scoreplotName = "/images/score_plot /${gameId}_score_plot.png"
 
             // Update the entity with the new image names
             newGame.scorebug = scorebugName
@@ -229,10 +229,16 @@ class GameService(
             // Create a new Discord thread
             if (newGame.homePlatform == Platform.DISCORD) {
                 newGame.homePlatformId = discordService.startGameThread(newGame)
-                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                    ?: run {
+                        gameRepository.deleteById(newGame.gameId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
+                        return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                    }
             } else if (newGame.awayPlatform == Platform.DISCORD) {
                 newGame.awayPlatformId = discordService.startGameThread(newGame)
-                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                    ?: run {
+                        gameRepository.deleteById(newGame.gameId ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST))
+                        return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+                    }
             }
 
             // Save the updated entity and create game stats
