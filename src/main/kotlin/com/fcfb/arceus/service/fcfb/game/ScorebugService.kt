@@ -141,12 +141,13 @@ class ScorebugService(
 
         // Draw Away Team Name
         g.color = Color.WHITE
-        drawTeamCenteredText(g,
+        drawTeamCenteredText(
+            g,
             game.awayTeam.toString(),
             teamNameX,
             awayTeamY - 10,
             teamBoxWidth - 30,
-            infoBoxHeight
+            infoBoxHeight,
         )
 
         fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
@@ -291,7 +292,8 @@ class ScorebugService(
                         game.ballLocation == 50 -> "50 yard line"
                         game.ballLocation != null &&
                             game.ballLocation!! < 50 &&
-                            game.possession == TeamSide.HOME -> if (homeTeam.abbreviation != awayTeam.abbreviation) {
+                            game.possession == TeamSide.HOME ->
+                            if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${homeTeam.abbreviation ?: homeTeam.name} ${game.ballLocation}"
                             } else {
                                 "${homeTeam.name} ${game.ballLocation}"
@@ -493,7 +495,7 @@ class ScorebugService(
         val textWidth = metrics.stringWidth(text)
 
         if (textWidth > boxWidth - 55) {
-            g.font = g.font.deriveFont((g.font.size * (boxWidth-55).toFloat() / textWidth))
+            g.font = g.font.deriveFont((g.font.size * (boxWidth - 55).toFloat() / textWidth))
         } else {
             g.font = g.font.deriveFont(35f)
         }
