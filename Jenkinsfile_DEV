@@ -6,7 +6,7 @@ pipeline {
         CONTAINER_NAME = 'FCFB-Arceus_DEV'
         DOCKERFILE = 'Dockerfile'
         APP_PROPERTIES = './src/main/resources/application.properties'
-        DB_URL = credentials('DB_URL')
+        DB_URL = credentials('DEV_DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
         JWT_ENCRYPTION_KEY = credentials('JWT_ENCRYPTION_KEY')
