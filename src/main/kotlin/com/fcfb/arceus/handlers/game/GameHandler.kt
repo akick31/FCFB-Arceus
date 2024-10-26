@@ -50,6 +50,7 @@ class GameHandler(
 
         // If game quarter is 0, then the game is over
         if (quarter == 0) {
+            game.quarter = 4
             game.gameStatus = GameStatus.FINAL
         } else if (quarter >= 5) {
             game.gameStatus = GameStatus.END_OF_REGULATION

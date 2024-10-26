@@ -837,6 +837,7 @@ class PlayHandler(
         initialQuarter: Int,
         homeScore: Int,
         awayScore: Int,
+        playTime: Int,
     ): Triple<TeamSide, Int, Int> {
         var possession = initialPossession
         var clock = initialClock
@@ -844,29 +845,17 @@ class PlayHandler(
 
         // If quarter is over but game is not over
         if (clock <= 0 &&
-            quarter < 4 &&
-            actualResult != ActualResult.TOUCHDOWN &&
-            actualResult != ActualResult.TURNOVER_TOUCHDOWN &&
-            actualResult != ActualResult.RETURN_TOUCHDOWN &&
-            actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.PUNT_RETURN_TOUCHDOWN &&
-            actualResult != ActualResult.PUNT_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.KICK_SIX
+            !isScoringPlay(actualResult) &&
+            quarter < 4
         ) {
             quarter += 1
-            clock = 420
+            clock = 420 - playTime
             if (quarter == 3) {
                 possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
             }
         } else if (
             clock <= 0 &&
-            actualResult != ActualResult.TOUCHDOWN &&
-            actualResult != ActualResult.TURNOVER_TOUCHDOWN &&
-            actualResult != ActualResult.RETURN_TOUCHDOWN &&
-            actualResult != ActualResult.KICKING_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.PUNT_RETURN_TOUCHDOWN &&
-            actualResult != ActualResult.PUNT_TEAM_TOUCHDOWN &&
-            actualResult != ActualResult.KICK_SIX &&
+            !isScoringPlay(actualResult) &&
             gamePlay.quarter == 4
         ) {
             // Check if game is over or needs to go to OT
@@ -877,6 +866,31 @@ class PlayHandler(
                     5
                 }
             clock = 0
+        } else if (clock > 0) {
+            clock = initialClock - playTime
+
+            if (clock <= 0 &&
+                !isScoringPlay(actualResult) &&
+                quarter < 4
+            ) {
+                clock = 420
+                if (quarter == 3) {
+                    possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
+                }
+            } else if (
+                clock <= 0 &&
+                !isScoringPlay(actualResult) &&
+                gamePlay.quarter == 4
+            ) {
+                // Check if game is over or needs to go to OT
+                quarter =
+                    if (homeScore > awayScore || awayScore > homeScore) {
+                        0
+                    } else {
+                        5
+                    }
+                clock = 0
+            }
         }
         return Triple(possession, clock, quarter)
     }
@@ -929,7 +943,7 @@ class PlayHandler(
         homeTimeoutCalled: Boolean,
         awayTimeoutcalled: Boolean,
     ): Play {
-        var clock = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK)) - (playTime)
+        var clock = (gamePlay.clock?.minus(runoffTime) ?: handleException(ExceptionType.INVALID_CLOCK))
         var quarter = gamePlay.quarter ?: handleException(ExceptionType.INVALID_QUARTER)
         var possession = initialPossession
 
@@ -944,6 +958,7 @@ class PlayHandler(
                     quarter,
                     homeScore,
                     awayScore,
+                    playTime,
                 )
             possession = updatedPossession
             clock = updatedClock
@@ -996,5 +1011,15 @@ class PlayHandler(
             gamePlay,
         )
         return gamePlay
+    }
+
+    private fun isScoringPlay(actualResult: ActualResult): Boolean {
+        return actualResult == ActualResult.TOUCHDOWN ||
+            actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            actualResult == ActualResult.RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.KICK_SIX
     }
 }

@@ -7,13 +7,13 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface GameRepository : CrudRepository<Game?, Int?> {
-    @Query(value = "SELECT * FROM game WHERE home_platform = ? && home_platform_id = ? AND game_status != 'FINAL'", nativeQuery = true)
+    @Query(value = "SELECT * FROM game WHERE home_platform = ? && home_platform_id = ?", nativeQuery = true)
     fun findOngoingGameByHomePlatformId(
         platform: String?,
         platformId: String?,
     ): Game?
 
-    @Query(value = "SELECT * FROM game WHERE away_platform = ? && away_platform_id = ? AND game_status != 'FINAL'", nativeQuery = true)
+    @Query(value = "SELECT * FROM game WHERE away_platform = ? && away_platform_id = ?", nativeQuery = true)
     fun findOngoingGameByAwayPlatformId(
         platform: String?,
         platformId: String?,
