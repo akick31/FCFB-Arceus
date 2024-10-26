@@ -469,8 +469,6 @@ class ScorebugService(
 
         if (textWidth > boxWidth) {
             g.font = g.font.deriveFont((g.font.size * (boxWidth).toFloat() / textWidth))
-        } else {
-            g.font = g.font.deriveFont(35f)
         }
 
         // Recalculate after scaling (if applied)

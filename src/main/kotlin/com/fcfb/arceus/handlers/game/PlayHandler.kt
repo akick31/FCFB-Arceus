@@ -891,17 +891,25 @@ class PlayHandler(
         var timeoutUsed = false
         var homeTimeoutCalled = false
         var awayTimeoutCalled = false
-        if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.homeTimeouts!! > 0 && !clockStopped) {
+        if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.awayTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            awayTimeoutCalled = true
+        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.homeTimeouts!! > 0 && !clockStopped) {
+            timeoutUsed = true
+            homeTimeoutCalled = true
+        } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.homeTimeouts!! > 0 && !clockStopped) {
             timeoutUsed = true
             homeTimeoutCalled = true
         } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.awayTimeouts!! > 0 && !clockStopped) {
             timeoutUsed = true
             awayTimeoutCalled = true
-        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME && game.awayTimeouts!! > 0 && !clockStopped) {
-            timeoutUsed = true
+        } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME) {
+            homeTimeoutCalled = true
+        } else if (offensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY) {
             awayTimeoutCalled = true
-        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY && game.homeTimeouts!! > 0 && !clockStopped) {
-            timeoutUsed = true
+        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.HOME) {
+            awayTimeoutCalled = true
+        } else if (defensiveTimeoutCalled && gamePlay.possession == TeamSide.AWAY) {
             homeTimeoutCalled = true
         }
         return Triple(timeoutUsed, homeTimeoutCalled, awayTimeoutCalled)
@@ -989,6 +997,7 @@ class PlayHandler(
             yardsToGo,
             homeTimeoutCalled,
             awayTimeoutcalled,
+            timeoutUsed,
         )
 
         statsHandler.updateGameStats(

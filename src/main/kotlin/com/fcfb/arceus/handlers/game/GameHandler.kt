@@ -31,6 +31,7 @@ class GameHandler(
         yardsToGo: Int,
         homeTimeoutCalled: Boolean,
         awayTimeoutCalled: Boolean,
+        timeoutUsed: Boolean,
     ): Game {
         // Update if the clock is stopped
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
@@ -42,9 +43,9 @@ class GameHandler(
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
 
         // Update timeouts
-        if (homeTimeoutCalled) {
+        if (homeTimeoutCalled && timeoutUsed) {
             game.homeTimeouts = game.homeTimeouts!! - 1
-        } else if (awayTimeoutCalled) {
+        } else if (awayTimeoutCalled && timeoutUsed) {
             game.awayTimeouts = game.awayTimeouts!! - 1
         }
 
