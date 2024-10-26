@@ -118,10 +118,10 @@ class UserService(
     }
 
     fun updateUserRole(
-        id: Long,
+        discordId: String,
         newRole: Role?,
     ): ResponseEntity<UserDTO> {
-        val user = userRepository.findById(id)
+        val user = userRepository.findByDiscordId(discordId)
         if (user != null) {
             if (newRole == null) {
                 return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
