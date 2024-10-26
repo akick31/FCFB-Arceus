@@ -61,9 +61,9 @@ class UserController(
 
     @PutMapping("/update/role")
     fun updateUserRole(
-        @RequestParam("id") id: Long,
-        @RequestParam newRole: Role?,
-    ) = userService.updateUserRole(id, newRole)
+        @RequestParam("discord_id") discordId: String,
+        @RequestParam("role") newRole: Role?,
+    ) = userService.updateUserRole(discordId, newRole)
 
     @PutMapping("/update/position")
     fun updateUserPosition(
