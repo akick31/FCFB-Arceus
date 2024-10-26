@@ -633,6 +633,7 @@ class Game {
         SIXTY_YARD_PUNT("60 YARD PUNT"),
         SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
         SEVENTY_YARD_PUNT("70 YARD PUNT"),
+        GAME_OVER("GAME OVER"),
         ;
 
         companion object {
