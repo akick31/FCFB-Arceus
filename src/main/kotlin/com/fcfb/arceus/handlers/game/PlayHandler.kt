@@ -636,7 +636,7 @@ class PlayHandler(
                 actualResult = ActualResult.SUCCESSFUL_ONSIDE
                 ballLocation = 45
             }
-            Scenario.NO_GOOD -> {
+            Scenario.FAILED_ONSIDE -> {
                 actualResult = ActualResult.FAILED_ONSIDE
                 ballLocation = 55
             }
