@@ -537,7 +537,6 @@ class StatsHandler(
         stats.gameStatus = game.gameStatus
 
         stats.averageDiff = calculateAverageDiff(allPlays)
-        stats.statsUpdated = true
 
         gameStatsRepository.save(stats)
         return stats
