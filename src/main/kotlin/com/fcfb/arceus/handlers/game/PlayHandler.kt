@@ -828,7 +828,7 @@ class PlayHandler(
         }
     }
 
-    private fun handleEndOfQuarterScenarios(
+    private fun handleEndOfQuarterNormalScenarios(
         game: Game,
         gamePlay: Play,
         actualResult: ActualResult,
@@ -844,18 +844,72 @@ class PlayHandler(
         var quarter = initialQuarter
 
         // If quarter is over but game is not over
-        if (clock <= 0 &&
-            !isScoringPlay(actualResult) &&
-            quarter < 4
-        ) {
+        if (clock <= 0 && !isScoringPlay(actualResult) && quarter < 4) {
             quarter += 1
             clock = 420 - playTime
             if (quarter == 3) {
                 possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
             }
+        } else if (clock <= 0 && !isScoringPlay(actualResult) && gamePlay.quarter == 4) {
+            // Check if game is over or needs to go to OT
+            quarter =
+                if (homeScore > awayScore || awayScore > homeScore) {
+                    0
+                } else {
+                    5
+                }
+            clock = 0
+        } else if (clock <= 0 && isScoringPlay(actualResult)
+        ) {
+            clock = 0
+        } else if (clock > 0) {
+            clock = initialClock - playTime
+
+            if (clock <= 0 && !isScoringPlay(actualResult) && quarter < 4) {
+                clock = 420
+                if (quarter == 3) {
+                    possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
+                }
+            } else if (clock <= 0 && !isScoringPlay(actualResult) && gamePlay.quarter == 4) {
+                // Check if game is over or needs to go to OT
+                quarter =
+                    if (homeScore > awayScore || awayScore > homeScore) {
+                        0
+                    } else {
+                        5
+                    }
+                clock = 0
+            } else if (clock <= 0 && isScoringPlay(actualResult)) {
+                clock = 0
+            }
+        }
+        return Triple(possession, clock, quarter)
+    }
+
+    private fun handleEndOfQuarterPATScenarios(
+        game: Game,
+        gamePlay: Play,
+        initialPossession: TeamSide,
+        initialClock: Int,
+        initialQuarter: Int,
+        homeScore: Int,
+        awayScore: Int,
+    ): Triple<TeamSide, Int, Int> {
+        var possession = initialPossession
+        var clock = initialClock
+        var quarter = initialQuarter
+
+        // If quarter is over but game is not over
+        if (clock <= 0 &&
+            quarter < 4
+        ) {
+            quarter += 1
+            clock = 420
+            if (quarter == 3) {
+                possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
+            }
         } else if (
             clock <= 0 &&
-            !isScoringPlay(actualResult) &&
             gamePlay.quarter == 4
         ) {
             // Check if game is over or needs to go to OT
@@ -866,31 +920,6 @@ class PlayHandler(
                     5
                 }
             clock = 0
-        } else if (clock > 0) {
-            clock = initialClock - playTime
-
-            if (clock <= 0 &&
-                !isScoringPlay(actualResult) &&
-                quarter < 4
-            ) {
-                clock = 420
-                if (quarter == 3) {
-                    possession = gameHandler.handleHalfTimePossessionChange(game) ?: handleException(ExceptionType.INVALID_POSSESSION)
-                }
-            } else if (
-                clock <= 0 &&
-                !isScoringPlay(actualResult) &&
-                gamePlay.quarter == 4
-            ) {
-                // Check if game is over or needs to go to OT
-                quarter =
-                    if (homeScore > awayScore || awayScore > homeScore) {
-                        0
-                    } else {
-                        5
-                    }
-                clock = 0
-            }
         }
         return Triple(possession, clock, quarter)
     }
@@ -957,7 +986,7 @@ class PlayHandler(
 
         if (playCall != PlayCall.PAT && playCall != PlayCall.TWO_POINT) {
             val (updatedPossession, updatedClock, updatedQuarter) =
-                handleEndOfQuarterScenarios(
+                handleEndOfQuarterNormalScenarios(
                     game,
                     gamePlay,
                     actualResult,
@@ -967,6 +996,21 @@ class PlayHandler(
                     homeScore,
                     awayScore,
                     playTime,
+                )
+            possession = updatedPossession
+            clock = updatedClock
+            quarter = updatedQuarter
+        } else {
+            // Handle end of quarter PAT scenarios
+            val (updatedPossession, updatedClock, updatedQuarter) =
+                handleEndOfQuarterPATScenarios(
+                    game,
+                    gamePlay,
+                    possession,
+                    clock,
+                    quarter,
+                    homeScore,
+                    awayScore,
                 )
             possession = updatedPossession
             clock = updatedClock
