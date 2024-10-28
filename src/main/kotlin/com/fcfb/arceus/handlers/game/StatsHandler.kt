@@ -534,6 +534,7 @@ class StatsHandler(
             stats.otHomeScore = calculateQuarterScore(play, stats.otHomeScore ?: 0, TeamSide.HOME)
             stats.otAwayScore = calculateQuarterScore(play, stats.otAwayScore ?: 0, TeamSide.AWAY)
         }
+        stats.gameStatus = game.gameStatus
 
         stats.averageDiff = calculateAverageDiff(allPlays)
         stats.statsUpdated = true

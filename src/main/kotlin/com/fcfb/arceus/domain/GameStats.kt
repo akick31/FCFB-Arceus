@@ -8,6 +8,8 @@ import com.fcfb.arceus.domain.Game.TVChannel
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.Id
 import javax.persistence.Table
 
@@ -354,18 +356,6 @@ class GameStats(
     @Column(name = "away_touchdowns")
     var awayTouchdowns: Int? = 0,
     @Basic
-    @Column(name = "scorebug")
-    var scorebug: String? = null,
-    @Basic
-    @Column(name = "win_probability_plot")
-    var winProbabilityPlot: String? = null,
-    @Basic
-    @Column(name = "score_plot_graph")
-    var scorePlotGraph: String? = null,
-    @Basic
-    @Column(name = "stats_updated")
-    var statsUpdated: Boolean? = false,
-    @Basic
     @Column(name = "average_home_offensive_diff")
     var averageHomeOffensiveDiff: Double? = 0.0,
     @Basic
@@ -461,9 +451,11 @@ class GameStats(
     @Basic
     @Column(name = "away_record")
     var awayRecord: String? = null,
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_type")
-    var gameType: Game.GameType? = GameType.SCRIMMAGE,
+    var gameType: GameType? = GameType.SCRIMMAGE,
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_status")
     var gameStatus: Game.GameStatus? = null,
