@@ -5,23 +5,19 @@ import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
-import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
 class PlayService(
-    private var gameRepository: GameRepository,
-    private var playRepository: PlayRepository,
-    private var playHandler: PlayHandler,
-    private var gameHandler: GameHandler,
-    private var encryptionUtils: EncryptionUtils,
-    private val scorebugService: ScorebugService,
+    private val playRepository: PlayRepository,
+    private val playHandler: PlayHandler,
+    private val gameHandler: GameHandler,
+    private val encryptionUtils: EncryptionUtils,
+    private val gameService: GameService,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
@@ -39,52 +35,18 @@ class PlayService(
         gameId: Int,
         defensiveSubmitter: String,
         defensiveNumber: Int,
-        timeoutCalled: Boolean?,
-    ): ResponseEntity<Any> {
-        return try {
-            val game =
-                gameRepository.findByGameId(gameId)
-                    ?: run {
-                        Logger.error("Could not find game with id $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "Could not find game with game ID",
-                            ),
-                            HttpStatus.NOT_FOUND,
-                        )
-                    }
+        timeoutCalled: Boolean = false,
+    ): Play {
+        try {
+            val game = gameService.getGameById(gameId)
 
             val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
-            val clock: Int =
-                gameHandler.convertClockToSeconds(
-                    game.clock
-                        ?: run {
-                            Logger.error("Could not find clock for game with id $gameId")
-                            return ResponseEntity(
-                                headers.add(
-                                    "Error-Message",
-                                    "Could not find clock for game",
-                                ),
-                                HttpStatus.BAD_REQUEST,
-                            )
-                        },
-                )
-            val gamePlay: Play =
+            val clock = gameHandler.convertClockToSeconds(game.clock)
+            val gamePlay =
                 playRepository.save(
                     Play(
                         gameId,
-                        game.numPlays?.plus(1)
-                            ?: run {
-                                Logger.error("Could not get the number of plays for game with id $gameId")
-                                return ResponseEntity(
-                                    headers.add(
-                                        "Error-Message",
-                                        "Could not get the number of plays for the game",
-                                    ),
-                                    HttpStatus.BAD_REQUEST,
-                                )
-                            },
+                        game.numPlays.plus(1),
                         game.homeScore,
                         game.awayScore,
                         game.quarter,
@@ -111,56 +73,21 @@ class PlayService(
                         timeoutCalled,
                         false,
                         timeoutCalled,
-                        game.homeTimeouts
-                            ?: run {
-                                Logger.error("Could not get the number of home timeouts for game with id $gameId")
-                                return ResponseEntity(
-                                    headers.add(
-                                        "Error-Message",
-                                        "Could not get the number of home timeouts",
-                                    ),
-                                    HttpStatus.BAD_REQUEST,
-                                )
-                            },
-                        game.awayTimeouts
-                            ?: run {
-                                Logger.error("Could not get the number of away timeouts for game with id $gameId")
-                                return ResponseEntity(
-                                    headers.add(
-                                        "Error-Message",
-                                        "Could not get the number of away timeouts",
-                                    ),
-                                    HttpStatus.BAD_REQUEST,
-                                )
-                            },
+                        game.homeTimeouts,
+                        game.awayTimeouts,
                         false,
                         null,
                         null,
                     ),
-                ) ?: run {
-                    Logger.error("Could not save play for game with id $gameId")
-                    return ResponseEntity(
-                        headers.add(
-                            "Error-Message",
-                            "There was an issue saving the play",
-                        ),
-                        HttpStatus.BAD_REQUEST,
-                    )
-                }
+                )
 
             game.currentPlayId = gamePlay.playId
             game.waitingOn = game.possession
-            gameRepository.save(game)
-            ResponseEntity(gamePlay, HttpStatus.CREATED)
+            gameService.saveGame(game)
+            return gamePlay
         } catch (e: Exception) {
             Logger.error("There was an error submitting the defensive number for game $gameId: " + e.message)
-            ResponseEntity(
-                headers.add(
-                    "Error-Message",
-                    e.message ?: "Unknown error",
-                ),
-                HttpStatus.BAD_REQUEST,
-            )
+            throw e
         }
     }
 
@@ -181,157 +108,83 @@ class PlayService(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-    ): ResponseEntity<Any> {
-        return try {
-            val game =
-                gameRepository.findByGameId(gameId)
-                    ?: run {
-                        Logger.error("Could not find game with id $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue finding the game",
-                            ),
-                            HttpStatus.NOT_FOUND,
-                        )
-                    }
-            var gamePlay =
-                playRepository.findByPlayId(game.currentPlayId!!)
-                    ?: run {
-                        Logger.error("Could not find play with id ${game.currentPlayId}")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue finding the play",
-                            ),
-                            HttpStatus.NOT_FOUND,
-                        )
-                    }
+    ): Play {
+        try {
+            val game = gameService.getGameById(gameId)
+            val allPlays = getAllPlaysByGameId(gameId)
+            var gamePlay = getPlayById(game.currentPlayId!!)
+
             gamePlay.offensiveSubmitter = offensiveSubmitter
 
-            val decryptedDefensiveNumber =
-                encryptionUtils.decrypt(
-                    gamePlay.defensiveNumber
-                        ?: run {
-                            Logger.error("There was an issue decrypting the defensive number for game $gameId")
-                            return ResponseEntity(
-                                headers.add(
-                                    "Error-Message",
-                                    "There was an issue decrypting the defensive number",
-                                ),
-                                HttpStatus.BAD_REQUEST,
-                            )
-                        },
-                )
+            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber)
 
             when (playCall) {
                 PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL ->
-                    gamePlay = playHandler.runNormalPlay(
-                        gamePlay,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    ) ?: run {
-                        Logger.error("There was an issue running a normal play for game $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue running a normal play",
-                            ),
-                            HttpStatus.BAD_REQUEST,
+                    gamePlay =
+                        playHandler.runNormalPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
                         )
-                    }
 
                 PlayCall.PAT, PlayCall.TWO_POINT ->
-                    gamePlay = playHandler.runPointAfterPlay(
-                        gamePlay,
-                        game,
-                        playCall,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    ) ?: run {
-                        Logger.error("There was an issue running the PAT play for game $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue running the PAT play",
-                            ),
-                            HttpStatus.BAD_REQUEST,
+                    gamePlay =
+                        playHandler.runPointAfterPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
                         )
-                    }
 
                 PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB ->
-                    gamePlay = playHandler.runKickoffPlay(
-                        gamePlay,
-                        game,
-                        playCall,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    ) ?: run {
-                        Logger.error("There was an issue running the kickoff play for game $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue running the kickoff play",
-                            ),
-                            HttpStatus.BAD_REQUEST,
+                    gamePlay =
+                        playHandler.runKickoffPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
                         )
-                    }
 
                 PlayCall.FIELD_GOAL ->
-                    gamePlay = playHandler.runFieldGoalPlay(
-                        gamePlay,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    ) ?: run {
-                        Logger.error("There was an issue running the field goal play for game $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue running the field goal play",
-                            ),
-                            HttpStatus.BAD_REQUEST,
+                    gamePlay =
+                        playHandler.runFieldGoalPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
                         )
-                    }
 
                 PlayCall.PUNT ->
-                    gamePlay = playHandler.runPuntPlay(
-                        gamePlay,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    ) ?: run {
-                        Logger.error("There was an issue running the punt play for game $gameId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "There was an issue running the punt play",
-                            ),
-                            HttpStatus.BAD_REQUEST,
+                    gamePlay =
+                        playHandler.runPuntPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
                         )
-                    }
             }
 
-            return ResponseEntity(gamePlay, HttpStatus.OK)
+            return gamePlay
         } catch (e: Exception) {
             Logger.error("There was an error submitting the offensive number for game $gameId: " + e.message)
-            ResponseEntity(
-                headers.add(
-                    "Error-Message",
-                    e.message ?: "Unknown error",
-                ),
-                HttpStatus.BAD_REQUEST,
-            )
+            throw e
         }
     }
 
@@ -340,30 +193,10 @@ class PlayService(
      * @param playId
      * @return
      */
-    fun getPlayById(playId: Int): ResponseEntity<Any> {
-        return try {
-            val play =
-                playRepository.findByPlayId(playId)
-                    ?: run {
-                        Logger.error("Could not find play with id $playId")
-                        return ResponseEntity(
-                            headers.add(
-                                "Error-Message",
-                                "Could not find play with play ID",
-                            ),
-                            HttpStatus.NOT_FOUND,
-                        )
-                    }
-            ResponseEntity(play, HttpStatus.OK)
-        } catch (e: Exception) {
-            Logger.error("There was an error getting the play with id $playId: " + e.message)
-            ResponseEntity(
-                headers.add(
-                    "Error-Message",
-                    e.message ?: "Unknown error",
-                ),
-                HttpStatus.BAD_REQUEST,
-            )
-        }
-    }
+    fun getPlayById(playId: Int) = playRepository.getPlayById(playId)
+
+    /**
+     * Get all plays for a game
+     */
+    fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
 }

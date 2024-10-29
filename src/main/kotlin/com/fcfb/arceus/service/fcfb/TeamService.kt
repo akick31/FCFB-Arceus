@@ -6,49 +6,54 @@ import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
+import com.fcfb.arceus.models.NoTeamFoundException
 import com.fcfb.arceus.repositories.TeamRepository
-import com.fcfb.arceus.repositories.UserRepository
-import com.fcfb.arceus.service.discord.DiscordService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Service
-import java.util.Optional
 
 @Service
 class TeamService(
-    var teamRepository: TeamRepository,
-    var userRepository: UserRepository,
-    private val discordService: DiscordService,
+    private val teamRepository: TeamRepository,
+    private val userService: UserService,
 ) {
-    private var emptyHeaders: HttpHeaders = HttpHeaders()
-
-    fun getTeamById(id: Int): ResponseEntity<Team> {
-        val teamData: Optional<Team?> = teamRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    /**
+     * Get a team by its ID
+     * @param id
+     */
+    fun getTeamById(id: Int): Team {
+        val teamData = teamRepository.findById(id)
         if (!teamData.isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            throw NoTeamFoundException()
         }
-        return ResponseEntity(teamData.get(), HttpStatus.OK)
+        return teamData.get()
     }
 
-    fun getAllTeams(): ResponseEntity<List<Team>> {
-        val teamData: Iterable<Team?> = teamRepository.findAll() ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    /**
+     * Get all teams
+     */
+    fun getAllTeams(): List<Team> {
+        val teamData = teamRepository.findAll()
         if (!teamData.iterator().hasNext()) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            throw NoTeamFoundException()
         }
-        return ResponseEntity(teamData.filterNotNull(), HttpStatus.OK)
+        return teamData.filterNotNull()
     }
 
-    fun getTeamByName(name: String?): ResponseEntity<Team> {
-        val teamData = teamRepository.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        return ResponseEntity(teamData, HttpStatus.OK)
-    }
+    /**
+     * Get a team by its name
+     * @param name
+     */
+    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name)
 
-    fun createTeam(team: Team): ResponseEntity<Team> {
-        return try {
-            val newTeam: Team? =
+    /**
+     * Create a new team
+     * @param team
+     */
+    fun createTeam(team: Team): Team {
+        try {
+            val newTeam =
                 teamRepository.save(
                     Team(
                         team.logo,
@@ -80,17 +85,18 @@ class TeamService(
                         0,
                     ),
                 )
-            ResponseEntity(newTeam, HttpStatus.CREATED)
+            return newTeam
         } catch (e: Exception) {
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            throw e
         }
     }
 
     fun updateTeam(
         name: String?,
         team: Team,
-    ): ResponseEntity<Team> {
-        val existingTeam = teamRepository.findByName(name) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    ): Team {
+        val existingTeam = getTeamByName(name)
+
         existingTeam.apply {
             this.name = team.name
             coachUsername1 = team.coachUsername1
@@ -119,23 +125,23 @@ class TeamService(
             overallConferenceLosses = team.overallConferenceLosses
         }
         teamRepository.save(existingTeam)
-        return ResponseEntity(existingTeam, HttpStatus.OK)
+        return existingTeam
     }
 
+    /**
+     * Hire a coach for a team
+     * @param name
+     * @param discordId
+     * @param coachPosition
+     */
     suspend fun hireCoach(
         name: String?,
         discordId: String,
         coachPosition: CoachPosition,
-    ): ResponseEntity<Team> {
+    ): Team {
         val updatedName = name?.replace("_", " ")
-        val existingTeam =
-            withContext(Dispatchers.IO) {
-                teamRepository.findByName(updatedName)
-            } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
-        val user =
-            withContext(Dispatchers.IO) {
-                userRepository.findByDiscordId(discordId)
-            } ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+        val existingTeam = getTeamByName(updatedName)
+        val user = userService.getUserByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
@@ -162,19 +168,30 @@ class TeamService(
             }
             RETIRED -> {}
         }
+
         withContext(Dispatchers.IO) {
-            teamRepository.save(existingTeam)
-            userRepository.save(user)
+            saveTeam(existingTeam)
+            userService.updateUser(user)
         }
-        return ResponseEntity(existingTeam, HttpStatus.OK)
+        return existingTeam
     }
 
-    fun deleteTeam(id: Int): ResponseEntity<HttpStatus> {
-        teamRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    /**
+     * Save a team
+     * @param team
+     */
+    fun saveTeam(team: Team) = teamRepository.save(team)
+
+    /**
+     * Delete a team
+     * @param id
+     */
+    fun deleteTeam(id: Int): HttpStatus {
+        teamRepository.findById(id) ?: return HttpStatus.NOT_FOUND
         if (!teamRepository.findById(id).isPresent) {
-            return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+            return HttpStatus.NOT_FOUND
         }
         teamRepository.deleteById(id)
-        return ResponseEntity(HttpStatus.OK)
+        return HttpStatus.OK
     }
 }

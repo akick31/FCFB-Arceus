@@ -4,8 +4,7 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.repositories.GameRepository
-import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpHeaders
@@ -25,14 +24,14 @@ import javax.imageio.ImageIO
 
 @Component
 class ScorebugService(
-    private val teamRepository: TeamRepository,
-    private val gameRepository: GameRepository,
+    private val teamService: TeamService,
+    private val gameService: GameService,
 ) {
     @Value("\${images.path}")
     private val imagePath: String? = null
 
     fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
-        val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+        val game = gameService.getGameById(gameId)
 
         val scorebug = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
 
@@ -47,18 +46,18 @@ class ScorebugService(
         return ResponseEntity(scorebug, headers, HttpStatus.OK)
     }
 
-    fun generateScorebug(gameId: Int): ResponseEntity<String> {
-        val game = gameRepository.findByGameId(gameId) ?: return ResponseEntity("Game not found", HttpStatus.NOT_FOUND)
-        generateScorebug(game) ?: return ResponseEntity("Failed to generate scorebug", HttpStatus.INTERNAL_SERVER_ERROR)
+    fun generateScorebug(gameId: Int): String {
+        val game = gameService.getGameById(gameId)
+        generateScorebug(game)
 
         // Return the image in the response
         Logger.info("Scorebug generated for $gameId")
-        return ResponseEntity("Scorebug generated for $gameId", HttpStatus.OK)
+        return "Scorebug generated for $gameId"
     }
 
-    fun generateScorebug(game: Game): BufferedImage? {
-        val homeTeam = teamRepository.findByName(game.homeTeam) ?: return null
-        val awayTeam = teamRepository.findByName(game.awayTeam) ?: return null
+    fun generateScorebug(game: Game): BufferedImage {
+        val homeTeam = teamService.getTeamByName(game.homeTeam)
+        val awayTeam = teamService.getTeamByName(game.awayTeam)
 
         val width = 436 // Width of the image
         val height = 200 // Height to accommodate additional boxes
@@ -255,7 +254,7 @@ class ScorebugService(
                         else -> game.down.toString()
                     } + " & " +
                         when {
-                            (game.ballLocation?.plus(game.yardsToGo ?: 0) ?: 0) >= 100 -> "Goal"
+                            (game.ballLocation.plus(game.yardsToGo)) >= 100 -> "Goal"
                             else -> game.yardsToGo.toString()
                         }
 
@@ -290,32 +289,28 @@ class ScorebugService(
                 val ballLocationText =
                     when {
                         game.ballLocation == 50 -> "50 yard line"
-                        game.ballLocation != null &&
-                            game.ballLocation!! < 50 &&
+                        game.ballLocation < 50 &&
                             game.possession == TeamSide.HOME ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${homeTeam.abbreviation ?: homeTeam.name?.uppercase()} ${game.ballLocation}"
                             } else {
                                 "${homeTeam.name?.uppercase()} ${game.ballLocation}"
                             }
-                        game.ballLocation != null &&
-                            game.ballLocation!! < 50 &&
+                        game.ballLocation < 50 &&
                             game.possession == TeamSide.AWAY ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${awayTeam.abbreviation ?: awayTeam.name?.uppercase()} ${game.ballLocation}"
                             } else {
                                 "${awayTeam.name?.uppercase()} ${game.ballLocation}"
                             }
-                        game.ballLocation != null &&
-                            game.ballLocation!! > 50 &&
+                        game.ballLocation > 50 &&
                             game.possession == TeamSide.HOME ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${awayTeam.abbreviation ?: awayTeam.name?.uppercase()} ${100 - game.ballLocation!!}"
                             } else {
                                 "${awayTeam.name?.uppercase()} ${game.ballLocation}"
                             }
-                        game.ballLocation != null &&
-                            game.ballLocation!! > 50 &&
+                        game.ballLocation > 50 &&
                             game.possession == TeamSide.AWAY ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${homeTeam.abbreviation ?: homeTeam.name?.uppercase()} ${100 - game.ballLocation!!}"
@@ -381,10 +376,10 @@ class ScorebugService(
         }
 
         // Draw Timeout Boxes for Home Team
-        drawTimeoutBoxes(g, homeTeamY + infoBoxHeight - 10, game.homeTimeouts!!)
+        drawTimeoutBoxes(g, homeTeamY + infoBoxHeight - 10, game.homeTimeouts)
 
         // Draw Timeout Boxes for Away Team
-        drawTimeoutBoxes(g, awayTeamY + infoBoxHeight - 10, game.awayTimeouts!!)
+        drawTimeoutBoxes(g, awayTeamY + infoBoxHeight - 10, game.awayTimeouts)
 
         // Draw border below team scores
         g.color = Color.GRAY

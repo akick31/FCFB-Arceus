@@ -48,7 +48,7 @@ class Ranges {
 
     @Basic
     @Column(name = "play_time")
-    var playTime: Int? = null
+    var playTime: Int = 0
 
     @Basic
     @Column(name = "lower_range")
@@ -66,7 +66,7 @@ class Ranges {
         ballLocationUpper: Int?,
         distance: Int?,
         result: Scenario?,
-        playTime: Int?,
+        playTime: Int,
         lowerRange: Int?,
         upperRange: Int?,
     ) {

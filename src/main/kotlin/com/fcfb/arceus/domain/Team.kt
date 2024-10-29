@@ -31,19 +31,19 @@ class Team {
 
     @Basic
     @Column(name = "coach_username1")
-    var coachUsername1: String? = null
+    var coachUsername1: String = ""
 
     @Basic
     @Column(name = "coach_name1")
-    var coachName1: String? = null
+    var coachName1: String = ""
 
     @Basic
     @Column(name = "coach_discord_tag1")
-    var coachDiscordTag1: String? = null
+    var coachDiscordTag1: String = ""
 
     @Basic
     @Column(name = "coach_discord_id1")
-    var coachDiscordId1: String? = null
+    var coachDiscordId1: String = ""
 
     @Basic
     @Column(name = "coach_username2")
@@ -91,11 +91,11 @@ class Team {
 
     @Convert(converter = OffensivePlaybookConverter::class)
     @Column(name = "offensive_playbook")
-    var offensivePlaybook: OffensivePlaybook? = null
+    lateinit var offensivePlaybook: OffensivePlaybook
 
     @Convert(converter = DefensivePlaybookConverter::class)
     @Column(name = "defensive_playbook")
-    var defensivePlaybook: DefensivePlaybook? = null
+    lateinit var defensivePlaybook: DefensivePlaybook
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -136,10 +136,10 @@ class Team {
 
     constructor(
         logo: String?,
-        coachUsername1: String?,
-        coachName1: String?,
-        coachDiscordTag1: String?,
-        coachDiscordId1: String?,
+        coachUsername1: String,
+        coachName1: String,
+        coachDiscordTag1: String,
+        coachDiscordId1: String,
         coachUsername2: String?,
         coachName2: String?,
         coachDiscordTag2: String?,
@@ -151,8 +151,8 @@ class Team {
         primaryColor: String?,
         secondaryColor: String?,
         subdivision: Subdivision?,
-        offensivePlaybook: OffensivePlaybook?,
-        defensivePlaybook: DefensivePlaybook?,
+        offensivePlaybook: OffensivePlaybook,
+        defensivePlaybook: DefensivePlaybook,
         conference: Conference?,
         currentWins: Int?,
         currentLosses: Int?,

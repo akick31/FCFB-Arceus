@@ -7,8 +7,8 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TeamRepository : CrudRepository<Team?, Int?> {
-    fun findByName(name: String?): Team?
+    fun getTeamByName(name: String?): Team
 
     @Query(value = "SELECT * FROM team", nativeQuery = true)
-    fun findAllTeams(): Team
+    fun getAllTeams(): Team
 }
