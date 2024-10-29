@@ -28,7 +28,7 @@ class PlayController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("defensiveSubmitter") defensiveSubmitter: String,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
-        @RequestParam("timeoutCalled") timeoutCalled: Boolean?,
+        @RequestParam("timeoutCalled") timeoutCalled: Boolean = false,
     ) = playService.defensiveNumberSubmitted(gameId, defensiveSubmitter, defensiveNumber, timeoutCalled)
 
     /**
@@ -59,5 +59,10 @@ class PlayController(
     fun getPlayById(
         @RequestParam("playId") playId: Int,
     ) = playService.getPlayById(playId)
+
+    @GetMapping("/game")
+    fun getAllPlaysByGameId(
+        @RequestParam("gameId") gameId: Int,
+    ) = playService.getAllPlaysByGameId(gameId)
     // TODO: Rollback play
 }

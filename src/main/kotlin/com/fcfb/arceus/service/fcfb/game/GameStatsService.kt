@@ -4,26 +4,21 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.repositories.GameStatsRepository
 import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.stereotype.Component
 
 @Component
 class GameStatsService(
     private val gameStatsRepository: GameStatsRepository,
-    private val teamRepository: TeamRepository,
+    private val teamService: TeamService,
 ) {
+    /**
+     * Create a game stats entry
+     * @param game
+     */
     fun createGameStats(game: Game): GameStats {
-        val homeTeam =
-            teamRepository.findByName(
-                game.homeTeam
-                    ?: throw Exception("Could not create game stats, could not get home team"),
-            )
-                ?: throw Exception("Could not create game stats, could not get home team")
-        val awayTeam =
-            teamRepository.findByName(
-                game.awayTeam
-                    ?: throw Exception("Could not create game stats, could not get away team"),
-            )
-                ?: throw Exception("Could not create game stats, could not get away team")
+        val homeTeam = teamService.getTeamByName(game.homeTeam)
+        val awayTeam = teamService.getTeamByName(game.awayTeam)
 
         val gameStats =
             GameStats(
@@ -55,8 +50,11 @@ class GameStatsService(
         return gameStats
     }
 
+    /**
+     * Get game stats entry by game ID
+     * @param gameId
+     */
     fun getGameStatsById(gameId: String): GameStats {
         return gameStatsRepository.findByGameId(gameId.toInt())
-            ?: throw Exception("Could not get game stats by game id")
     }
 }

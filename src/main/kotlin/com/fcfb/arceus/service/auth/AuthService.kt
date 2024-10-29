@@ -2,11 +2,13 @@ package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.Role
+import com.fcfb.arceus.models.UserUnauthorizedException
 import com.fcfb.arceus.models.website.Session
 import com.fcfb.arceus.repositories.SessionRepository
 import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
+import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
 import org.springframework.http.HttpHeaders
@@ -21,58 +23,24 @@ import java.util.UUID
 class AuthService(
     private val sessionUtils: SessionUtils,
     private val emailService: EmailService,
-    private val discordService: DiscordService,
-    private val usersRepository: UserRepository,
+    private val userService: UserService,
     private val sessionRepository: SessionRepository,
 ) {
-    private val emptyHeaders = HttpHeaders()
 
     /**
      * Create a new user
      * @param user
      * @return
      */
-    suspend fun createUser(user: User): ResponseEntity<User> {
-        return try {
-            val passwordEncoder = BCryptPasswordEncoder()
-            val salt = passwordEncoder.encode(user.password)
-            val verificationToken = UUID.randomUUID().toString()
-
-            val discordUser =
-                discordService.getUserByDiscordTag(user.discordTag)
-                    ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-            val discordId = discordUser.id.toString()
-
-            val newUser: User =
-                usersRepository.save(
-                    User(
-                        user.username,
-                        user.coachName,
-                        user.discordTag,
-                        discordId,
-                        user.email,
-                        passwordEncoder.encode(user.password),
-                        user.position,
-                        user.redditUsername,
-                        Role.USER,
-                        salt,
-                        null,
-                        0,
-                        0,
-                        0.0,
-                        user.offensivePlaybook,
-                        user.defensivePlaybook,
-                        0,
-                        verificationToken,
-                    ),
-                ) ?: return ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
-
-            emailService.sendVerificationEmail(newUser.email, newUser.id!!, verificationToken)
+    suspend fun createUser(user: User): User {
+        try {
+            val newUser = userService.createUser(user)
+            emailService.sendVerificationEmail(newUser.email, newUser.id!!, newUser.verificationToken)
             Logger.info("User ${user.username} registered successfully. Verification email sent.")
-            ResponseEntity(newUser, HttpStatus.CREATED)
+            return newUser
         } catch (e: Exception) {
             Logger.error("Error creating user: ", e.message)
-            ResponseEntity(emptyHeaders, HttpStatus.BAD_REQUEST)
+            throw e
         }
     }
 
@@ -85,16 +53,16 @@ class AuthService(
     fun loginUser(
         usernameOrEmail: String,
         password: String,
-    ): ResponseEntity<Session> {
-        val user = usersRepository.findByUsernameOrEmail(usernameOrEmail) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    ): Session {
+        val user = userService.getUserByUsernameOrEmail(usernameOrEmail)
         val passwordEncoder = BCryptPasswordEncoder()
         return if (passwordEncoder.matches(password, user.password)) {
             val token = sessionUtils.generateSessionToken()
             val expirationTime = LocalDateTime.now().plusHours(1)
-            val session = sessionRepository.save(Session(user.id!!, token, expirationTime))
-            ResponseEntity(session, HttpStatus.OK)
+            val session = sessionRepository.save(Session(user.id, token, expirationTime))
+            session
         } else {
-            ResponseEntity(emptyHeaders, HttpStatus.UNAUTHORIZED)
+            throw UserUnauthorizedException()
         }
     }
 
@@ -103,9 +71,9 @@ class AuthService(
      * @param token
      * @return
      */
-    fun logoutUser(token: String): ResponseEntity<String> {
+    fun logoutUser(token: String): String {
         sessionRepository.deleteByToken(token)
-        return ResponseEntity("User logged out successfully", HttpStatus.OK)
+        return "User logged out successfully"
     }
 
     /**
@@ -113,11 +81,11 @@ class AuthService(
      * @param token
      * @return
      */
-    fun verifyEmail(token: String): ResponseEntity<String> {
-        val user = usersRepository.findByVerificationToken(token) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun verifyEmail(token: String): String {
+        val user = userService.getByVerificationToken(token)
         user.approved = 1
-        usersRepository.save(user)
-        return ResponseEntity("Email verified successfully", HttpStatus.OK)
+        userService.approveUser(user.id)
+        return "Email verified successfully"
     }
 
     /**
@@ -125,12 +93,12 @@ class AuthService(
      * @param id
      * @return
      */
-    fun resetVerificationToken(id: Long): ResponseEntity<User> {
-        val user: User = usersRepository.findById(id) ?: return ResponseEntity(emptyHeaders, HttpStatus.NOT_FOUND)
+    fun resetVerificationToken(id: Long): User {
+        val user = userService.getUserById(id)
         val verificationToken = UUID.randomUUID().toString()
         user.verificationToken = verificationToken
-        usersRepository.save(user)
-        emailService.sendVerificationEmail(user.email, user.id!!, verificationToken)
-        return ResponseEntity(user, HttpStatus.OK)
+        userService.saveUser(user)
+        emailService.sendVerificationEmail(user.email, user.id, verificationToken)
+        return user
     }
 }

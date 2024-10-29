@@ -1,6 +1,7 @@
 package com.fcfb.arceus.service.discord
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.models.DiscordUserNotFoundException
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
@@ -40,21 +41,21 @@ class DiscordService(
         }
     }
 
-    suspend fun getUserByDiscordTag(tag: String): User? {
-        return try {
+    suspend fun getUserByDiscordTag(tag: String): User {
+        try {
             val client = Kord(botToken!!)
             val guild = client.getGuild(Snowflake(guildId!!))
             val members = guild.members.toList()
             for (member in members) {
                 if (member.username == tag) {
-                    val user = client.getUser(Snowflake(member.id.value))
+                    val user = client.getUser(Snowflake(member.id.value)) ?: throw DiscordUserNotFoundException()
                     return user
                 }
             }
-            null
+            throw DiscordUserNotFoundException()
         } catch (e: Exception) {
             Logger.error("{}", e)
-            null
+            throw DiscordUserNotFoundException()
         }
     }
 }

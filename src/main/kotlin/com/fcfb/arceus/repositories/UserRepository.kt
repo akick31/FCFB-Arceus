@@ -7,18 +7,18 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserRepository : CrudRepository<User?, String?> {
-    fun findById(id: Long?): User?
+    fun getById(id: Long?): User
 
-    fun findByDiscordId(id: String?): User?
+    fun getByDiscordId(id: String?): User
 
-    fun findByCoachName(name: String?): User?
+    fun getByCoachName(name: String?): User
 
-    fun findByTeam(team: String?): User?
+    fun getByTeam(team: String?): User
 
-    fun findEntityByTeam(team: String?): User?
+    fun getEntityByTeam(team: String?): User
 
     @Query("SELECT u FROM User u WHERE u.username = :usernameOrEmail OR u.email = :usernameOrEmail")
-    fun findByUsernameOrEmail(usernameOrEmail: String): User?
+    fun getByUsernameOrEmail(usernameOrEmail: String): User
 
-    fun findByVerificationToken(token: String?): User?
+    fun getByVerificationToken(token: String?): User
 }

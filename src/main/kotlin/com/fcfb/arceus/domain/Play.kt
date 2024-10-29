@@ -21,48 +21,48 @@ class Play {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "play_id")
-    var playId: Int? = 0
+    var playId: Int = 0
 
     @Basic
     @Column(name = "game_id")
-    var gameId: Int? = 0
+    var gameId: Int = 0
 
     @Basic
     @Column(name = "play_number")
-    var playNumber: Int? = 0
+    var playNumber: Int = 0
 
     @Basic
     @Column(name = "home_score")
-    var homeScore: Int? = null
+    var homeScore: Int = 0
 
     @Basic
     @Column(name = "away_score")
-    var awayScore: Int? = null
+    var awayScore: Int = 0
 
     @Basic
     @Column(name = "quarter")
-    var quarter: Int? = null
+    var quarter: Int = 1
 
     @Basic
     @Column(name = "clock")
-    var clock: Int? = null
+    var clock: Int = 420
 
     @Basic
     @Column(name = "ball_location")
-    var ballLocation: Int? = null
+    var ballLocation: Int = 0
 
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
-    var possession: TeamSide? = null
+    var possession: TeamSide = TeamSide.HOME
 
     @Basic
     @Column(name = "down")
-    var down: Int? = null
+    var down: Int = 1
 
     @Basic
     @Column(name = "yards_to_go")
-    var yardsToGo: Int? = null
+    var yardsToGo: Int = 100
 
     @Basic
     @Column(name = "defensive_number")
@@ -91,7 +91,7 @@ class Play {
 
     @Basic
     @Column(name = "difference")
-    var difference: Int? = null
+    var difference: Int = 0
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -100,15 +100,15 @@ class Play {
 
     @Basic
     @Column(name = "yards")
-    var yards: Int? = null
+    var yards: Int = 0
 
     @Basic
     @Column(name = "play_time")
-    var playTime: Int? = null
+    var playTime: Int = 0
 
     @Basic
     @Column(name = "runoff_time")
-    var runoffTime: Int? = null
+    var runoffTime: Int = 0
 
     @Basic
     @Column(name = "win_probability")
@@ -120,35 +120,35 @@ class Play {
 
     @Basic
     @Column(name = "home_team")
-    var homeTeam: String? = null
+    lateinit var homeTeam: String
 
     @Basic
     @Column(name = "away_team")
-    var awayTeam: String? = null
+    lateinit var awayTeam: String
 
     @Basic
     @Column(name = "timeout_used")
-    var timeoutUsed: Boolean? = null
+    var timeoutUsed: Boolean = false
 
     @Basic
     @Column(name = "offensive_timeout_called")
-    var offensiveTimeoutCalled: Boolean? = null
+    var offensiveTimeoutCalled: Boolean = false
 
     @Basic
     @Column(name = "defensive_timeout_called")
-    var defensiveTimeoutCalled: Boolean? = null
+    var defensiveTimeoutCalled: Boolean = false
 
     @Basic
     @Column(name = "home_timeouts")
-    var homeTimeouts: Int? = null
+    var homeTimeouts: Int = 3
 
     @Basic
     @Column(name = "away_timeouts")
-    var awayTimeouts: Int? = null
+    var awayTimeouts: Int = 3
 
     @Basic
     @Column(name = "play_finished")
-    var playFinished: Boolean? = null
+    var playFinished: Boolean = false
 
     @Basic
     @Column(name = "offensive_response_speed")
@@ -161,14 +161,14 @@ class Play {
     constructor(
         gameId: Int,
         playNumber: Int,
-        homeScore: Int?,
-        awayScore: Int?,
-        quarter: Int?,
-        clock: Int?,
-        ballLocation: Int?,
-        possession: TeamSide?,
-        down: Int?,
-        yardsToGo: Int?,
+        homeScore: Int,
+        awayScore: Int,
+        quarter: Int,
+        clock: Int,
+        ballLocation: Int,
+        possession: TeamSide,
+        down: Int,
+        yardsToGo: Int,
         defensiveNumber: String?,
         offensiveNumber: String?,
         offensiveSubmitter: String?,
@@ -181,15 +181,15 @@ class Play {
         runoffTime: Int,
         winProbability: Double?,
         winProbabilityAdded: Double,
-        homeTeam: String?,
-        awayTeam: String?,
+        homeTeam: String,
+        awayTeam: String,
         difference: Int,
-        timeoutUsed: Boolean?,
-        offensiveTimeoutCalled: Boolean?,
-        defensiveTimeoutCalled: Boolean?,
+        timeoutUsed: Boolean,
+        offensiveTimeoutCalled: Boolean,
+        defensiveTimeoutCalled: Boolean,
         homeTimeouts: Int,
         awayTimeouts: Int,
-        playFinished: Boolean?,
+        playFinished: Boolean,
         offensiveResponseSpeed: BigInteger?,
         defensiveResponseSpeed: BigInteger?,
     ) {

@@ -18,22 +18,22 @@ class Game {
     @Id
     @Column(name = "game_id")
     @JsonProperty("game_id")
-    var gameId: Int? = 0
+    var gameId: Int = 0
 
     @Basic
     @Column(name = "home_team")
     @JsonProperty("home_team")
-    var homeTeam: String? = "home team"
+    lateinit var homeTeam: String
 
     @Basic
     @Column(name = "away_team")
     @JsonProperty("away_team")
-    var awayTeam: String? = "away team"
+    lateinit var awayTeam: String
 
     @Basic
     @Column(name = "home_coach1")
     @JsonProperty("home_coach1")
-    var homeCoach1: String? = "home coach"
+    lateinit var homeCoach1: String
 
     @Basic
     @Column(name = "home_coach2")
@@ -43,7 +43,7 @@ class Game {
     @Basic
     @Column(name = "away_coach1")
     @JsonProperty("away_coach1")
-    var awayCoach1: String? = "away coach"
+    lateinit var awayCoach1: String
 
     @Basic
     @Column(name = "away_coach2")
@@ -93,43 +93,43 @@ class Game {
     @Basic
     @Column(name = "home_score")
     @JsonProperty("home_score")
-    var homeScore: Int? = 0
+    var homeScore: Int = 0
 
     @Basic
     @Column(name = "away_score")
     @JsonProperty("away_score")
-    var awayScore: Int? = 0
+    var awayScore: Int = 0
 
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "possession")
     @JsonProperty("possession")
-    var possession: TeamSide? = null
+    var possession: TeamSide = TeamSide.HOME
 
     @Basic
     @Column(name = "quarter")
     @JsonProperty("quarter")
-    var quarter: Int? = 1
+    var quarter: Int = 1
 
     @Basic
     @Column(name = "clock")
     @JsonProperty("clock")
-    var clock: String? = "7:00"
+    var clock: String = "7:00"
 
     @Basic
     @Column(name = "ball_location")
     @JsonProperty("ball_location")
-    var ballLocation: Int? = null
+    var ballLocation: Int = 0
 
     @Basic
     @Column(name = "down")
     @JsonProperty("down")
-    var down: Int? = 1
+    var down: Int = 1
 
     @Basic
     @Column(name = "yards_to_go")
     @JsonProperty("yards_to_go")
-    var yardsToGo: Int? = 10
+    var yardsToGo: Int = 10
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -167,11 +167,6 @@ class Game {
     @JsonProperty("away_losses")
     var awayLosses: Int? = null
 
-    @Basic
-    @Column(name = "scorebug")
-    @JsonProperty("scorebug")
-    var scorebug: String? = null
-
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "subdivision")
@@ -202,32 +197,22 @@ class Game {
     @Basic
     @Column(name = "waiting_on")
     @JsonProperty("waiting_on")
-    var waitingOn: TeamSide? = TeamSide.AWAY
-
-    @Basic
-    @Column(name = "win_probability_plot")
-    @JsonProperty("win_probability_plot")
-    var winProbabilityPlot: String? = null
-
-    @Basic
-    @Column(name = "score_plot")
-    @JsonProperty("score_plot")
-    var scorePlot: String? = null
+    var waitingOn: TeamSide = TeamSide.AWAY
 
     @Basic
     @Column(name = "num_plays")
     @JsonProperty("num_plays")
-    var numPlays: Int? = 0
+    var numPlays: Int = 0
 
     @Basic
     @Column(name = "home_timeouts")
     @JsonProperty("home_timeouts")
-    var homeTimeouts: Int? = 3
+    var homeTimeouts: Int = 3
 
     @Basic
     @Column(name = "away_timeouts")
     @JsonProperty("away_timeouts")
-    var awayTimeouts: Int? = 3
+    var awayTimeouts: Int = 3
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -282,7 +267,7 @@ class Game {
     @Basic
     @Column(name = "clock_stopped")
     @JsonProperty("clock_stopped")
-    var clockStopped: Boolean? = null
+    var clockStopped: Boolean = false
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -313,10 +298,10 @@ class Game {
         awayDefensivePlaybook: DefensivePlaybook,
         homeScore: Int,
         awayScore: Int,
-        possession: TeamSide?,
+        possession: TeamSide,
         quarter: Int,
         clock: String,
-        ballLocation: Int?,
+        ballLocation: Int,
         down: Int,
         yardsToGo: Int,
         tvChannel: TVChannel?,
@@ -326,15 +311,12 @@ class Game {
         homeLosses: Int?,
         awayWins: Int?,
         awayLosses: Int?,
-        scorebug: String?,
         subdivision: Subdivision?,
         timestamp: String?,
         winProbability: Double?,
         season: Int?,
         week: Int?,
         waitingOn: TeamSide,
-        winProbabilityPlot: String?,
-        scorePlot: String?,
         numPlays: Int,
         homeTimeouts: Int,
         awayTimeouts: Int,
@@ -347,7 +329,7 @@ class Game {
         gameTimer: String?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
-        clockStopped: Boolean?,
+        clockStopped: Boolean,
         gameStatus: GameStatus?,
         gameType: GameType?,
     ) {
@@ -380,15 +362,12 @@ class Game {
         this.homeLosses = homeLosses
         this.awayWins = awayWins
         this.awayLosses = awayLosses
-        this.scorebug = scorebug
         this.subdivision = subdivision
         this.timestamp = timestamp
         this.winProbability = winProbability
         this.season = season
         this.week = week
         this.waitingOn = waitingOn
-        this.winProbabilityPlot = winProbabilityPlot
-        this.scorePlot = scorePlot
         this.numPlays = numPlays
         this.homeTimeouts = homeTimeouts
         this.awayTimeouts = awayTimeouts
@@ -678,7 +657,7 @@ class Game {
 
         companion object {
             fun fromString(description: String): GameType? {
-                return GameType.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }

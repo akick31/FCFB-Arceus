@@ -6,13 +6,15 @@ import org.springframework.stereotype.Component
 
 @Component
 class GameWriteupService(
-    private var gameWriteupRepository: GameWriteupRepository?,
+    private val gameWriteupRepository: GameWriteupRepository,
 ) {
+    /**
+     * Get a game message by scenario
+     * @param scenario
+     * @param passOrRun
+     */
     fun getGameMessageByScenario(
         scenario: String,
         passOrRun: String?,
-    ) = gameWriteupRepository?.findByScenario(scenario, passOrRun)?.message ?: run {
-        Logger.error("No message found for scenario: $scenario and passOrRun: $passOrRun")
-        "No message found"
-    }
+    ) = gameWriteupRepository.findByScenario(scenario, passOrRun)?.message ?: "No message found"
 }

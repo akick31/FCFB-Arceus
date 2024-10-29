@@ -18,7 +18,7 @@ class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: Long? = 0
+    var id: Long = 0
 
     @Basic
     @Column(name = "username")
@@ -56,7 +56,7 @@ class User {
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "role")
-    var role: Role? = Role.USER
+    var role: Role = Role.USER
 
     @Basic
     @Column(name = "salt")
@@ -68,27 +68,27 @@ class User {
 
     @Basic
     @Column(name = "wins")
-    var wins: Int? = 0
+    var wins: Int = 0
 
     @Basic
     @Column(name = "losses")
-    var losses: Int? = 0
+    var losses: Int = 0
 
     @Basic
     @Column(name = "win_percentage")
-    var winPercentage: Double? = 0.0
+    var winPercentage: Double = 0.0
 
     @Basic
     @Column(name = "offensive_playbook")
-    var offensivePlaybook: OffensivePlaybook? = null
+    lateinit var offensivePlaybook: OffensivePlaybook
 
     @Basic
     @Column(name = "defensive_playbook")
-    var defensivePlaybook: DefensivePlaybook? = null
+    lateinit var defensivePlaybook: DefensivePlaybook
 
     @Basic
     @Column(name = "approved")
-    var approved: Byte? = 0
+    var approved: Byte = 0
 
     @Basic
     @Column(name = "verification_token")
@@ -109,8 +109,8 @@ class User {
         wins: Int,
         losses: Int,
         winPercentage: Double,
-        offensivePlaybook: OffensivePlaybook?,
-        defensivePlaybook: DefensivePlaybook?,
+        offensivePlaybook: OffensivePlaybook,
+        defensivePlaybook: DefensivePlaybook,
         approved: Byte,
         verificationToken: String,
     ) {

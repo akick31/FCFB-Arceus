@@ -4,9 +4,6 @@ import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.game.GameService
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -47,7 +44,7 @@ class GameController(
     ) = when {
         channelId != null -> gamesService.getOngoingGameByDiscordChannelId(channelId)
         discordId != null -> gamesService.getOngoingGameByDiscordId(discordId)
-        else -> ResponseEntity(HttpHeaders(), HttpStatus.BAD_REQUEST)
+        else -> null
     }
 
     /**
