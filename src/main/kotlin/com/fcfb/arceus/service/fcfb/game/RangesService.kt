@@ -25,7 +25,7 @@ class RangesService(
         playCall: PlayCall,
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
-        difference: Int
+        difference: Int,
     ): Ranges {
         return if (playCall == PlayCall.SPIKE) {
             Ranges(
@@ -70,7 +70,7 @@ class RangesService(
      */
     fun getNonNormalResult(
         playCall: PlayCall,
-        difference: Int
+        difference: Int,
     ): Ranges {
         return rangesRepository.getNonNormalResult(
             playCall.description,
@@ -87,7 +87,7 @@ class RangesService(
     fun getFieldGoalResult(
         playCall: PlayCall,
         distance: Int,
-        difference: Int
+        difference: Int,
     ): Ranges {
         return rangesRepository.getFieldGoalResult(
             playCall.description,
@@ -105,7 +105,7 @@ class RangesService(
     fun getPuntResult(
         playCall: PlayCall,
         ballLocation: Int,
-        difference: Int
+        difference: Int,
     ): Ranges {
         return rangesRepository.getPuntResult(
             playCall.description,

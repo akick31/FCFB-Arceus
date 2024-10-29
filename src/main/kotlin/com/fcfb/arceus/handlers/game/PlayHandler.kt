@@ -1018,7 +1018,7 @@ class PlayHandler(
         statsHandler.updateGameStats(
             game,
             allPlays,
-            gamePlay
+            gamePlay,
         )
         return gamePlay
     }

@@ -8,13 +8,11 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameStatsRepository
-import com.fcfb.arceus.repositories.PlayRepository
-import com.fcfb.arceus.service.fcfb.game.PlayService
 import org.springframework.stereotype.Component
 
 @Component
 class StatsHandler(
-    private val gameStatsRepository: GameStatsRepository
+    private val gameStatsRepository: GameStatsRepository,
 ) {
     fun updateGameStats(
         game: Game,

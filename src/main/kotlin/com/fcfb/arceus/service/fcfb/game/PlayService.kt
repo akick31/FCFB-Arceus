@@ -5,13 +5,10 @@ import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
-import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Component
 
 @Component
@@ -121,63 +118,67 @@ class PlayService(
 
             val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber)
 
-
             when (playCall) {
                 PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL ->
-                    gamePlay = playHandler.runNormalPlay(
-                        gamePlay,
-                        allPlays,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    )
+                    gamePlay =
+                        playHandler.runNormalPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
+                        )
 
                 PlayCall.PAT, PlayCall.TWO_POINT ->
-                    gamePlay = playHandler.runPointAfterPlay(
-                        gamePlay,
-                        allPlays,
-                        game,
-                        playCall,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    )
+                    gamePlay =
+                        playHandler.runPointAfterPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
+                        )
 
                 PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB ->
-                    gamePlay = playHandler.runKickoffPlay(
-                        gamePlay,
-                        allPlays,
-                        game,
-                        playCall,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    )
+                    gamePlay =
+                        playHandler.runKickoffPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
+                        )
 
                 PlayCall.FIELD_GOAL ->
-                    gamePlay = playHandler.runFieldGoalPlay(
-                        gamePlay,
-                        allPlays,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    )
+                    gamePlay =
+                        playHandler.runFieldGoalPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
+                        )
 
                 PlayCall.PUNT ->
-                    gamePlay = playHandler.runPuntPlay(
-                        gamePlay,
-                        allPlays,
-                        game,
-                        playCall,
-                        runoffType,
-                        offensiveTimeoutCalled,
-                        offensiveNumber.toString(),
-                        decryptedDefensiveNumber,
-                    )
+                    gamePlay =
+                        playHandler.runPuntPlay(
+                            gamePlay,
+                            allPlays,
+                            game,
+                            playCall,
+                            runoffType,
+                            offensiveTimeoutCalled,
+                            offensiveNumber.toString(),
+                            decryptedDefensiveNumber,
+                        )
             }
 
             return gamePlay
@@ -198,5 +199,4 @@ class PlayService(
      * Get all plays for a game
      */
     fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
-
 }

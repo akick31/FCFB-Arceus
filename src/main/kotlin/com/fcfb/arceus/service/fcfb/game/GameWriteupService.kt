@@ -1,7 +1,6 @@
 package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.repositories.GameWriteupRepository
-import com.fcfb.arceus.utils.Logger
 import org.springframework.stereotype.Component
 
 @Component

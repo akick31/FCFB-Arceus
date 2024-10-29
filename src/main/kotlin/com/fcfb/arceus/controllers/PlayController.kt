@@ -60,7 +60,7 @@ class PlayController(
         @RequestParam("playId") playId: Int,
     ) = playService.getPlayById(playId)
 
-    @GetMapping("/game")
+    @GetMapping("/all")
     fun getAllPlaysByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = playService.getAllPlaysByGameId(gameId)

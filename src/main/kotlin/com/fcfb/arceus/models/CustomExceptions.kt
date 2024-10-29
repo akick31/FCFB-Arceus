@@ -59,4 +59,3 @@ class InvalidHalfTimePossessionChangeException : Exception("Invalid half time po
         return "InvalidHalfTimePossessionChangeException: ${super.message}"
     }
 }
-

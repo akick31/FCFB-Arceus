@@ -1,19 +1,13 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.Role
 import com.fcfb.arceus.models.UserUnauthorizedException
 import com.fcfb.arceus.models.website.Session
 import com.fcfb.arceus.repositories.SessionRepository
-import com.fcfb.arceus.repositories.UserRepository
-import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
-import org.springframework.http.HttpHeaders
-import org.springframework.http.HttpStatus
-import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
@@ -26,7 +20,6 @@ class AuthService(
     private val userService: UserService,
     private val sessionRepository: SessionRepository,
 ) {
-
     /**
      * Create a new user
      * @param user

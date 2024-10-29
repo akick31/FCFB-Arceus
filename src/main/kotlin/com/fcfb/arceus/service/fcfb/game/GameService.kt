@@ -44,7 +44,7 @@ class GameService(
      */
     fun getOngoingGameByDiscordChannelId(channelId: String?) =
         gameRepository.getOngoingGameByHomePlatformId(Platform.DISCORD.description, channelId)
-                ?: gameRepository.getOngoingGameByAwayPlatformId(Platform.DISCORD.description, channelId)
+            ?: gameRepository.getOngoingGameByAwayPlatformId(Platform.DISCORD.description, channelId)
 
     /**
      * Get an ongoing game by Discord user id
@@ -53,9 +53,9 @@ class GameService(
      */
     fun getOngoingGameByDiscordId(discordId: String?) =
         gameRepository.getOngoingGameByHomeCoachDiscordId1(discordId)
-                ?: gameRepository.getOngoingGameByHomeCoachDiscordId2(discordId)
-                ?: gameRepository.getOngoingGameByAwayCoachDiscordId1(discordId)
-                ?: gameRepository.getOngoingGameByAwayCoachDiscordId2(discordId)
+            ?: gameRepository.getOngoingGameByHomeCoachDiscordId2(discordId)
+            ?: gameRepository.getOngoingGameByAwayCoachDiscordId1(discordId)
+            ?: gameRepository.getOngoingGameByAwayCoachDiscordId2(discordId)
 
     /**
      * Start a game

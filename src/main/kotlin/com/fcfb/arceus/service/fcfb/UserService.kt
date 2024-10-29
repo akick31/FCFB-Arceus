@@ -29,26 +29,27 @@ class UserService(
         val discordUser = discordService.getUserByDiscordTag(user.discordTag)
         val discordId = discordUser.id.toString()
 
-        val newUser = User(
-            user.username,
-            user.coachName,
-            user.discordTag,
-            discordId,
-            user.email,
-            passwordEncoder.encode(user.password),
-            user.position,
-            user.redditUsername,
-            USER,
-            salt,
-            null,
-            0,
-            0,
-            0.0,
-            user.offensivePlaybook,
-            user.defensivePlaybook,
-            0,
-            verificationToken,
-        )
+        val newUser =
+            User(
+                user.username,
+                user.coachName,
+                user.discordTag,
+                discordId,
+                user.email,
+                passwordEncoder.encode(user.password),
+                user.position,
+                user.redditUsername,
+                USER,
+                salt,
+                null,
+                0,
+                0,
+                0.0,
+                user.offensivePlaybook,
+                user.defensivePlaybook,
+                0,
+                verificationToken,
+            )
 
         saveUser(newUser)
         return newUser
@@ -147,7 +148,10 @@ class UserService(
      * @param email
      * @return Boolean
      */
-    fun updateEmail(id: Long, email: String): UserDTO {
+    fun updateEmail(
+        id: Long,
+        email: String,
+    ): UserDTO {
         val user = getUserById(id)
         user.apply {
             this.email = email
@@ -162,9 +166,7 @@ class UserService(
      * @param user
      * @return UserDTO
      */
-    fun updateUser(
-        user: UserDTO
-    ): UserDTO {
+    fun updateUser(user: UserDTO): UserDTO {
         val existingUser = getUserDTOById(user.id)
 
         existingUser.apply {
@@ -191,7 +193,10 @@ class UserService(
      * @param id
      * @param user
      */
-    private fun saveUserDTOToUser(id: Long, user: UserDTO): UserDTO {
+    private fun saveUserDTOToUser(
+        id: Long,
+        user: UserDTO,
+    ): UserDTO {
         val existingUser = getUserById(id)
 
         existingUser.apply {

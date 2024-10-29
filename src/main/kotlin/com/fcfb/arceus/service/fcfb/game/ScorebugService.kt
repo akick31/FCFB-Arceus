@@ -4,8 +4,6 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.repositories.GameRepository
-import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -291,7 +289,7 @@ class ScorebugService(
                 val ballLocationText =
                     when {
                         game.ballLocation == 50 -> "50 yard line"
-                            game.ballLocation < 50 &&
+                        game.ballLocation < 50 &&
                             game.possession == TeamSide.HOME ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
                                 "${homeTeam.abbreviation ?: homeTeam.name?.uppercase()} ${game.ballLocation}"
