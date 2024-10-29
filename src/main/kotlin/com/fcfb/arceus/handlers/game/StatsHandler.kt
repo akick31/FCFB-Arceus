@@ -2,6 +2,10 @@ package com.fcfb.arceus.handlers.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
+import com.fcfb.arceus.domain.Game.ActualResult.KICK_SIX
+import com.fcfb.arceus.domain.Game.ActualResult.PUNT_RETURN_TOUCHDOWN
+import com.fcfb.arceus.domain.Game.ActualResult.RETURN_TOUCHDOWN
+import com.fcfb.arceus.domain.Game.ActualResult.TURNOVER_TOUCHDOWN
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
@@ -546,15 +550,18 @@ class StatsHandler(
     ): Int {
         // Don't count sacks as pass attempts
         if (play.playCall == PlayCall.PASS && (
-                play.result != Scenario.LOSS_OF_10_YARDS ||
-                    play.result != Scenario.LOSS_OF_5_YARDS ||
-                    play.result != Scenario.LOSS_OF_3_YARDS ||
-                    play.result != Scenario.LOSS_OF_1_YARD
+                play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_5_YARDS ||
+                    play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {
-            return currentPassAttempts + 1
+            return currentPassAttempts
         }
         if (play.playCall == PlayCall.SPIKE) {
+            return currentPassAttempts + 1
+        }
+        if (play.playCall == PlayCall.PASS) {
             return currentPassAttempts + 1
         }
         return currentPassAttempts
@@ -565,21 +572,21 @@ class StatsHandler(
         currentPassCompletions: Int,
     ): Int {
         if (play.playCall == PlayCall.PASS && (
-                play.result != Scenario.INCOMPLETE ||
-                    play.result != Scenario.LOSS_OF_10_YARDS ||
-                    play.result != Scenario.LOSS_OF_5_YARDS ||
-                    play.result != Scenario.LOSS_OF_3_YARDS ||
-                    play.result != Scenario.LOSS_OF_1_YARD ||
-                    play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
-                    play.result != Scenario.TURNOVER ||
-                    play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
-                    play.result != Scenario.TURNOVER_TOUCHDOWN ||
+                play.result != Scenario.INCOMPLETE &&
+                    play.result != Scenario.LOSS_OF_10_YARDS &&
+                    play.result != Scenario.LOSS_OF_5_YARDS &&
+                    play.result != Scenario.LOSS_OF_3_YARDS &&
+                    play.result != Scenario.LOSS_OF_1_YARD &&
+                    play.result != Scenario.TURNOVER_PLUS_20_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_15_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_10_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_5_YARDS &&
+                    play.result != Scenario.TURNOVER &&
+                    play.result != Scenario.TURNOVER_MINUS_5_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_10_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_15_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_20_YARDS &&
+                    play.result != Scenario.TURNOVER_TOUCHDOWN &&
                     play.result != Scenario.SAFETY
             )
         ) {
@@ -594,10 +601,10 @@ class StatsHandler(
     ): Int {
         // Don't count sacks towards passing yards
         if (play.playCall == PlayCall.PASS && (
-                play.result != Scenario.LOSS_OF_10_YARDS ||
-                    play.result != Scenario.LOSS_OF_5_YARDS ||
-                    play.result != Scenario.LOSS_OF_3_YARDS ||
-                    play.result != Scenario.LOSS_OF_1_YARD
+                play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_5_YARDS ||
+                    play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {
             return currentPassYards
@@ -649,25 +656,25 @@ class StatsHandler(
     ): Int {
         // Count sacks towards rushing yards
         if (play.playCall == PlayCall.PASS && (
-                play.result != Scenario.LOSS_OF_10_YARDS ||
-                    play.result != Scenario.LOSS_OF_5_YARDS ||
-                    play.result != Scenario.LOSS_OF_3_YARDS ||
-                    play.result != Scenario.LOSS_OF_1_YARD
+                play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_5_YARDS ||
+                    play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {
             return currentRushYards + (play.yards)
         }
         if (play.playCall == PlayCall.RUN && (
-                play.result != Scenario.TURNOVER_PLUS_20_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_15_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_10_YARDS ||
-                    play.result != Scenario.TURNOVER_PLUS_5_YARDS ||
-                    play.result != Scenario.TURNOVER ||
-                    play.result != Scenario.TURNOVER_MINUS_5_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_10_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_15_YARDS ||
-                    play.result != Scenario.TURNOVER_MINUS_20_YARDS ||
-                    play.result != Scenario.TURNOVER_TOUCHDOWN ||
+                play.result != Scenario.TURNOVER_PLUS_20_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_15_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_10_YARDS &&
+                    play.result != Scenario.TURNOVER_PLUS_5_YARDS &&
+                    play.result != Scenario.TURNOVER &&
+                    play.result != Scenario.TURNOVER_MINUS_5_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_10_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_15_YARDS &&
+                    play.result != Scenario.TURNOVER_MINUS_20_YARDS &&
+                    play.result != Scenario.TURNOVER_TOUCHDOWN &&
                     play.result != Scenario.SAFETY
             )
         ) {
@@ -969,24 +976,24 @@ class StatsHandler(
         possession: TeamSide,
     ): Int {
         val offensiveTouchdowns =
-            allPlays.filter {
+            allPlays.count {
                 it.possession == possession &&
                     (
                         it.actualResult == ActualResult.TOUCHDOWN ||
                             it.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
                             it.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN
                     )
-            }.count()
+            }
         val defensiveTouchdowns =
-            allPlays.filter {
+            allPlays.count {
                 it.possession != possession &&
                     (
-                        it.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                            it.actualResult == ActualResult.RETURN_TOUCHDOWN ||
-                            it.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
-                            it.actualResult == ActualResult.KICK_SIX
+                        it.actualResult == TURNOVER_TOUCHDOWN ||
+                            it.actualResult == RETURN_TOUCHDOWN ||
+                            it.actualResult == PUNT_RETURN_TOUCHDOWN ||
+                            it.actualResult == KICK_SIX
                     )
-            }.count()
+            }
         return offensiveTouchdowns + defensiveTouchdowns
     }
 
@@ -1004,7 +1011,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference ?: 0 }.average()
+            }.map { it.difference }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -1026,7 +1033,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference ?: 0 }.average()
+            }.map { it.difference }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -1048,7 +1055,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference ?: 0 }.average()
+            }.map { it.difference }.average()
         return if (average.isNaN()) {
             0.0
         } else {
@@ -1070,7 +1077,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference ?: 0 }.average()
+            }.map { it.difference }.average()
         return if (average.isNaN()) {
             0.0
         } else {
