@@ -43,9 +43,9 @@ class GameService(
      * @return
      */
     fun getOngoingGameByDiscordChannelId(channelId: String?) =
-        gameRepository.getOngoingGameByHomePlatformId("Discord", channelId)
-                ?: gameRepository.getOngoingGameByAwayPlatformId("Discord", channelId)
-    
+        gameRepository.getOngoingGameByHomePlatformId(Platform.DISCORD.description, channelId)
+                ?: gameRepository.getOngoingGameByAwayPlatformId(Platform.DISCORD.description, channelId)
+
     /**
      * Get an ongoing game by Discord user id
      * @param discordId
