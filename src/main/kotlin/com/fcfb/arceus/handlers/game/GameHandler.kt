@@ -11,13 +11,16 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.models.InvalidHalfTimePossessionChangeException
 import com.fcfb.arceus.repositories.GameRepository
+import com.fcfb.arceus.service.fcfb.game.GameService
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import org.springframework.stereotype.Component
+import kotlin.math.abs
 
 @Component
 class GameHandler(
     private val gameRepository: GameRepository,
     private val scorebugService: ScorebugService,
+    private val gameService: GameService,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -45,9 +48,9 @@ class GameHandler(
 
         // Update timeouts
         if (homeTimeoutCalled && timeoutUsed) {
-            game.homeTimeouts = game.homeTimeouts!! - 1
+            game.homeTimeouts -= 1
         } else if (awayTimeoutCalled && timeoutUsed) {
-            game.awayTimeouts = game.awayTimeouts!! - 1
+            game.awayTimeouts -= 1
         }
 
         // If game quarter is 0, then the game is over
@@ -111,6 +114,7 @@ class GameHandler(
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
         game.waitingOn = waitingOn
+        game.gameTimer = gameService.calculateDelayOfGameTimer()
 
         gameRepository.save(game)
         scorebugService.generateScorebug(game)
@@ -128,7 +132,7 @@ class GameHandler(
         offensiveNumber: Int,
         defesiveNumber: Int,
     ): Int {
-        var difference = Math.abs(defesiveNumber - offensiveNumber)
+        var difference = abs(defesiveNumber - offensiveNumber)
         if (difference > 750) {
             difference = 1500 - difference
         }
@@ -152,7 +156,7 @@ class GameHandler(
      * @param seconds
      * @return
      */
-    fun convertClockToString(seconds: Int): String {
+    private fun convertClockToString(seconds: Int): String {
         val minutes = seconds / 60
         val remainingSeconds = seconds % 60
         return String.format("%d:%02d", minutes, remainingSeconds)

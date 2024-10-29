@@ -15,6 +15,8 @@ import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Random
 
@@ -65,21 +67,9 @@ class GameService(
     fun startGame(startRequest: StartRequest): Game {
         try {
             val homeTeamData = teamService.getTeamByName(startRequest.homeTeam)
-
             val awayTeamData = teamService.getTeamByName(startRequest.awayTeam)
 
-            // Set the DOG timer
-            // Get the current date and time
-            val now = LocalDateTime.now()
-
-            // Add 24 hours to the current date and time
-            val futureTime = now.plusHours(24)
-
-            // Define the desired date and time format
-            val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
-
-            // Format the result and set it on the game
-            val formattedDateTime = futureTime.format(formatter)
+            val formattedDateTime = calculateDelayOfGameTimer()
 
             // Validate request fields
             val homeTeam = startRequest.homeTeam
@@ -292,5 +282,23 @@ class GameService(
         gameRepository.deleteById(id)
         Logger.info("Game $id deleted")
         return true
+    }
+
+    /**
+     * Calculate the delay of game timer
+     */
+    fun calculateDelayOfGameTimer(): String? {
+        // Set the DOG timer
+        // Get the current date and time
+        val now = ZonedDateTime.now(ZoneId.of("America/New_York"))
+
+        // Add 24 hours to the current date and time
+        val futureTime = now.plusHours(24)
+
+        // Define the desired date and time format
+        val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
+
+        // Format the result and set it on the game
+        return futureTime.format(formatter)
     }
 }

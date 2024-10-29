@@ -40,7 +40,7 @@ class PlayService(
         try {
             val game = gameService.getGameById(gameId)
 
-            val encryptedDefensiveNumber: String = encryptionUtils.encrypt(defensiveNumber.toString())
+            val encryptedDefensiveNumber = encryptionUtils.encrypt(defensiveNumber.toString())
             val clock = gameHandler.convertClockToSeconds(game.clock)
             val gamePlay =
                 playRepository.save(
@@ -83,6 +83,7 @@ class PlayService(
 
             game.currentPlayId = gamePlay.playId
             game.waitingOn = game.possession
+            game.gameTimer = gameService.calculateDelayOfGameTimer()
             gameService.saveGame(game)
             return gamePlay
         } catch (e: Exception) {
