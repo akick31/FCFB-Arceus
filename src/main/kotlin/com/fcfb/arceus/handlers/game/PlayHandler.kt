@@ -12,7 +12,9 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.models.InvalidActualResultException
 import com.fcfb.arceus.models.InvalidPlayTypeException
+import com.fcfb.arceus.models.InvalidResultDescriptionException
 import com.fcfb.arceus.models.InvalidScenarioException
+import com.fcfb.arceus.models.ResultNotFoundException
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.game.RangesService
 import org.springframework.stereotype.Component
@@ -52,7 +54,7 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
-        val result = resultInformation.result
+        val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
@@ -157,7 +159,7 @@ class PlayHandler(
                 }
             }
             else -> {
-                yards = result?.description?.toInt()!!
+                yards = result?.description?.toInt() ?: throw InvalidResultDescriptionException()
                 ballLocation += yards
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
@@ -279,7 +281,7 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation, difference)
-        val result = resultInformation.result
+        val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
@@ -408,7 +410,7 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getPuntResult(playCall, ballLocation, difference)
-        val result = resultInformation.result
+        val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
@@ -556,7 +558,7 @@ class PlayHandler(
         val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
-        val result = resultInformation.result
+        val result = resultInformation.result ?: throw ResultNotFoundException()
         var homeScore = game.homeScore
         var awayScore = game.awayScore
         val ballLocation: Int
@@ -678,7 +680,7 @@ class PlayHandler(
         val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         val possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
-        val result = resultInformation.result
+        val result = resultInformation.result ?: throw ResultNotFoundException()
         var homeScore = game.homeScore
         var awayScore = game.awayScore
         val ballLocation = 35

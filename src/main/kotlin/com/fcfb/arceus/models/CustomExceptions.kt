@@ -59,3 +59,9 @@ class InvalidHalfTimePossessionChangeException : Exception("Invalid half time po
         return "InvalidHalfTimePossessionChangeException: ${super.message}"
     }
 }
+
+class InvalidResultDescriptionException : Exception("Invalid result description, could not parse result yardage") {
+    override fun toString(): String {
+        return "InvalidInvalidResultDescriptionException: ${super.message}"
+    }
+}

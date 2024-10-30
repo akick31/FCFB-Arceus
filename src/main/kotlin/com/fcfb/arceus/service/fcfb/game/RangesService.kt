@@ -27,39 +27,43 @@ class RangesService(
         defensivePlaybook: DefensivePlaybook,
         difference: Int,
     ): Ranges {
-        return if (playCall == PlayCall.SPIKE) {
-            Ranges(
-                PlayType.NORMAL.description,
-                offensivePlaybook.description,
-                defensivePlaybook.description,
-                0,
-                0,
-                0,
-                Scenario.SPIKE,
-                0,
-                0,
-                0,
-            )
-        } else if (playCall == PlayCall.KNEEL) {
-            Ranges(
-                PlayType.NORMAL.description,
-                offensivePlaybook.description,
-                defensivePlaybook.description,
-                0,
-                0,
-                0,
-                Scenario.KNEEL,
-                0,
-                0,
-                0,
-            )
-        } else {
-            rangesRepository.getNormalResult(
-                playCall.description,
-                offensivePlaybook.description,
-                defensivePlaybook.description,
-                difference.toString(),
-            ) ?: throw ResultNotFoundException()
+        return when (playCall) {
+            PlayCall.SPIKE -> {
+                Ranges(
+                    PlayType.NORMAL.description,
+                    offensivePlaybook.description,
+                    defensivePlaybook.description,
+                    0,
+                    0,
+                    0,
+                    Scenario.SPIKE,
+                    0,
+                    0,
+                    0,
+                )
+            }
+            PlayCall.KNEEL -> {
+                Ranges(
+                    PlayType.NORMAL.description,
+                    offensivePlaybook.description,
+                    defensivePlaybook.description,
+                    0,
+                    0,
+                    0,
+                    Scenario.KNEEL,
+                    0,
+                    0,
+                    0,
+                )
+            }
+            else -> {
+                rangesRepository.getNormalResult(
+                    playCall.description,
+                    offensivePlaybook.description,
+                    defensivePlaybook.description,
+                    difference.toString(),
+                ) ?: throw ResultNotFoundException()
+            }
         }
     }
 
