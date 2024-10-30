@@ -43,26 +43,6 @@ class GameService(
     fun saveGame(game: Game) = gameRepository.save(game)
 
     /**
-     * Get an ongoing game by platform id
-     * @param channelId
-     * @return
-     */
-    fun getOngoingGameByDiscordChannelId(channelId: String?) =
-        gameRepository.getOngoingGameByHomePlatformId(Platform.DISCORD.description, channelId)
-            ?: gameRepository.getOngoingGameByAwayPlatformId(Platform.DISCORD.description, channelId)
-
-    /**
-     * Get an ongoing game by Discord user id
-     * @param discordId
-     * @return
-     */
-    fun getOngoingGameByDiscordId(discordId: String?) =
-        gameRepository.getOngoingGameByHomeCoachDiscordId1(discordId)
-            ?: gameRepository.getOngoingGameByHomeCoachDiscordId2(discordId)
-            ?: gameRepository.getOngoingGameByAwayCoachDiscordId1(discordId)
-            ?: gameRepository.getOngoingGameByAwayCoachDiscordId2(discordId)
-
-    /**
      * Start a game
      * @param startRequest
      * @return
@@ -116,8 +96,8 @@ class GameService(
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook
             val awayDefensivePlaybook = awayTeamData.defensivePlaybook
             val subdivision = startRequest.subdivision
-            val homePlatform = startRequest.homePlatform
-            val awayPlatform = startRequest.awayPlatform
+            val homePlatform = Platform.DISCORD
+            val awayPlatform = Platform.DISCORD
 
             val (season, week) =
                 if (startRequest.gameType != GameType.SCRIMMAGE) {
@@ -177,26 +157,24 @@ class GameService(
                         gameTimer = formattedDateTime,
                         currentPlayType = PlayType.KICKOFF,
                         currentPlayId = 0,
-                        gameType = startRequest.gameType,
                         clockStopped = true,
+                        requestMessageId = null,
+                        gameType = startRequest.gameType,
                         gameStatus = GameStatus.PREGAME,
                     ),
                 )
 
             // Create a new Discord thread
-            if (newGame.homePlatform == Platform.DISCORD) {
-                newGame.homePlatformId = discordService.startGameThread(newGame)
+            val discordData =
+                discordService.startGameThread(newGame)
                     ?: run {
                         deleteOngoingGame(newGame.gameId)
                         throw UnableToCreateGameThreadException()
                     }
-            } else if (newGame.awayPlatform == Platform.DISCORD) {
-                newGame.awayPlatformId = discordService.startGameThread(newGame)
-                    ?: run {
-                        deleteOngoingGame(newGame.gameId)
-                        throw UnableToCreateGameThreadException()
-                    }
-            }
+
+            newGame.homePlatformId = discordData[0]
+            newGame.awayPlatformId = discordData[0]
+            newGame.requestMessageId = listOf(discordData[1])
 
             // Save the updated entity and create game stats
             gameStatsService.createGameStats(newGame)
@@ -311,4 +289,27 @@ class GameService(
         // Format the result and set it on the game
         return futureTime.format(formatter)
     }
+
+    /**
+     * Update the request message id
+     * @param gameId
+     * @param requestMessageId
+     */
+    fun updateRequestMessageId(
+        gameId: Int,
+        requestMessageId: String,
+    ) {
+        val game = getGameById(gameId)
+
+        val requestMessageIdList =
+            if (requestMessageId.contains(",")) {
+                listOf(requestMessageId.split(",")[0], requestMessageId.split(",")[1])
+            } else {
+                listOf(requestMessageId)
+            }
+        game.requestMessageId = requestMessageIdList
+        saveGame(game)
+    }
+
+    fun getGameByRequestMessageId(requestMessageId: String) = gameRepository.getGameByRequestMessageId(requestMessageId)
 }

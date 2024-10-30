@@ -1,6 +1,10 @@
 package com.fcfb.arceus.domain
 
+import com.fasterxml.jackson.annotation.JsonCreator
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.vladmihalcea.hibernate.type.json.JsonStringType
+import org.hibernate.annotations.Type
+import org.hibernate.annotations.TypeDef
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -13,6 +17,7 @@ import javax.persistence.Table
 
 @Entity
 @Table(name = "game", schema = "arceus")
+@TypeDef(name = "json", typeClass = JsonStringType::class)
 class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
@@ -269,6 +274,11 @@ class Game {
     @JsonProperty("clock_stopped")
     var clockStopped: Boolean = false
 
+    @Type(type = "json")
+    @Column(name = "request_message_id", columnDefinition = "json")
+    @JsonProperty("request_message_id")
+    var requestMessageId: List<String>? = listOf()
+
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_status")
@@ -330,6 +340,7 @@ class Game {
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         clockStopped: Boolean,
+        requestMessageId: List<String>?,
         gameStatus: GameStatus?,
         gameType: GameType?,
     ) {
@@ -381,6 +392,7 @@ class Game {
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
         this.clockStopped = clockStopped
+        this.requestMessageId = requestMessageId
         this.gameStatus = gameStatus
         this.gameType = gameType
     }
@@ -452,8 +464,16 @@ class Game {
     }
 
     enum class Platform(val description: String) {
-        DISCORD("Discord"),
-        REDDIT("Reddit"),
+        DISCORD("DISCORD"),
+        REDDIT("REDDIT"),
+        ;
+
+        companion object {
+            @JsonCreator
+            fun fromDescription(description: String): Platform =
+                Platform.entries.find { it.description.equals(description, ignoreCase = true) }
+                    ?: throw IllegalArgumentException("Unknown platform: $description")
+        }
     }
 
     enum class PlayCall(val description: String) {
@@ -656,9 +676,10 @@ class Game {
         ;
 
         companion object {
-            fun fromString(description: String): GameType? {
-                return entries.find { it.description == description }
-            }
+            @JsonCreator
+            fun fromDescription(description: String): GameType =
+                entries.find { it.description.equals(description, ignoreCase = true) }
+                    ?: throw IllegalArgumentException("Unknown game type: $description")
         }
     }
 }

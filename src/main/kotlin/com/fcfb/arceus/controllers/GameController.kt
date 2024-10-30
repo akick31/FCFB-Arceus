@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController
 @RestController
 @RequestMapping("/game")
 class GameController(
-    private var gamesService: GameService,
+    private var gameService: GameService,
 ) {
     /**
      * Get a ongoing game by id
@@ -29,23 +29,7 @@ class GameController(
     @GetMapping("/id")
     fun getOngoingGameById(
         @RequestParam("id") id: Int,
-    ) = gamesService.getGameById(id)
-
-    /**
-     * Get an ongoing game by channel or user id
-     * @param channelId
-     * @param discordId
-     * @return
-     */
-    @GetMapping("/discord")
-    fun getOngoingGame(
-        @RequestParam("channelId", required = false) channelId: String?,
-        @RequestParam("userId", required = false) discordId: String?,
-    ) = when {
-        channelId != null -> gamesService.getOngoingGameByDiscordChannelId(channelId)
-        discordId != null -> gamesService.getOngoingGameByDiscordId(discordId)
-        else -> null
-    }
+    ) = gameService.getGameById(id)
 
     /**
      * Start a game
@@ -55,7 +39,7 @@ class GameController(
     @PostMapping("/start")
     fun startGame(
         @RequestBody startRequest: StartRequest,
-    ) = gamesService.startGame(startRequest)
+    ) = gameService.startGame(startRequest)
 
     /**
      * Run the game's coin toss
@@ -67,7 +51,7 @@ class GameController(
     fun runCoinToss(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossCall") coinTossCall: CoinTossCall,
-    ) = gamesService.runCoinToss(gameId, coinTossCall)
+    ) = gameService.runCoinToss(gameId, coinTossCall)
 
     /**
      * Set the coin toss receive or defer choice
@@ -79,7 +63,27 @@ class GameController(
     fun makeCoinTossChoice(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice,
-    ) = gamesService.makeCoinTossChoice(gameId, coinTossChoice)
+    ) = gameService.makeCoinTossChoice(gameId, coinTossChoice)
+
+    /**
+     * Update the request message id
+     * @param gameId
+     * @param requestMessageId
+     * @return
+     */
+    @PutMapping("/request_message")
+    fun updateRequestMessageId(
+        @RequestParam("gameId") gameId: Int,
+        @RequestParam("requestMessageId") requestMessageId: String,
+    ) = gameService.updateRequestMessageId(gameId, requestMessageId)
+
+    /**
+     * Get the game by request message id
+     */
+    @GetMapping("/request_message")
+    fun getGameByRequestMessageId(
+        @RequestParam("requestMessageId") requestMessageId: String,
+    ) = gameService.getGameByRequestMessageId("\"$requestMessageId\"")
 
     /**
      * Delete an ongoing game
@@ -89,7 +93,7 @@ class GameController(
     @DeleteMapping("/{id}")
     fun deleteOngoingGame(
         @PathVariable("id") id: Int,
-    ) = gamesService.deleteOngoingGame(id)
+    ) = gameService.deleteOngoingGame(id)
 
     // TODO: end game
 }
