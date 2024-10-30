@@ -165,19 +165,15 @@ class GameService(
                 )
 
             // Create a new Discord thread
-            if (newGame.homePlatform == Platform.DISCORD) {
-                newGame.homePlatformId = discordService.startGameThread(newGame)
-                    ?: run {
-                        deleteOngoingGame(newGame.gameId)
-                        throw UnableToCreateGameThreadException()
-                    }
-            } else if (newGame.awayPlatform == Platform.DISCORD) {
-                newGame.awayPlatformId = discordService.startGameThread(newGame)
-                    ?: run {
-                        deleteOngoingGame(newGame.gameId)
-                        throw UnableToCreateGameThreadException()
-                    }
-            }
+            val discordData = discordService.startGameThread(newGame)
+                ?: run {
+                    deleteOngoingGame(newGame.gameId)
+                    throw UnableToCreateGameThreadException()
+                }
+
+            newGame.homePlatformId = discordData[0]
+            newGame.awayPlatformId = discordData[0]
+            newGame.requestMessageId = listOf(discordData[1])
 
             // Save the updated entity and create game stats
             gameStatsService.createGameStats(newGame)
