@@ -10,13 +10,13 @@ import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.models.InvalidActualResultException
-import com.fcfb.arceus.models.InvalidPlayTypeException
-import com.fcfb.arceus.models.InvalidResultDescriptionException
-import com.fcfb.arceus.models.InvalidScenarioException
-import com.fcfb.arceus.models.ResultNotFoundException
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.game.RangesService
+import com.fcfb.arceus.utils.InvalidActualResultException
+import com.fcfb.arceus.utils.InvalidPlayTypeException
+import com.fcfb.arceus.utils.InvalidResultDescriptionException
+import com.fcfb.arceus.utils.InvalidScenarioException
+import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
 
 @Component
@@ -159,7 +159,7 @@ class PlayHandler(
                 }
             }
             else -> {
-                yards = result?.description?.toInt() ?: throw InvalidResultDescriptionException()
+                yards = result.description.toInt() ?: throw InvalidResultDescriptionException()
                 ballLocation += yards
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
@@ -1022,6 +1022,7 @@ class PlayHandler(
             allPlays,
             gamePlay,
         )
+
         return gamePlay
     }
 

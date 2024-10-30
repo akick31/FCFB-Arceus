@@ -4,15 +4,19 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.GameStatus
+import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.models.InvalidHalfTimePossessionChangeException
 import com.fcfb.arceus.repositories.GameRepository
+import com.fcfb.arceus.service.fcfb.SeasonService
+import com.fcfb.arceus.service.fcfb.TeamService
+import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.service.fcfb.game.GameService
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
+import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
 import org.springframework.stereotype.Component
 import kotlin.math.abs
 
@@ -21,6 +25,9 @@ class GameHandler(
     private val gameRepository: GameRepository,
     private val scorebugService: ScorebugService,
     private val gameService: GameService,
+    private val teamService: TeamService,
+    private val userService: UserService,
+    private val seasonService: SeasonService,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -57,6 +64,7 @@ class GameHandler(
         if (quarter == 0) {
             game.quarter = 4
             game.gameStatus = GameStatus.FINAL
+            endGame(game)
         } else if (quarter >= 5) {
             game.gameStatus = GameStatus.END_OF_REGULATION
         }
@@ -175,4 +183,17 @@ class GameHandler(
             throw InvalidHalfTimePossessionChangeException()
         }
     } // TODO Win probability and ELO rating methods
+
+    /**
+     * Run through end of game tasks
+     */
+    private fun endGame(game: Game) {
+        if (game.gameType != GameType.SCRIMMAGE) {
+            teamService.updateTeamWinsAndLosses(game)
+            userService.updateUserWinsAndLosses(game)
+        }
+        if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+            seasonService.endSeason(game)
+        }
+    }
 }

@@ -1,13 +1,13 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.models.UserUnauthorizedException
 import com.fcfb.arceus.models.website.Session
 import com.fcfb.arceus.repositories.SessionRepository
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.SessionUtils
+import com.fcfb.arceus.utils.UserUnauthorizedException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime

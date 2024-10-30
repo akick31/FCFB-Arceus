@@ -1,4 +1,4 @@
-package com.fcfb.arceus.models
+package com.fcfb.arceus.utils
 
 class UserUnauthorizedException : Exception("User is unauthorized") {
     override fun toString(): String {
@@ -63,5 +63,17 @@ class InvalidHalfTimePossessionChangeException : Exception("Invalid half time po
 class InvalidResultDescriptionException : Exception("Invalid result description, could not parse result yardage") {
     override fun toString(): String {
         return "InvalidInvalidResultDescriptionException: ${super.message}"
+    }
+}
+
+class CurrentSeasonNotFoundException : Exception("Current season not found") {
+    override fun toString(): String {
+        return "CurrentSeasonNotFoundException: ${super.message}"
+    }
+}
+
+class CurrentWeekNotFoundException : Exception("Current week not found") {
+    override fun toString(): String {
+        return "CurrentWeekNotFoundException: ${super.message}"
     }
 }

@@ -1,7 +1,7 @@
 package com.fcfb.arceus.service.discord
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.models.DiscordUserNotFoundException
+import com.fcfb.arceus.utils.DiscordUserNotFoundException
 import com.fcfb.arceus.utils.Logger
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
