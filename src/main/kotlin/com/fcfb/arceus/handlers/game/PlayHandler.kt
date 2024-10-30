@@ -159,7 +159,7 @@ class PlayHandler(
                 }
             }
             else -> {
-                yards = result.description.toInt() ?: throw InvalidResultDescriptionException()
+                yards = result.description.toInt()
                 ballLocation += yards
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
@@ -276,11 +276,11 @@ class PlayHandler(
 
         val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
-        var ballLocation = game.ballLocation
+        var ballLocation = 100-game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
-        val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation, difference)
+        val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation+17, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
