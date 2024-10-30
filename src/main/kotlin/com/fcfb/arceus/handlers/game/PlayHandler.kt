@@ -14,7 +14,6 @@ import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.game.RangesService
 import com.fcfb.arceus.utils.InvalidActualResultException
 import com.fcfb.arceus.utils.InvalidPlayTypeException
-import com.fcfb.arceus.utils.InvalidResultDescriptionException
 import com.fcfb.arceus.utils.InvalidScenarioException
 import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
@@ -276,11 +275,11 @@ class PlayHandler(
 
         val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
-        var ballLocation = 100-game.ballLocation
+        var ballLocation = 100 - game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
-        val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation+17, difference)
+        val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation + 17, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 

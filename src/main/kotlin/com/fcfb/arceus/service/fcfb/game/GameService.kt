@@ -165,11 +165,12 @@ class GameService(
                 )
 
             // Create a new Discord thread
-            val discordData = discordService.startGameThread(newGame)
-                ?: run {
-                    deleteOngoingGame(newGame.gameId)
-                    throw UnableToCreateGameThreadException()
-                }
+            val discordData =
+                discordService.startGameThread(newGame)
+                    ?: run {
+                        deleteOngoingGame(newGame.gameId)
+                        throw UnableToCreateGameThreadException()
+                    }
 
             newGame.homePlatformId = discordData[0]
             newGame.awayPlatformId = discordData[0]
