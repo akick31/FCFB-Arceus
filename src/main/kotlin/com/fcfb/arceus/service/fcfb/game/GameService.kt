@@ -4,15 +4,17 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.GameStatus
+import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.models.UnableToCreateGameThreadException
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.service.discord.DiscordService
+import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
+import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -26,6 +28,7 @@ class GameService(
     private val teamService: TeamService,
     private val discordService: DiscordService,
     private val gameStatsService: GameStatsService,
+    private val seasonService: SeasonService,
 ) {
     /**
      * Get an ongoing game by id
@@ -116,6 +119,13 @@ class GameService(
             val homePlatform = startRequest.homePlatform
             val awayPlatform = startRequest.awayPlatform
 
+            val (season, week) =
+                if (startRequest.gameType != GameType.SCRIMMAGE) {
+                    seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
+                } else {
+                    null to null
+                }
+
             // Create and save the Game object and Stats object
             val newGame =
                 gameRepository.save(
@@ -152,8 +162,8 @@ class GameService(
                         subdivision = subdivision,
                         timestamp = LocalDateTime.now().toString(),
                         winProbability = 0.0,
-                        season = startRequest.season?.toInt(),
-                        week = startRequest.week?.toInt(),
+                        season = season,
+                        week = week,
                         waitingOn = TeamSide.AWAY,
                         numPlays = 0,
                         homeTimeouts = 3,

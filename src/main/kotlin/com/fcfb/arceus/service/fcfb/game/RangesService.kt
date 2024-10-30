@@ -6,8 +6,8 @@ import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Ranges
-import com.fcfb.arceus.models.ResultNotFoundException
 import com.fcfb.arceus.repositories.RangesRepository
+import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
 
 @Component

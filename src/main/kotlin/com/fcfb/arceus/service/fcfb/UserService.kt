@@ -1,6 +1,8 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.converter.DTOConverter
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.dto.UserDTO
@@ -17,6 +19,69 @@ class UserService(
     private val discordService: DiscordService,
     private val dtoConverter: DTOConverter,
 ) {
+    /**
+     * After a game ends, update the user's wins and losses
+     * @param game
+     */
+    fun updateUserWinsAndLosses(game: Game) {
+        val homeUser = getUserByTeam(game.homeTeam)
+        val awayUser = getUserByTeam(game.awayTeam)
+
+        if (game.homeScore > game.awayScore) {
+            homeUser.wins += 1
+            awayUser.losses += 1
+            if (game.gameType == GameType.CONFERENCE_GAME) {
+                homeUser.conferenceWins += 1
+                awayUser.conferenceLosses += 1
+            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
+                homeUser.conferenceChampionshipWins += 1
+                awayUser.conferenceChampionshipLosses += 1
+            } else if (game.gameType == GameType.BOWL) {
+                homeUser.bowlWins += 1
+                awayUser.bowlLosses += 1
+            } else if (game.gameType == GameType.PLAYOFFS) {
+                homeUser.bowlWins += 1
+                awayUser.bowlLosses += 1
+                homeUser.playoffWins += 1
+                awayUser.playoffLosses += 1
+            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+                homeUser.bowlWins += 1
+                awayUser.bowlLosses += 1
+                homeUser.playoffWins += 1
+                awayUser.playoffLosses += 1
+                homeUser.nationalChampionshipWins += 1
+                awayUser.nationalChampionshipLosses += 1
+            }
+        } else {
+            homeUser.losses += 1
+            awayUser.wins += 1
+            if (game.gameType == GameType.CONFERENCE_GAME) {
+                homeUser.conferenceLosses += 1
+                awayUser.conferenceWins += 1
+            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
+                homeUser.conferenceChampionshipLosses += 1
+                awayUser.conferenceChampionshipWins += 1
+            } else if (game.gameType == GameType.BOWL) {
+                homeUser.bowlLosses += 1
+                awayUser.bowlWins += 1
+            } else if (game.gameType == GameType.PLAYOFFS) {
+                homeUser.bowlLosses += 1
+                awayUser.bowlWins += 1
+                homeUser.playoffLosses += 1
+                awayUser.playoffWins += 1
+            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+                homeUser.bowlLosses += 1
+                awayUser.bowlWins += 1
+                homeUser.playoffLosses += 1
+                awayUser.playoffWins += 1
+                homeUser.nationalChampionshipLosses += 1
+                awayUser.nationalChampionshipWins += 1
+            }
+        }
+        updateUser(homeUser)
+        updateUser(awayUser)
+    }
+
     /**
      * Create a new user
      * @param user
@@ -45,6 +110,16 @@ class UserService(
                 0,
                 0,
                 0.0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
                 user.offensivePlaybook,
                 user.defensivePlaybook,
                 0,
@@ -59,7 +134,7 @@ class UserService(
      * Get a user DTO by its ID
      * @param id
      */
-    fun getUserDTOById(id: Long) = dtoConverter.convertToUserDTO(getUserById(id))
+    private fun getUserDTOById(id: Long) = dtoConverter.convertToUserDTO(getUserById(id))
 
     /**
      * Get a user by its ID
@@ -181,6 +256,16 @@ class UserService(
             wins = user.wins
             losses = user.losses
             winPercentage = user.wins.toDouble() / (user.wins + user.losses)
+            conferenceWins = user.conferenceWins
+            conferenceLosses = user.conferenceLosses
+            conferenceChampionshipWins = user.conferenceChampionshipWins
+            conferenceChampionshipLosses = user.conferenceChampionshipLosses
+            bowlWins = user.bowlWins
+            bowlLosses = user.bowlLosses
+            playoffWins = user.playoffWins
+            playoffLosses = user.playoffLosses
+            nationalChampionshipWins = user.nationalChampionshipWins
+            nationalChampionshipLosses = user.nationalChampionshipLosses
             offensivePlaybook = user.offensivePlaybook
             defensivePlaybook = user.defensivePlaybook
         }

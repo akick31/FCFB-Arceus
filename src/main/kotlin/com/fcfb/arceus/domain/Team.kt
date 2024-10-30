@@ -104,35 +104,67 @@ class Team {
 
     @Basic
     @Column(name = "current_wins")
-    var currentWins: Int? = null
+    var currentWins: Int = 0
 
     @Basic
     @Column(name = "current_losses")
-    var currentLosses: Int? = null
+    var currentLosses: Int = 0
 
     @Basic
     @Column(name = "overall_wins")
-    var overallWins: Int? = null
+    var overallWins: Int = 0
 
     @Basic
     @Column(name = "overall_losses")
-    var overallLosses: Int? = null
+    var overallLosses: Int = 0
 
     @Basic
     @Column(name = "current_conference_wins")
-    var currentConferenceWins: Int? = null
+    var currentConferenceWins: Int = 0
 
     @Basic
     @Column(name = "current_conference_losses")
-    var currentConferenceLosses: Int? = null
+    var currentConferenceLosses: Int = 0
 
     @Basic
     @Column(name = "overall_conference_wins")
-    var overallConferenceWins: Int? = null
+    var overallConferenceWins: Int = 0
 
     @Basic
     @Column(name = "overall_conference_losses")
-    var overallConferenceLosses: Int? = null
+    var overallConferenceLosses: Int = 0
+
+    @Basic
+    @Column(name = "conference_championship_wins")
+    var conferenceChampionshipWins: Int = 0
+
+    @Basic
+    @Column(name = "conference_championship_losses")
+    var conferenceChampionshipLosses: Int = 0
+
+    @Basic
+    @Column(name = "bowl_wins")
+    var bowlWins: Int = 0
+
+    @Basic
+    @Column(name = "bowl_losses")
+    var bowlLosses: Int = 0
+
+    @Basic
+    @Column(name = "playoff_wins")
+    var playoffWins: Int = 0
+
+    @Basic
+    @Column(name = "playoff_losses")
+    var playoffLosses: Int = 0
+
+    @Basic
+    @Column(name = "national_championship_wins")
+    var nationalChampionshipWins: Int = 0
+
+    @Basic
+    @Column(name = "national_championship_losses")
+    var nationalChampionshipLosses: Int = 0
 
     constructor(
         logo: String?,
@@ -154,14 +186,22 @@ class Team {
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
         conference: Conference?,
-        currentWins: Int?,
-        currentLosses: Int?,
-        overallWins: Int?,
-        overallLosses: Int?,
-        currentConferenceWins: Int?,
-        currentConferenceLosses: Int?,
-        overallConferenceWins: Int?,
-        overallConferenceLosses: Int?,
+        currentWins: Int,
+        currentLosses: Int,
+        overallWins: Int,
+        overallLosses: Int,
+        currentConferenceWins: Int,
+        currentConferenceLosses: Int,
+        overallConferenceWins: Int,
+        overallConferenceLosses: Int,
+        conferenceChampionshipWins: Int,
+        conferenceChampionshipLosses: Int,
+        bowlWins: Int,
+        bowlLosses: Int,
+        playoffWins: Int,
+        playoffLosses: Int,
+        nationalChampionshipWins: Int,
+        nationalChampionshipLosses: Int,
     ) {
         this.logo = logo
         this.coachUsername1 = coachUsername1
@@ -190,6 +230,14 @@ class Team {
         this.currentConferenceLosses = currentConferenceLosses
         this.overallConferenceWins = overallConferenceWins
         this.overallConferenceLosses = overallConferenceLosses
+        this.conferenceChampionshipWins = conferenceChampionshipWins
+        this.conferenceChampionshipLosses = conferenceChampionshipLosses
+        this.bowlWins = bowlWins
+        this.bowlLosses = bowlLosses
+        this.playoffWins = playoffWins
+        this.playoffLosses = playoffLosses
+        this.nationalChampionshipWins = nationalChampionshipWins
+        this.nationalChampionshipLosses = nationalChampionshipLosses
     }
 
     constructor()

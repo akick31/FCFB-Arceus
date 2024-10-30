@@ -1,13 +1,18 @@
 package com.fcfb.arceus.service.fcfb
 
+import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.GameType
+import com.fcfb.arceus.domain.Game.GameType.BOWL
+import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_CHAMPIONSHIP
+import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_GAME
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
-import com.fcfb.arceus.models.NoTeamFoundException
 import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.utils.NoTeamFoundException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
@@ -18,6 +23,77 @@ class TeamService(
     private val teamRepository: TeamRepository,
     private val userService: UserService,
 ) {
+    /**
+     * After a game ends, update the team's wins and losses
+     * @param game
+     */
+    fun updateTeamWinsAndLosses(game: Game) {
+        val homeTeam = getTeamByName(game.homeTeam)
+        val awayTeam = getTeamByName(game.awayTeam)
+
+        if (game.homeScore > game.awayScore) {
+            homeTeam.currentWins += 1
+            awayTeam.currentLosses += 1
+            homeTeam.overallWins += 1
+            awayTeam.overallLosses += 1
+            if (game.gameType == CONFERENCE_GAME) {
+                homeTeam.currentConferenceWins += 1
+                awayTeam.currentConferenceLosses += 1
+                homeTeam.overallConferenceWins += 1
+                awayTeam.overallConferenceLosses += 1
+            } else if (game.gameType == CONFERENCE_CHAMPIONSHIP) {
+                homeTeam.conferenceChampionshipWins += 1
+                awayTeam.conferenceChampionshipLosses += 1
+            } else if (game.gameType == BOWL) {
+                homeTeam.bowlWins += 1
+                awayTeam.bowlLosses += 1
+            } else if (game.gameType == GameType.PLAYOFFS) {
+                homeTeam.bowlWins += 1
+                awayTeam.bowlLosses += 1
+                homeTeam.playoffWins += 1
+                awayTeam.playoffLosses += 1
+            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+                homeTeam.bowlWins += 1
+                awayTeam.bowlLosses += 1
+                homeTeam.playoffWins += 1
+                awayTeam.playoffLosses += 1
+                homeTeam.nationalChampionshipWins += 1
+                awayTeam.nationalChampionshipLosses += 1
+            }
+        } else {
+            homeTeam.currentLosses += 1
+            awayTeam.currentWins += 1
+            homeTeam.overallLosses += 1
+            awayTeam.overallWins += 1
+            if (game.gameType == CONFERENCE_GAME) {
+                homeTeam.currentConferenceLosses += 1
+                awayTeam.currentConferenceWins += 1
+                homeTeam.overallConferenceLosses += 1
+                awayTeam.overallConferenceWins += 1
+            } else if (game.gameType == CONFERENCE_CHAMPIONSHIP) {
+                homeTeam.conferenceChampionshipLosses += 1
+                awayTeam.conferenceChampionshipWins += 1
+            } else if (game.gameType == BOWL) {
+                homeTeam.bowlLosses += 1
+                awayTeam.bowlWins += 1
+            } else if (game.gameType == GameType.PLAYOFFS) {
+                homeTeam.bowlLosses += 1
+                awayTeam.bowlWins += 1
+                homeTeam.playoffLosses += 1
+                awayTeam.playoffWins += 1
+            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+                homeTeam.bowlLosses += 1
+                awayTeam.bowlWins += 1
+                homeTeam.playoffLosses += 1
+                awayTeam.playoffWins += 1
+                homeTeam.nationalChampionshipLosses += 1
+                awayTeam.nationalChampionshipWins += 1
+            }
+        }
+        updateTeam(game.homeTeam, homeTeam)
+        updateTeam(game.awayTeam, awayTeam)
+    }
+
     /**
      * Get a team by its ID
      * @param id
@@ -83,6 +159,14 @@ class TeamService(
                         0,
                         0,
                         0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
+                        0,
                     ),
                 )
             return newTeam
@@ -91,6 +175,11 @@ class TeamService(
         }
     }
 
+    /**
+     * Update a team
+     * @param name
+     * @param team
+     */
     fun updateTeam(
         name: String?,
         team: Team,
@@ -123,6 +212,14 @@ class TeamService(
             overallLosses = team.overallLosses
             overallConferenceWins = team.overallConferenceWins
             overallConferenceLosses = team.overallConferenceLosses
+            conferenceChampionshipWins = team.conferenceChampionshipWins
+            conferenceChampionshipLosses = team.conferenceChampionshipLosses
+            bowlWins = team.bowlWins
+            bowlLosses = team.bowlLosses
+            playoffWins = team.playoffWins
+            playoffLosses = team.playoffLosses
+            nationalChampionshipWins = team.nationalChampionshipWins
+            nationalChampionshipLosses = team.nationalChampionshipLosses
         }
         teamRepository.save(existingTeam)
         return existingTeam

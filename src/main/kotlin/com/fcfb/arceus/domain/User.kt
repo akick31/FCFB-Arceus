@@ -75,6 +75,46 @@ class User {
     var losses: Int = 0
 
     @Basic
+    @Column(name = "conference_wins")
+    var conferenceWins: Int = 0
+
+    @Basic
+    @Column(name = "conference_losses")
+    var conferenceLosses: Int = 0
+
+    @Basic
+    @Column(name = "conference_championship_wins")
+    var conferenceChampionshipWins: Int = 0
+
+    @Basic
+    @Column(name = "conference_championship_losses")
+    var conferenceChampionshipLosses: Int = 0
+
+    @Basic
+    @Column(name = "bowl_wins")
+    var bowlWins: Int = 0
+
+    @Basic
+    @Column(name = "bowl_losses")
+    var bowlLosses: Int = 0
+
+    @Basic
+    @Column(name = "playoff_wins")
+    var playoffWins: Int = 0
+
+    @Basic
+    @Column(name = "playoff_losses")
+    var playoffLosses: Int = 0
+
+    @Basic
+    @Column(name = "national_championship_wins")
+    var nationalChampionshipWins: Int = 0
+
+    @Basic
+    @Column(name = "national_championship_losses")
+    var nationalChampionshipLosses: Int = 0
+
+    @Basic
     @Column(name = "win_percentage")
     var winPercentage: Double = 0.0
 
@@ -109,6 +149,16 @@ class User {
         wins: Int,
         losses: Int,
         winPercentage: Double,
+        conferenceWins: Int,
+        conferenceLosses: Int,
+        conferenceChampionshipWins: Int,
+        conferenceChampionshipLosses: Int,
+        bowlWins: Int,
+        bowlLosses: Int,
+        playoffWins: Int,
+        playoffLosses: Int,
+        nationalChampionshipWins: Int,
+        nationalChampionshipLosses: Int,
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
         approved: Byte,
@@ -128,6 +178,16 @@ class User {
         this.wins = wins
         this.losses = losses
         this.winPercentage = winPercentage
+        this.conferenceWins = conferenceWins
+        this.conferenceLosses = conferenceLosses
+        this.conferenceChampionshipWins = conferenceChampionshipWins
+        this.conferenceChampionshipLosses = conferenceChampionshipLosses
+        this.bowlWins = bowlWins
+        this.bowlLosses = bowlLosses
+        this.playoffWins = playoffWins
+        this.playoffLosses = playoffLosses
+        this.nationalChampionshipWins = nationalChampionshipWins
+        this.nationalChampionshipLosses = nationalChampionshipLosses
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
         this.approved = approved
@@ -145,7 +205,7 @@ class User {
 
         companion object {
             fun fromString(description: String): CoachPosition? {
-                return CoachPosition.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
@@ -158,7 +218,7 @@ class User {
 
         companion object {
             fun fromString(description: String): Role? {
-                return Role.values().find { it.description == description }
+                return entries.find { it.description == description }
             }
         }
     }
