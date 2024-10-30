@@ -8,7 +8,7 @@ import com.fcfb.arceus.domain.Game.TVChannel
 data class StartRequest(
     val homePlatform: Platform,
     val awayPlatform: Platform,
-    val subdivision: Subdivision?,
+    val subdivision: Subdivision,
     val homeTeam: String,
     val awayTeam: String,
     val tvChannel: TVChannel?,
