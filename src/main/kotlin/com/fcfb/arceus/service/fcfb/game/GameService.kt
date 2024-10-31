@@ -172,6 +172,11 @@ class GameService(
                         throw UnableToCreateGameThreadException()
                     }
 
+            if (discordData[0] == "null") {
+                deleteOngoingGame(newGame.gameId)
+                throw UnableToCreateGameThreadException()
+            }
+
             newGame.homePlatformId = discordData[0]
             newGame.awayPlatformId = discordData[0]
             newGame.requestMessageId = listOf(discordData[1])
