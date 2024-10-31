@@ -282,6 +282,7 @@ class PlayHandler(
         val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation + 17, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
+        ballLocation = game.ballLocation
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
