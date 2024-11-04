@@ -806,6 +806,7 @@ class PlayHandler(
             clock = 420 - playTime
             if (quarter == 3) {
                 possession = gameHandler.handleHalfTimePossessionChange(game)
+                clock = 420
             }
         } else if (clock <= 0 && !isScoringPlay(actualResult) && gamePlay.quarter == 4) {
             // Check if game is over or needs to go to OT
@@ -821,8 +822,8 @@ class PlayHandler(
             clock = 0
         } else if (clock > 0) {
             clock = initialClock - playTime
-
             if (clock <= 0 && !isScoringPlay(actualResult) && quarter < 4) {
+                quarter += 1
                 clock = 420
                 if (quarter == 3) {
                     possession = gameHandler.handleHalfTimePossessionChange(game)
