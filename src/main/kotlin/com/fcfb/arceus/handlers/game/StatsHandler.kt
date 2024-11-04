@@ -551,8 +551,10 @@ class StatsHandler(
         // Don't count sacks as pass attempts
         if (play.playCall == PlayCall.PASS && (
                 play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_7_YARDS ||
                     play.result == Scenario.LOSS_OF_5_YARDS ||
                     play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_2_YARDS ||
                     play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {
@@ -574,8 +576,10 @@ class StatsHandler(
         if (play.playCall == PlayCall.PASS && (
                 play.result != Scenario.INCOMPLETE &&
                     play.result != Scenario.LOSS_OF_10_YARDS &&
+                    play.result != Scenario.LOSS_OF_7_YARDS &&
                     play.result != Scenario.LOSS_OF_5_YARDS &&
                     play.result != Scenario.LOSS_OF_3_YARDS &&
+                    play.result != Scenario.LOSS_OF_2_YARDS &&
                     play.result != Scenario.LOSS_OF_1_YARD &&
                     play.result != Scenario.TURNOVER_PLUS_20_YARDS &&
                     play.result != Scenario.TURNOVER_PLUS_15_YARDS &&
@@ -602,8 +606,10 @@ class StatsHandler(
         // Don't count sacks towards passing yards
         if (play.playCall == PlayCall.PASS && (
                 play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_7_YARDS ||
                     play.result == Scenario.LOSS_OF_5_YARDS ||
                     play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_2_YARDS ||
                     play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {
@@ -657,8 +663,10 @@ class StatsHandler(
         // Count sacks towards rushing yards
         if (play.playCall == PlayCall.PASS && (
                 play.result == Scenario.LOSS_OF_10_YARDS ||
+                    play.result == Scenario.LOSS_OF_7_YARDS ||
                     play.result == Scenario.LOSS_OF_5_YARDS ||
                     play.result == Scenario.LOSS_OF_3_YARDS ||
+                    play.result == Scenario.LOSS_OF_2_YARDS ||
                     play.result == Scenario.LOSS_OF_1_YARD
             )
         ) {

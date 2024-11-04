@@ -9,7 +9,7 @@ import org.springframework.stereotype.Repository
 interface RangesRepository : CrudRepository<Ranges?, Int?> {
     @Query(
         value =
-            "SELECT * FROM ranges WHERE play_type = ? AND offensive_playbook = ? " +
+            "SELECT * FROM new_ranges WHERE play_type = ? AND offensive_playbook = ? " +
                 "AND defensive_playbook = ? AND ? BETWEEN lower_range AND upper_range;",
         nativeQuery = true,
     )
@@ -21,7 +21,7 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
     ): Ranges?
 
     @Query(
-        value = "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN lower_range AND upper_range;",
+        value = "SELECT * FROM new_ranges WHERE play_type = ? AND ? BETWEEN lower_range AND upper_range;",
         nativeQuery = true,
     )
     fun getNonNormalResult(
@@ -31,7 +31,7 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
 
     @Query(
         value =
-            "SELECT * FROM ranges WHERE play_type = ? AND ? BETWEEN ball_location_lower AND ball_location_upper " +
+            "SELECT * FROM new_ranges WHERE play_type = ? AND ? BETWEEN ball_location_lower AND ball_location_upper " +
                 "AND ? BETWEEN lower_range AND upper_range;",
         nativeQuery = true,
     )
@@ -42,7 +42,7 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
     ): Ranges?
 
     @Query(
-        value = "SELECT * FROM ranges WHERE play_type = ? AND distance = ? AND ? BETWEEN lower_range AND upper_range;",
+        value = "SELECT * FROM new_ranges WHERE play_type = ? AND distance = ? AND ? BETWEEN lower_range AND upper_range;",
         nativeQuery = true,
     )
     fun getFieldGoalResult(
