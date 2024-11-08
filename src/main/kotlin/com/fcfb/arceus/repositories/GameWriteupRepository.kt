@@ -7,7 +7,7 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface GameWriteupRepository : CrudRepository<GameWriteup?, Int?> {
-    @Query(value = "SELECT * FROM game_writeup WHERE scenario = ? && pass_or_run = ?", nativeQuery = true)
+    @Query(value = "SELECT * FROM game_writeup WHERE scenario = ? && pass_or_run = ? ORDER BY RAND() LIMIT 1", nativeQuery = true)
     fun findByScenario(
         scenario: String,
         passOrRun: String?,
