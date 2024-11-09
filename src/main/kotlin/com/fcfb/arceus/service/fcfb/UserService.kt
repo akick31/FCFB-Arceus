@@ -255,7 +255,7 @@ class UserService(
             team = user.team
             wins = user.wins
             losses = user.losses
-            winPercentage = user.wins.toDouble() / (user.wins + user.losses)
+            winPercentage = if (user.wins + user.losses > 0) user.wins.toDouble() / (user.wins + user.losses) else 0.0
             conferenceWins = user.conferenceWins
             conferenceLosses = user.conferenceLosses
             conferenceChampionshipWins = user.conferenceChampionshipWins
@@ -296,6 +296,16 @@ class UserService(
             wins = user.wins
             losses = user.losses
             winPercentage = user.winPercentage
+            conferenceWins = user.conferenceWins
+            conferenceLosses = user.conferenceLosses
+            conferenceChampionshipWins = user.conferenceChampionshipWins
+            conferenceChampionshipLosses = user.conferenceChampionshipLosses
+            bowlWins = user.bowlWins
+            bowlLosses = user.bowlLosses
+            playoffWins = user.playoffWins
+            playoffLosses = user.playoffLosses
+            nationalChampionshipWins = user.nationalChampionshipWins
+            nationalChampionshipLosses = user.nationalChampionshipLosses
             offensivePlaybook = user.offensivePlaybook
             defensivePlaybook = user.defensivePlaybook
         }
