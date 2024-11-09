@@ -7,7 +7,6 @@ import com.fcfb.arceus.service.fcfb.game.GameService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -40,6 +39,14 @@ class GameController(
     fun startGame(
         @RequestBody startRequest: StartRequest,
     ) = gameService.startGame(startRequest)
+
+    /**
+     * End a game
+     */
+    @PostMapping("/end")
+    fun endGame(
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.endGame(channelId)
 
     /**
      * Run the game's coin toss
@@ -90,10 +97,10 @@ class GameController(
      * @param id
      * @return
      */
-    @DeleteMapping("/{id}")
+    @DeleteMapping("")
     fun deleteOngoingGame(
-        @PathVariable("id") id: Int,
-    ) = gameService.deleteOngoingGame(id)
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.deleteOngoingGame(channelId)
 
     // TODO: end game
 }

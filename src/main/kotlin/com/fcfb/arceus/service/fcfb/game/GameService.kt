@@ -10,11 +10,14 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
+import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
+import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
+import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -25,8 +28,10 @@ import java.util.Random
 @Component
 class GameService(
     private val gameRepository: GameRepository,
+    private val playRepository: PlayRepository,
     private val teamService: TeamService,
     private val discordService: DiscordService,
+    private val userService: UserService,
     private val gameStatsService: GameStatsService,
     private val seasonService: SeasonService,
 ) {
@@ -168,12 +173,18 @@ class GameService(
             val discordData =
                 discordService.startGameThread(newGame)
                     ?: run {
-                        deleteOngoingGame(newGame.gameId)
+                        deleteOngoingGame(
+                            newGame.homePlatformId?.toULong() ?: newGame.awayPlatformId?.toULong()
+                                ?: throw UnableToDeleteGameException(),
+                        )
                         throw UnableToCreateGameThreadException()
                     }
 
             if (discordData[0] == "null") {
-                deleteOngoingGame(newGame.gameId)
+                deleteOngoingGame(
+                    newGame.homePlatformId?.toULong() ?: newGame.awayPlatformId?.toULong()
+                        ?: throw UnableToDeleteGameException(),
+                )
                 throw UnableToCreateGameThreadException()
             }
 
@@ -189,6 +200,36 @@ class GameService(
             return newGame
         } catch (e: Exception) {
             Logger.error("Error starting ${startRequest.homeTeam} vs ${startRequest.awayTeam}: " + e.message!!)
+            throw e
+        }
+    }
+
+    /**
+     * End a game
+     * @param gameId
+     * @return
+     */
+    fun endGame(channelId: ULong): Game {
+        val game =
+            getGameByPlatformId(channelId) ?: run {
+                Logger.error("Game at $channelId not found")
+                throw Exception("Game not found")
+            }
+
+        try {
+            game.gameStatus = GameStatus.FINAL
+            if (game.gameType != GameType.SCRIMMAGE) {
+                teamService.updateTeamWinsAndLosses(game)
+                userService.updateUserWinsAndLosses(game)
+            }
+            if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+                seasonService.endSeason(game)
+            }
+            saveGame(game)
+            Logger.info("Game  ${game.gameId} ended")
+            return game
+        } catch (e: Exception) {
+            Logger.error("Error in ${game.gameId}: " + e.message!!)
             throw e
         }
     }
@@ -266,13 +307,16 @@ class GameService(
      * @param id
      * @return
      */
-    fun deleteOngoingGame(id: Int): Boolean {
-        gameRepository.findById(id) ?: return false
-        if (!gameRepository.findById(id).isPresent) {
-            Logger.error("No game found with id $id to delete")
-            return false
-        }
+    fun deleteOngoingGame(channelId: ULong): Boolean {
+        val game =
+            getGameByPlatformId(channelId) ?: run {
+                Logger.error("Game at $channelId not found")
+                return false
+            }
+        val id = game.gameId
         gameRepository.deleteById(id)
+        gameStatsService.deleteById(id)
+        playRepository.deleteAllPlaysByGameId(id)
         Logger.info("Game $id deleted")
         return true
     }
@@ -317,4 +361,7 @@ class GameService(
     }
 
     fun getGameByRequestMessageId(requestMessageId: String) = gameRepository.getGameByRequestMessageId(requestMessageId)
+
+    fun getGameByPlatformId(platformId: ULong) =
+        gameRepository.getGameByHomePlatformId(platformId) ?: gameRepository.getGameByAwayPlatformId(platformId)
 }

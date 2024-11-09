@@ -53,7 +53,10 @@ class GameStatsService(
      * Get game stats entry by game ID
      * @param gameId
      */
-    fun getGameStatsById(gameId: String): GameStats {
-        return gameStatsRepository.findByGameId(gameId.toInt())
-    }
+    fun getGameStatsById(gameId: Int) = gameStatsRepository.findByGameId(gameId)
+
+    /**
+     * Delete game stats entry by game ID
+     */
+    fun deleteById(gameId: Int) = gameStatsRepository.deleteById(gameId)
 }

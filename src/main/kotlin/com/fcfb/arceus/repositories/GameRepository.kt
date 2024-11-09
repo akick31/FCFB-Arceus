@@ -12,4 +12,10 @@ interface GameRepository : CrudRepository<Game?, Int?> {
 
     @Query(value = "SELECT * FROM game WHERE JSON_CONTAINS(request_message_id, ?, '\$')", nativeQuery = true)
     fun getGameByRequestMessageId(requestMessageId: String): Game
+
+    @Query(value = "SELECT * FROM game WHERE home_platform_id = ?", nativeQuery = true)
+    fun getGameByHomePlatformId(homePlatformId: ULong): Game?
+
+    @Query(value = "SELECT * FROM game WHERE away_platform_id = ?", nativeQuery = true)
+    fun getGameByAwayPlatformId(awayPlatformId: ULong): Game?
 }

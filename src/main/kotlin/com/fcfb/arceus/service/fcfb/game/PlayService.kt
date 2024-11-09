@@ -200,4 +200,9 @@ class PlayService(
      * Get all plays for a game
      */
     fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
+
+    /**
+     * Delete all plays for a game
+     */
+    fun deleteAllPlaysByGameId(gameId: Int) = playRepository.deleteAllPlaysByGameId(gameId)
 }
