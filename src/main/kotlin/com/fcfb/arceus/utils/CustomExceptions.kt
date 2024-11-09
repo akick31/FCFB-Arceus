@@ -24,6 +24,12 @@ class UnableToCreateGameThreadException : Exception("Unable to create game threa
     }
 }
 
+class UnableToDeleteGameException : Exception("Unable to delete game") {
+    override fun toString(): String {
+        return "UnableToDeleteGameException: ${super.message}"
+    }
+}
+
 class NoTeamFoundException : Exception("No team found") {
     override fun toString(): String {
         return "NoTeamFoundException: ${super.message}"

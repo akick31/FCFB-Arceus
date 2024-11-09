@@ -20,6 +20,6 @@ class GameStatsController(
      */
     @GetMapping("")
     fun getGameStatsById(
-        @RequestParam("gameId") gameId: String,
+        @RequestParam("gameId") gameId: Int,
     ) = gameStatsService.getGameStatsById(gameId)
 }
