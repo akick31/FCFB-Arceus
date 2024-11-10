@@ -83,3 +83,21 @@ class CurrentWeekNotFoundException : Exception("Current week not found") {
         return "CurrentWeekNotFoundException: ${super.message}"
     }
 }
+
+class NoCoachesFoundException : Exception("No coaches found") {
+    override fun toString(): String {
+        return "NoCoachesFoundException: ${super.message}"
+    }
+}
+
+class NoCoachDiscordIdsFoundException : Exception("No coach Discord IDs found") {
+    override fun toString(): String {
+        return "NoCoachDiscordIdFoundException: ${super.message}"
+    }
+}
+
+class TooManyCoachesException : Exception("Attempting to add too many coaches to a team") {
+    override fun toString(): String {
+        return "TooManyCoachesException: ${super.message}"
+    }
+}

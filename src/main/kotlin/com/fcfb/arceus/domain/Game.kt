@@ -35,45 +35,25 @@ class Game {
     @JsonProperty("away_team")
     lateinit var awayTeam: String
 
-    @Basic
-    @Column(name = "home_coach1")
-    @JsonProperty("home_coach1")
-    lateinit var homeCoach1: String
+    @Type(type = "json")
+    @Column(name = "home_coaches", columnDefinition = "json")
+    @JsonProperty("home_coaches")
+    var homeCoaches: List<String>? = listOf()
 
-    @Basic
-    @Column(name = "home_coach2")
-    @JsonProperty("home_coach2")
-    var homeCoach2: String? = null
+    @Type(type = "json")
+    @Column(name = "away_coaches", columnDefinition = "json")
+    @JsonProperty("away_coaches")
+    var awayCoaches: List<String>? = listOf()
 
-    @Basic
-    @Column(name = "away_coach1")
-    @JsonProperty("away_coach1")
-    lateinit var awayCoach1: String
+    @Type(type = "json")
+    @Column(name = "home_coach_discord_ids")
+    @JsonProperty("home_coach_discord_ids")
+    var homeCoachDiscordIds: List<String>? = listOf()
 
-    @Basic
-    @Column(name = "away_coach2")
-    @JsonProperty("away_coach2")
-    var awayCoach2: String? = null
-
-    @Basic
-    @Column(name = "home_coach_discord_id1")
-    @JsonProperty("home_coach_discord_id1")
-    var homeCoachDiscordId1: String? = null
-
-    @Basic
-    @Column(name = "home_coach_discord_id2")
-    @JsonProperty("home_coach_discord_id2")
-    var homeCoachDiscordId2: String? = null
-
-    @Basic
-    @Column(name = "away_coach_discord_id1")
-    @JsonProperty("away_coach_discord_id1")
-    var awayCoachDiscordId1: String? = null
-
-    @Basic
-    @Column(name = "away_coach_discord_id2")
-    @JsonProperty("away_coach_discord_id2")
-    var awayCoachDiscordId2: String? = null
+    @Type(type = "json")
+    @Column(name = "away_coach_discord_ids")
+    @JsonProperty("away_coach_discord_ids")
+    var awayCoachDiscordIds: List<String>? = listOf()
 
     @Basic
     @Column(name = "home_offensive_playbook")
@@ -294,14 +274,10 @@ class Game {
     constructor(
         homeTeam: String,
         awayTeam: String,
-        homeCoach1: String,
-        homeCoach2: String?,
-        awayCoach1: String,
-        awayCoach2: String?,
-        homeCoachDiscordId1: String,
-        homeCoachDiscordId2: String?,
-        awayCoachDiscordId1: String,
-        awayCoachDiscordId2: String?,
+        homeCoaches: List<String>,
+        awayCoaches: List<String>,
+        homeCoachDiscordIds: List<String>,
+        awayCoachDiscordIds: List<String>,
         homeOffensivePlaybook: OffensivePlaybook,
         awayOffensivePlaybook: OffensivePlaybook,
         homeDefensivePlaybook: DefensivePlaybook,
@@ -346,14 +322,10 @@ class Game {
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
-        this.homeCoach1 = homeCoach1
-        this.homeCoach2 = homeCoach2
-        this.awayCoach1 = awayCoach1
-        this.awayCoach2 = awayCoach2
-        this.homeCoachDiscordId1 = homeCoachDiscordId1
-        this.homeCoachDiscordId2 = homeCoachDiscordId2
-        this.awayCoachDiscordId1 = awayCoachDiscordId1
-        this.awayCoachDiscordId2 = awayCoachDiscordId2
+        this.homeCoaches = homeCoaches
+        this.awayCoaches = awayCoaches
+        this.homeCoachDiscordIds = homeCoachDiscordIds
+        this.awayCoachDiscordIds = awayCoachDiscordIds
         this.homeOffensivePlaybook = homeOffensivePlaybook
         this.awayOffensivePlaybook = awayOffensivePlaybook
         this.homeDefensivePlaybook = homeDefensivePlaybook

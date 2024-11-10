@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface GameStatsRepository : CrudRepository<GameStats?, Int?> {
-    @Query(value = "SELECT * FROM game_stats WHERE game_id =?", nativeQuery = true)
-    fun findByGameId(gameId: Int): GameStats
+    @Query(value = "SELECT * FROM game_stats WHERE game_id = ? and team = ?", nativeQuery = true)
+    fun getGameStatsByIdAndTeam(
+        gameId: Int,
+        team: String,
+    ): GameStats
 }

@@ -19,7 +19,8 @@ class GameStatsController(
      * @return
      */
     @GetMapping("")
-    fun getGameStatsById(
+    fun getGameStatsByIdAndTeam(
         @RequestParam("gameId") gameId: Int,
-    ) = gameStatsService.getGameStatsById(gameId)
+        @RequestParam("team") team: String,
+    ) = gameStatsService.getGameStatsByIdAndTeam(gameId, team)
 }

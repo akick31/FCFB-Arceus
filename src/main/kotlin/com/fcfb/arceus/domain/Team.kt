@@ -6,6 +6,7 @@ import com.fcfb.arceus.converter.SubdivisionConverter
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Subdivision
+import org.hibernate.annotations.Type
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Convert
@@ -29,37 +30,21 @@ class Team {
     @Column(name = "logo")
     var logo: String? = null
 
-    @Basic
-    @Column(name = "coach_username1")
-    var coachUsername1: String = ""
+    @Type(type = "json")
+    @Column(name = "coach_usernames")
+    var coachUsernames: MutableList<String>? = mutableListOf()
 
-    @Basic
-    @Column(name = "coach_name1")
-    var coachName1: String = ""
+    @Type(type = "json")
+    @Column(name = "coach_names")
+    var coachNames: MutableList<String>? = mutableListOf()
 
-    @Basic
-    @Column(name = "coach_discord_tag1")
-    var coachDiscordTag1: String = ""
+    @Type(type = "json")
+    @Column(name = "coach_discord_tags")
+    var coachDiscordTags: MutableList<String>? = mutableListOf()
 
-    @Basic
-    @Column(name = "coach_discord_id1")
-    var coachDiscordId1: String = ""
-
-    @Basic
-    @Column(name = "coach_username2")
-    var coachUsername2: String? = null
-
-    @Basic
-    @Column(name = "coach_name2")
-    var coachName2: String? = null
-
-    @Basic
-    @Column(name = "coach_discord_tag2")
-    var coachDiscordTag2: String? = null
-
-    @Basic
-    @Column(name = "coach_discord_id2")
-    var coachDiscordId2: String? = null
+    @Type(type = "json")
+    @Column(name = "coach_discord_ids")
+    var coachDiscordIds: MutableList<String>? = mutableListOf()
 
     @Basic
     @Column(name = "coaches_poll_ranking")
@@ -168,14 +153,10 @@ class Team {
 
     constructor(
         logo: String?,
-        coachUsername1: String,
-        coachName1: String,
-        coachDiscordTag1: String,
-        coachDiscordId1: String,
-        coachUsername2: String?,
-        coachName2: String?,
-        coachDiscordTag2: String?,
-        coachDiscordId2: String?,
+        coachUsernames: MutableList<String>,
+        coachNames: MutableList<String>,
+        coachDiscordTags: MutableList<String>,
+        coachDiscordIds: MutableList<String>,
         coachesPollRanking: Int?,
         name: String?,
         playoffCommitteeRanking: Int?,
@@ -204,14 +185,10 @@ class Team {
         nationalChampionshipLosses: Int,
     ) {
         this.logo = logo
-        this.coachUsername1 = coachUsername1
-        this.coachName1 = coachName1
-        this.coachDiscordTag1 = coachDiscordTag1
-        this.coachDiscordId1 = coachDiscordId1
-        this.coachUsername2 = coachUsername2
-        this.coachName2 = coachName2
-        this.coachDiscordTag2 = coachDiscordTag2
-        this.coachDiscordId2 = coachDiscordId2
+        this.coachUsernames = coachUsernames
+        this.coachNames = coachNames
+        this.coachDiscordTags = coachDiscordTags
+        this.coachDiscordIds = coachDiscordIds
         this.coachesPollRanking = coachesPollRanking
         this.name = name
         this.playoffCommitteeRanking = playoffCommitteeRanking

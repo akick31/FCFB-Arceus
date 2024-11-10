@@ -16,6 +16,8 @@ import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
+import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
+import com.fcfb.arceus.utils.NoCoachesFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
@@ -63,38 +65,10 @@ class GameService(
             val homeTeam = startRequest.homeTeam
             val awayTeam = startRequest.awayTeam
 
-            // If the second coach username is not null, there is a coordinator
-            val homeCoachUsername1: String
-            val homeCoachDiscordId1: String
-            val awayCoachUsername1: String
-            val awayCoachDiscordId1: String
-            val homeCoachDiscordId2: String?
-            val homeCoachUsername2: String?
-            val awayCoachUsername2: String?
-            val awayCoachDiscordId2: String?
-            if (homeTeamData.coachUsername2 != null) {
-                homeCoachUsername1 = homeTeamData.coachUsername1
-                homeCoachUsername2 = homeTeamData.coachUsername2
-                homeCoachDiscordId1 = homeTeamData.coachDiscordId1
-                homeCoachDiscordId2 = homeTeamData.coachDiscordId2
-            } else {
-                homeCoachUsername1 = homeTeamData.coachUsername1
-                homeCoachUsername2 = null
-                homeCoachDiscordId1 = homeTeamData.coachDiscordId1
-                homeCoachDiscordId2 = null
-            }
-
-            if (awayTeamData.coachUsername2 != null) {
-                awayCoachUsername1 = awayTeamData.coachUsername1
-                awayCoachUsername2 = awayTeamData.coachUsername2
-                awayCoachDiscordId1 = awayTeamData.coachDiscordId1
-                awayCoachDiscordId2 = awayTeamData.coachDiscordId2
-            } else {
-                awayCoachUsername1 = awayTeamData.coachUsername1
-                awayCoachUsername2 = null
-                awayCoachDiscordId1 = awayTeamData.coachDiscordId1
-                awayCoachDiscordId2 = null
-            }
+            val homeCoachUsernames = homeTeamData.coachUsernames ?: throw NoCoachesFoundException()
+            val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
+            val homeCoachDiscordIds = homeTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+            val awayCoachDiscordIds = awayTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
 
             val homeOffensivePlaybook = homeTeamData.offensivePlaybook
             val awayOffensivePlaybook = awayTeamData.offensivePlaybook
@@ -117,14 +91,10 @@ class GameService(
                     Game(
                         homeTeam = homeTeam,
                         awayTeam = awayTeam,
-                        homeCoach1 = homeCoachUsername1,
-                        homeCoach2 = homeCoachUsername2,
-                        awayCoach1 = awayCoachUsername1,
-                        awayCoach2 = awayCoachUsername2,
-                        homeCoachDiscordId1 = homeCoachDiscordId1,
-                        homeCoachDiscordId2 = homeCoachDiscordId2,
-                        awayCoachDiscordId1 = awayCoachDiscordId1,
-                        awayCoachDiscordId2 = awayCoachDiscordId2,
+                        homeCoaches = homeCoachUsernames,
+                        awayCoaches = awayCoachUsernames,
+                        homeCoachDiscordIds = homeCoachDiscordIds,
+                        awayCoachDiscordIds = awayCoachDiscordIds,
                         homeOffensivePlaybook = homeOffensivePlaybook,
                         awayOffensivePlaybook = awayOffensivePlaybook,
                         homeDefensivePlaybook = homeDefensivePlaybook,
@@ -206,7 +176,7 @@ class GameService(
 
     /**
      * End a game
-     * @param gameId
+     * @param channelId
      * @return
      */
     fun endGame(channelId: ULong): Game {
@@ -304,7 +274,7 @@ class GameService(
 
     /**
      * Deletes an ongoing game
-     * @param id
+     * @param channelId
      * @return
      */
     fun deleteOngoingGame(channelId: ULong): Boolean {
