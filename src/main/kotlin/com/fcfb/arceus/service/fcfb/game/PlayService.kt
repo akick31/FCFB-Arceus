@@ -197,6 +197,18 @@ class PlayService(
     fun getPlayById(playId: Int) = playRepository.getPlayById(playId)
 
     /**
+     * Get the previous play of a game
+     * @param gameId
+     * @return
+     */
+    fun getPreviousPlay(gameId: Int) = playRepository.getPreviousPlay(gameId)
+
+    /**
+     * Get the current play of a game
+     */
+    fun getCurrentPlay(gameId: Int) = playRepository.getCurrentPlay(gameId)
+
+    /**
      * Get all plays for a game
      */
     fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)

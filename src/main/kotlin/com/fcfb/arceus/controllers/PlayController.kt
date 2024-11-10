@@ -60,6 +60,31 @@ class PlayController(
         @RequestParam("playId") playId: Int,
     ) = playService.getPlayById(playId)
 
+    /**
+     * Get the previous play of a game
+     * @param gameId
+     * @return
+     */
+    @GetMapping("/previous")
+    fun getPreviousPlay(
+        @RequestParam("gameId") gameId: Int,
+    ) = playService.getPreviousPlay(gameId)
+
+    /**
+     * Get the current play of a game
+     * @param gameId
+     * @return
+     */
+    @GetMapping("/current")
+    fun getCurrentPlay(
+        @RequestParam("gameId") gameId: Int,
+    ) = playService.getCurrentPlay(gameId)
+
+    /**
+     * Get all plays of a game
+     * @param gameId
+     * @return
+     */
     @GetMapping("/all")
     fun getAllPlaysByGameId(
         @RequestParam("gameId") gameId: Int,

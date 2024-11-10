@@ -92,6 +92,11 @@ class GameController(
         @RequestParam("requestMessageId") requestMessageId: String,
     ) = gameService.getGameByRequestMessageId("\"$requestMessageId\"")
 
+    @GetMapping("/platform_id")
+    fun getGameByPlatformId(
+        @RequestParam("id") platformId: ULong,
+    ) = gameService.getGameByPlatformId(platformId)
+
     /**
      * Delete an ongoing game
      * @param id
