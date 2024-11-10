@@ -138,6 +138,7 @@ class PlayHandler(
                 }
             }
             Scenario.TOUCHDOWN -> {
+                yards = 100-ballLocation
                 actualResult = ActualResult.TOUCHDOWN
             }
             Scenario.SPIKE -> {
