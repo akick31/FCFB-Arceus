@@ -92,6 +92,9 @@ class GameController(
         @RequestParam("requestMessageId") requestMessageId: String,
     ) = gameService.getGameByRequestMessageId("\"$requestMessageId\"")
 
+    /**
+     * Get the game by platform id
+     */
     @GetMapping("/platform_id")
     fun getGameByPlatformId(
         @RequestParam("id") platformId: ULong,

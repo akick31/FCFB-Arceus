@@ -45,13 +45,13 @@ class SeasonService(
         if (game.homeScore > game.awayScore) {
             season.nationalChampionshipWinningTeam = game.homeTeam
             season.nationalChampionshipLosingTeam = game.awayTeam
-            season.nationalChampionshipWinningCoach = listOfNotNull(game.homeCoach1, game.homeCoach2).joinToString(",")
-            season.nationalChampionshipLosingCoach = listOfNotNull(game.awayCoach1, game.awayCoach2).joinToString(",")
+            season.nationalChampionshipWinningCoach = game.homeCoaches?.joinToString(",")
+            season.nationalChampionshipLosingCoach = game.awayCoaches?.joinToString(",")
         } else {
             season.nationalChampionshipWinningTeam = game.awayTeam
             season.nationalChampionshipLosingTeam = game.homeTeam
-            season.nationalChampionshipWinningCoach = listOfNotNull(game.awayCoach1, game.awayCoach2).joinToString(",")
-            season.nationalChampionshipLosingCoach = listOfNotNull(game.homeCoach1, game.homeCoach2).joinToString(",")
+            season.nationalChampionshipWinningCoach = game.awayCoaches?.joinToString(",")
+            season.nationalChampionshipLosingCoach = game.homeCoaches?.joinToString(",")
         }
 
         val now = ZonedDateTime.now(ZoneId.of("America/New_York"))

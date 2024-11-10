@@ -15,45 +15,60 @@ class GameStatsService(
      * Create a game stats entry
      * @param game
      */
-    fun createGameStats(game: Game): GameStats {
+    fun createGameStats(game: Game): List<GameStats> {
         val homeTeam = teamService.getTeamByName(game.homeTeam)
         val awayTeam = teamService.getTeamByName(game.awayTeam)
 
-        val gameStats =
+        val homeStats =
             GameStats(
                 gameId = game.gameId,
-                homeTeam = game.homeTeam,
-                awayTeam = game.awayTeam,
-                homeTeamRank = homeTeam.playoffCommitteeRanking ?: homeTeam.coachesPollRanking ?: 0,
-                awayTeamRank = awayTeam.playoffCommitteeRanking ?: awayTeam.coachesPollRanking ?: 0,
+                team = game.homeTeam,
+                teamRank = homeTeam.playoffCommitteeRanking ?: homeTeam.coachesPollRanking ?: 0,
                 startTime = game.startTime,
                 location = game.location,
                 tvChannel = game.tvChannel,
-                homeCoach1 = game.homeCoach1,
-                homeCoach2 = game.homeCoach2,
-                awayCoach1 = game.awayCoach1,
-                awayCoach2 = game.awayCoach2,
-                homeOffensivePlaybook = game.homeOffensivePlaybook,
-                awayOffensivePlaybook = game.awayOffensivePlaybook,
-                homeDefensivePlaybook = game.homeDefensivePlaybook,
-                awayDefensivePlaybook = game.awayDefensivePlaybook,
+                coaches = game.homeCoaches,
+                offensivePlaybook = game.homeOffensivePlaybook,
+                defensivePlaybook = game.homeDefensivePlaybook,
                 season = game.season,
                 week = game.week,
                 subdivision = game.subdivision,
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
-                homeRecord = homeTeam.currentWins.toString() + "-" + homeTeam.currentLosses.toString(),
-                awayRecord = awayTeam.currentWins.toString() + "-" + awayTeam.currentLosses.toString(),
+                record = homeTeam.currentWins.toString() + "-" + homeTeam.currentLosses.toString(),
             )
-        gameStatsRepository.save(gameStats) ?: throw Exception("Could not create game stats")
-        return gameStats
+        gameStatsRepository.save(homeStats) ?: throw Exception("Could not create game stats")
+
+        val awayStats =
+            GameStats(
+                gameId = game.gameId,
+                team = game.awayTeam,
+                teamRank = awayTeam.playoffCommitteeRanking ?: awayTeam.coachesPollRanking ?: 0,
+                startTime = game.startTime,
+                location = game.location,
+                tvChannel = game.tvChannel,
+                coaches = game.awayCoaches,
+                offensivePlaybook = game.awayOffensivePlaybook,
+                defensivePlaybook = game.awayDefensivePlaybook,
+                season = game.season,
+                week = game.week,
+                subdivision = game.subdivision,
+                gameStatus = game.gameStatus,
+                gameType = game.gameType,
+                record = awayTeam.currentWins.toString() + "-" + awayTeam.currentLosses.toString(),
+            )
+
+        return listOf(homeStats, awayStats)
     }
 
     /**
      * Get game stats entry by game ID
      * @param gameId
      */
-    fun getGameStatsById(gameId: Int) = gameStatsRepository.findByGameId(gameId)
+    fun getGameStatsByIdAndTeam(
+        gameId: Int,
+        team: String,
+    ) = gameStatsRepository.getGameStatsByIdAndTeam(gameId, team)
 
     /**
      * Delete game stats entry by game ID

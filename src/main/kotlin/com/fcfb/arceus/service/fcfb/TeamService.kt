@@ -13,6 +13,7 @@ import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.utils.NoTeamFoundException
+import com.fcfb.arceus.utils.TooManyCoachesException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
@@ -133,14 +134,10 @@ class TeamService(
                 teamRepository.save(
                     Team(
                         team.logo,
-                        team.coachUsername1,
-                        team.coachName1,
-                        team.coachDiscordTag1,
-                        team.coachDiscordId1,
-                        team.coachUsername2,
-                        team.coachName2,
-                        team.coachDiscordTag2,
-                        team.coachDiscordId2,
+                        team.coachUsernames ?: mutableListOf(),
+                        team.coachNames ?: mutableListOf(),
+                        team.coachDiscordTags ?: mutableListOf(),
+                        team.coachDiscordIds ?: mutableListOf(),
                         0,
                         team.name,
                         0,
@@ -188,14 +185,10 @@ class TeamService(
 
         existingTeam.apply {
             this.name = team.name
-            coachUsername1 = team.coachUsername1
-            coachName1 = team.coachName1
-            coachDiscordTag1 = team.coachDiscordTag1
-            coachDiscordId1 = team.coachDiscordId1
-            coachUsername2 = team.coachUsername2
-            coachName2 = team.coachName2
-            coachDiscordTag2 = team.coachDiscordTag2
-            coachDiscordId2 = team.coachDiscordId2
+            coachUsernames = team.coachUsernames
+            coachNames = team.coachNames
+            coachDiscordTags = team.coachDiscordTags
+            coachDiscordIds = team.coachDiscordIds
             subdivision = team.subdivision
             conference = team.conference
             primaryColor = team.primaryColor
@@ -242,25 +235,79 @@ class TeamService(
         user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
-                existingTeam.coachUsername1 = user.username
-                existingTeam.coachName1 = user.coachName
-                existingTeam.coachDiscordTag1 = user.discordTag
-                existingTeam.coachDiscordId1 = discordId
+                existingTeam.coachUsernames = mutableListOf(user.username)
+                existingTeam.coachNames = mutableListOf(user.coachName)
+                existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
+                existingTeam.coachDiscordIds = mutableListOf(discordId)
                 existingTeam.offensivePlaybook = user.offensivePlaybook
                 existingTeam.defensivePlaybook = user.defensivePlaybook
             }
             OFFENSIVE_COORDINATOR -> {
-                existingTeam.coachUsername1 = user.username
-                existingTeam.coachName1 = user.coachName
-                existingTeam.coachDiscordTag1 = user.discordTag
-                existingTeam.coachDiscordId1 = discordId
+                if (existingTeam.coachNames == null || existingTeam.coachNames == listOf<String>()) {
+                    existingTeam.coachNames = mutableListOf(user.coachName)
+                } else if (existingTeam.coachNames?.size == 1) {
+                    existingTeam.coachNames?.add(user.coachName)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachUsernames == null || existingTeam.coachUsernames == mutableListOf<String>()) {
+                    existingTeam.coachUsernames = mutableListOf(user.username)
+                } else if (existingTeam.coachUsernames?.size == 1) {
+                    existingTeam.coachUsernames?.add(user.username)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachDiscordTags == null || existingTeam.coachDiscordTags == mutableListOf<String>()) {
+                    existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
+                } else if (existingTeam.coachDiscordTags?.size == 1) {
+                    existingTeam.coachDiscordTags?.add(user.discordTag)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachDiscordIds == null || existingTeam.coachDiscordIds == mutableListOf<String>()) {
+                    existingTeam.coachDiscordIds = mutableListOf(discordId)
+                } else if (existingTeam.coachDiscordIds?.size == 1) {
+                    existingTeam.coachDiscordIds?.add(discordId)
+                } else {
+                    throw TooManyCoachesException()
+                }
                 existingTeam.offensivePlaybook = user.offensivePlaybook
             }
             DEFENSIVE_COORDINATOR -> {
-                existingTeam.coachUsername2 = user.username
-                existingTeam.coachName2 = user.coachName
-                existingTeam.coachDiscordTag2 = user.discordTag
-                existingTeam.coachDiscordId2 = discordId
+                if (existingTeam.coachNames == null || existingTeam.coachNames == mutableListOf<String>()) {
+                    existingTeam.coachNames = mutableListOf(user.coachName)
+                } else if (existingTeam.coachNames?.size == 1) {
+                    existingTeam.coachNames?.add(user.coachName)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachUsernames == null || existingTeam.coachUsernames == mutableListOf<String>()) {
+                    existingTeam.coachUsernames = mutableListOf(user.username)
+                } else if (existingTeam.coachUsernames?.size == 1) {
+                    existingTeam.coachUsernames?.add(user.username)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachDiscordTags == null || existingTeam.coachDiscordTags == mutableListOf<String>()) {
+                    existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
+                } else if (existingTeam.coachDiscordTags?.size == 1) {
+                    existingTeam.coachDiscordTags?.add(user.discordTag)
+                } else {
+                    throw TooManyCoachesException()
+                }
+
+                if (existingTeam.coachDiscordIds == null || existingTeam.coachDiscordIds == mutableListOf<String>()) {
+                    existingTeam.coachDiscordIds = mutableListOf(discordId)
+                } else if (existingTeam.coachDiscordIds?.size == 1) {
+                    existingTeam.coachDiscordIds?.add(discordId)
+                } else {
+                    throw TooManyCoachesException()
+                }
                 existingTeam.defensivePlaybook = user.defensivePlaybook
             }
             RETIRED -> {}
