@@ -57,6 +57,7 @@ class GameStatsService(
                 gameType = game.gameType,
                 record = awayTeam.currentWins.toString() + "-" + awayTeam.currentLosses.toString(),
             )
+        gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats")
 
         return listOf(homeStats, awayStats)
     }
