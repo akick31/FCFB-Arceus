@@ -73,5 +73,5 @@ class GameStatsService(
     /**
      * Delete game stats entry by game ID
      */
-    fun deleteById(gameId: Int) = gameStatsRepository.deleteById(gameId)
+    fun deleteByGameId(gameId: Int) = gameStatsRepository.deleteByGameId(gameId)
 }

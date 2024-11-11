@@ -285,7 +285,7 @@ class GameService(
             }
         val id = game.gameId
         gameRepository.deleteById(id)
-        gameStatsService.deleteById(id)
+        gameStatsService.deleteByGameId(id)
         playRepository.deleteAllPlaysByGameId(id)
         Logger.info("Game $id deleted")
         return true
