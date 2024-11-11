@@ -163,8 +163,8 @@ class GameService(
             newGame.requestMessageId = listOf(discordData[1])
 
             // Save the updated entity and create game stats
-            gameStatsService.createGameStats(newGame)
             gameRepository.save(newGame)
+            gameStatsService.createGameStats(newGame)
 
             Logger.info("Game started: ${newGame.homeTeam} vs ${newGame.awayTeam}")
             return newGame
