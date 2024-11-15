@@ -752,7 +752,13 @@ class StatsHandler(
                 it.playCall != PlayCall.KICKOFF_NORMAL &&
                 it.playCall != PlayCall.KICKOFF_ONSIDE &&
                 it.playCall != PlayCall.KICKOFF_SQUIB
-        }.sumOf { (it.playTime) + (it.runoffTime) }
+        }.sumOf {
+            if (it.clock - (it.playTime) + (it.runoffTime) < 0) {
+                it.clock
+            } else {
+                it.playTime + it.runoffTime
+            }
+        }
     }
 
     private fun calculateTouchdowns(
