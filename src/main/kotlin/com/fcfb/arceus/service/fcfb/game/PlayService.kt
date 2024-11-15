@@ -6,6 +6,7 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
 import com.fcfb.arceus.repositories.PlayRepository
+import com.fcfb.arceus.utils.DefensiveNumberNotFound
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.http.HttpHeaders
@@ -117,7 +118,7 @@ class PlayService(
 
             gamePlay.offensiveSubmitter = offensiveSubmitter
 
-            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber)
+            val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: throw DefensiveNumberNotFound())
 
             when (playCall) {
                 PlayCall.PASS, PlayCall.RUN, PlayCall.SPIKE, PlayCall.KNEEL ->

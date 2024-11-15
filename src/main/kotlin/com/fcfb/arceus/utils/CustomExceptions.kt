@@ -101,3 +101,9 @@ class TooManyCoachesException : Exception("Attempting to add too many coaches to
         return "TooManyCoachesException: ${super.message}"
     }
 }
+
+class DefensiveNumberNotFound : Exception("Defensive number not found") {
+    override fun toString(): String {
+        return "DefensiveNumberNotFound: ${super.message}"
+    }
+}
