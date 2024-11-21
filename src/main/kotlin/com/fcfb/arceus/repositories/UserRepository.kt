@@ -9,7 +9,8 @@ import org.springframework.stereotype.Repository
 interface UserRepository : CrudRepository<User?, String?> {
     fun getById(id: Long?): User
 
-    fun getByDiscordId(id: String?): User
+    @Query("SELECT u FROM User u WHERE u.discordId = :discordId")
+    fun getByDiscordId(discordId: String?): User
 
     fun getByCoachName(name: String?): User
 
