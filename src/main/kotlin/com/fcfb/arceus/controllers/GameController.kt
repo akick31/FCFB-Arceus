@@ -101,6 +101,19 @@ class GameController(
     ) = gameService.getGameByPlatformId(platformId)
 
     /**
+     * Sub a coach in the game for a team
+     * @param gameId
+     * @param team
+     * @param coachId
+     */
+    @PutMapping("/sub")
+    fun subCoach(
+        @RequestParam("gameId") gameId: Int,
+        @RequestParam("team") team: String,
+        @RequestParam("coachId") coachId: String,
+    ) = gameService.subCoach(gameId, team, coachId)
+
+    /**
      * Delete an ongoing game
      * @param id
      * @return
