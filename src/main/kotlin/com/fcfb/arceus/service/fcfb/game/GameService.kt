@@ -351,7 +351,7 @@ class GameService(
     fun subCoach(
         gameId: Int,
         team: String,
-        coachId: String
+        coachId: String,
     ): Game {
         val game = getGameById(gameId)
         val userData = userService.getUserByDiscordId(coachId)
