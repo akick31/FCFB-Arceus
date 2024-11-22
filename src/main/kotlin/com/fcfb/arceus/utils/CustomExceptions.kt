@@ -107,3 +107,9 @@ class DefensiveNumberNotFound : Exception("Defensive number not found") {
         return "DefensiveNumberNotFound: ${super.message}"
     }
 }
+
+class TeamNotFoundException : Exception("Team not found") {
+    override fun toString(): String {
+        return "TeamNotFoundException: ${super.message}"
+    }
+}

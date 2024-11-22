@@ -18,6 +18,7 @@ import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
 import com.fcfb.arceus.utils.NoCoachesFoundException
+import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
@@ -330,8 +331,47 @@ class GameService(
         saveGame(game)
     }
 
+    /**
+     * Get the game by request message id
+     * @param requestMessageId
+     */
     fun getGameByRequestMessageId(requestMessageId: String) = gameRepository.getGameByRequestMessageId(requestMessageId)
 
+    /**
+     * Get the game by platform id
+     * @param platformId
+     */
     fun getGameByPlatformId(platformId: ULong) =
         gameRepository.getGameByHomePlatformId(platformId) ?: gameRepository.getGameByAwayPlatformId(platformId)
+
+    /**
+     * Sub a coach in for a team
+     * @param gameId
+     */
+    fun subCoach(
+        gameId: Int,
+        team: String,
+        coachId: String
+    ): Game {
+        val game = getGameById(gameId)
+        val userData = userService.getUserByDiscordId(coachId)
+        val coach = userData.coachName
+        val updatedTeam = team.replace("_", " ")
+
+        when (updatedTeam) {
+            game.homeTeam -> {
+                game.homeCoaches = listOf(coach)
+                game.homeCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())
+            }
+            game.awayTeam -> {
+                game.awayCoaches = listOf(coach)
+                game.awayCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())
+            }
+            else -> {
+                throw TeamNotFoundException()
+            }
+        }
+        saveGame(game)
+        return game
+    }
 }
