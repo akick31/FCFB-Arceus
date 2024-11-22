@@ -1,10 +1,12 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.GameType.BOWL
 import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_CHAMPIONSHIP
 import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_GAME
+import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
@@ -12,6 +14,7 @@ import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
 import com.fcfb.arceus.utils.NoTeamFoundException
 import com.fcfb.arceus.utils.TooManyCoachesException
 import kotlinx.coroutines.Dispatchers
@@ -321,10 +324,34 @@ class TeamService(
     }
 
     /**
+     * Fire all coaches for a team
+     * @param name
+     */
+    fun fireCoach(name: String?): Team {
+        val updatedName = name?.replace("_", " ")
+        val existingTeam = getTeamByName(updatedName)
+        val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+        for (coach in coachDiscordIds) {
+            val user = userService.getUserByDiscordId(coach)
+            user.team = null
+            userService.updateUser(user)
+        }
+
+        existingTeam.coachUsernames = mutableListOf()
+        existingTeam.coachNames = mutableListOf()
+        existingTeam.coachDiscordTags = mutableListOf()
+        existingTeam.coachDiscordIds = mutableListOf()
+        existingTeam.offensivePlaybook = OffensivePlaybook.AIR_RAID
+        existingTeam.defensivePlaybook = DefensivePlaybook.FOUR_THREE
+        saveTeam(existingTeam)
+        return existingTeam
+    }
+
+    /**
      * Save a team
      * @param team
      */
-    fun saveTeam(team: Team) = teamRepository.save(team)
+    private fun saveTeam(team: Team) = teamRepository.save(team)
 
     /**
      * Delete a team

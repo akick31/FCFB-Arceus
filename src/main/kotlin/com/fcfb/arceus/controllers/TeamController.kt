@@ -51,6 +51,11 @@ class TeamController(
         @RequestParam coachPosition: CoachPosition,
     ) = teamService.hireCoach(name, discordId, coachPosition)
 
+    @PostMapping("/fire")
+    fun hireCoach(
+        @RequestParam team: String,
+    ) = teamService.fireCoach(team)
+
     @DeleteMapping("/{id}")
     fun deleteTeam(
         @PathVariable("id") id: Int,
