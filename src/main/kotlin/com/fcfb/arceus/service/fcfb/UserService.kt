@@ -147,7 +147,7 @@ class UserService(
      * Get a user by its Discord ID
      * @param discordId
      */
-    fun getUserByDiscordId(discordId: String) = dtoConverter.convertToUserDTO(userRepository.getByDiscordId(discordId))
+    fun getUserDTOByDiscordId(discordId: String) = dtoConverter.convertToUserDTO(userRepository.getByDiscordId(discordId))
 
     /**
      * Get a user by its team
@@ -314,6 +314,11 @@ class UserService(
         userRepository.save(existingUser)
         return user
     }
+
+    /**
+     * Get a user by their Discord id
+     */
+    fun getUserByDiscordId(id: String) = userRepository.getByDiscordId(id)
 
     /**
      * Save a user

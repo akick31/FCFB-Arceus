@@ -301,7 +301,7 @@ class GameService(
         val now = ZonedDateTime.now(ZoneId.of("America/New_York"))
 
         // Add 24 hours to the current date and time
-        val futureTime = now.plusHours(24)
+        val futureTime = now.plusHours(18)
 
         // Define the desired date and time format
         val formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")
@@ -354,7 +354,7 @@ class GameService(
         coachId: String,
     ): Game {
         val game = getGameById(gameId)
-        val userData = userService.getUserByDiscordId(coachId)
+        val userData = userService.getUserDTOByDiscordId(coachId)
         val coach = userData.coachName
         val updatedTeam = team.replace("_", " ")
 
@@ -374,4 +374,9 @@ class GameService(
         saveGame(game)
         return game
     }
+
+    /**
+     * Find expired timers
+     */
+    fun findExpiredTimers() = gameRepository.findExpiredTimers()
 }
