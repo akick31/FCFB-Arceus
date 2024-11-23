@@ -24,9 +24,9 @@ class UserController(
     ) = userService.getUserById(id)
 
     @GetMapping("/discord")
-    fun getUserByDiscordId(
+    fun getUserDTOByDiscordId(
         @RequestParam id: String,
-    ) = userService.getUserByDiscordId(id)
+    ) = userService.getUserDTOByDiscordId(id)
 
     @GetMapping("/team")
     fun getUserByTeam(

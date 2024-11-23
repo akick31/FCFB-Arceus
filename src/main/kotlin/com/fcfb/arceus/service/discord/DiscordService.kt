@@ -27,6 +27,11 @@ class DiscordService(
     @Value("\${discord.bot.token}")
     private val botToken: String? = null
 
+    /**
+     * Start a game thread in Discord
+     * @param game
+     * @return List<String>?
+     */
     fun startGameThread(game: Game): List<String>? {
         val discordBotUrl = "$discordBotUrl/start_game"
         val headers = HttpHeaders()
@@ -41,6 +46,28 @@ class DiscordService(
         }
     }
 
+    /**
+     * Notify game of a delay of game
+     * @param game
+     * @return Boolean
+     */
+    fun notifyDelayOfGame(game: Game) {
+        val discordBotUrl = "$discordBotUrl/delay_of_game"
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val requestEntity = HttpEntity(game, headers)
+        try {
+            restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
+        } catch (e: Exception) {
+            Logger.error("There was an error notifying the delay of game for ${game.gameId}: " + e.message)
+        }
+    }
+
+    /**
+     * Get a user by their Discord Tag
+     * @param discordId
+     * @return User
+     */
     suspend fun getUserByDiscordTag(tag: String): User {
         try {
             val client = Kord(botToken!!)

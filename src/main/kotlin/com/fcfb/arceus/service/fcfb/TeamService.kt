@@ -234,7 +234,7 @@ class TeamService(
     ): Team {
         val updatedName = name?.replace("_", " ")
         val existingTeam = getTeamByName(updatedName)
-        val user = userService.getUserByDiscordId(discordId)
+        val user = userService.getUserDTOByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
@@ -332,7 +332,7 @@ class TeamService(
         val existingTeam = getTeamByName(updatedName)
         val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
         for (coach in coachDiscordIds) {
-            val user = userService.getUserByDiscordId(coach)
+            val user = userService.getUserDTOByDiscordId(coach)
             user.team = null
             userService.updateUser(user)
         }

@@ -18,4 +18,12 @@ interface GameRepository : CrudRepository<Game?, Int?> {
 
     @Query(value = "SELECT * FROM game WHERE away_platform_id = ?", nativeQuery = true)
     fun getGameByAwayPlatformId(awayPlatformId: ULong): Game?
+
+    @Query(
+        value =
+            "SELECT * FROM game WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') < NOW() " +
+                "AND game_status != 'FINAL' AND game_status != 'PREGAME'",
+        nativeQuery = true,
+    )
+    fun findExpiredTimers(): List<Game>
 }
