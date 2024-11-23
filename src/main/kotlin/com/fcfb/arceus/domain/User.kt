@@ -67,6 +67,10 @@ class User {
     var team: String? = null
 
     @Basic
+    @Column(name = "delay_of_game_instances")
+    var delayOfGameInstances: Int = 0
+
+    @Basic
     @Column(name = "wins")
     var wins: Int = 0
 
@@ -146,6 +150,7 @@ class User {
         role: Role,
         salt: String,
         team: String?,
+        delayOfGameInstances: Int,
         wins: Int,
         losses: Int,
         winPercentage: Double,
@@ -175,6 +180,7 @@ class User {
         this.role = role
         this.salt = salt
         this.team = team
+        this.delayOfGameInstances = delayOfGameInstances
         this.wins = wins
         this.losses = losses
         this.winPercentage = winPercentage
