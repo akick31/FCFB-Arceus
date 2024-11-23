@@ -15,6 +15,7 @@ data class UserDTO(
     var redditUsername: String?,
     var role: Role,
     var team: String?,
+    var delayOfGameInstances: Int,
     var wins: Int,
     var losses: Int,
     var winPercentage: Double,

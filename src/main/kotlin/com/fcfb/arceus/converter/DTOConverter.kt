@@ -17,6 +17,7 @@ class DTOConverter {
             redditUsername = user.redditUsername,
             role = user.role,
             team = user.team,
+            delayOfGameInstances = user.delayOfGameInstances,
             wins = user.wins,
             losses = user.losses,
             winPercentage = user.winPercentage,
