@@ -21,8 +21,10 @@ interface GameRepository : CrudRepository<Game?, Int?> {
 
     @Query(
         value =
-            "SELECT * FROM game WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') < NOW() " +
-                "AND game_status != 'FINAL' AND game_status != 'PREGAME'",
+            "SELECT * FROM game " +
+                "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') <= CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
+                "AND game_status != 'FINAL' " +
+                "AND game_status != 'PREGAME'",
         nativeQuery = true,
     )
     fun findExpiredTimers(): List<Game>
