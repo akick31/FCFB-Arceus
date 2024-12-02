@@ -24,6 +24,11 @@ class DelayOfGameMonitor(
 ) {
     @Scheduled(fixedRate = 60000) // Runs every minute
     fun checkForDelayOfGame() {
+        val warnedGames = gameService.findGamesToWarn()
+        warnedGames.forEach { game ->
+            discordService.notifyWarning(game)
+            Logger.info("A delay of game warning for game ${game.gameId} has been processed")
+        }
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
             val updatedGame = applyDelayOfGame(game)
