@@ -27,6 +27,7 @@ class DelayOfGameMonitor(
         val warnedGames = gameService.findGamesToWarn()
         warnedGames.forEach { game ->
             discordService.notifyWarning(game)
+            gameService.updateGameAsWarned(game.gameId)
             Logger.info("A delay of game warning for game ${game.gameId} has been processed")
         }
         val expiredGames = gameService.findExpiredTimers()

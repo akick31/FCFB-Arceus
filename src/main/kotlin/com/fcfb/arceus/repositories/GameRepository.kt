@@ -1,6 +1,7 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Game
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
@@ -30,14 +31,19 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     fun findExpiredTimers(): List<Game>
 
     @Query(
-        value = "SELECT * FROM game " +
+        value =
+            "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') " +
                 "BETWEEN CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 6 HOUR) " +
                 "AND game_status != 'FINAL' " +
                 "AND game_status != 'PREGAME'" +
                 "AND game_warned = False",
-        nativeQuery = true
+        nativeQuery = true,
     )
     fun findGamesToWarn(): List<Game>
+
+    @Modifying
+    @Query(value = "UPDATE game SET game_warned = True WHERE game_id = ?", nativeQuery = true)
+    fun updateGameAsWarned(gameId: Int)
 }

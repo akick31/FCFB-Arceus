@@ -385,4 +385,10 @@ class GameService(
      * Find games to warn
      */
     fun findGamesToWarn() = gameRepository.findGamesToWarn()
+
+    /**
+     * Update a game as warned
+     * @param gameId
+     */
+    fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
 }
