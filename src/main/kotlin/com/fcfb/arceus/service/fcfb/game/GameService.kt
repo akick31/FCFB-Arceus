@@ -3,6 +3,7 @@ package com.fcfb.arceus.service.fcfb.game
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.GameMode
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.Platform
@@ -138,6 +139,7 @@ class GameService(
                         requestMessageId = null,
                         gameType = startRequest.gameType,
                         gameStatus = GameStatus.PREGAME,
+                        gameMode = GameMode.NORMAL,
                     ),
                 )
 
@@ -198,7 +200,30 @@ class GameService(
                 seasonService.endSeason(game)
             }
             saveGame(game)
-            Logger.info("Game  ${game.gameId} ended")
+            Logger.info("Game ${game.gameId} ended")
+            return game
+        } catch (e: Exception) {
+            Logger.error("Error in ${game.gameId}: " + e.message!!)
+            throw e
+        }
+    }
+
+    /**
+     * Chew a game
+     * @param channelId
+     * @return
+     */
+    fun chewGame(channelId: ULong): Game {
+        val game =
+            getGameByPlatformId(channelId) ?: run {
+                Logger.error("Game at $channelId not found")
+                throw Exception("Game not found")
+            }
+
+        try {
+            game.gameMode = GameMode.CHEW
+            saveGame(game)
+            Logger.info("Game ${game.gameId} is being chewed")
             return game
         } catch (e: Exception) {
             Logger.error("Error in ${game.gameId}: " + e.message!!)

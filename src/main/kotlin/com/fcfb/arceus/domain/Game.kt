@@ -276,6 +276,12 @@ class Game {
     @JsonProperty("game_type")
     var gameType: GameType? = null
 
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_mode")
+    @JsonProperty("game_mode")
+    var gameMode: GameMode? = null
+
     constructor(
         homeTeam: String,
         awayTeam: String,
@@ -325,6 +331,7 @@ class Game {
         requestMessageId: List<String>?,
         gameStatus: GameStatus?,
         gameType: GameType?,
+        gameMode: GameMode?,
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -374,6 +381,7 @@ class Game {
         this.requestMessageId = requestMessageId
         this.gameStatus = gameStatus
         this.gameType = gameType
+        this.gameMode = gameMode
     }
 
     constructor()
@@ -660,6 +668,19 @@ class Game {
             fun fromDescription(description: String): GameType =
                 entries.find { it.description.equals(description, ignoreCase = true) }
                     ?: throw IllegalArgumentException("Unknown game type: $description")
+        }
+    }
+
+    enum class GameMode(val description: String) {
+        NORMAL("Normal"),
+        CHEW("Chew"),
+        ;
+
+        companion object {
+            @JsonCreator
+            fun fromDescription(description: String): GameMode =
+                entries.find { it.description.equals(description, ignoreCase = true) }
+                    ?: throw IllegalArgumentException("Unknown game mode: $description")
         }
     }
 }
