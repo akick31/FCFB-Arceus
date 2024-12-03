@@ -123,6 +123,7 @@ class GameHandler(
         game.numPlays = play.playNumber
         game.waitingOn = waitingOn
         game.gameTimer = gameService.calculateDelayOfGameTimer()
+        game.gameWarned = false
 
         gameRepository.save(game)
         scorebugService.generateScorebug(game)
