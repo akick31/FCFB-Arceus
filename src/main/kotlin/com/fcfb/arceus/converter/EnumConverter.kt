@@ -2,6 +2,7 @@ package com.fcfb.arceus.converter
 
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
+import com.fcfb.arceus.domain.Game.GameMode
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.Subdivision
@@ -60,5 +61,16 @@ class CoinTossCallConverter : AttributeConverter<CoinTossCall, String> {
 
     override fun convertToEntityAttribute(dbData: String?): CoinTossCall? {
         return dbData?.let { CoinTossCall.fromString(it) }
+    }
+}
+
+@Converter(autoApply = true)
+class GameModeConverter : AttributeConverter<GameMode, String> {
+    override fun convertToDatabaseColumn(attribute: GameMode?): String? {
+        return attribute?.description
+    }
+
+    override fun convertToEntityAttribute(dbData: String?): GameMode? {
+        return dbData?.let { GameMode.fromDescription(it) }
     }
 }

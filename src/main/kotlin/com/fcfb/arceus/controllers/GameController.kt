@@ -49,6 +49,14 @@ class GameController(
     ) = gameService.endGame(channelId)
 
     /**
+     * Chew a game
+     */
+    @PostMapping("/chew")
+    fun chewGame(
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.chewGame(channelId)
+
+    /**
      * Run the game's coin toss
      * @param gameId
      * @param coinTossCall
