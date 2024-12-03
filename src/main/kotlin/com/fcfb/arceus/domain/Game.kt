@@ -238,6 +238,11 @@ class Game {
     @JsonProperty("game_timer")
     var gameTimer: String? = null
 
+    @Basic
+    @Column(name = "game_warned")
+    @JsonProperty("game_warned")
+    var gameWarned: Boolean? = false
+
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "current_play_type")
@@ -313,6 +318,7 @@ class Game {
         awayPlatform: Platform,
         awayPlatformId: String?,
         gameTimer: String?,
+        gameWarned: Boolean?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         clockStopped: Boolean,
@@ -361,6 +367,7 @@ class Game {
         this.awayPlatform = awayPlatform
         this.awayPlatformId = awayPlatformId
         this.gameTimer = gameTimer
+        this.gameWarned = gameWarned
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
         this.clockStopped = clockStopped

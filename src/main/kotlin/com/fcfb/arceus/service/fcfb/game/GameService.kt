@@ -131,6 +131,7 @@ class GameService(
                         awayPlatform = awayPlatform,
                         awayPlatformId = null,
                         gameTimer = formattedDateTime,
+                        gameWarned = false,
                         currentPlayType = PlayType.KICKOFF,
                         currentPlayId = 0,
                         clockStopped = true,
@@ -379,4 +380,15 @@ class GameService(
      * Find expired timers
      */
     fun findExpiredTimers() = gameRepository.findExpiredTimers()
+
+    /**
+     * Find games to warn
+     */
+    fun findGamesToWarn() = gameRepository.findGamesToWarn()
+
+    /**
+     * Update a game as warned
+     * @param gameId
+     */
+    fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
 }

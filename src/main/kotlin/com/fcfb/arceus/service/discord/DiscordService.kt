@@ -64,6 +64,23 @@ class DiscordService(
     }
 
     /**
+     * Notify game of a warning for a delay of game
+     * @param game
+     * @return Boolean
+     */
+    fun notifyWarning(game: Game) {
+        val discordBotUrl = "$discordBotUrl/delay_of_game_warning"
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val requestEntity = HttpEntity(game, headers)
+        try {
+            restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
+        } catch (e: Exception) {
+            Logger.error("There was an error notifying the delay of game  warning for ${game.gameId}: " + e.message)
+        }
+    }
+
+    /**
      * Get a user by their Discord Tag
      * @param discordId
      * @return User
