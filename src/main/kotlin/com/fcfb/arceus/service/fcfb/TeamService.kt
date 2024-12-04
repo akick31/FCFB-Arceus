@@ -125,7 +125,7 @@ class TeamService(
      * Get a team by its name
      * @param name
      */
-    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name)
+    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name?.replace("_", " "))
 
     /**
      * Create a new team
