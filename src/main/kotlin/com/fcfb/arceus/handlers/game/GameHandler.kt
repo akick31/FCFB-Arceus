@@ -65,8 +65,18 @@ class GameHandler(
             game.quarter = 4
             game.gameStatus = GameStatus.FINAL
             endGame(game)
-        } else if (quarter >= 5) {
+        } else if (quarter >= 5 && game.gameStatus == GameStatus.IN_PROGRESS) {
             game.gameStatus = GameStatus.END_OF_REGULATION
+            game.ballLocation = 75
+            game.down = 1
+            game.yardsToGo = 10
+            game.overtimeHalf = 1
+            game.homeTimeouts = 1
+            game.awayTimeouts = 1
+        } else {
+            game.down = down
+            game.yardsToGo = yardsToGo
+            game.clockStopped = true
         }
 
         // Update waiting on
@@ -89,7 +99,11 @@ class GameHandler(
             play.playCall == PlayCall.PAT ||
             play.playCall == PlayCall.TWO_POINT
         ) {
-            game.currentPlayType = PlayType.KICKOFF
+            if (game.gameStatus == GameStatus.OVERTIME) {
+                game.currentPlayType = PlayType.NORMAL
+            } else {
+                game.currentPlayType = PlayType.KICKOFF
+            }
         } else {
             game.currentPlayType = PlayType.NORMAL
         }
@@ -110,18 +124,66 @@ class GameHandler(
             game.gameStatus = GameStatus.IN_PROGRESS
         }
 
+        // Handle overtime logic
+        if (game.gameStatus == GameStatus.OVERTIME) {
+            game.clock = "0:00"
+            if (play.actualResult == ActualResult.GOOD ||
+                play.actualResult == ActualResult.NO_GOOD ||
+                play.actualResult == ActualResult.SUCCESS ||
+                play.actualResult == ActualResult.FAILED ||
+                play.actualResult == ActualResult.DEFENSE_TWO_POINT ||
+                play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
+                play.actualResult == ActualResult.TURNOVER
+            ) {
+                // Handle the end of each half of overtime
+                if (game.overtimeHalf == 1) {
+                    game.overtimeHalf = 2
+                    game.possession =
+                        if (game.possession == TeamSide.HOME) {
+                            TeamSide.AWAY
+                        } else {
+                            TeamSide.HOME
+                        }
+                    game.ballLocation = 75
+                    game.down = 1
+                    game.yardsToGo = 10
+                } else {
+                    if (homeScore != awayScore) {
+                        game.gameStatus = GameStatus.FINAL
+                        endGame(game)
+                    } else {
+                        game.overtimeHalf = 1
+                        game.possession =
+                            if (game.possession == TeamSide.HOME) {
+                                TeamSide.HOME
+                            } else {
+                                TeamSide.AWAY
+                            }
+                        game.ballLocation = 75
+                        game.down = 1
+                        game.yardsToGo = 10
+                        game.quarter += 1
+                        game.homeTimeouts = 1
+                        game.awayTimeouts = 1
+                        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                    }
+                }
+            }
+        } else {
+            game.clock = convertClockToString(clock)
+            game.possession = possession
+            game.quarter = quarter
+            game.ballLocation = ballLocation
+            game.down = down
+            game.yardsToGo = yardsToGo
+            game.waitingOn = waitingOn
+        }
+
         // Update everything else
         game.homeScore = homeScore
         game.awayScore = awayScore
-        game.possession = possession
-        game.quarter = quarter
-        game.clock = convertClockToString(clock)
-        game.ballLocation = ballLocation
-        game.down = down
-        game.yardsToGo = yardsToGo
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
-        game.waitingOn = waitingOn
         game.gameTimer = gameService.calculateDelayOfGameTimer()
         game.gameWarned = false
 

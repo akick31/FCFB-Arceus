@@ -209,14 +209,20 @@ class ScorebugService(
             ) // Center the ball location text
         } else {
             // Draw Quarter Box
-            val quarterText =
+            var quarterText =
                 when (game.quarter) {
-                    5 -> "OT" // Overtime
+                    5 -> "OT"
                     4 -> "4th"
                     3 -> "3rd"
                     2 -> "2nd"
                     1 -> "1st"
                     else -> "Unknown"
+                }
+            quarterText =
+                if (game.quarter >= 6) {
+                    "${game.quarter - 4} OT"
+                } else {
+                    quarterText
                 }
             g.color = Color.DARK_GRAY.darker()
             g.fillRect(clockInfoBoxX, homeTeamY, clockInfoBoxWidth, infoBoxHeight) // Quarter box
@@ -227,7 +233,13 @@ class ScorebugService(
             g.color = Color.DARK_GRAY
             g.fillRect(clockInfoBoxX, awayTeamY, clockInfoBoxWidth, infoBoxHeight) // Clock box
             g.color = Color.WHITE
-            drawCenteredText(g, game.clock.toString(), clockInfoBoxX, awayTeamY, clockInfoBoxWidth, infoBoxHeight) // Draw clock text
+            val clock =
+                if (game.quarter >= 5) {
+                    ""
+                } else {
+                    game.clock
+                }
+            drawCenteredText(g, clock, clockInfoBoxX, awayTeamY, clockInfoBoxWidth, infoBoxHeight) // Draw clock text
 
             if (game.currentPlayType == PlayType.NORMAL) {
                 fontInputStream = this.javaClass.getResourceAsStream(customFontPath)
