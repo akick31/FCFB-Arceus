@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import javax.transaction.Transactional
 
 @Repository
 interface GameRepository : CrudRepository<Game?, Int?> {
@@ -43,6 +44,7 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     )
     fun findGamesToWarn(): List<Game>
 
+    @Transactional
     @Modifying
     @Query(value = "UPDATE game SET game_warned = True WHERE game_id = ?", nativeQuery = true)
     fun updateGameAsWarned(gameId: Int)
