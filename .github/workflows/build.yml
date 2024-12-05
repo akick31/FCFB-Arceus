@@ -123,4 +123,4 @@ jobs:
           curl -X POST "http://51.81.32.234:8080/job/FCFB-Arceus_PRD/build?token=${{ secrets.JENKINS_TOKEN }}"
         env:
           JENKINS_USER: ${{ secrets.JENKINS_USER }}
-          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_API_TOKEN }}
