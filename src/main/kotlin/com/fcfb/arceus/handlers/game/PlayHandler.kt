@@ -58,7 +58,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
@@ -287,7 +287,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
@@ -416,7 +416,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
@@ -751,6 +751,7 @@ class PlayHandler(
 
     private fun getRunoffTime(
         clockStopped: Boolean?,
+        clock: Int,
         timeoutUsed: Boolean,
         playCall: PlayCall,
         runoffType: RunoffType,
@@ -763,6 +764,14 @@ class PlayHandler(
                 playCall == PlayCall.KNEEL -> 30
                 runoffType == RunoffType.CHEW -> 30
                 runoffType == RunoffType.HURRY -> 7
+                runoffType == RunoffType.FINAL ->
+                    if (clock <= 7) {
+                        clock
+                    } else if (clock > 30) {
+                        30
+                    } else {
+                        clock - 1
+                    }
                 offensivePlaybook == OffensivePlaybook.PRO -> 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> 20
