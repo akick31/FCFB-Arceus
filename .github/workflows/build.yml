@@ -110,3 +110,17 @@ jobs:
           # Create and push the new tag
           git tag $NEW_TAG
           git push origin $NEW_TAG
+
+  trigger_jenkins_build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Trigger Jenkins build
+        run: |
+          curl -X POST "http://51.81.32.234:8080/job/FCFB-Arceus_PRD/build?token=${{ secrets.JENKINS_TOKEN }}"
+        env:
+          JENKINS_USER: ${{ secrets.JENKINS_USER }}
+          JENKINS_TOKEN: ${{ secrets.JENKINS_TOKEN }}
