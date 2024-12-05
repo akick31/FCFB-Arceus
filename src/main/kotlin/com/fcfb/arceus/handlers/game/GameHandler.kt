@@ -155,9 +155,9 @@ class GameHandler(
             game.clock = convertClockToString(clock)
             game.possession = possession
             game.quarter = quarter
-            game.ballLocation = 35
-            game.down = 1
-            game.yardsToGo = 10
+            game.ballLocation = ballLocation
+            game.down = down
+            game.yardsToGo = yardsToGo
             game.waitingOn = waitingOn
         } else if (quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
             // Halftime
@@ -175,6 +175,13 @@ class GameHandler(
         } else if (game.gameStatus == GameStatus.HALFTIME) {
             // Start of second half
             game.gameStatus = GameStatus.IN_PROGRESS
+            game.clock = convertClockToString(clock)
+            game.possession = possession
+            game.quarter = quarter
+            game.ballLocation = ballLocation
+            game.down = down
+            game.yardsToGo = yardsToGo
+            game.waitingOn = waitingOn
         } else if (quarter >= 5 && game.gameStatus == GameStatus.IN_PROGRESS) {
             // Start of Overtime
             game.gameStatus = GameStatus.END_OF_REGULATION
