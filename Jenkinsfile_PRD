@@ -25,6 +25,13 @@ pipeline {
     }
 
     stages {
+        stage('Debug Jenkinsfile') {
+            steps {
+                script {
+                    echo "Webhook Payload: ${readJSON text: env.GITHUB_EVENT_PATH}"
+                }
+            }
+        }
         stage('Filter for merged PR') {
             when {
                 expression {
