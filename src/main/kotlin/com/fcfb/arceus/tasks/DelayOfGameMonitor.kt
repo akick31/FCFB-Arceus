@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.service.fcfb.game.GameService
@@ -21,6 +22,7 @@ class DelayOfGameMonitor(
     private val playService: PlayService,
     private val discordService: DiscordService,
     private val scorebugService: ScorebugService,
+    private val playRepository: PlayRepository,
 ) {
     @Scheduled(fixedRate = 60000) // Runs every minute
     fun checkForDelayOfGame() {
@@ -67,10 +69,21 @@ class DelayOfGameMonitor(
         }
 
         val currentPlay = playService.getCurrentPlay(game.gameId)
-        currentPlay.playFinished = true
-        currentPlay.defensiveNumber = "0"
-        currentPlay.result = Scenario.DELAY_OF_GAME
-        currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+        if (currentPlay != null) {
+            currentPlay.playFinished = true
+            currentPlay.defensiveNumber = "0"
+            currentPlay.result = Scenario.DELAY_OF_GAME
+            currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+            playRepository.save(currentPlay)
+        } else {
+            val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
+            play.playFinished = true
+            play.defensiveNumber = "0"
+            play.result = Scenario.DELAY_OF_GAME
+            play.actualResult = ActualResult.DELAY_OF_GAME
+            playRepository.save(play)
+        }
+
         gameService.saveGame(game)
         scorebugService.generateScorebug(game)
         return game
