@@ -2,6 +2,7 @@ package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.game.GameService
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -79,6 +80,18 @@ class GameController(
         @RequestParam("gameId") gameId: String,
         @RequestParam("coinTossChoice") coinTossChoice: CoinTossChoice,
     ) = gameService.makeCoinTossChoice(gameId, coinTossChoice)
+
+    /**
+     * Set the coin toss offense or defense choice
+     * @param gameId
+     * @param coinTossChoice
+     * @return
+     */
+    @PutMapping("/make_overtime_coin_toss_choice")
+    fun makeCoinTossChoice(
+        @RequestParam("gameId") gameId: String,
+        @RequestParam("coinTossChoice") coinTossChoice: OvertimeCoinTossChoice,
+    ) = gameService.makeOvertimeCoinTossChoice(gameId, coinTossChoice)
 
     /**
      * Update the request message id

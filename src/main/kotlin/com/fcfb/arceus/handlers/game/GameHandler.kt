@@ -51,22 +51,14 @@ class GameHandler(
             play.playCall == PlayCall.PAT || play.playCall == PlayCall.KICKOFF_NORMAL ||
             play.playCall == PlayCall.KICKOFF_ONSIDE || play.playCall == PlayCall.KICKOFF_SQUIB ||
             play.playCall == PlayCall.PUNT || play.actualResult == ActualResult.TURNOVER ||
-            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY
+            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY ||
+            game.gameStatus == GameStatus.OVERTIME || game.gameStatus == GameStatus.HALFTIME
 
         // Update timeouts
         if (homeTimeoutCalled && timeoutUsed) {
             game.homeTimeouts -= 1
         } else if (awayTimeoutCalled && timeoutUsed) {
             game.awayTimeouts -= 1
-        }
-
-        // If game quarter is 0, then the game is over
-        if (quarter == 0) {
-            game.quarter = 4
-            game.gameStatus = GameStatus.FINAL
-            endGame(game)
-        } else if (quarter >= 5) {
-            game.gameStatus = GameStatus.END_OF_REGULATION
         }
 
         // Update waiting on
@@ -89,39 +81,125 @@ class GameHandler(
             play.playCall == PlayCall.PAT ||
             play.playCall == PlayCall.TWO_POINT
         ) {
-            game.currentPlayType = PlayType.KICKOFF
+            if (game.gameStatus == GameStatus.OVERTIME) {
+                game.currentPlayType = PlayType.NORMAL
+            } else {
+                game.currentPlayType = PlayType.KICKOFF
+            }
         } else {
             game.currentPlayType = PlayType.NORMAL
         }
 
-        // Update the current game status
-        if (game.gameStatus == GameStatus.OPENING_KICKOFF) {
+        // Update the quarter/overtime stuff
+        if (quarter == 0) {
+            // End of game
+            game.quarter = 4
+            game.gameStatus = GameStatus.FINAL
+            endGame(game)
+        } else if (game.gameStatus == GameStatus.OVERTIME) {
+            // Overtime
+            game.clock = "0:00"
+            if (play.actualResult == ActualResult.GOOD ||
+                play.actualResult == ActualResult.NO_GOOD ||
+                play.actualResult == ActualResult.SUCCESS ||
+                play.actualResult == ActualResult.FAILED ||
+                play.actualResult == ActualResult.DEFENSE_TWO_POINT ||
+                play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
+                play.actualResult == ActualResult.TURNOVER
+            ) {
+                // Handle the end of each half of overtime
+                if (game.overtimeHalf == 1) {
+                    game.overtimeHalf = 2
+                    game.possession =
+                        if (game.possession == TeamSide.HOME) {
+                            TeamSide.AWAY
+                        } else {
+                            TeamSide.HOME
+                        }
+                    game.ballLocation = 75
+                    game.down = 1
+                    game.yardsToGo = 10
+                    game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                } else {
+                    if (homeScore != awayScore) {
+                        // End of game, one team has won
+                        game.gameStatus = GameStatus.FINAL
+                        endGame(game)
+                    } else {
+                        game.overtimeHalf = 1
+                        game.possession =
+                            if (game.possession == TeamSide.HOME) {
+                                TeamSide.HOME
+                            } else {
+                                TeamSide.AWAY
+                            }
+                        game.ballLocation = 75
+                        game.down = 1
+                        game.yardsToGo = 10
+                        game.quarter += 1
+                        game.homeTimeouts = 1
+                        game.awayTimeouts = 1
+                        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                    }
+                }
+            } else {
+                game.possession = possession
+                game.waitingOn = waitingOn
+                game.ballLocation = ballLocation
+                game.down = down
+                game.yardsToGo = yardsToGo
+            }
+        } else if (game.gameStatus == GameStatus.OPENING_KICKOFF) {
+            // Start of game
             game.gameStatus = GameStatus.IN_PROGRESS
-        }
-
-        // Handle halftime
-        if (quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+            game.clock = convertClockToString(clock)
+            game.possession = possession
+            game.quarter = quarter
+            game.ballLocation = 35
+            game.down = 1
+            game.yardsToGo = 10
+            game.waitingOn = waitingOn
+        } else if (quarter == 3 && clock == 420 && game.gameStatus != GameStatus.HALFTIME) {
+            // Halftime
             game.homeTimeouts = 3
             game.awayTimeouts = 3
             game.gameStatus = GameStatus.HALFTIME
             game.currentPlayType = PlayType.KICKOFF
             game.ballLocation = 35
+            game.clock = convertClockToString(clock)
+            game.possession = possession
+            game.quarter = 3
+            game.down = 1
+            game.yardsToGo = 10
+            game.waitingOn = waitingOn
         } else if (game.gameStatus == GameStatus.HALFTIME) {
+            // Start of second half
             game.gameStatus = GameStatus.IN_PROGRESS
+        } else if (quarter >= 5 && game.gameStatus == GameStatus.IN_PROGRESS) {
+            // Start of Overtime
+            game.gameStatus = GameStatus.END_OF_REGULATION
+            game.ballLocation = 75
+            game.down = 1
+            game.yardsToGo = 10
+            game.overtimeHalf = 1
+            game.homeTimeouts = 1
+            game.awayTimeouts = 1
+        } else {
+            // Normal
+            game.clock = convertClockToString(clock)
+            game.possession = possession
+            game.quarter = quarter
+            game.ballLocation = ballLocation
+            game.down = down
+            game.yardsToGo = yardsToGo
+            game.waitingOn = waitingOn
         }
 
         // Update everything else
         game.homeScore = homeScore
         game.awayScore = awayScore
-        game.possession = possession
-        game.quarter = quarter
-        game.clock = convertClockToString(clock)
-        game.ballLocation = ballLocation
-        game.down = down
-        game.yardsToGo = yardsToGo
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
-        game.waitingOn = waitingOn
         game.gameTimer = gameService.calculateDelayOfGameTimer()
         game.gameWarned = false
 

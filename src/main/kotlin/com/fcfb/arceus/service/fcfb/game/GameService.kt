@@ -6,6 +6,7 @@ import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.GameMode
 import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.GameType
+import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
@@ -127,6 +128,8 @@ class GameService(
                         awayTimeouts = 3,
                         coinTossWinner = null,
                         coinTossChoice = null,
+                        overtimeCoinTossWinner = null,
+                        overtimeCoinTossChoice = null,
                         homePlatform = homePlatform,
                         homePlatformId = null,
                         awayPlatform = awayPlatform,
@@ -140,6 +143,7 @@ class GameService(
                         gameType = startRequest.gameType,
                         gameStatus = GameStatus.PREGAME,
                         gameMode = GameMode.NORMAL,
+                        overtimeHalf = 0,
                     ),
                 )
 
@@ -252,7 +256,11 @@ class GameService(
                 } else {
                     TeamSide.AWAY
                 }
-            game.coinTossWinner = coinTossWinner
+            if (game.gameStatus == GameStatus.PREGAME) {
+                game.coinTossWinner = coinTossWinner
+            } else if (game.gameStatus == GameStatus.END_OF_REGULATION) {
+                game.overtimeCoinTossWinner = coinTossWinner
+            }
 
             Logger.info("Coin toss finished, the winner was $coinTossWinner")
             saveGame(game)
@@ -291,6 +299,42 @@ class GameService(
                 game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
+            Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
+            return saveGame(game)
+        } catch (e: Exception) {
+            Logger.error("Error in ${game.gameId}: " + e.message!!)
+            throw e
+        }
+    }
+
+    /**
+     * Make a coin toss choice
+     * @param gameId
+     * @param coinTossChoice
+     * @return
+     */
+    fun makeOvertimeCoinTossChoice(
+        gameId: String,
+        coinTossChoice: OvertimeCoinTossChoice,
+    ): Game {
+        val game = getGameById(gameId.toInt())
+
+        try {
+            game.overtimeCoinTossChoice = coinTossChoice
+            if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
+            } else if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
+            }
+            game.gameStatus = GameStatus.OVERTIME
             Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
             return saveGame(game)
         } catch (e: Exception) {

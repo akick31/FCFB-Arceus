@@ -213,6 +213,18 @@ class Game {
 
     @Enumerated(EnumType.STRING)
     @Basic
+    @Column(name = "overtime_coin_toss_winner")
+    @JsonProperty("overtime_coin_toss_winner")
+    var overtimeCoinTossWinner: TeamSide? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "overtime_coin_toss_choice")
+    @JsonProperty("overtime_coin_toss_choice")
+    var overtimeCoinTossChoice: OvertimeCoinTossChoice? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
     @Column(name = "home_platform")
     @JsonProperty("home_platform")
     lateinit var homePlatform: Platform
@@ -282,6 +294,11 @@ class Game {
     @JsonProperty("game_mode")
     var gameMode: GameMode? = null
 
+    @Basic
+    @Column(name = "overtime_half")
+    @JsonProperty("overtime_half")
+    var overtimeHalf: Int? = 0
+
     constructor(
         homeTeam: String,
         awayTeam: String,
@@ -319,6 +336,8 @@ class Game {
         awayTimeouts: Int,
         coinTossWinner: TeamSide?,
         coinTossChoice: CoinTossChoice?,
+        overtimeCoinTossWinner: TeamSide?,
+        overtimeCoinTossChoice: OvertimeCoinTossChoice?,
         homePlatform: Platform,
         homePlatformId: String?,
         awayPlatform: Platform,
@@ -332,6 +351,7 @@ class Game {
         gameStatus: GameStatus?,
         gameType: GameType?,
         gameMode: GameMode?,
+        overtimeHalf: Int?,
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -369,6 +389,8 @@ class Game {
         this.awayTimeouts = awayTimeouts
         this.coinTossWinner = coinTossWinner
         this.coinTossChoice = coinTossChoice
+        this.overtimeCoinTossWinner = overtimeCoinTossWinner
+        this.overtimeCoinTossChoice = overtimeCoinTossChoice
         this.homePlatform = homePlatform
         this.homePlatformId = homePlatformId
         this.awayPlatform = awayPlatform
@@ -382,6 +404,7 @@ class Game {
         this.gameStatus = gameStatus
         this.gameType = gameType
         this.gameMode = gameMode
+        this.overtimeHalf = overtimeHalf
     }
 
     constructor()
@@ -525,6 +548,9 @@ class Game {
         PLAY_RESULT("PLAY RESULT"),
         COIN_TOSS("COIN_TOSS"),
         COIN_TOSS_CHOICE("COIN TOSS CHOICE"),
+        OVERTIME_START("OVERTIME START"),
+        OVERTIME_COIN_TOSS("OVERTIME COIN TOSS"),
+        OVERTIME_COIN_TOSS_CHOICE("OVERTIME COIN TOSS CHOICE"),
         KICKOFF_NUMBER_REQUEST("KICKOFF NUMBER REQUEST"),
         NORMAL_NUMBER_REQUEST("NORMAL NUMBER REQUEST"),
         DM_NUMBER_REQUEST("DM NUMBER REQUEST"),
@@ -642,6 +668,11 @@ class Game {
     enum class CoinTossChoice(val description: String) {
         RECEIVE("receive"),
         DEFER("defer"),
+    }
+
+    enum class OvertimeCoinTossChoice(val description: String) {
+        OFFENSE("offense"),
+        DEFENSE("defense"),
     }
 
     enum class CoinTossCall(val description: String) {
