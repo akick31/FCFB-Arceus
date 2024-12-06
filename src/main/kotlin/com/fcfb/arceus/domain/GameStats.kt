@@ -291,4 +291,7 @@ class GameStats(
     @Basic
     @Column(name = "safeties_committed")
     var safetiesCommitted: Int = 0,
+    @Basic
+    @Column(name = "average_response_speed")
+    var averageResponseSpeed: Double = 0.0,
 )
