@@ -106,6 +106,17 @@ class GameController(
     ) = gameService.updateRequestMessageId(gameId, requestMessageId)
 
     /**
+     * Update the request message id
+     * @param gameId
+     * @param requestMessageId
+     * @return
+     */
+    @PutMapping("/last_message_timestamp")
+    fun updateLastMessageTimestamp(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.updateLastMessageTimestamp(gameId)
+
+    /**
      * Get the game by request message id
      */
     @GetMapping("/request_message")

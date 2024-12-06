@@ -271,6 +271,14 @@ class StatsHandler(
                 play, stats.safetiesCommitted,
             )
         opponentStats.safetiesForced = stats.safetiesCommitted
+        stats.averageResponseSpeed =
+            calculateAverageResponseSpeed(
+                allPlays, possession,
+            )
+        opponentStats.averageResponseSpeed =
+            calculateAverageResponseSpeed(
+                allPlays, defendingTeam,
+            )
 
         if (play.quarter == 1) {
             stats.q1Score = calculateQuarterScore(play, stats.q1Score, possession)
@@ -615,11 +623,7 @@ class StatsHandler(
             }.map {
                 it.result?.description?.substringBefore(" YARD PUNT")?.toInt() ?: 0
             }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateBlockedOpponentPunt(
@@ -802,11 +806,7 @@ class StatsHandler(
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
             }.map { it.difference }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateAverageDefensiveDiff(
@@ -824,11 +824,7 @@ class StatsHandler(
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
             }.map { it.difference }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateAverageOffensiveSpecialTeamsDiff(
@@ -846,11 +842,7 @@ class StatsHandler(
                             it.playCall == PlayCall.PUNT
                     )
             }.map { it.difference }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateAverageDefensiveSpecialTeamsDiff(
@@ -868,11 +860,7 @@ class StatsHandler(
                             it.playCall == PlayCall.PUNT
                     )
             }.map { it.difference }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateAverageYardsPerPlay(
@@ -888,11 +876,7 @@ class StatsHandler(
                     it.playCall != PlayCall.PAT &&
                     it.playCall != PlayCall.TWO_POINT
             }.map { it.yards }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateThirdDownConversionSuccess(
@@ -1012,11 +996,7 @@ class StatsHandler(
 
     private fun calculateAverageDiff(allPlays: List<Play>): Double {
         val average = allPlays.map { it.difference }.average()
-        return if (average.isNaN()) {
-            0.0
-        } else {
-            average
-        }
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateTurnoverDifferential(
@@ -1054,6 +1034,27 @@ class StatsHandler(
             return currentSafeties + 1
         }
         return currentSafeties
+    }
+
+    private fun calculateAverageResponseSpeed(
+        allPlays: List<Play>,
+        possession: TeamSide,
+    ): Double {
+        val average =
+            allPlays
+                .filter { play ->
+                    play.offensiveResponseSpeed != null && play.defensiveResponseSpeed != null
+                }
+                .map { play ->
+                    if (play.possession == possession) {
+                        play.offensiveResponseSpeed ?: 0L
+                    } else {
+                        play.defensiveResponseSpeed ?: 0L
+                    }
+                }
+                .average()
+
+        return if (average.isNaN()) 0.0 else average
     }
 
     private fun calculateQuarterScore(
