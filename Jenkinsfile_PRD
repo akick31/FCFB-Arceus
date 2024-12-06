@@ -97,6 +97,14 @@ pipeline {
                         spring.mail.properties.mail.smtp.auth=true
                         spring.mail.properties.mail.smtp.starttls.enable=true
 
+                        # Health check configuration
+                        management.endpoints.web.exposure.include=*
+                        management.endpoint.health.show-details=always
+                        management.health.defaults.enabled=true
+                        management.health.db.enabled=true
+                        management.health.diskspace.enabled=true
+                        management.health.jvm.enabled=true
+
                         # Discord configuration
                         discord.bot.token=${env.DISCORD_TOKEN}
                         discord.bot.url=http://51.81.32.234:1211/fcfb_discord
