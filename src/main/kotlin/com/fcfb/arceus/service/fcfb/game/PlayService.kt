@@ -1,5 +1,6 @@
 package com.fcfb.arceus.service.fcfb.game
 
+import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Play
@@ -11,6 +12,9 @@ import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.http.HttpHeaders
 import org.springframework.stereotype.Component
+import java.time.Duration
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class PlayService(
@@ -40,6 +44,7 @@ class PlayService(
     ): Play {
         try {
             val game = gameService.getGameById(gameId)
+            val responseSpeed = getResponseSpeed(game)
 
             val encryptedDefensiveNumber = encryptionUtils.encrypt(defensiveNumber.toString())
             val clock = gameHandler.convertClockToSeconds(game.clock)
@@ -78,7 +83,7 @@ class PlayService(
                         game.awayTimeouts,
                         false,
                         null,
-                        null,
+                        responseSpeed,
                     ),
                 )
 
@@ -115,7 +120,9 @@ class PlayService(
             val game = gameService.getGameById(gameId)
             val allPlays = getAllPlaysByGameId(gameId)
             var gamePlay = getPlayById(game.currentPlayId!!)
+            val responseSpeed = getResponseSpeed(game)
 
+            gamePlay.offensiveResponseSpeed = responseSpeed
             gamePlay.offensiveSubmitter = offensiveSubmitter
 
             val decryptedDefensiveNumber = encryptionUtils.decrypt(gamePlay.defensiveNumber ?: throw DefensiveNumberNotFound())
@@ -191,6 +198,17 @@ class PlayService(
     }
 
     /**
+     * Get the response speed
+     * @param game
+     */
+    fun getResponseSpeed(game: Game): Long {
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val parsedDateTime = game.lastMessageTimestamp?.let { LocalDateTime.parse(it, formatter) }
+        val currentDateTime = LocalDateTime.now()
+        return Duration.between(parsedDateTime, currentDateTime).seconds
+    }
+
+    /**
      * Get a play by its id
      * @param playId
      * @return
@@ -206,16 +224,19 @@ class PlayService(
 
     /**
      * Get the current play of a game
+     * @param gameId
      */
     fun getCurrentPlay(gameId: Int) = playRepository.getCurrentPlay(gameId)
 
     /**
      * Get all plays for a game
+     * @param gameId
      */
     fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
 
     /**
      * Delete all plays for a game
+     * @param gameId
      */
     fun deleteAllPlaysByGameId(gameId: Int) = playRepository.deleteAllPlaysByGameId(gameId)
 }
