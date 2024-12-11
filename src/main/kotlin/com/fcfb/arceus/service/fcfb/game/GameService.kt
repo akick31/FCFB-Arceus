@@ -186,17 +186,37 @@ class GameService(
     }
 
     /**
-     * End a game
+     * End all ongoing games
+     */
+    fun endAllGames(): List<Game> {
+        val gamesToEnd = gameRepository.getAllOngoingGames()
+        val endedGames = mutableListOf<Game>()
+        for (game in gamesToEnd) {
+            endedGames.add(endGame(game))
+        }
+        return endedGames
+    }
+
+    /**
+     * End a single game
      * @param channelId
      * @return
      */
-    fun endGame(channelId: ULong): Game {
+    fun endSingleGame(channelId: ULong): Game {
         val game =
             getGameByPlatformId(channelId) ?: run {
                 Logger.error("Game at $channelId not found")
                 throw Exception("Game not found")
             }
+        return endGame(game)
+    }
 
+    /**
+     * End a game
+     * @param game
+     * @return
+     */
+    private fun endGame(game: Game): Game {
         try {
             game.gameStatus = GameStatus.FINAL
             if (game.gameType != GameType.SCRIMMAGE) {

@@ -47,7 +47,13 @@ class GameController(
     @PostMapping("/end")
     fun endGame(
         @RequestParam("channelId") channelId: ULong,
-    ) = gameService.endGame(channelId)
+    ) = gameService.endSingleGame(channelId)
+
+    /**
+     * End all ongoing games
+     */
+    @PostMapping("/end_all")
+    fun endAllGames() = gameService.endAllGames()
 
     /**
      * Chew a game
@@ -154,6 +160,4 @@ class GameController(
     fun deleteOngoingGame(
         @RequestParam("channelId") channelId: ULong,
     ) = gameService.deleteOngoingGame(channelId)
-
-    // TODO: end game
 }
