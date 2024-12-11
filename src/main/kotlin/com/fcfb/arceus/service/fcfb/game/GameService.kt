@@ -189,7 +189,7 @@ class GameService(
      * End all ongoing games
      */
     fun endAllGames(): List<Game> {
-        val gamesToEnd = gameRepository.getAllOngoingGames()
+        val gamesToEnd = getAllOngoingGames()
         val endedGames = mutableListOf<Game>()
         for (game in gamesToEnd) {
             endedGames.add(endGame(game))
@@ -495,4 +495,9 @@ class GameService(
      * @param gameId
      */
     fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
+
+    /**
+     * Get all ongoing games
+     */
+    fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
 }

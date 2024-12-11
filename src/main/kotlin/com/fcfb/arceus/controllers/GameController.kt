@@ -32,6 +32,13 @@ class GameController(
     ) = gameService.getGameById(id)
 
     /**
+     * Get all ongoing games
+     * @return
+     */
+    @GetMapping("/all")
+    fun getAllOngoingGames() = gameService.getAllOngoingGames()
+
+    /**
      * Start a game
      * @param startRequest
      * @return
