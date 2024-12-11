@@ -24,6 +24,8 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
+import java.sql.Timestamp
+import java.time.Instant
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -134,6 +136,7 @@ class GameService(
                         homePlatformId = null,
                         awayPlatform = awayPlatform,
                         awayPlatformId = null,
+                        lastMessageTimestamp = null,
                         gameTimer = formattedDateTime,
                         gameWarned = false,
                         currentPlayType = PlayType.KICKOFF,
@@ -418,6 +421,18 @@ class GameService(
                 listOf(requestMessageId)
             }
         game.requestMessageId = requestMessageIdList
+        saveGame(game)
+    }
+
+    /**
+     * Update the last message timestamp
+     * @param gameId
+     * @param timestamp
+     */
+    fun updateLastMessageTimestamp(gameId: Int) {
+        val game = getGameById(gameId)
+        val timestamp = Timestamp.from(Instant.now()).toString()
+        game.lastMessageTimestamp = timestamp
         saveGame(game)
     }
 

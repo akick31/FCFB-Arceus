@@ -246,6 +246,11 @@ class Game {
     var awayPlatformId: String? = null
 
     @Basic
+    @Column(name = "last_message_timestamp")
+    @JsonProperty("last_message_timestamp")
+    var lastMessageTimestamp: String? = null
+
+    @Basic
     @Column(name = "game_timer")
     @JsonProperty("game_timer")
     var gameTimer: String? = null
@@ -342,6 +347,7 @@ class Game {
         homePlatformId: String?,
         awayPlatform: Platform,
         awayPlatformId: String?,
+        lastMessageTimestamp: String?,
         gameTimer: String?,
         gameWarned: Boolean?,
         currentPlayType: PlayType?,
@@ -395,6 +401,7 @@ class Game {
         this.homePlatformId = homePlatformId
         this.awayPlatform = awayPlatform
         this.awayPlatformId = awayPlatformId
+        this.lastMessageTimestamp = lastMessageTimestamp
         this.gameTimer = gameTimer
         this.gameWarned = gameWarned
         this.currentPlayType = currentPlayType
