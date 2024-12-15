@@ -24,6 +24,15 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllOngoingGames(): List<Game>
 
+    @Query(value = "SELECT * FROM game WHERE game_status = 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
+    fun getAllPastGames(): List<Game>
+
+    @Query(value = "SELECT * FROM game WHERE game_status = 'FINAL' AND game_type = 'SCRIMMAGE'", nativeQuery = true)
+    fun getAllPastScrimmageGames(): List<Game>
+
+    @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type == 'SCRIMMAGE'", nativeQuery = true)
+    fun getAllOngoingScrimmageGames(): List<Game>
+
     @Query(
         value =
             "SELECT * FROM game " +
