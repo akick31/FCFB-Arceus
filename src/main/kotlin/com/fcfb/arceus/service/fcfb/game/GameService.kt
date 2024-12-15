@@ -480,10 +480,19 @@ class GameService(
         return game
     }
 
+    /**
+     * Get all past games
+     */
     fun getAllPastGames() = gameRepository.getAllPastGames()
 
+    /**
+     * Get all past scrimmage games
+     */
     fun getAllPastScrimmageGames() = gameRepository.getAllPastScrimmageGames()
 
+    /**
+     * Get all ongoing scrimmage games
+     */
     fun getAllOngoingScrimmageGames() = gameRepository.getAllOngoingScrimmageGames()
 
     /**
