@@ -35,8 +35,29 @@ class GameController(
      * Get all ongoing games
      * @return
      */
-    @GetMapping("/all")
+    @GetMapping("/all/ongoing")
     fun getAllOngoingGames() = gameService.getAllOngoingGames()
+
+    /**
+     * Get all past games
+     * @return
+     */
+    @GetMapping("/all/past")
+    fun getAllPastGames() = gameService.getAllPastGames()
+
+    /**
+     * Get all past scrimmage games
+     * @return
+     */
+    @GetMapping("/all/past/scrimmage")
+    fun getAllPastScrimmageGames() = gameService.getAllPastScrimmageGames()
+
+    /**
+     * Get all ongoing scrimmage games
+     * @return
+     */
+    @GetMapping("/all/ongoing/scrimmage")
+    fun getAllOngoingScrimmageGames() = gameService.getAllOngoingScrimmageGames()
 
     /**
      * Start a game

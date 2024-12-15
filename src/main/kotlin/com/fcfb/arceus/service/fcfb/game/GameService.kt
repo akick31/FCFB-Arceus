@@ -480,6 +480,12 @@ class GameService(
         return game
     }
 
+    fun getAllPastGames() = gameRepository.getAllPastGames()
+
+    fun getAllPastScrimmageGames() = gameRepository.getAllPastScrimmageGames()
+
+    fun getAllOngoingScrimmageGames() = gameRepository.getAllOngoingScrimmageGames()
+
     /**
      * Find expired timers
      */
