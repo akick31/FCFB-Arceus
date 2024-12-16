@@ -153,6 +153,9 @@ class PlayHandler(
                 yards = -3
                 actualResult = ActualResult.KNEEL
                 ballLocation -= 3
+                if (ballLocation <= 0) {
+                    ballLocation = 1
+                }
                 down += 1
                 if (down > 4) {
                     actualResult = ActualResult.TURNOVER_ON_DOWNS
