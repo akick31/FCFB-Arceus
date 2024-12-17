@@ -183,8 +183,10 @@ class PlayHandler(
                         actualResult =
                             if (yards > 0) {
                                 ActualResult.GAIN
-                            } else {
+                            } else if (yards == 0) {
                                 ActualResult.NO_GAIN
+                            } else {
+                                ActualResult.LOSS
                             }
                     }
                 }
