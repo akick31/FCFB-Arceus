@@ -72,8 +72,11 @@ class GameHandler(
         // Update the play type
         if (play.actualResult == ActualResult.TOUCHDOWN ||
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            play.actualResult == ActualResult.RETURN_TOUCHDOWN ||
             play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
-            play.actualResult == ActualResult.RETURN_TOUCHDOWN
+            play.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+            play.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
+            play.actualResult == ActualResult.KICK_SIX
         ) {
             game.currentPlayType = PlayType.PAT
         } else if (play.actualResult == ActualResult.SAFETY ||

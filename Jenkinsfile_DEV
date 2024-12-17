@@ -2,8 +2,8 @@ pipeline {
     agent any
 
     environment {
-        IMAGE_NAME = 'fcfb-arceus_dev'
-        CONTAINER_NAME = 'FCFB-Arceus_DEV'
+        IMAGE_NAME = 'fcfb-arceus-dev'
+        CONTAINER_NAME = 'FCFB-Arceus-DEV'
         DOCKERFILE = 'Dockerfile'
         APP_PROPERTIES = './src/main/resources/application.properties'
         DB_URL = credentials('DEV_DB_URL')
