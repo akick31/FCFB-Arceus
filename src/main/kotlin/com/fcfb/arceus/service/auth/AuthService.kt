@@ -49,7 +49,7 @@ class AuthService(
             throw UserUnauthorizedException()
         }
         val token = sessionService.generateToken(user.id)
-        return LoginResponse(token, user.id)
+        return LoginResponse(token, user.id, user.role)
     }
 
     /**
