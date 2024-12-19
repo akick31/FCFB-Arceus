@@ -1,24 +1,20 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.models.website.Session
-import com.fcfb.arceus.repositories.SessionRepository
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.SessionUtils
 import com.fcfb.arceus.utils.UserUnauthorizedException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
-import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
 class AuthService(
-    private val sessionUtils: SessionUtils,
     private val emailService: EmailService,
     private val userService: UserService,
-    private val sessionRepository: SessionRepository,
+    private val sessionService: SessionService,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     /**
      * Create a new user
@@ -43,20 +39,15 @@ class AuthService(
      * @param password
      * @return
      */
-    fun loginUser(
+    fun login(
         usernameOrEmail: String,
         password: String,
-    ): Session {
+    ): String {
         val user = userService.getUserByUsernameOrEmail(usernameOrEmail)
-        val passwordEncoder = BCryptPasswordEncoder()
-        return if (passwordEncoder.matches(password, user.password)) {
-            val token = sessionUtils.generateSessionToken()
-            val expirationTime = LocalDateTime.now().plusHours(1)
-            val session = sessionRepository.save(Session(user.id, token, expirationTime))
-            session
-        } else {
+        if (!passwordEncoder.matches(password, user.password)) {
             throw UserUnauthorizedException()
         }
+        return sessionService.generateToken(user.id)
     }
 
     /**
@@ -64,8 +55,8 @@ class AuthService(
      * @param token
      * @return
      */
-    fun logoutUser(token: String): String {
-        sessionRepository.deleteByToken(token)
+    fun logout(token: String): String {
+        sessionService.blacklistUserSession(token)
         return "User logged out successfully"
     }
 

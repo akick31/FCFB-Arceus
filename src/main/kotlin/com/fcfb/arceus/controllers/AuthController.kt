@@ -23,15 +23,15 @@ class AuthController(
     ) = authService.createUser(user)
 
     @PostMapping("/login")
-    fun loginUser(
+    fun login(
         @RequestParam("usernameOrEmail") usernameOrEmail: String,
         @RequestParam("password") password: String,
-    ) = authService.loginUser(usernameOrEmail, password)
+    ) = authService.login(usernameOrEmail, password)
 
     @PostMapping("/logout")
-    fun logoutUser(
+    fun logout(
         @RequestParam("token") token: String,
-    ) = authService.logoutUser(token)
+    ) = authService.logout(token)
 
     @GetMapping("/verify")
     fun verifyEmail(
