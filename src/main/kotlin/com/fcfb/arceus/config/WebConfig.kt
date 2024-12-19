@@ -18,7 +18,6 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
             .antMatchers("/**").permitAll()
             .anyRequest().authenticated()
             .and()
-
             .sessionManagement()
             .invalidSessionUrl("/invalidSession") // Redirect to /invalidSession if the session is invalid
             .maximumSessions(1) // Allow only one session per user
