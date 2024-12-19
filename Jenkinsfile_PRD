@@ -10,6 +10,7 @@ pipeline {
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
         JWT_ENCRYPTION_KEY = credentials('JWT_ENCRYPTION_KEY')
+        JWT_SECRET = credentials('JWT_SECRET')
         EMAIL_HOST = credentials('EMAIL_HOST')
         EMAIL_PORT = credentials('EMAIL_PORT')
         EMAIL = credentials('EMAIL')
@@ -88,6 +89,7 @@ pipeline {
                         # JWT configuration
                         encryption.key=${env.JWT_ENCRYPTION_KEY}
                         encryption.algorithm=aes
+                        jwt.secret=${env.JWT_SECRET}
 
                         # Email configuration
                         spring.mail.host=${env.EMAIL_HOST}

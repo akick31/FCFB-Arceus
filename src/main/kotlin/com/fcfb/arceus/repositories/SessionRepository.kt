@@ -2,12 +2,24 @@ package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.models.website.Session
 import org.springframework.data.jpa.repository.JpaRepository
+import org.springframework.data.jpa.repository.Query
 import org.springframework.stereotype.Repository
-import java.time.LocalDateTime
+import java.util.Date
 
 @Repository
 interface SessionRepository : JpaRepository<Session, Long> {
     fun deleteByToken(token: String)
 
-    fun findByExpirationTimeBefore(expirationTime: LocalDateTime): List<Session>
+    @Query("INSERT INTO session (token, user_id, expiration_date) VALUES (?, ?, ?)", nativeQuery = true)
+    fun blacklistUserSession(
+        token: String,
+        userId: Long,
+        expirationDate: Date,
+    )
+
+    @Query("SELECT EXISTS(SELECT 1 FROM session WHERE token = ?)", nativeQuery = true)
+    fun isSessionBlacklisted(token: String): Boolean
+
+    @Query("DELETE FROM session WHERE expiration_date < NOW()", nativeQuery = true)
+    fun clearExpiredTokens()
 }
