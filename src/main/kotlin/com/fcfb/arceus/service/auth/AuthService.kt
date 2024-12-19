@@ -1,6 +1,7 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.models.website.LoginResponse
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
@@ -42,12 +43,13 @@ class AuthService(
     fun login(
         usernameOrEmail: String,
         password: String,
-    ): String {
+    ): LoginResponse {
         val user = userService.getUserByUsernameOrEmail(usernameOrEmail)
         if (!passwordEncoder.matches(password, user.password)) {
             throw UserUnauthorizedException()
         }
-        return sessionService.generateToken(user.id)
+        val token = sessionService.generateToken(user.id)
+        return LoginResponse(token, user.id)
     }
 
     /**

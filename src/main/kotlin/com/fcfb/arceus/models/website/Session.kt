@@ -19,9 +19,10 @@ data class Session(
     @Column(name = "user_id")
     val userId: Long,
     val token: String,
-    @Column(name = "expiration_time")
-    val expirationTime: LocalDateTime,
+    @Column(name = "expiration_date")
+    val expirationDate: LocalDateTime,
+    val createdAt: LocalDateTime = LocalDateTime.now(),
 ) {
-    constructor(userId: Long, token: String, expirationTime: LocalDateTime) : this(0, userId, token, expirationTime)
+    constructor(userId: Long, token: String, expirationDate: LocalDateTime) : this(0, userId, token, expirationDate)
     constructor() : this(0, 0, "", LocalDateTime.now())
 }
