@@ -234,6 +234,7 @@ class PlayHandler(
             ActualResult.NO_GAIN -> {}
             ActualResult.SPIKE -> {}
             ActualResult.KNEEL -> {}
+            ActualResult.LOSS -> {}
             else -> throw InvalidActualResultException()
         }
 
