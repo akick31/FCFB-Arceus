@@ -113,8 +113,6 @@ class GameService(
                         down = 1,
                         yardsToGo = 10,
                         tvChannel = startRequest.tvChannel,
-                        startTime = startRequest.startTime,
-                        location = startRequest.location,
                         homeWins = homeTeamData.currentWins,
                         homeLosses = homeTeamData.currentLosses,
                         awayWins = awayTeamData.currentWins,

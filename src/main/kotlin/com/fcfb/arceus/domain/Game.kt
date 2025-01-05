@@ -123,16 +123,6 @@ class Game {
     var tvChannel: TVChannel? = null
 
     @Basic
-    @Column(name = "start_time")
-    @JsonProperty("start_time")
-    var startTime: String? = null
-
-    @Basic
-    @Column(name = "location")
-    @JsonProperty("location")
-    var location: String? = null
-
-    @Basic
     @Column(name = "home_wins")
     @JsonProperty("home_wins")
     var homeWins: Int? = null
@@ -324,8 +314,6 @@ class Game {
         down: Int,
         yardsToGo: Int,
         tvChannel: TVChannel?,
-        startTime: String?,
-        location: String?,
         homeWins: Int?,
         homeLosses: Int?,
         awayWins: Int?,
@@ -378,8 +366,6 @@ class Game {
         this.down = down
         this.yardsToGo = yardsToGo
         this.tvChannel = tvChannel
-        this.startTime = startTime
-        this.location = location
         this.homeWins = homeWins
         this.homeLosses = homeLosses
         this.awayWins = awayWins
@@ -478,6 +464,13 @@ class Game {
         FS1("FS1"),
         FS2("FS2"),
         NBC("NBC"),
+        ACC_NETWORK("ACC Network"),
+        BIG_TEN_NETWORK("Big Ten Network"),
+        CBS_SPORTS_NETWORK("CBS Sports Network"),
+        THE_CW("The CW"),
+        ESPNU("ESPNU"),
+        ESPN_PLUS("ESPN+"),
+        SEC_NETWORK("SEC Network"),
     }
 
     enum class Platform(val description: String) {

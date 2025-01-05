@@ -13,7 +13,5 @@ data class StartRequest(
     @JsonProperty("homeTeam") val homeTeam: String,
     @JsonProperty("awayTeam") val awayTeam: String,
     @JsonProperty("tvChannel") val tvChannel: TVChannel?,
-    @JsonProperty("startTime") val startTime: String?,
-    @JsonProperty("location") val location: String?,
     @JsonProperty("gameType") val gameType: GameType,
 )
