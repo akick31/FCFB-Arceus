@@ -20,6 +20,7 @@ import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
 import com.fcfb.arceus.utils.NoCoachesFoundException
+import com.fcfb.arceus.utils.NoGameFoundException
 import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
@@ -41,6 +42,7 @@ class GameService(
     private val userService: UserService,
     private val gameStatsService: GameStatsService,
     private val seasonService: SeasonService,
+    private val scheduleService: ScheduleService,
 ) {
     /**
      * Get an ongoing game by id
@@ -181,6 +183,41 @@ class GameService(
             Logger.error("Error starting ${startRequest.homeTeam} vs ${startRequest.awayTeam}: " + e.message!!)
             throw e
         }
+    }
+
+    /**
+     * Start all games for the given week
+     * @param season
+     * @param week
+     * @return
+     */
+    fun startWeek(
+        season: Int,
+        week: Int,
+    ): List<Game> {
+        val gamesToStart =
+            scheduleService.getGamesToStartBySeasonAndWeek(season, week) ?: run {
+                Logger.error("No games found for season $season week $week")
+                throw NoGameFoundException()
+            }
+        val startedGames = mutableListOf<Game>()
+        for (game in gamesToStart) {
+            startedGames.add(
+                startGame(
+                    StartRequest(
+                        Platform.DISCORD,
+                        Platform.DISCORD,
+                        game.subdivision,
+                        game.homeTeam,
+                        game.awayTeam,
+                        game.tvChannel,
+                        game.gameType,
+                    ),
+                ),
+            )
+            scheduleService.markGameAsStarted(game)
+        }
+        return startedGames
     }
 
     /**

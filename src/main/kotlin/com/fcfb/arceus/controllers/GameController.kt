@@ -70,6 +70,18 @@ class GameController(
     ) = gameService.startGame(startRequest)
 
     /**
+     * Start all games for a week
+     * @param season
+     * @param week
+     * @return
+     */
+    @PostMapping("/start_week")
+    fun startWeek(
+        @RequestParam("season") season: Int,
+        @RequestParam("week") week: Int,
+    ) = gameService.startWeek(season, week)
+
+    /**
      * End a game
      */
     @PostMapping("/end")
