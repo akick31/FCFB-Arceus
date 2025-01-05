@@ -30,6 +30,12 @@ class UnableToDeleteGameException : Exception("Unable to delete game") {
     }
 }
 
+class NoGameFoundException : Exception("No games found to start week") {
+    override fun toString(): String {
+        return "NoGameFoundException: ${super.message}"
+    }
+}
+
 class NoTeamFoundException : Exception("No team found") {
     override fun toString(): String {
         return "NoTeamFoundException: ${super.message}"

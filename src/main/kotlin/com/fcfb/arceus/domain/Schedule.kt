@@ -1,0 +1,58 @@
+package com.fcfb.arceus.domain
+
+import com.fcfb.arceus.domain.Game.GameType
+import com.fcfb.arceus.domain.Game.Subdivision
+import com.fcfb.arceus.domain.Game.TVChannel
+import javax.persistence.Basic
+import javax.persistence.Column
+import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
+import javax.persistence.GeneratedValue
+import javax.persistence.GenerationType.IDENTITY
+import javax.persistence.Id
+import javax.persistence.Table
+
+@Entity
+@Table(name = "schedule", schema = "arceus")
+class Schedule {
+    @Id
+    @GeneratedValue(strategy = IDENTITY)
+    @Column(name = "id")
+    var id: Int = 0
+
+    @Basic
+    @Column(name = "season")
+    var season: Int = 0
+
+    @Basic
+    @Column(name = "week")
+    var week: Int = 0
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "subdivision")
+    lateinit var subdivision: Subdivision
+
+    @Basic
+    @Column(name = "home_team")
+    lateinit var homeTeam: String
+
+    @Basic
+    @Column(name = "away_team")
+    lateinit var awayTeam: String
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "tv_channel")
+    var tvChannel: TVChannel? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_type")
+    lateinit var gameType: GameType
+
+    @Basic
+    @Column(name = "started")
+    var started: Boolean? = false
+}

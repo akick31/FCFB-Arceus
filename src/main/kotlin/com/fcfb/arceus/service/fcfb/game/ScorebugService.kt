@@ -328,14 +328,14 @@ class ScorebugService(
                         game.ballLocation > 50 &&
                             game.possession == TeamSide.HOME ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
-                                "${awayTeam.abbreviation ?: awayTeam.name?.uppercase()} ${100 - game.ballLocation!!}"
+                                "${awayTeam.abbreviation ?: awayTeam.name?.uppercase()} ${100 - game.ballLocation}"
                             } else {
                                 "${awayTeam.name?.uppercase()} ${game.ballLocation}"
                             }
                         game.ballLocation > 50 &&
                             game.possession == TeamSide.AWAY ->
                             if (homeTeam.abbreviation != awayTeam.abbreviation) {
-                                "${homeTeam.abbreviation ?: homeTeam.name?.uppercase()} ${100 - game.ballLocation!!}"
+                                "${homeTeam.abbreviation ?: homeTeam.name?.uppercase()} ${100 - game.ballLocation}"
                             } else {
                                 "${homeTeam.name?.uppercase()} ${game.ballLocation}"
                             }

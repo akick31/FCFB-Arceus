@@ -34,12 +34,6 @@ class GameStats(
     @Column(name = "team_rank")
     var teamRank: Int = 0,
     @Basic
-    @Column(name = "start_time")
-    var startTime: String? = null,
-    @Basic
-    @Column(name = "location")
-    var location: String? = null,
-    @Basic
     @Column(name = "tv_channel")
     var tvChannel: TVChannel? = null,
     @Type(type = "json")
