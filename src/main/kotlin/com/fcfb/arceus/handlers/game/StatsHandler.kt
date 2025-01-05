@@ -88,10 +88,18 @@ class StatsHandler(
             calculateFieldGoalMade(
                 play, stats.fieldGoalMade,
             )
-        stats.fieldGoalAttempts =
-            calculateFieldGoalAttempts(
-                play, stats.fieldGoalAttempts,
-            )
+        if (play.playCall == PlayCall.FIELD_GOAL && (play.result == Scenario.NO_GOOD || play.result == Scenario.BLOCKED_FIELD_GOAL)) {
+            opponentStats.fieldGoalAttempts =
+                calculateFieldGoalAttempts(
+                    play, opponentStats.fieldGoalAttempts,
+                )
+        }
+        else {
+            stats.fieldGoalAttempts =
+                calculateFieldGoalAttempts(
+                    play, stats.fieldGoalAttempts,
+                )
+        }
         stats.fieldGoalPercentage =
             calculatePercentage(
                 stats.fieldGoalMade, stats.fieldGoalAttempts,
@@ -108,13 +116,13 @@ class StatsHandler(
             calculateFieldGoalTouchdown(
                 play, stats.fieldGoalTouchdown,
             )
-        stats.puntsAttempted =
+        opponentStats.puntsAttempted =
             calculatePuntsAttempted(
-                play, stats.puntsAttempted,
+                play, opponentStats.puntsAttempted,
             )
-        stats.longestPunt =
+        opponentStats.longestPunt =
             calculateLongestPunt(
-                play, stats.longestPunt,
+                play, opponentStats.longestPunt,
             )
         stats.averagePuntLength =
             calculateAveragePuntLength(
@@ -132,33 +140,33 @@ class StatsHandler(
             calculatePercentage(
                 opponentStats.puntReturnTd, opponentStats.puntsAttempted,
             )
-        stats.numberOfKickoffs =
+        opponentStats.numberOfKickoffs =
             calculateNumberOfKickoffs(
-                play, stats.numberOfKickoffs,
+                play, opponentStats.numberOfKickoffs,
             )
-        stats.onsideAttempts =
+        opponentStats.onsideAttempts =
             calculateOnsideAttempts(
-                play, stats.onsideAttempts,
+                play, opponentStats.onsideAttempts,
             )
-        stats.onsideSuccess =
+        opponentStats.onsideSuccess =
             calculateOnsideSuccess(
-                play, stats.onsideSuccess,
+                play, opponentStats.onsideSuccess,
             )
-        stats.onsideSuccessPercentage =
+        opponentStats.onsideSuccessPercentage =
             calculatePercentage(
-                stats.onsideSuccess, stats.onsideAttempts,
+                opponentStats.onsideSuccess, opponentStats.onsideAttempts,
             )
-        stats.normalKickoffAttempts =
+        opponentStats.normalKickoffAttempts =
             calculateNormalKickoffAttempts(
-                play, stats.normalKickoffAttempts,
+                play, opponentStats.normalKickoffAttempts,
             )
-        stats.touchbacks =
+        opponentStats.touchbacks =
             calculateTouchbacks(
-                play, stats.touchbacks,
+                play, opponentStats.touchbacks,
             )
-        stats.touchbackPercentage =
+        opponentStats.touchbackPercentage =
             calculatePercentage(
-                stats.touchbacks, stats.normalKickoffAttempts,
+                opponentStats.touchbacks, opponentStats.normalKickoffAttempts,
             )
         opponentStats.kickReturnTd =
             calculateKickReturnTd(
@@ -279,7 +287,22 @@ class StatsHandler(
             calculateAverageResponseSpeed(
                 allPlays, defendingTeam,
             )
+        stats.gameStatus = game.gameStatus
+        opponentStats.gameStatus = game.gameStatus
+        stats.averageDiff = calculateAverageDiff(allPlays)
+        opponentStats.averageDiff = calculateAverageDiff(allPlays)
+        gameStatsRepository.save(stats)
+        gameStatsRepository.save(opponentStats)
+        return listOf(stats, opponentStats)
+    }
 
+    private fun updateScoreStats(
+        play: Play,
+        stats: GameStats,
+        opponentStats: GameStats,
+        possession: TeamSide,
+    ) {
+        val defendingTeam = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
         if (play.quarter == 1) {
             stats.q1Score = calculateQuarterScore(play, stats.q1Score, possession)
             opponentStats.q1Score = calculateQuarterScore(play, stats.q1Score, defendingTeam)
@@ -300,13 +323,6 @@ class StatsHandler(
             stats.otScore = calculateQuarterScore(play, stats.otScore, possession)
             opponentStats.otScore = calculateQuarterScore(play, stats.otScore, defendingTeam)
         }
-        stats.gameStatus = game.gameStatus
-        opponentStats.gameStatus = game.gameStatus
-        stats.averageDiff = calculateAverageDiff(allPlays)
-        opponentStats.averageDiff = calculateAverageDiff(allPlays)
-        gameStatsRepository.save(stats)
-        gameStatsRepository.save(opponentStats)
-        return listOf(stats, opponentStats)
     }
 
     /**
@@ -320,10 +336,12 @@ class StatsHandler(
         if (game.possession == TeamSide.HOME) {
             val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
             val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
+            updateScoreStats(play, stats, opponentStats, game.possession)
             return updateStatsForEachTeam(allPlays, play, TeamSide.HOME, game, stats, opponentStats)
         } else {
             val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
             val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
+            updateScoreStats(play, stats, opponentStats, game.possession)
             return updateStatsForEachTeam(allPlays, play, TeamSide.AWAY, game, stats, opponentStats)
         }
     }
