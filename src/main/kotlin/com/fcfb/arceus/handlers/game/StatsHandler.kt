@@ -93,8 +93,7 @@ class StatsHandler(
                 calculateFieldGoalAttempts(
                     play, opponentStats.fieldGoalAttempts,
                 )
-        }
-        else {
+        } else {
             stats.fieldGoalAttempts =
                 calculateFieldGoalAttempts(
                     play, stats.fieldGoalAttempts,
