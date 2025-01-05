@@ -67,8 +67,8 @@ class GameService(
             val formattedDateTime = calculateDelayOfGameTimer()
 
             // Validate request fields
-            val homeTeam = startRequest.homeTeam
-            val awayTeam = startRequest.awayTeam
+            val homeTeam = homeTeamData.name ?: throw TeamNotFoundException()
+            val awayTeam = awayTeamData.name ?: throw TeamNotFoundException()
 
             val homeCoachUsernames = homeTeamData.coachUsernames ?: throw NoCoachesFoundException()
             val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
