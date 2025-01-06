@@ -1,8 +1,11 @@
 package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.PlayCall
+import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.RunoffType
+import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
@@ -23,6 +26,7 @@ class PlayService(
     private val gameHandler: GameHandler,
     private val encryptionUtils: EncryptionUtils,
     private val gameService: GameService,
+    private val scorebugService: ScorebugService,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
@@ -193,6 +197,90 @@ class PlayService(
             return gamePlay
         } catch (e: Exception) {
             Logger.error("There was an error submitting the offensive number for game $gameId: " + e.message)
+            throw e
+        }
+    }
+
+    /**
+     * Rollback the play to the previous play
+     * @param gameId
+     */
+    fun rollbackPlay(gameId: Int): Play {
+        try {
+            val game = gameService.getGameById(gameId)
+            val previousPlay = getPreviousPlay(gameId) ?: throw Exception("No previous play found")
+            val gamePlay = getPlayById(game.currentPlayId!!)
+
+            if (playHandler.isScoringPlay(gamePlay.actualResult)) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    game.homeScore -= 6
+                } else {
+                    game.awayScore -= 6
+                }
+                game.currentPlayType = PlayType.NORMAL
+            }
+            if (gamePlay.actualResult == ActualResult.GOOD) {
+                if (gamePlay.playCall == PlayCall.PAT) {
+                    if (gamePlay.possession == TeamSide.HOME) {
+                        game.homeScore -= 1
+                    } else {
+                        game.awayScore -= 1
+                    }
+                    game.currentPlayType = PlayType.PAT
+                } else if (gamePlay.playCall == PlayCall.FIELD_GOAL) {
+                    if (gamePlay.possession == TeamSide.HOME) {
+                        game.homeScore -= 3
+                    } else {
+                        game.awayScore -= 3
+                    }
+                    game.currentPlayType = PlayType.NORMAL
+                }
+            }
+            if (gamePlay.actualResult == ActualResult.SUCCESS) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    game.homeScore -= 2
+                } else {
+                    game.awayScore -= 2
+                }
+                game.currentPlayType = PlayType.PAT
+            }
+            if (gamePlay.actualResult == ActualResult.DEFENSE_TWO_POINT) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    game.awayScore -= 2
+                } else {
+                    game.homeScore -= 2
+                }
+                game.currentPlayType = PlayType.PAT
+            }
+            if (gamePlay.actualResult == ActualResult.SAFETY) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    game.awayScore -= 2
+                } else {
+                    game.homeScore -= 2
+                }
+                game.currentPlayType = PlayType.NORMAL
+            }
+
+            if (previousPlay.playCall == PlayCall.KICKOFF_NORMAL ||
+                previousPlay.playCall == PlayCall.KICKOFF_ONSIDE ||
+                previousPlay.playCall == PlayCall.KICKOFF_SQUIB
+            ) {
+                game.currentPlayType = PlayType.KICKOFF
+            }
+
+            game.possession = previousPlay.possession
+            game.quarter = previousPlay.quarter
+            game.clock = gameHandler.convertClockToString(previousPlay.clock)
+            game.ballLocation = previousPlay.ballLocation
+            game.down = previousPlay.down
+            game.yardsToGo = previousPlay.yardsToGo
+            game.currentPlayId = previousPlay.playId
+            game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+            playRepository.deleteById(gamePlay.playId)
+            gameService.saveGame(game)
+            return previousPlay
+        } catch (e: Exception) {
+            Logger.error("There was an error rolling back the play for game $gameId: " + e.message)
             throw e
         }
     }

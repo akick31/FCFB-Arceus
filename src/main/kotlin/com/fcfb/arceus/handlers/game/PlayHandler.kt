@@ -756,6 +756,30 @@ class PlayHandler(
         )
     }
 
+    /**
+     * Check if a play is a scoring play
+     * @param actualResult
+     * @return
+     */
+    fun isScoringPlay(actualResult: ActualResult?): Boolean {
+        return actualResult == ActualResult.TOUCHDOWN ||
+            actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            actualResult == ActualResult.RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.KICK_SIX
+    }
+
+    /**
+     * Determine the runoff time between plays
+     * @param clockStopped
+     * @param clock
+     * @param timeoutUsed
+     * @param playCall
+     * @param runoffType
+     * @param offensivePlaybook
+     */
     private fun getRunoffTime(
         clockStopped: Boolean?,
         clock: Int,
@@ -764,7 +788,6 @@ class PlayHandler(
         runoffType: RunoffType,
         offensivePlaybook: OffensivePlaybook,
     ): Int {
-        // Determine runoff time between plays
         return if (!clockStopped!! && !timeoutUsed) {
             when {
                 playCall == PlayCall.SPIKE -> 3
@@ -791,6 +814,11 @@ class PlayHandler(
         }
     }
 
+    /**
+     * Get the offensive and defensive playbooks
+     * @param game
+     * @param possession
+     */
     private fun getPlaybooks(
         game: Game,
         possession: TeamSide,
@@ -802,6 +830,18 @@ class PlayHandler(
         }
     }
 
+    /**
+     * Handle the normal end of quarter scenarios
+     * @param game
+     * @param gamePlay
+     * @param actualResult
+     * @param initialPossession
+     * @param initialClock
+     * @param initialQuarter
+     * @param homeScore
+     * @param awayScore
+     * @param playTime
+     */
     private fun handleEndOfQuarterNormalScenarios(
         game: Game,
         gamePlay: Play,
@@ -861,6 +901,16 @@ class PlayHandler(
         return Triple(possession, clock, quarter)
     }
 
+    /**
+     * Handle the end of quarter PAT scenarios
+     * @param game
+     * @param gamePlay
+     * @param initialPossession
+     * @param initialClock
+     * @param initialQuarter
+     * @param homeScore
+     * @param awayScore
+     */
     private fun handleEndOfQuarterPATScenarios(
         game: Game,
         gamePlay: Play,
@@ -899,6 +949,12 @@ class PlayHandler(
         return Triple(possession, clock, quarter)
     }
 
+    /**
+     * Get the timeout usage for the play
+     * @param game
+     * @param gamePlay
+     * @param offensiveTimeoutCalled
+     */
     private fun getTimeoutUsage(
         game: Game,
         gamePlay: Play,
@@ -933,6 +989,31 @@ class PlayHandler(
         return Triple(timeoutUsed, homeTimeoutCalled, awayTimeoutCalled)
     }
 
+    /**
+     * Update the play values
+     * @param game
+     * @param allPlays
+     * @param gamePlay
+     * @param playCall
+     * @param result
+     * @param actualResult
+     * @param initialPossession
+     * @param homeScore
+     * @param awayScore
+     * @param runoffTime
+     * @param playTime
+     * @param ballLocation
+     * @param down
+     * @param yardsToGo
+     * @param decryptedDefensiveNumber
+     * @param offensiveNumber
+     * @param difference
+     * @param yards
+     * @param timeoutUsed
+     * @param homeTimeoutCalled
+     * @param awayTimeoutcalled
+     * @return
+     */
     private fun updatePlayValues(
         game: Game,
         allPlays: List<Play>,
@@ -1042,15 +1123,5 @@ class PlayHandler(
         )
 
         return gamePlay
-    }
-
-    private fun isScoringPlay(actualResult: ActualResult): Boolean {
-        return actualResult == ActualResult.TOUCHDOWN ||
-            actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-            actualResult == ActualResult.RETURN_TOUCHDOWN ||
-            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
-            actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
-            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
-            actualResult == ActualResult.KICK_SIX
     }
 }
