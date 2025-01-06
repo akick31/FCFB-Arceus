@@ -44,6 +44,12 @@ class TeamController(
         @RequestBody team: Team,
     ) = teamService.updateTeam(name, team)
 
+    @PutMapping("/color")
+    fun updateTeamColor(
+        @RequestParam team: String,
+        @RequestParam color: String,
+    ) = teamService.updateTeamColor(team, color)
+
     @PostMapping("/{name}/hire")
     suspend fun hireCoach(
         @PathVariable("name") name: String?,

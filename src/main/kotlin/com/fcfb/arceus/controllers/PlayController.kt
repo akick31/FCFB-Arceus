@@ -51,6 +51,16 @@ class PlayController(
     ) = playService.offensiveNumberSubmitted(gameId, offensiveSubmitter, offensiveNumber, playCall, runoffType, timeoutCalled)
 
     /**
+     * Rollback the last play
+     * @param gameId
+     * @return
+     */
+    @PutMapping("/rollback")
+    fun rollbackPlay(
+        @RequestParam("gameId") gameId: Int,
+    ) = playService.rollbackPlay(gameId)
+
+    /**
      * Get a play by its id
      * @param playId
      * @return

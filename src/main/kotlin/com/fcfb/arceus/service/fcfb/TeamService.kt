@@ -222,6 +222,26 @@ class TeamService(
     }
 
     /**
+     * Update team color
+     */
+    fun updateTeamColor(
+        team: String,
+        color: String,
+    ): Team {
+        val existingTeam = getTeamByName(team)
+        val hexRegex = Regex("^#([a-fA-F0-9]{3}|[a-fA-F0-9]{4}|[a-fA-F0-9]{6}|[a-fA-F0-9]{8})$")
+        if (!hexRegex.matches(color)) {
+            throw IllegalArgumentException("Invalid color")
+        }
+
+        existingTeam.apply {
+            primaryColor = color
+        }
+        teamRepository.save(existingTeam)
+        return existingTeam
+    }
+
+    /**
      * Hire a coach for a team
      * @param name
      * @param discordId

@@ -61,7 +61,10 @@ class GameService(
      * @param startRequest
      * @return
      */
-    fun startGame(startRequest: StartRequest): Game {
+    fun startGame(
+        startRequest: StartRequest,
+        week: Int?,
+    ): Game {
         try {
             val homeTeamData = teamService.getTeamByName(startRequest.homeTeam)
             val awayTeamData = teamService.getTeamByName(startRequest.awayTeam)
@@ -85,12 +88,16 @@ class GameService(
             val homePlatform = Platform.DISCORD
             val awayPlatform = Platform.DISCORD
 
-            val (season, week) =
+            var (season, currentWeek) =
                 if (startRequest.gameType != GameType.SCRIMMAGE) {
                     seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
                 } else {
                     null to null
                 }
+
+            if (week != null) {
+                currentWeek = week
+            }
 
             // Create and save the Game object and Stats object
             val newGame =
@@ -123,7 +130,7 @@ class GameService(
                         timestamp = LocalDateTime.now().toString(),
                         winProbability = 0.0,
                         season = season,
-                        week = week,
+                        week = currentWeek,
                         waitingOn = TeamSide.AWAY,
                         numPlays = 0,
                         homeTimeouts = 3,
@@ -213,6 +220,7 @@ class GameService(
                         game.tvChannel,
                         game.gameType,
                     ),
+                    week,
                 ),
             )
             scheduleService.markGameAsStarted(game)
