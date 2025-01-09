@@ -1096,6 +1096,9 @@ class PlayHandler(
             gamePlay.offensiveTimeoutCalled = awayTimeoutcalled
             gamePlay.defensiveTimeoutCalled = homeTimeoutCalled
         }
+        val winProbabilityAdded = statsHandler.calculateWinProbabilityAdded(game, gamePlay)
+        gamePlay.winProbabilityAdded = winProbabilityAdded
+        gamePlay.winProbability = gamePlay.winProbability + winProbabilityAdded
 
         // Save the play and then update the game and stats
         playRepository.save(gamePlay)

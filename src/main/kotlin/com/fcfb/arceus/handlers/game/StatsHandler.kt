@@ -2,6 +2,7 @@ package com.fcfb.arceus.handlers.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
+import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
@@ -9,11 +10,104 @@ import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameStatsRepository
 import org.springframework.stereotype.Component
+import kotlin.math.exp
 
 @Component
 class StatsHandler(
     private val gameStatsRepository: GameStatsRepository,
 ) {
+    /**
+     * Update the game stats for the current game
+     */
+    fun updateGameStats(
+        game: Game,
+        allPlays: List<Play>,
+        play: Play,
+    ): List<GameStats> {
+        if (game.possession == TeamSide.HOME) {
+            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
+            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
+            updateScoreStats(play, stats, opponentStats, game.possession)
+            return updateStatsForEachTeam(allPlays, play, TeamSide.HOME, game, stats, opponentStats)
+        } else {
+            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
+            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
+            updateScoreStats(play, stats, opponentStats, game.possession)
+            return updateStatsForEachTeam(allPlays, play, TeamSide.AWAY, game, stats, opponentStats)
+        }
+    }
+
+    fun calculateWinProbabilityAdded(
+        game: Game,
+        gamePlay: Play,
+    ): Double {
+        val homeElo = 1500.0
+        val awayElo = 1500.0
+        val quarter = gamePlay.quarter
+        val clock = gamePlay.clock
+        val down = gamePlay.down
+        val yardsToGo = gamePlay.yardsToGo
+        val ballLocation = gamePlay.ballLocation
+        val margin = if (game.possession == TeamSide.HOME) {
+            game.homeScore - game.awayScore
+        } else {
+            game.awayScore - game.homeScore
+        }
+        val half = if (quarter == 1 || quarter == 2) {
+            1
+        } else {
+            2
+        }
+        val secondsLeftInHalf = if (quarter == 2 || quarter == 4) {
+            clock
+        } else {
+            420 + clock
+        }
+        val secondsLeftInGame = if (quarter == 4) {
+            clock
+        } else if (quarter == 3) {
+            clock + 420
+        } else if (quarter == 2) {
+            clock + 840
+        } else {
+            clock + 1260
+        }
+        val offensiveElo = if (game.possession == TeamSide.HOME) homeElo else awayElo
+        val defensiveElo = if (game.possession == TeamSide.HOME) awayElo else homeElo
+        val eloDiffTime = (offensiveElo - defensiveElo) * exp(-2.0 * (1 - (secondsLeftInGame / 1680)))
+        val hadFirstPossession =
+            if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    1
+                } else {
+                    0
+                }
+            } else if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+                if (gamePlay.possession == TeamSide.AWAY) {
+                    1
+                } else {
+                    0
+                }
+            } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+                if (gamePlay.possession == TeamSide.AWAY) {
+                    1
+                } else {
+                    0
+                }
+            } else {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    1
+                } else {
+                    0
+                }
+            }
+        val winProbability = calculateWinProbability(
+            down, yardsToGo, ballLocation, margin, secondsLeftInGame,
+            secondsLeftInHalf, half, hadFirstPossession,
+            eloDiffTime, gamePlay.playCall
+        )
+    }
+
     /**
      * Calculate the stats for each team from the current play
      */
@@ -321,27 +415,6 @@ class StatsHandler(
         if (play.quarter == 5) {
             stats.otScore = calculateQuarterScore(play, stats.otScore, possession)
             opponentStats.otScore = calculateQuarterScore(play, stats.otScore, defendingTeam)
-        }
-    }
-
-    /**
-     * Update the game stats for the current game
-     */
-    fun updateGameStats(
-        game: Game,
-        allPlays: List<Play>,
-        play: Play,
-    ): List<GameStats> {
-        if (game.possession == TeamSide.HOME) {
-            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
-            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
-            updateScoreStats(play, stats, opponentStats, game.possession)
-            return updateStatsForEachTeam(allPlays, play, TeamSide.HOME, game, stats, opponentStats)
-        } else {
-            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
-            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
-            updateScoreStats(play, stats, opponentStats, game.possession)
-            return updateStatsForEachTeam(allPlays, play, TeamSide.AWAY, game, stats, opponentStats)
         }
     }
 
