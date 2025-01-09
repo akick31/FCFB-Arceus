@@ -175,6 +175,11 @@ class UserService(
         return userData.map { dtoConverter.convertToUserDTO(it) }
     }
 
+    fun getNewSignups(): List<UserDTO> {
+        val userData = userRepository.getNewSignups().filterNotNull()
+        return userData.map { dtoConverter.convertToUserDTO(it) }.filter { it.approved == 0 }
+    }
+
     /**
      * Get a user by its name
      * @param name
