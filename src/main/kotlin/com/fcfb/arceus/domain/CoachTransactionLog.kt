@@ -1,6 +1,5 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.vladmihalcea.hibernate.type.json.JsonStringType
 import org.hibernate.annotations.Type
@@ -80,4 +79,3 @@ class CoachTransactionLog {
         }
     }
 }
-

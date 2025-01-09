@@ -1,7 +1,6 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.CoachTransactionLog
-import com.fcfb.arceus.domain.User
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository

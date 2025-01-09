@@ -187,9 +187,7 @@ class TeamService(
      * @param name
      * @param team
      */
-    fun updateTeam(
-        team: Team,
-    ): Team {
+    fun updateTeam(team: Team): Team {
         val existingTeam = getTeamByName(team.name)
 
         existingTeam.apply {
@@ -353,8 +351,8 @@ class TeamService(
                     mutableListOf(user.username),
                     HIRED,
                     ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
-                    processedBy
-                )
+                    processedBy,
+                ),
             )
         }
         return existingTeam
@@ -384,8 +382,8 @@ class TeamService(
                 existingTeam.coachUsernames,
                 FIRED,
                 ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
-                processedBy
-            )
+                processedBy,
+            ),
         )
         existingTeam.coachUsernames = mutableListOf()
         existingTeam.coachNames = mutableListOf()

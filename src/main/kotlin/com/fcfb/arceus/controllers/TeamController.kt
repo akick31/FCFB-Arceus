@@ -6,7 +6,6 @@ import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -53,14 +52,14 @@ class TeamController(
     suspend fun hireCoach(
         @RequestParam name: String?,
         @RequestParam discordId: String,
-        @RequestParam  coachPosition: CoachPosition,
+        @RequestParam coachPosition: CoachPosition,
         @RequestParam processedBy: String,
     ) = teamService.hireCoach(name, discordId, coachPosition, processedBy)
 
     @PostMapping("/fire")
     fun hireCoach(
         @RequestParam team: String,
-        @RequestParam processedBy: String
+        @RequestParam processedBy: String,
     ) = teamService.fireCoach(team, processedBy)
 
     @DeleteMapping("")
