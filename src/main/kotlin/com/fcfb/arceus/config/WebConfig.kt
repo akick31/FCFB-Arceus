@@ -9,7 +9,6 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 @Configuration
 @EnableWebSecurity
 open class WebConfig : WebSecurityConfigurerAdapter() {
-
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
         http
@@ -26,5 +25,4 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
             .expiredUrl("/sessionExpired")
             .and()
     }
-
 }
