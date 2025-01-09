@@ -35,6 +35,9 @@ class UserController(
     @GetMapping("")
     fun getAllUsers() = userService.getAllUsers()
 
+    @GetMapping("/new_signups")
+    fun getNewSignups() = userService.getNewSignups()
+
     @GetMapping("/name")
     fun getUserByName(
         @RequestParam name: String,
