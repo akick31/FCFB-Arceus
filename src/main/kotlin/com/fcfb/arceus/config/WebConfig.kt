@@ -5,12 +5,10 @@ import org.springframework.http.HttpMethod
 import org.springframework.security.config.annotation.web.builders.HttpSecurity
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.web.servlet.config.annotation.CorsRegistry
-import org.springframework.web.servlet.config.annotation.WebMvcConfigurer
 
 @Configuration
 @EnableWebSecurity
-open class WebConfig : WebSecurityConfigurerAdapter(), WebMvcConfigurer {
+open class WebConfig : WebSecurityConfigurerAdapter() {
 
     @Throws(Exception::class)
     override fun configure(http: HttpSecurity) {
@@ -27,18 +25,5 @@ open class WebConfig : WebSecurityConfigurerAdapter(), WebMvcConfigurer {
             .maxSessionsPreventsLogin(false)
             .expiredUrl("/sessionExpired")
             .and()
-    }
-
-    // Add CORS configuration
-    override fun addCorsMappings(registry: CorsRegistry) {
-        registry.addMapping("/**")
-            .allowedOrigins(
-                "http://fakecollegefootball.com",
-                "https://fakecollegefootball.com"
-            )
-            .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-            .allowedHeaders("*")
-            .allowCredentials(true)
-            .maxAge(3600)
     }
 }
