@@ -51,7 +51,7 @@ class RangesService(
                     0,
                     0,
                     Scenario.KNEEL,
-                    0,
+                    1,
                     0,
                     0,
                 )

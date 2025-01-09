@@ -1,5 +1,8 @@
 package com.fcfb.arceus.service.fcfb
 
+import com.fcfb.arceus.domain.CoachTransactionLog
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.FIRED
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.GameType
@@ -21,11 +24,15 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class TeamService(
     private val teamRepository: TeamRepository,
     private val userService: UserService,
+    private val coachTransactionLogService: CoachTransactionLogService,
 ) {
     /**
      * After a game ends, update the team's wins and losses
@@ -94,8 +101,8 @@ class TeamService(
                 awayTeam.nationalChampionshipWins += 1
             }
         }
-        updateTeam(game.homeTeam, homeTeam)
-        updateTeam(game.awayTeam, awayTeam)
+        updateTeam(homeTeam)
+        updateTeam(awayTeam)
     }
 
     /**
@@ -180,11 +187,8 @@ class TeamService(
      * @param name
      * @param team
      */
-    fun updateTeam(
-        name: String?,
-        team: Team,
-    ): Team {
-        val existingTeam = getTeamByName(name)
+    fun updateTeam(team: Team): Team {
+        val existingTeam = getTeamByName(team.name)
 
         existingTeam.apply {
             this.name = team.name
@@ -251,6 +255,7 @@ class TeamService(
         name: String?,
         discordId: String,
         coachPosition: CoachPosition,
+        processedBy: String,
     ): Team {
         val updatedName = name?.replace("_", " ")
         val existingTeam = getTeamByName(updatedName)
@@ -339,6 +344,16 @@ class TeamService(
         withContext(Dispatchers.IO) {
             saveTeam(existingTeam)
             userService.updateUser(user)
+            coachTransactionLogService.logCoachTransaction(
+                CoachTransactionLog(
+                    existingTeam.name ?: "TEAM_NOT_FOUND",
+                    coachPosition,
+                    mutableListOf(user.username),
+                    HIRED,
+                    ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                    processedBy,
+                ),
+            )
         }
         return existingTeam
     }
@@ -347,7 +362,10 @@ class TeamService(
      * Fire all coaches for a team
      * @param name
      */
-    fun fireCoach(name: String?): Team {
+    fun fireCoach(
+        name: String?,
+        processedBy: String,
+    ): Team {
         val updatedName = name?.replace("_", " ")
         val existingTeam = getTeamByName(updatedName)
         val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
@@ -357,6 +375,16 @@ class TeamService(
             userService.updateUser(user)
         }
 
+        coachTransactionLogService.logCoachTransaction(
+            CoachTransactionLog(
+                existingTeam.name ?: "TEAM_NOT_FOUND",
+                HEAD_COACH,
+                existingTeam.coachUsernames,
+                FIRED,
+                ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                processedBy,
+            ),
+        )
         existingTeam.coachUsernames = mutableListOf()
         existingTeam.coachNames = mutableListOf()
         existingTeam.coachDiscordTags = mutableListOf()

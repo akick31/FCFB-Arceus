@@ -5,7 +5,6 @@ import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -43,13 +42,13 @@ class UserController(
 
     @PutMapping("/update/password")
     fun updateUserPassword(
-        @RequestParam("id") id: Long,
+        @RequestParam id: Long,
         @RequestParam newPassword: String,
     ) = userService.updateUserPassword(id, newPassword)
 
     @PutMapping("/update/email")
     fun updateUserEmail(
-        @RequestParam("id") id: Long,
+        @RequestParam id: Long,
         @RequestParam newEmail: String,
     ) = userService.updateEmail(id, newEmail)
 
@@ -58,8 +57,8 @@ class UserController(
         @RequestBody user: UserDTO,
     ) = userService.updateUser(user)
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("")
     fun deleteTeam(
-        @PathVariable("id") id: Long,
+        @RequestParam id: Long,
     ) = userService.deleteUser(id)
 }

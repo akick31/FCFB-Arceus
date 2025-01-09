@@ -211,6 +211,13 @@ class PlayService(
             val previousPlay = getPreviousPlay(gameId) ?: throw Exception("No previous play found")
             val gamePlay = getPlayById(game.currentPlayId!!)
 
+            if (gamePlay.actualResult == ActualResult.DELAY_OF_GAME) {
+                if (game.waitingOn == TeamSide.HOME) {
+                    game.awayScore -= 8
+                } else {
+                    game.homeScore -= 8
+                }
+            }
             if (playHandler.isScoringPlay(gamePlay.actualResult)) {
                 if (gamePlay.possession == TeamSide.HOME) {
                     game.homeScore -= 6
@@ -268,6 +275,14 @@ class PlayService(
                 game.currentPlayType = PlayType.KICKOFF
             }
 
+            if (gamePlay.offensiveTimeoutCalled) {
+                if (gamePlay.possession == TeamSide.HOME) {
+                    game.homeTimeouts--
+                } else {
+                    game.awayTimeouts--
+                }
+            }
+
             game.possession = previousPlay.possession
             game.quarter = previousPlay.quarter
             game.clock = gameHandler.convertClockToString(previousPlay.clock)
@@ -276,6 +291,7 @@ class PlayService(
             game.yardsToGo = previousPlay.yardsToGo
             game.currentPlayId = previousPlay.playId
             game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+            game.gameTimer = gameService.calculateDelayOfGameTimer()
             playRepository.deleteById(gamePlay.playId)
             gameService.saveGame(game)
             return previousPlay

@@ -6,7 +6,6 @@ import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -38,11 +37,10 @@ class TeamController(
         @RequestBody team: Team,
     ) = teamService.createTeam(team)
 
-    @PutMapping("/{name}")
+    @PutMapping("")
     fun updateTeam(
-        @PathVariable("name") name: String?,
         @RequestBody team: Team,
-    ) = teamService.updateTeam(name, team)
+    ) = teamService.updateTeam(team)
 
     @PutMapping("/color")
     fun updateTeamColor(
@@ -50,20 +48,22 @@ class TeamController(
         @RequestParam color: String,
     ) = teamService.updateTeamColor(team, color)
 
-    @PostMapping("/{name}/hire")
+    @PostMapping("/hire")
     suspend fun hireCoach(
-        @PathVariable("name") name: String?,
+        @RequestParam name: String?,
         @RequestParam discordId: String,
         @RequestParam coachPosition: CoachPosition,
-    ) = teamService.hireCoach(name, discordId, coachPosition)
+        @RequestParam processedBy: String,
+    ) = teamService.hireCoach(name, discordId, coachPosition, processedBy)
 
     @PostMapping("/fire")
     fun hireCoach(
         @RequestParam team: String,
-    ) = teamService.fireCoach(team)
+        @RequestParam processedBy: String,
+    ) = teamService.fireCoach(team, processedBy)
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("")
     fun deleteTeam(
-        @PathVariable("id") id: Int,
+        @RequestParam id: Int,
     ) = teamService.deleteTeam(id)
 }

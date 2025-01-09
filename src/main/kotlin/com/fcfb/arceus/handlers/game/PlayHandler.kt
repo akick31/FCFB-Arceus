@@ -791,7 +791,7 @@ class PlayHandler(
         return if (!clockStopped!! && !timeoutUsed) {
             when {
                 playCall == PlayCall.SPIKE -> 3
-                playCall == PlayCall.KNEEL -> 30
+                playCall == PlayCall.KNEEL -> 40
                 runoffType == RunoffType.CHEW -> 30
                 runoffType == RunoffType.HURRY -> 7
                 runoffType == RunoffType.FINAL ->
