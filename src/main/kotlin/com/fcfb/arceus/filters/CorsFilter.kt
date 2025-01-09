@@ -31,7 +31,7 @@ class CorsFilter : OncePerRequestFilter() {
                     "Access-Control-Request-Method, " +
                     "Access-Control-Request-Headers",
             )
-            response.addHeader("Access-Control-Allow-Credentials", "true")
+            response.addHeader("Access-Control-Allow-Credentials", "false")
             response.addIntHeader("Access-Control-Max-Age", 3600) // Cache preflight request for 1 hour
         } else {
             // Allow cross-origin requests from any origin
