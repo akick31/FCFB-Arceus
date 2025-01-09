@@ -209,8 +209,8 @@ class GameService(
             }
         val startedGames = mutableListOf<Game>()
         for (game in gamesToStart) {
-            startedGames.add(
-                startGame(
+            try {
+                val startedGame = startGame(
                     StartRequest(
                         Platform.DISCORD,
                         Platform.DISCORD,
@@ -221,9 +221,13 @@ class GameService(
                         game.gameType,
                     ),
                     week,
-                ),
-            )
-            scheduleService.markGameAsStarted(game)
+                )
+                startedGames.add(startedGame)
+                scheduleService.markGameAsStarted(game)
+            } catch (e: Exception) {
+                Logger.error("Error starting ${game.homeTeam} vs ${game.awayTeam}: " + e.message!!)
+                continue
+            }
         }
         return startedGames
     }

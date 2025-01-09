@@ -43,13 +43,13 @@ class UserController(
 
     @PutMapping("/update/password")
     fun updateUserPassword(
-        @RequestParam("id") id: Long,
+        @RequestParam id: Long,
         @RequestParam newPassword: String,
     ) = userService.updateUserPassword(id, newPassword)
 
     @PutMapping("/update/email")
     fun updateUserEmail(
-        @RequestParam("id") id: Long,
+        @RequestParam id: Long,
         @RequestParam newEmail: String,
     ) = userService.updateEmail(id, newEmail)
 
@@ -58,8 +58,8 @@ class UserController(
         @RequestBody user: UserDTO,
     ) = userService.updateUser(user)
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("")
     fun deleteTeam(
-        @PathVariable("id") id: Long,
+        @RequestParam id: Long,
     ) = userService.deleteUser(id)
 }
