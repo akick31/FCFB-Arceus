@@ -176,8 +176,8 @@ class UserService(
     }
 
     fun getNewSignups(): List<UserDTO> {
-        val userData = userRepository.getNewSignups().filterNotNull()
-        return userData.map { dtoConverter.convertToUserDTO(it) }.filter { it.approved == 0 }
+        val userData = userRepository.getNewSignups()
+        return userData.map { dtoConverter.convertToUserDTO(it) }
     }
 
     /**
