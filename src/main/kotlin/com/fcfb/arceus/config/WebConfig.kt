@@ -15,8 +15,8 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
         http
             .csrf().disable()
             .authorizeRequests()
-            .antMatchers(HttpMethod.OPTIONS).permitAll()  // Allow pre-flight requests
-            .antMatchers("/**").permitAll()  // Allow all paths for now, modify as per needs
+            .antMatchers(HttpMethod.OPTIONS).permitAll() // Allow pre-flight requests
+            .antMatchers("/**").permitAll() // Allow all paths for now
             .anyRequest().authenticated()
             .and()
             .sessionManagement()
@@ -26,4 +26,5 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
             .expiredUrl("/sessionExpired")
             .and()
     }
+
 }

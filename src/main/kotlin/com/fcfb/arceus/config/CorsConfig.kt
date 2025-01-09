@@ -11,11 +11,11 @@ open class CorsConfig : WebMvcConfigurer {
         registry.addMapping("/**")
             .allowedOrigins(
                 "http://fakecollegefootball.com",
-                "https://fakecollegefootball.com"
+                "https://fakecollegefootball.com",
             )
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
-            .allowCredentials(true)
+            .allowCredentials(false)
             .maxAge(3600)
     }
 }
