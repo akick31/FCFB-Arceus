@@ -101,8 +101,8 @@ class TeamService(
                 awayTeam.nationalChampionshipWins += 1
             }
         }
-        updateTeam(game.homeTeam, homeTeam)
-        updateTeam(game.awayTeam, awayTeam)
+        updateTeam(homeTeam)
+        updateTeam(awayTeam)
     }
 
     /**
