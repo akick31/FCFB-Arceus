@@ -29,12 +29,12 @@ class CorsFilter : OncePerRequestFilter() {
             response.addHeader(
                 "Access-Control-Allow-Headers",
                 "Origin, " +
-                        "Accept, " +
-                        "X-Requested-With, " +
-                        "Content-Type, " +
-                        "Authorization, " +
-                        "Access-Control-Request-Method, " +
-                        "Access-Control-Request-Headers",
+                    "Accept, " +
+                    "X-Requested-With, " +
+                    "Content-Type, " +
+                    "Authorization, " +
+                    "Access-Control-Request-Method, " +
+                    "Access-Control-Request-Headers",
             )
             response.addIntHeader("Access-Control-Max-Age", 3600) // Cache preflight request for 1 hour
         } else {
@@ -44,12 +44,12 @@ class CorsFilter : OncePerRequestFilter() {
             response.addHeader(
                 "Access-Control-Allow-Headers",
                 "Origin, " +
-                        "Accept, " +
-                        "X-Requested-With, " +
-                        "Content-Type, " +
-                        "Authorization, " +
-                        "Access-Control-Request-Method, " +
-                        "Access-Control-Request-Headers",
+                    "Accept, " +
+                    "X-Requested-With, " +
+                    "Content-Type, " +
+                    "Authorization, " +
+                    "Access-Control-Request-Method, " +
+                    "Access-Control-Request-Headers",
             )
             response.addHeader("Access-Control-Expose-Headers", "Access-Control-Allow-Origin, Access-Control-Allow-Credentials")
             response.addHeader("Access-Control-Allow-Credentials", "false")
