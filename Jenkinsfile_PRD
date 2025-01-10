@@ -62,6 +62,19 @@ pipeline {
             }
         }
 
+        stage('Generate Keystore') {
+            steps {
+                script {
+                    echo 'Generating keystore from Certbot certificates...'
+                    sh """
+                        openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
+                            -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
+                            -out /app/certs/keystore.p12 -name tomcat -password ${env.DB_PASSWORD}
+                    """
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 echo 'Creating the properties file...'
@@ -90,6 +103,13 @@ pipeline {
                         encryption.key=${env.JWT_ENCRYPTION_KEY}
                         encryption.algorithm=aes
                         jwt.secret=${env.JWT_SECRET}
+
+                        # SSL Configuration
+                        server.ssl.enabled=true
+                        server.ssl.key-store=/app/certs/keystore.p12
+                        server.ssl.key-store-password=${env.DB_PASSWORD}
+                        server.ssl.key-store-type=PKCS12
+                        server.ssl.key-alias=tomcat
 
                         # Email configuration
                         spring.mail.host=${env.EMAIL_HOST}
@@ -145,6 +165,7 @@ pipeline {
                     sh """
                         docker run --network="host" -d --restart=always --name ${CONTAINER_NAME} \\
                             -v /var/images:/app/images \\
+                            -v /app/certs:/app/certs \\
                             --env-file ${APP_PROPERTIES} \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """
