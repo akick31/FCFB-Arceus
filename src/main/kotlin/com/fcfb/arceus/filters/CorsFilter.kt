@@ -24,7 +24,6 @@ class CorsFilter : OncePerRequestFilter() {
                 response.addHeader("Access-Control-Allow-Origin", origin)
                 response.addHeader("Access-Control-Allow-Credentials", "true")
             }
-
             response.addHeader("Access-Control-Allow-Methods", "GET, POST, DELETE, PUT, PATCH, HEAD")
             response.addHeader(
                 "Access-Control-Allow-Headers",

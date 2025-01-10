@@ -99,5 +99,14 @@ class PlayController(
     fun getAllPlaysByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = playService.getAllPlaysByGameId(gameId)
-    // TODO: Rollback play
+
+    /**
+     * Get all plays with a user present
+     * @param discordTag
+     * @return
+     */
+    @GetMapping("/all/user")
+    fun getAllPlaysByDiscordTag(
+        @RequestParam("discordTag") discordTag: String,
+    ) = playService.getAllPlaysByDiscordTag(discordTag)
 }

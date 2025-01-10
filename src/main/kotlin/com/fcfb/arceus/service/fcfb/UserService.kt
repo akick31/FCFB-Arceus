@@ -78,8 +78,13 @@ class UserService(
                 awayUser.nationalChampionshipWins += 1
             }
         }
-        updateUser(homeUser)
-        updateUser(awayUser)
+
+        // Only update user if this is their main team
+        if (homeUser.team == game.homeTeam) {
+            updateUser(homeUser)
+        } else if (awayUser.team == game.awayTeam) {
+            updateUser(awayUser)
+        }
     }
 
     /**
