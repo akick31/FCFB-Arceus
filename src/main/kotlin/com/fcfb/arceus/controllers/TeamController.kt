@@ -19,49 +19,91 @@ import org.springframework.web.bind.annotation.RestController
 class TeamController(
     private var teamService: TeamService,
 ) {
+    /**
+     * Get a team by id
+     * @param id
+     */
     @GetMapping("/id")
     fun getTeamById(
         @RequestParam id: Int,
     ) = teamService.getTeamById(id)
 
+    /**
+     * Get all teams
+     * @return
+     */
     @GetMapping("")
     fun getAllTeams() = teamService.getAllTeams()
 
+    /**
+     * Get a team by name
+     * @param name
+     * @return
+     */
     @GetMapping("/name")
     fun getTeamByName(
         @RequestParam name: String?,
     ) = teamService.getTeamByName(name)
 
+    /**
+     * Create a team
+     * @param team
+     */
     @PostMapping("")
     fun createTeam(
         @RequestBody team: Team,
     ) = teamService.createTeam(team)
 
+    /**
+     * Update a team
+     * @param team
+     */
     @PutMapping("")
     fun updateTeam(
         @RequestBody team: Team,
     ) = teamService.updateTeam(team)
 
-    @PutMapping("/color")
-    fun updateTeamColor(
-        @RequestParam team: String,
-        @RequestParam color: String,
-    ) = teamService.updateTeamColor(team, color)
-
+    /**
+     * Hire a coach for a team
+     * @param team
+     * @param discordId
+     * @param coachPosition
+     * @param processedBy
+     */
     @PostMapping("/hire")
     suspend fun hireCoach(
-        @RequestParam name: String?,
+        @RequestParam team: String?,
         @RequestParam discordId: String,
         @RequestParam coachPosition: CoachPosition,
         @RequestParam processedBy: String,
-    ) = teamService.hireCoach(name, discordId, coachPosition, processedBy)
+    ) = teamService.hireCoach(team, discordId, coachPosition, processedBy)
 
+    /**
+     * Hire an interim coach for a team
+     * @param team
+     * @param discordId
+     * @param processedBy
+     */
+    @PutMapping("/hire/interim")
+    suspend fun hireInterimCoach(
+        @RequestParam team: String,
+        @RequestParam discordId: String,
+        @RequestParam processedBy: String,
+    ) = teamService.hireInterimCoach(team, discordId, processedBy)
+
+    /**
+     * Fire all coaches for a team
+     * @param team
+     */
     @PostMapping("/fire")
-    fun hireCoach(
+    fun fireCoach(
         @RequestParam team: String,
         @RequestParam processedBy: String,
     ) = teamService.fireCoach(team, processedBy)
 
+    /**
+     * Delete a team
+     */
     @DeleteMapping("")
     fun deleteTeam(
         @RequestParam id: Int,

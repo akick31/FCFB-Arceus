@@ -339,6 +339,12 @@ class PlayService(
     fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
 
     /**
+     * Get all plays with a user
+     * @param discordTag
+     */
+    fun getAllPlaysByDiscordTag(discordTag: String) = playRepository.getAllPlaysByDiscordTag(discordTag)
+
+    /**
      * Delete all plays for a game
      * @param gameId
      */
