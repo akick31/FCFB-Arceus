@@ -83,9 +83,9 @@ class ScorebugService(
         val scoreBoxWidth = 80
         val clockInfoBoxWidth = scoreBoxWidth + 50 // Width for the clock info box
         val bottomBoxHeight = 50 // Height for the bottom info box
-        val homeTeamY = 0 // Y position for the home team box row
-        val awayTeamY = homeTeamY + infoBoxHeight // Y position for the away team box row
-        val bottomBoxY = awayTeamY + infoBoxHeight // Y position for the down & distance box
+        val awayTeamY = 0 // Y position for the home team box row
+        val homeTeamY = awayTeamY + infoBoxHeight // Y position for the away team box row
+        val bottomBoxY = homeTeamY + infoBoxHeight // Y position for the down & distance box
         val teamNameX = 0 // X position for the team name
         val scoreX = teamBoxWidth - 25 // X position for the score
         val clockInfoBoxX = scoreX + scoreBoxWidth // X position for the clock info box
@@ -136,7 +136,7 @@ class ScorebugService(
         g.color = Color.WHITE
         drawTeamCenteredText(
             g,
-            game.homeTeam.toString(),
+            game.homeTeam + " (" + homeTeam.currentWins + "-" + homeTeam.currentLosses + ")",
             teamNameX,
             homeTeamY - 10,
             teamBoxWidth - 30,
@@ -147,7 +147,7 @@ class ScorebugService(
         g.color = Color.WHITE
         drawTeamCenteredText(
             g,
-            game.awayTeam.toString(),
+            game.awayTeam + " (" + awayTeam.currentWins + "-" + awayTeam.currentLosses + ")",
             teamNameX,
             awayTeamY - 10,
             teamBoxWidth - 30,

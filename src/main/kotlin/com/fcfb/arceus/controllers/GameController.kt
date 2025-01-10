@@ -185,11 +185,11 @@ class GameController(
      * @param coachId
      */
     @PutMapping("/sub")
-    fun subCoach(
+    fun subCoachIntoGame(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("team") team: String,
-        @RequestParam("coachId") coachId: String,
-    ) = gameService.subCoach(gameId, team, coachId)
+        @RequestParam("discordId") discordId: String,
+    ) = gameService.subCoachIntoGame(gameId, team, discordId)
 
     /**
      * Delete an ongoing game

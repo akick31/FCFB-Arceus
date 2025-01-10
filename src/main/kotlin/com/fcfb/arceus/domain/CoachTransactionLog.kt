@@ -69,6 +69,7 @@ class CoachTransactionLog {
 
     enum class TransactionType(val description: String) {
         HIRED("Hired"),
+        HIRED_INTERIM("Hired Interim"),
         FIRED("Fired"),
         ;
 

@@ -25,6 +25,7 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
+import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
@@ -208,8 +209,12 @@ class GameService(
                 throw NoGameFoundException()
             }
         val startedGames = mutableListOf<Game>()
+        var count = 0
         for (game in gamesToStart) {
             try {
+                if (count == 15) {
+                    sleep(300000)
+                }
                 val startedGame =
                     startGame(
                         StartRequest(
@@ -225,6 +230,7 @@ class GameService(
                     )
                 startedGames.add(startedGame)
                 scheduleService.markGameAsStarted(game)
+                count += 1
             } catch (e: Exception) {
                 Logger.error("Error starting ${game.homeTeam} vs ${game.awayTeam}: " + e.message!!)
                 continue
@@ -501,13 +507,13 @@ class GameService(
      * Sub a coach in for a team
      * @param gameId
      */
-    fun subCoach(
+    fun subCoachIntoGame(
         gameId: Int,
         team: String,
-        coachId: String,
+        discordId: String,
     ): Game {
         val game = getGameById(gameId)
-        val userData = userService.getUserDTOByDiscordId(coachId)
+        val userData = userService.getUserDTOByDiscordId(discordId)
         val coach = userData.coachName
         val updatedTeam = team.replace("_", " ")
 

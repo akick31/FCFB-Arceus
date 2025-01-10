@@ -3,6 +3,7 @@ package com.fcfb.arceus.service.fcfb
 import com.fcfb.arceus.domain.CoachTransactionLog
 import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.FIRED
 import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED_INTERIM
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.GameType
@@ -247,18 +248,18 @@ class TeamService(
 
     /**
      * Hire a coach for a team
-     * @param name
+     * @param team
      * @param discordId
      * @param coachPosition
      */
     suspend fun hireCoach(
-        name: String?,
+        team: String?,
         discordId: String,
         coachPosition: CoachPosition,
         processedBy: String,
     ): Team {
-        val updatedName = name?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedName)
+        val updatedTeam = team?.replace("_", " ")
+        val existingTeam = getTeamByName(updatedTeam)
         val user = userService.getUserDTOByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
@@ -350,6 +351,44 @@ class TeamService(
                     coachPosition,
                     mutableListOf(user.username),
                     HIRED,
+                    ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                    processedBy,
+                ),
+            )
+        }
+        return existingTeam
+    }
+
+    /**
+     * Hire an interim coach for a team
+     * @param team
+     * @param discordId
+     * @param processedBy
+     */
+    suspend fun hireInterimCoach(
+        team: String?,
+        discordId: String,
+        processedBy: String,
+    ): Team {
+        val updatedTeam = team?.replace("_", " ")
+        val existingTeam = getTeamByName(updatedTeam)
+        val user = userService.getUserDTOByDiscordId(discordId)
+
+        existingTeam.coachUsernames = mutableListOf(user.username)
+        existingTeam.coachNames = mutableListOf(user.coachName)
+        existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
+        existingTeam.coachDiscordIds = mutableListOf(discordId)
+        existingTeam.offensivePlaybook = user.offensivePlaybook
+        existingTeam.defensivePlaybook = user.defensivePlaybook
+
+        withContext(Dispatchers.IO) {
+            saveTeam(existingTeam)
+            coachTransactionLogService.logCoachTransaction(
+                CoachTransactionLog(
+                    existingTeam.name ?: "TEAM_NOT_FOUND",
+                    HEAD_COACH,
+                    mutableListOf(user.username),
+                    HIRED_INTERIM,
                     ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
                     processedBy,
                 ),
