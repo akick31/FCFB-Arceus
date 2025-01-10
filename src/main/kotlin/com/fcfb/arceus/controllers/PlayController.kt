@@ -3,7 +3,6 @@ package com.fcfb.arceus.controllers
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.service.fcfb.game.PlayService
-import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -17,7 +16,6 @@ import org.springframework.web.bind.annotation.RestController
 @RequestMapping("/play")
 class PlayController(
     private var playService: PlayService,
-    private var encryptionUtils: EncryptionUtils,
 ) {
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
@@ -104,7 +102,7 @@ class PlayController(
 
     /**
      * Get all plays with a user present
-     * @param gameId
+     * @param discordTag
      * @return
      */
     @GetMapping("/all/user")
