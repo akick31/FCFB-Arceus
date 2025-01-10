@@ -69,7 +69,7 @@ pipeline {
                     sh """
                         openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
                             -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
-                            -out /app/certs/keystore.p12 -name tomcat -password test
+                            -out /app/certs/keystore.p12 -name tomcat -password pass:test
                     """
                 }
             }
