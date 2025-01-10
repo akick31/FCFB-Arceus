@@ -66,11 +66,14 @@ pipeline {
             steps {
                 script {
                     echo 'Generating keystore from Certbot certificates...'
-                    sh """
-                        openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
-                            -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
-                            -out /app/certs/keystore.p12 -name tomcat -password ${env.DB_PASSWORD}
-                    """
+
+                    withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
+                        sh """
+                            openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
+                                -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
+                                -out /app/certs/keystore.p12 -name tomcat -password ${DB_PASSWORD}
+                        """
+                    }
                 }
             }
         }
