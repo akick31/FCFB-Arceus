@@ -67,13 +67,12 @@ pipeline {
                 script {
                     echo 'Generating keystore from Certbot certificates...'
 
-                    withCredentials([string(credentialsId: 'DB_PASSWORD', variable: 'DB_PASSWORD')]) {
-                        sh """
-                            openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
-                                -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
-                                -out /app/certs/keystore.p12 -name tomcat -password '${DB_PASSWORD}'
-                        """
-                    }
+                    sh """
+                        openssl pkcs12 -export -in /etc/letsencrypt/live/fakecollegefootball.com/fullchain.pem \
+                            -inkey /etc/letsencrypt/live/fakecollegefootball.com/privkey.pem \
+                            -out /app/certs/keystore.p12 -name tomcat -password test
+                    """
+
                 }
             }
         }
@@ -110,7 +109,7 @@ pipeline {
                         # SSL Configuration
                         server.ssl.enabled=true
                         server.ssl.key-store=/app/certs/keystore.p12
-                        server.ssl.key-store-password=${env.DB_PASSWORD}
+                        server.ssl.key-store-password=test
                         server.ssl.key-store-type=PKCS12
                         server.ssl.key-alias=tomcat
 
