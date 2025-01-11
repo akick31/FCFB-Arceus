@@ -84,7 +84,7 @@ class TeamController(
      * @param discordId
      * @param processedBy
      */
-    @PutMapping("/hire/interim")
+    @PostMapping("/hire/interim")
     suspend fun hireInterimCoach(
         @RequestParam team: String,
         @RequestParam discordId: String,

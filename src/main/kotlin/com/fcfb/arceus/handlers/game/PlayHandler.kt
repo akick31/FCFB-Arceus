@@ -59,7 +59,7 @@ class PlayHandler(
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
-        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+        if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
 
@@ -302,7 +302,7 @@ class PlayHandler(
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
-        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+        if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
 
@@ -430,7 +430,7 @@ class PlayHandler(
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
-        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+        if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
 
