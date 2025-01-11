@@ -536,6 +536,7 @@ class Game {
         PUNT_TEAM_TOUCHDOWN("PUNT TEAM TOUCHDOWN"),
         MUFFED_PUNT("MUFFED PUNT"),
         DELAY_OF_GAME("DELAY OF GAME"),
+        END_OF_HALF("END OF HALF"),
     }
 
     enum class RunoffType(val description: String) {
@@ -653,6 +654,7 @@ class Game {
         DELAY_OF_GAME("DELAY OF GAME"),
         CHEW_MODE_ENABLED("CHEW MODE ENABLED"),
         GAME_OVER("GAME OVER"),
+        END_OF_HALF("END OF HALF"),
         ;
 
         companion object {

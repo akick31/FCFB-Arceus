@@ -35,8 +35,27 @@ class DelayOfGameMonitor(
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
             val updatedGame = applyDelayOfGame(game)
-            discordService.notifyDelayOfGame(updatedGame)
+            val isDelayofGameOut = getIsDelayOfGameOut(game)
+            if (isDelayofGameOut) {
+                gameService.endSingleGame(
+                    game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong() ?: throw Exception("No platform ID found"),
+                )
+            }
+            discordService.notifyDelayOfGame(updatedGame, isDelayofGameOut)
             Logger.info("A delay of game for game ${game.gameId} has been processed")
+        }
+    }
+
+    private fun getIsDelayOfGameOut(game: Game): Boolean {
+        if (game.gameType == GameType.SCRIMMAGE) {
+            return false
+        }
+        if (game.waitingOn == TeamSide.HOME) {
+            val instances = playService.getDelayOfGameInstances(game.gameId, TeamSide.AWAY)
+            return instances >= 3
+        } else {
+            val instances = playService.getDelayOfGameInstances(game.gameId, TeamSide.HOME)
+            return instances >= 3
         }
     }
 

@@ -9,6 +9,7 @@ import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
@@ -418,6 +419,31 @@ class GameService(
             Logger.error("Error in ${game.gameId}: " + e.message!!)
             throw e
         }
+    }
+
+    /**
+     * Restart a game
+     * @param channelId
+     * @return
+     */
+    fun restartGame(channelId: ULong): Game? {
+        val game =
+            getGameByPlatformId(channelId) ?: run {
+                Logger.error("Game at $channelId not found")
+                return null
+            }
+        deleteOngoingGame(channelId)
+        val startRequest =
+            StartRequest(
+                Platform.DISCORD,
+                Platform.DISCORD,
+                game.subdivision ?: Subdivision.FCFB,
+                game.homeTeam,
+                game.awayTeam,
+                game.tvChannel,
+                game.gameType ?: GameType.SCRIMMAGE,
+            )
+        return startGame(startRequest, game.week)
     }
 
     /**

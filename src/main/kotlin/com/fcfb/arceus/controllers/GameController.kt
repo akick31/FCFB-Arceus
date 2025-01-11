@@ -192,6 +192,14 @@ class GameController(
     ) = gameService.subCoachIntoGame(gameId, team, discordId)
 
     /**
+     * Restart a game
+     */
+    @PostMapping("/restart")
+    fun restartGame(
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.restartGame(channelId)
+
+    /**
      * Delete an ongoing game
      * @param id
      * @return
