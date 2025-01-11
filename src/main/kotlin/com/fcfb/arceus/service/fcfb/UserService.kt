@@ -24,67 +24,67 @@ class UserService(
      * @param game
      */
     fun updateUserWinsAndLosses(game: Game) {
-        val homeUser = getUserByTeam(game.homeTeam)
-        val awayUser = getUserByTeam(game.awayTeam)
+        val homeUsers = getUsersByTeam(game.homeTeam)
+        val awayUsers = getUsersByTeam(game.awayTeam)
 
-        if (game.homeScore > game.awayScore) {
-            homeUser.wins += 1
-            awayUser.losses += 1
-            if (game.gameType == GameType.CONFERENCE_GAME) {
-                homeUser.conferenceWins += 1
-                awayUser.conferenceLosses += 1
-            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
-                homeUser.conferenceChampionshipWins += 1
-                awayUser.conferenceChampionshipLosses += 1
-            } else if (game.gameType == GameType.BOWL) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-            } else if (game.gameType == GameType.PLAYOFFS) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-                homeUser.playoffWins += 1
-                awayUser.playoffLosses += 1
-            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-                homeUser.playoffWins += 1
-                awayUser.playoffLosses += 1
-                homeUser.nationalChampionshipWins += 1
-                awayUser.nationalChampionshipLosses += 1
+        for (user in homeUsers + awayUsers) {
+            val isHomeUser = user.team == game.homeTeam
+            val isAwayUser = user.team == game.awayTeam
+            if (!isHomeUser && !isAwayUser) {
+                continue
+            }
+            val isWin = if (isHomeUser) game.homeScore > game.awayScore else game.awayScore > game.homeScore
+            val gameType = game.gameType
+
+            if (isHomeUser) {
+                updateUserRecord(user, gameType ?: GameType.SCRIMMAGE, isWin)
+            } else {
+                updateUserRecord(user, gameType ?: GameType.SCRIMMAGE, !isWin)
+            }
+        }
+    }
+
+    private fun updateUserRecord(
+        user: UserDTO,
+        gameType: GameType,
+        isWin: Boolean,
+    ) {
+        if (isWin) {
+            user.wins += 1
+            when (gameType) {
+                GameType.CONFERENCE_GAME -> user.conferenceWins += 1
+                GameType.CONFERENCE_CHAMPIONSHIP -> user.conferenceChampionshipWins += 1
+                GameType.BOWL -> user.bowlWins += 1
+                GameType.PLAYOFFS -> {
+                    user.bowlWins += 1
+                    user.playoffWins += 1
+                }
+                GameType.NATIONAL_CHAMPIONSHIP -> {
+                    user.bowlWins += 1
+                    user.playoffWins += 1
+                    user.nationalChampionshipWins += 1
+                }
+                else -> {}
             }
         } else {
-            homeUser.losses += 1
-            awayUser.wins += 1
-            if (game.gameType == GameType.CONFERENCE_GAME) {
-                homeUser.conferenceLosses += 1
-                awayUser.conferenceWins += 1
-            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
-                homeUser.conferenceChampionshipLosses += 1
-                awayUser.conferenceChampionshipWins += 1
-            } else if (game.gameType == GameType.BOWL) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-            } else if (game.gameType == GameType.PLAYOFFS) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-                homeUser.playoffLosses += 1
-                awayUser.playoffWins += 1
-            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-                homeUser.playoffLosses += 1
-                awayUser.playoffWins += 1
-                homeUser.nationalChampionshipLosses += 1
-                awayUser.nationalChampionshipWins += 1
+            user.losses += 1
+            when (gameType) {
+                GameType.CONFERENCE_GAME -> user.conferenceLosses += 1
+                GameType.CONFERENCE_CHAMPIONSHIP -> user.conferenceChampionshipLosses += 1
+                GameType.BOWL -> user.bowlLosses += 1
+                GameType.PLAYOFFS -> {
+                    user.bowlLosses += 1
+                    user.playoffLosses += 1
+                }
+                GameType.NATIONAL_CHAMPIONSHIP -> {
+                    user.bowlLosses += 1
+                    user.playoffLosses += 1
+                    user.nationalChampionshipLosses += 1
+                }
+                else -> {}
             }
         }
-
-        // Only update user if this is their main team
-        if (homeUser.team == game.homeTeam) {
-            updateUser(homeUser)
-        } else if (awayUser.team == game.awayTeam) {
-            updateUser(awayUser)
-        }
+        updateUser(user)
     }
 
     /**
@@ -159,6 +159,15 @@ class UserService(
      * @param team
      */
     fun getUserByTeam(team: String) = dtoConverter.convertToUserDTO(userRepository.getByTeam(team))
+
+    /**
+     * Get a list of users coaching team
+     * @param team
+     */
+    fun getUsersByTeam(team: String): List<UserDTO> {
+        val users = userRepository.getUsersByTeam(team)
+        return users.map { dtoConverter.convertToUserDTO(it) }
+    }
 
     /**
      * Get a user by its username or email

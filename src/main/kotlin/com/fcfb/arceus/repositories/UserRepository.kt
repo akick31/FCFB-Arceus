@@ -16,6 +16,9 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     fun getByTeam(team: String?): User
 
+    @Query("SELECT * FROM user WHERE team = :team", nativeQuery = true)
+    fun getUsersByTeam(team: String?): List<User>
+
     fun getEntityByTeam(team: String?): User
 
     @Query("SELECT * FROM user WHERE team IS NULL", nativeQuery = true)

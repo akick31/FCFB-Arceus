@@ -53,12 +53,15 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
-        val result = resultInformation.result ?: throw ResultNotFoundException()
+        var result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+            result = Scenario.END_OF_HALF
+        }
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
@@ -162,6 +165,9 @@ class PlayHandler(
                     ballLocation = 100 - ballLocation
                 }
             }
+            Scenario.END_OF_HALF -> {
+                actualResult = ActualResult.END_OF_HALF
+            }
             else -> {
                 yards = result.description.toInt()
                 ballLocation += yards
@@ -229,6 +235,7 @@ class PlayHandler(
                     possession = TeamSide.HOME
                 }
             }
+            ActualResult.END_OF_HALF -> {}
             ActualResult.FIRST_DOWN -> {}
             ActualResult.GAIN -> {}
             ActualResult.NO_GAIN -> {}
@@ -288,18 +295,21 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getFieldGoalResult(playCall, ballLocation + 17, difference)
-        val result = resultInformation.result ?: throw ResultNotFoundException()
+        var result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
         ballLocation = game.ballLocation
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+            result = Scenario.END_OF_HALF
+        }
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
-        val down: Int?
-        val yardsToGo: Int?
+        val down = 1
+        val yardsToGo = 10
         val actualResult: ActualResult
         when (result) {
             Scenario.KICK_SIX -> {
@@ -318,6 +328,9 @@ class PlayHandler(
                 actualResult = ActualResult.GOOD
                 ballLocation = 35
             }
+            Scenario.END_OF_HALF -> {
+                actualResult = ActualResult.END_OF_HALF
+            }
             else -> throw InvalidScenarioException()
         }
         when (actualResult) {
@@ -329,8 +342,6 @@ class PlayHandler(
                     possession = TeamSide.HOME
                     homeScore += 6
                 }
-                down = 1
-                yardsToGo = 10
             }
             ActualResult.BLOCKED -> {
                 possession =
@@ -339,8 +350,6 @@ class PlayHandler(
                     } else {
                         TeamSide.HOME
                     }
-                down = 1
-                yardsToGo = 10
             }
             ActualResult.NO_GOOD -> {
                 possession =
@@ -349,8 +358,6 @@ class PlayHandler(
                     } else {
                         TeamSide.HOME
                     }
-                down = 1
-                yardsToGo = 10
             }
             ActualResult.GOOD -> {
                 if (possession == TeamSide.HOME) {
@@ -358,9 +365,8 @@ class PlayHandler(
                 } else {
                     awayScore += 3
                 }
-                down = 1
-                yardsToGo = 10
             }
+            ActualResult.END_OF_HALF -> {}
             else -> throw InvalidActualResultException()
         }
 
@@ -418,12 +424,15 @@ class PlayHandler(
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
         val resultInformation = rangesService.getPuntResult(playCall, ballLocation, difference)
-        val result = resultInformation.result ?: throw ResultNotFoundException()
+        var result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        if (gamePlay.clock - runoffTime < 0 && game.quarter == 2 || game.quarter == 4) {
+            result = Scenario.END_OF_HALF
+        }
 
         var homeScore = game.homeScore
         var awayScore = game.awayScore
@@ -461,6 +470,9 @@ class PlayHandler(
             Scenario.TOUCHDOWN -> {
                 actualResult = ActualResult.PUNT_TEAM_TOUCHDOWN
                 ballLocation = 97
+            }
+            Scenario.END_OF_HALF -> {
+                actualResult = ActualResult.END_OF_HALF
             }
             else -> throw InvalidScenarioException()
         }
@@ -515,6 +527,7 @@ class PlayHandler(
                     possession = TeamSide.AWAY
                 }
             }
+            ActualResult.END_OF_HALF -> {}
             else -> throw InvalidActualResultException()
         }
 

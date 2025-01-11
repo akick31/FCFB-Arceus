@@ -9,6 +9,7 @@ import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
@@ -338,7 +339,7 @@ class GameService(
             } else if (game.gameStatus == GameStatus.END_OF_REGULATION) {
                 game.overtimeCoinTossWinner = coinTossWinner
             }
-
+            game.gameTimer = calculateDelayOfGameTimer()
             Logger.info("Coin toss finished, the winner was $coinTossWinner")
             saveGame(game)
             return game
@@ -376,6 +377,7 @@ class GameService(
                 game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
+            game.gameTimer = calculateDelayOfGameTimer()
             Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
             return saveGame(game)
         } catch (e: Exception) {
@@ -418,6 +420,31 @@ class GameService(
             Logger.error("Error in ${game.gameId}: " + e.message!!)
             throw e
         }
+    }
+
+    /**
+     * Restart a game
+     * @param channelId
+     * @return
+     */
+    fun restartGame(channelId: ULong): Game? {
+        val game =
+            getGameByPlatformId(channelId) ?: run {
+                Logger.error("Game at $channelId not found")
+                return null
+            }
+        deleteOngoingGame(channelId)
+        val startRequest =
+            StartRequest(
+                Platform.DISCORD,
+                Platform.DISCORD,
+                game.subdivision ?: Subdivision.FCFB,
+                game.homeTeam,
+                game.awayTeam,
+                game.tvChannel,
+                game.gameType ?: GameType.SCRIMMAGE,
+            )
+        return startGame(startRequest, game.week)
     }
 
     /**
@@ -515,9 +542,8 @@ class GameService(
         val game = getGameById(gameId)
         val userData = userService.getUserDTOByDiscordId(discordId)
         val coach = userData.coachName
-        val updatedTeam = team.replace("_", " ")
 
-        when (updatedTeam) {
+        when (team) {
             game.homeTeam -> {
                 game.homeCoaches = listOf(coach)
                 game.homeCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())

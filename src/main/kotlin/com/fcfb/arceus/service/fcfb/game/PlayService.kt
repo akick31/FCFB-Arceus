@@ -30,8 +30,6 @@ class PlayService(
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
-    // TODO: Add response speed
-
     /**
      * Start a new play, the defensive number was submitted. The defensive number is encrypted
      * @param gameId
@@ -343,6 +341,16 @@ class PlayService(
      * @param discordTag
      */
     fun getAllPlaysByDiscordTag(discordTag: String) = playRepository.getAllPlaysByDiscordTag(discordTag)
+
+    /**
+     * Get the number of delay of game instances for a team
+     * @param gameId
+     * @param benefactingTeam
+     */
+    fun getDelayOfGameInstances(
+        gameId: Int,
+        benefactingTeam: TeamSide,
+    ) = playRepository.getDelayOfGameInstances(gameId, benefactingTeam.description)
 
     /**
      * Delete all plays for a game

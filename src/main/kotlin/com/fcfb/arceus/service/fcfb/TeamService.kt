@@ -133,7 +133,7 @@ class TeamService(
      * Get a team by its name
      * @param name
      */
-    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name?.replace("_", " "))
+    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name)
 
     /**
      * Create a new team
@@ -258,12 +258,13 @@ class TeamService(
         coachPosition: CoachPosition,
         processedBy: String,
     ): Team {
-        val updatedTeam = team?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedTeam)
+        val existingTeam = getTeamByName(team)
         val user = userService.getUserDTOByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
+                // Fire previous coach if hiring a new head coach
+                fireCoach(existingTeam.name, processedBy)
                 existingTeam.coachUsernames = mutableListOf(user.username)
                 existingTeam.coachNames = mutableListOf(user.coachName)
                 existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
@@ -370,8 +371,7 @@ class TeamService(
         discordId: String,
         processedBy: String,
     ): Team {
-        val updatedTeam = team?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedTeam)
+        val existingTeam = getTeamByName(team)
         val user = userService.getUserDTOByDiscordId(discordId)
 
         existingTeam.coachUsernames = mutableListOf(user.username)
@@ -405,8 +405,7 @@ class TeamService(
         name: String?,
         processedBy: String,
     ): Team {
-        val updatedName = name?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedName)
+        val existingTeam = getTeamByName(name)
         val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
         for (coach in coachDiscordIds) {
             val user = userService.getUserDTOByDiscordId(coach)

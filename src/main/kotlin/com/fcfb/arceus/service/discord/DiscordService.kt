@@ -51,8 +51,11 @@ class DiscordService(
      * @param game
      * @return Boolean
      */
-    fun notifyDelayOfGame(game: Game) {
-        val discordBotUrl = "$discordBotUrl/delay_of_game"
+    fun notifyDelayOfGame(
+        game: Game,
+        isDelayofGameOut: Boolean,
+    ) {
+        val discordBotUrl = "$discordBotUrl/delay_of_game?isDelayOfGameOut=$isDelayofGameOut"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)
