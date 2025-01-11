@@ -339,7 +339,7 @@ class GameService(
             } else if (game.gameStatus == GameStatus.END_OF_REGULATION) {
                 game.overtimeCoinTossWinner = coinTossWinner
             }
-
+            game.gameTimer = calculateDelayOfGameTimer()
             Logger.info("Coin toss finished, the winner was $coinTossWinner")
             saveGame(game)
             return game
@@ -377,6 +377,7 @@ class GameService(
                 game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
+            game.gameTimer = calculateDelayOfGameTimer()
             Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
             return saveGame(game)
         } catch (e: Exception) {
@@ -541,9 +542,8 @@ class GameService(
         val game = getGameById(gameId)
         val userData = userService.getUserDTOByDiscordId(discordId)
         val coach = userData.coachName
-        val updatedTeam = team.replace("_", " ")
 
-        when (updatedTeam) {
+        when (team) {
             game.homeTeam -> {
                 game.homeCoaches = listOf(coach)
                 game.homeCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())

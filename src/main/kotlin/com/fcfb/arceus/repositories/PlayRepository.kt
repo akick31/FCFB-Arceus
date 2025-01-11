@@ -1,6 +1,5 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -34,10 +33,13 @@ interface PlayRepository : CrudRepository<Play?, Int?> {
     @Query(value = "SELECT * FROM play WHERE game_id = ? AND play_finished = true ORDER BY play_id DESC LIMIT 1", nativeQuery = true)
     fun getPreviousPlay(gameId: Int): Play?
 
-    @Query(value = "SELECT COUNT(*) FROM play WHERE game_id = ? AND result = 'DELAY OF GAME' AND possession = ?", nativeQuery = true)
+    @Query(
+        value = "SELECT COUNT(*) FROM play WHERE game_id = :gameId AND result = 'DELAY OF GAME' AND possession = :benefactingTeam",
+        nativeQuery = true,
+    )
     fun getDelayOfGameInstances(
         gameId: Int,
-        benefactingTeam: TeamSide,
+        benefactingTeam: String,
     ): Int
 
     @Transactional

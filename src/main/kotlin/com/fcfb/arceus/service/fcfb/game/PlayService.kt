@@ -350,7 +350,7 @@ class PlayService(
     fun getDelayOfGameInstances(
         gameId: Int,
         benefactingTeam: TeamSide,
-    ) = playRepository.getDelayOfGameInstances(gameId, benefactingTeam)
+    ) = playRepository.getDelayOfGameInstances(gameId, benefactingTeam.description)
 
     /**
      * Delete all plays for a game
