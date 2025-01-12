@@ -95,9 +95,9 @@ class ScorebugService(
         drawTeamScoreSection(g, game, homeTeam, 205, adjustedRowHeightForTeamScore)
 
         // Draw the away team name section with adjusted height
-        drawTeamNameSection(g, game, awayTeam, 0, adjustedRowHeightForTeamName)
+        drawTeamNameSection(g, game, awayTeam, width, 0, adjustedRowHeightForTeamName)
         // Draw the home team name section with adjusted height
-        drawTeamNameSection(g, game, homeTeam, 140, adjustedRowHeightForTeamName)
+        drawTeamNameSection(g, game, homeTeam, width, 140, adjustedRowHeightForTeamName)
 
         drawClockInformationSection(g, rowHeight - 10, game, homeTeam, awayTeam)
         drawDownAndDistanceSection(g, rowHeight - 10, game)
@@ -108,8 +108,8 @@ class ScorebugService(
         // Dispose graphics context
         g.dispose()
 
-        // Draw the image
-        g.drawImage(image, 0, 0, width, height, null)
+        // Scale and draw the image
+        val scaledImage = scaleImage(image, width, height)
 
         // Save image to file
         val outputfile = File("$imagePath/scorebugs/${game.gameId}_scorebug.png")
@@ -125,8 +125,37 @@ class ScorebugService(
             }
         }
 
-        ImageIO.write(image, "png", outputfile)
+        ImageIO.write(scaledImage, "png", outputfile)
         return image
+    }
+
+    /**
+     * Scales the image to a smaller size
+     * @param image
+     * @param width
+     * @param height
+     */
+    private fun scaleImage(
+        image: BufferedImage,
+        width: Int,
+        height: Int,
+    ): BufferedImage {
+        // Create a new BufferedImage for the smaller version
+        val scaledWidth = (width * 0.65).toInt()
+        val scaledHeight = (height * 0.65).toInt()
+        val scaledImage = BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB)
+        val gScaled: Graphics2D = scaledImage.createGraphics()
+
+        // Enable anti-aliasing for smoother scaling
+        gScaled.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        gScaled.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR)
+
+        // Draw the original image onto the scaled image
+        gScaled.drawImage(image, 0, 0, scaledWidth, scaledHeight, null)
+
+        // Dispose graphics context
+        gScaled.dispose()
+        return scaledImage
     }
 
     /**
@@ -140,6 +169,7 @@ class ScorebugService(
         g: Graphics2D,
         game: Game,
         team: Team,
+        width: Int,
         yPos: Int,
         rowHeight: Int,
     ) {
@@ -151,9 +181,13 @@ class ScorebugService(
             g.font = Font("Helvetica", Font.PLAIN, 37)
             val textWidth = g.fontMetrics.stringWidth(teamName)
             if (textWidth > 245) {
-                teamName = "${team.abbreviation}"
+                teamName = "${team.shortName}"
+                val width = g.fontMetrics.stringWidth(teamName)
+                if (width > 245  || team.shortName == null) {
+                    teamName = "${team.abbreviation}"
+                }
             }
-            g.color = Color(255, 250, 220)
+            g.color = Color(255, 255, 255)
             g.font = Font("Helvetica", Font.PLAIN, 37)
             g.drawString(teamName, 10, yPos + rowHeight / 2 + 5)
         } else {
@@ -162,15 +196,19 @@ class ScorebugService(
             g.font = Font("Helvetica", Font.PLAIN, 37) // Get the text width as if it was all the same size
             val textWidth = g.fontMetrics.stringWidth(ranking + teamName + 20)
             if (textWidth > 245) {
-                teamName = "${team.abbreviation}"
+                teamName = "${team.shortName}"
+                val width = g.fontMetrics.stringWidth(teamName)
+                if (width > 245 || team.shortName == null) {
+                    teamName = "${team.abbreviation}"
+                }
             }
             // Reduce the font size for the ranking
-            g.color = Color(255, 250, 220)
+            g.color = Color(255, 255, 255)
             g.font = Font("Helvetica", Font.PLAIN, 32)
             val rankingWidth = g.fontMetrics.stringWidth(ranking)
             g.drawString(ranking, 10, yPos + rowHeight / 2 + 5)
 
-            g.color = Color(255, 250, 220)
+            g.color = Color(255, 255, 255)
             g.font = Font("Helvetica", Font.PLAIN, 37)
             g.drawString(teamName, rankingWidth + 20, yPos + rowHeight / 2 + 5)
         }
@@ -181,12 +219,13 @@ class ScorebugService(
         // Draw the team record
         val record = "${team.currentWins}-${team.currentLosses}"
         g.font = Font("Helvetica", Font.PLAIN, 32)
-        g.color = Color(255, 250, 220)
-        g.drawString(record, 360 - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 5)
+        g.color = Color(255, 255, 255)
+        g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 5)
 
         // Horizontal line to span the entire width between teams
-        g.color = Color.GRAY
-        g.drawLine(0, 140, 360, 140)
+        g.color = Color(255, 255, 255)
+        g.stroke = BasicStroke(3f)
+        g.drawLine(0, 140, width, 140)
     }
 
     private fun drawTimeoutBoxes(
@@ -232,18 +271,18 @@ class ScorebugService(
         drawTeamSection(g, Color.decode(team.primaryColor), yPos, rowHeight)
 
         // Draw the team logo
-        val logoUrl = team.logo // Assume team.logoUrl is the URL of the team logo
+        val logoUrl = team.scorebugLogo
         val logoWidth = 130
         val logoHeight = 130
 
         // Create a gradient for the shadow (dark color, fading to transparent)
         val shadowX = 245
         val shadowY = yPos + (rowHeight - 100)
-        val shadowColor = Color(0, 0, 0, 100)
+        val shadowColor = Color(0, 0, 0, 120)
         val shadowGradient =
             LinearGradientPaint(
                 Point2D.Float(shadowX.toFloat(), shadowY.toFloat()),
-                Point2D.Float(285.toFloat(), shadowY.toFloat()),
+                Point2D.Float(290.toFloat(), shadowY.toFloat()),
                 floatArrayOf(0f, 0.25f, 1f),
                 arrayOf(shadowColor, shadowColor, Color(0, 0, 0, 0)),
             )
@@ -263,7 +302,7 @@ class ScorebugService(
                 // Draw the logo image and overlay the box back over the logo if it spills over
                 g.drawImage(logoImage, logoX, logoY, logoWidth, logoHeight, null)
                 paintGradient(g, Color.decode(team.primaryColor), yPos, rowHeight)
-                g.fillRect(0, yPos, 245, 75)
+                g.fillRect(0, yPos, 246, 75)
             } catch (e: IOException) {
                 // Handle error if the logo cannot be loaded (e.g., invalid URL)
                 Logger.error("Error loading logo for ${team.name}: ${e.message}")
@@ -273,7 +312,7 @@ class ScorebugService(
         // Draw the team score and possession arrow
         val score = if (team.name == game.homeTeam) game.homeScore.toString() else game.awayScore.toString()
 
-        g.color = Color(255, 250, 220)
+        g.color = Color(255, 255, 255)
         if (game.possession == TeamSide.AWAY && team.name == game.awayTeam && game.gameStatus != GameStatus.FINAL) {
             val unicodeChar = "\u25C0"
             val charHeight = g.fontMetrics.ascent
@@ -314,8 +353,8 @@ class ScorebugService(
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
         }
 
-        // Draw the light gray line to separate the two sections
-        g.color = Color.GRAY
+        // Draw the gray line to separate the two sections
+        g.color = Color(211, 211, 211, 110)
         g.drawLine(245, yPos, 245, yPos + rowHeight)
     }
 
@@ -352,11 +391,12 @@ class ScorebugService(
         width: Int,
         height: Int,
     ) {
-        g.color = Color.GRAY
+        g.color = Color.WHITE
+        g.stroke = BasicStroke(3f)
         g.drawLine(0, 0, width, 0) // Top border
         g.drawLine(0, 0, 0, height) // Left border
-        g.drawLine(width - 1, 0, width - 1, height) // Right border
-        g.drawLine(0, height - 1, width, height - 1) // Bottom border
+        g.drawLine(width - 1, 0, width - 3, height) // Right border
+        g.drawLine(0, height - 1, width, height - 3) // Bottom border
     }
 
     /**
@@ -403,9 +443,9 @@ class ScorebugService(
 
         // Draw Quarter Section
         var xPos = 0
-        g.color = Color(255, 250, 220)
+        g.color = Color(255, 255, 255)
         g.fillRect(xPos, rowY, 126, rowHeight)
-        g.color = Color.GRAY
+        g.color = Color.LIGHT_GRAY
 
         // Draw Quarter text
         val quarterText = getQuarterText(game.quarter)
@@ -414,15 +454,14 @@ class ScorebugService(
         g.color = Color.BLACK
         g.drawString(
             quarterText,
-            xPos + (115 - g.fontMetrics.stringWidth(quarterText)) / 2,
+            xPos + (100 - g.fontMetrics.stringWidth(quarterText)) / 2,
             rowY + rowHeight / 2 + quarterTextAscent / 2,
         )
 
         // Draw Clock Section
-        xPos = 115
-        g.color = Color(255, 250, 220)
-        g.fillRect(xPos, rowY, 130, rowHeight)
-        g.color = Color.GRAY
+        xPos = 100
+        g.color = Color(255, 255, 255)
+        g.fillRect(xPos, rowY, 160, rowHeight)
 
         // Draw Clock text
         val clockText = getClockText(game.quarter, game.clock)
@@ -431,14 +470,14 @@ class ScorebugService(
         g.color = Color.BLACK
         g.drawString(
             clockText,
-            xPos + (130 - g.fontMetrics.stringWidth(clockText)) / 2,
+            xPos + (160 - g.fontMetrics.stringWidth(clockText)) / 2,
             rowY + rowHeight / 2 + clockTextAscent / 2,
         )
 
         // Draw Ball Location Section
-        xPos = 245
-        g.color = Color(255, 250, 220)
-        g.fillRect(xPos, rowY, 125, rowHeight)
+        xPos = 260
+        g.color = Color(255, 255, 255)
+        g.fillRect(xPos, rowY, 100, rowHeight)
 
         // Draw Ball Location text
         val ballLocationText =
@@ -450,7 +489,7 @@ class ScorebugService(
                 game.ballLocation,
                 game.possession,
             )
-        var fontSize = 40
+        var fontSize = 30
         g.font = Font("Helvetica", Font.PLAIN, fontSize)
 
         // Calculate the width of the text
@@ -458,32 +497,36 @@ class ScorebugService(
         val ballLocationTextAscent = g.fontMetrics.ascent
 
         // Decrease font size if text overflows
-        while (textWidth > 110 && fontSize > 10) {
+        while (textWidth > 85 && fontSize > 10) {
             fontSize -= 2
             g.font = Font("Helvetica", Font.PLAIN, fontSize)
             textWidth = g.fontMetrics.stringWidth(ballLocationText)
         }
 
         g.color = Color.BLACK
-        g.drawString(ballLocationText, xPos + (115 - textWidth) / 2, rowY + (rowHeight - 5) / 2 + ballLocationTextAscent / 2)
+        g.drawString(ballLocationText, xPos + (100 - textWidth) / 2, rowY + (rowHeight) / 2 + ballLocationTextAscent / 2)
 
         // Vertical line to separate Quarter and Clock sections
-        val verticalLineX = 115
-        g.color = Color.GRAY
+        val verticalLineX = 100
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
         g.drawLine(verticalLineX, rowY + rowHeight, verticalLineX, rowY + (rowHeight / 2))
 
         // Vertical line to separate Clock and Ball Location sections
-        val verticalLineX2 = 240
-        g.color = Color.GRAY
+        val verticalLineX2 = 260
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
         g.drawLine(verticalLineX2, rowY + rowHeight, verticalLineX2, rowY + (rowHeight / 2))
 
         // Top horizontal line to span the entire width of the section
-        g.color = Color.GRAY
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
         g.drawLine(0, rowY, 360, rowY)
 
         // Bottom horizontal line to span the entire width of the section
-        g.color = Color.GRAY
-        g.drawLine(0, rowY + rowHeight, 360, rowY + rowHeight)
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
+        g.drawLine(0, rowY + rowHeight, 360 , rowY + rowHeight)
     }
 
     /**
@@ -498,20 +541,21 @@ class ScorebugService(
     ) {
         // Draw Down & Distance Section
         val rowY = 340
-        g.color = Color(255, 250, 220)
+        g.color = Color(255, 255, 255)
         g.fillRect(0, rowY, 360, rowHeight)
-        g.color = Color.GRAY
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
         g.drawRect(0, rowY, 360, rowHeight)
 
         // Draw Down & Distance text
         if (game.gameStatus != GameStatus.FINAL) {
             val downDistanceText = getDownDistanceText(game.down, game.yardsToGo, game.ballLocation)
-            g.font = Font("Helvetica", Font.BOLD, 43)
+            g.font = Font("Helvetica", Font.PLAIN, 43)
             val ascent = g.fontMetrics.ascent
             g.color = Color.BLACK
             g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
         } else {
-            g.font = Font("Helvetica", Font.BOLD, 43)
+            g.font = Font("Helvetica", Font.PLAIN, 43)
             val ascent = g.fontMetrics.ascent
             val textWidth = g.fontMetrics.stringWidth("Final")
             g.color = Color.BLACK
