@@ -18,9 +18,4 @@ class ScorebugController(
     fun getScorebugByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = scorebugService.getScorebugByGameId(gameId)
-
-    @PostMapping("/generate")
-    fun generateScorebug(
-        @RequestParam("gameId") gameId: Int,
-    ) = scorebugService.generateScorebug(gameId)
 }
