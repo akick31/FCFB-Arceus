@@ -265,14 +265,12 @@ class PlayService(
                 }
                 game.currentPlayType = PlayType.NORMAL
             }
-
             if (previousPlay.playCall == PlayCall.KICKOFF_NORMAL ||
                 previousPlay.playCall == PlayCall.KICKOFF_ONSIDE ||
                 previousPlay.playCall == PlayCall.KICKOFF_SQUIB
             ) {
                 game.currentPlayType = PlayType.KICKOFF
             }
-
             if (gamePlay.offensiveTimeoutCalled) {
                 if (gamePlay.possession == TeamSide.HOME) {
                     game.homeTimeouts--

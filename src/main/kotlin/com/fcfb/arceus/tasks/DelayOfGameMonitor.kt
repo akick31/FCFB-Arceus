@@ -88,21 +88,24 @@ class DelayOfGameMonitor(
         }
 
         val currentPlay = playService.getCurrentPlay(game.gameId)
-        if (currentPlay != null) {
-            currentPlay.playFinished = true
-            currentPlay.defensiveNumber = "0"
-            currentPlay.result = Scenario.DELAY_OF_GAME
-            currentPlay.actualResult = ActualResult.DELAY_OF_GAME
-            playRepository.save(currentPlay)
-        } else {
-            val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
-            play.playFinished = true
-            play.defensiveNumber = "0"
-            play.result = Scenario.DELAY_OF_GAME
-            play.actualResult = ActualResult.DELAY_OF_GAME
-            playRepository.save(play)
-        }
+        val savedPlay =
+            if (currentPlay != null) {
+                currentPlay.playFinished = true
+                currentPlay.defensiveNumber = "0"
+                currentPlay.result = Scenario.DELAY_OF_GAME
+                currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+                playRepository.save(currentPlay)
+            } else {
+                val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
+                play.playFinished = true
+                play.defensiveNumber = "0"
+                play.result = Scenario.DELAY_OF_GAME
+                play.actualResult = ActualResult.DELAY_OF_GAME
+                playRepository.save(play)
+            }
 
+        game.currentPlayId = savedPlay.playId
+        game.gameWarned = false
         gameService.saveGame(game)
         scorebugService.generateScorebug(game)
         return game
