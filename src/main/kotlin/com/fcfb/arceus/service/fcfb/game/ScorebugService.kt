@@ -559,7 +559,7 @@ class ScorebugService(
             val ascent = g.fontMetrics.ascent
             val textWidth = g.fontMetrics.stringWidth("Final")
             g.color = Color.BLACK
-            g.drawString("Final", 165 - textWidth / 2, rowY + rowHeight / 2 + ascent / 2)
+            g.drawString("Final", 180 - textWidth / 2, rowY + rowHeight / 2 + ascent / 2)
         }
     }
 
