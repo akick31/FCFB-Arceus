@@ -182,7 +182,7 @@ class ScorebugService(
         val record = "${team.currentWins}-${team.currentLosses}"
         g.font = Font("Helvetica", Font.PLAIN, 32)
         g.color = Color(255, 250, 220)
-        g.drawString(record, 360 - 5 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 10)
+        g.drawString(record, 360 - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 5)
 
         // Horizontal line to span the entire width between teams
         g.color = Color.GRAY
