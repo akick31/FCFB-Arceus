@@ -183,7 +183,7 @@ class ScorebugService(
             if (textWidth > 245) {
                 teamName = "${team.shortName}"
                 val width = g.fontMetrics.stringWidth(teamName)
-                if (width > 245  || team.shortName == null) {
+                if (width > 245 || team.shortName == null) {
                     teamName = "${team.abbreviation}"
                 }
             }
@@ -526,7 +526,7 @@ class ScorebugService(
         // Bottom horizontal line to span the entire width of the section
         g.color = Color.LIGHT_GRAY
         g.stroke = BasicStroke(3f)
-        g.drawLine(0, rowY + rowHeight, 360 , rowY + rowHeight)
+        g.drawLine(0, rowY + rowHeight, 360, rowY + rowHeight)
     }
 
     /**
