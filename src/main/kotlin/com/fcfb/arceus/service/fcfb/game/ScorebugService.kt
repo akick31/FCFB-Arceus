@@ -326,12 +326,12 @@ class ScorebugService(
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
 
             // Reduce the font size for the Unicode character
-            g.font = Font("Arial", Font.PLAIN, 35)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getSansFont(g)).deriveFont(Font.PLAIN, 40f)
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 12,
-                (yPos + 6) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                width + 15,
+                (yPos) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else if (game.possession == TeamSide.HOME && team.name == game.homeTeam && game.gameStatus != GameStatus.FINAL) {
             val unicodeChar = "\u25C0"
@@ -343,12 +343,12 @@ class ScorebugService(
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
 
             // Reduce the font size for the Unicode character
-            g.font = Font("Arial", Font.PLAIN, 35)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getSansFont(g)).deriveFont(Font.PLAIN, 40f)
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 12,
-                (yPos + 28) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                width + 15,
+                (yPos + 22) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else {
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaBoldFont(g)).deriveFont(Font.BOLD, 75f)
@@ -688,6 +688,13 @@ class ScorebugService(
                 }
             else -> "Unknown Location"
         }
+    }
+
+    private fun getSansFont(g: Graphics2D): InputStream? {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+        return this::class.java.classLoader.getResourceAsStream("DejaVuSans.ttf")
     }
 
     private fun getHelveticaFont(g: Graphics2D): InputStream? {
