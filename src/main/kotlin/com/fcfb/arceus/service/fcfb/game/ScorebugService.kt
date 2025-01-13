@@ -467,11 +467,12 @@ class ScorebugService(
         g.fillRect(xPos, rowY, 160, rowHeight)
 
         // Draw Clock text
-        val clockText = if (game.gameStatus != GameStatus.FINAL) {
-            getClockText(game.quarter, game.clock)
-        } else {
-            ""
-        }
+        val clockText =
+            if (game.gameStatus != GameStatus.FINAL) {
+                getClockText(game.quarter, game.clock)
+            } else {
+                ""
+            }
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val clockTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK
