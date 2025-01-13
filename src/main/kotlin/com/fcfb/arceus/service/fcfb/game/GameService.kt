@@ -213,9 +213,6 @@ class GameService(
         var count = 0
         for (game in gamesToStart) {
             try {
-                if (count == 15) {
-                    sleep(300000)
-                }
                 val startedGame =
                     startGame(
                         StartRequest(

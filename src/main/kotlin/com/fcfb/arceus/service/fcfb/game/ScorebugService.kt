@@ -330,7 +330,7 @@ class ScorebugService(
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 10,
+                width + 12,
                 (yPos + 6) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else if (game.possession == TeamSide.HOME && team.name == game.homeTeam && game.gameStatus != GameStatus.FINAL) {
@@ -347,7 +347,7 @@ class ScorebugService(
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 10,
+                width + 12,
                 (yPos + 28) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else {

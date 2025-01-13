@@ -170,16 +170,21 @@ class PlayHandler(
             }
             else -> {
                 yards = result.description.toInt()
-                ballLocation += yards
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
+                    yards = 100 - ballLocation
+                    ballLocation += yards
                 } else if (ballLocation <= 0) {
                     actualResult = ActualResult.SAFETY
+                    yards = ballLocation
+                    ballLocation += yards
                 } else if (yards >= yardsToGo) {
                     down = 1
                     yardsToGo = 10
                     actualResult = ActualResult.FIRST_DOWN
+                    ballLocation += yards
                 } else {
+                    ballLocation += yards
                     down += 1
                     if (down > 4) {
                         actualResult = ActualResult.TURNOVER_ON_DOWNS

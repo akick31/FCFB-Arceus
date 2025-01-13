@@ -3,6 +3,7 @@ package com.fcfb.arceus.controllers
 import com.fcfb.arceus.service.fcfb.game.GameStatsService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
@@ -23,4 +24,13 @@ class GameStatsController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("team") team: String,
     ) = gameStatsService.getGameStatsByIdAndTeam(gameId, team)
+
+    /**
+     * Generate game stats for a game
+     * @return
+     */
+    @PostMapping("/generate")
+    fun generateGameStats(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameStatsService.generateGameStats(gameId)
 }
