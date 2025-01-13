@@ -106,6 +106,7 @@ class DelayOfGameMonitor(
 
         game.currentPlayId = savedPlay.playId
         game.gameWarned = false
+        game.clockStopped = true
         gameService.saveGame(game)
         scorebugService.generateScorebug(game)
         return game
