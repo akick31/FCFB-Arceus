@@ -919,22 +919,34 @@ class StatsHandler(
         return currentFourthDownConversionAttempts
     }
 
-    private fun calculateLargestLeadForHome(play: Play, currentLargestLead: Int): Int {
+    private fun calculateLargestLeadForHome(
+        play: Play,
+        currentLargestLead: Int,
+    ): Int {
         val lead = play.homeScore - play.awayScore
         return if (lead > currentLargestLead) lead else currentLargestLead
     }
 
-    private fun calculateLargestDeficitForHome(play: Play, currentLargestDeficit: Int): Int {
+    private fun calculateLargestDeficitForHome(
+        play: Play,
+        currentLargestDeficit: Int,
+    ): Int {
         val deficit = play.awayScore - play.homeScore
         return if (deficit > currentLargestDeficit) deficit else currentLargestDeficit
     }
 
-    private fun calculateLargestLeadForAway(play: Play, currentLargestLead: Int): Int {
+    private fun calculateLargestLeadForAway(
+        play: Play,
+        currentLargestLead: Int,
+    ): Int {
         val lead = play.awayScore - play.homeScore
         return if (lead > currentLargestLead) lead else currentLargestLead
     }
 
-    private fun calculateLargestDeficitForAway(play: Play, currentLargestDeficit: Int): Int {
+    private fun calculateLargestDeficitForAway(
+        play: Play,
+        currentLargestDeficit: Int,
+    ): Int {
         val deficit = play.homeScore - play.awayScore
         return if (deficit > currentLargestDeficit) deficit else currentLargestDeficit
     }
@@ -972,10 +984,10 @@ class StatsHandler(
             when {
                 // If the current play is a kickoff, end the current drive
                 (
-                        play.playCall == PlayCall.KICKOFF_NORMAL ||
-                                play.playCall == PlayCall.KICKOFF_ONSIDE ||
-                                play.playCall == PlayCall.KICKOFF_SQUIB
-                        ) && play.possession == possession -> {
+                    play.playCall == PlayCall.KICKOFF_NORMAL ||
+                        play.playCall == PlayCall.KICKOFF_ONSIDE ||
+                        play.playCall == PlayCall.KICKOFF_SQUIB
+                ) && play.possession == possession -> {
                     isDriveInProgress = false
                 }
 
@@ -989,8 +1001,8 @@ class StatsHandler(
 
                 // If possession changes to another player or a turnover happens
                 play.possession != possession ||
-                        play.actualResult == ActualResult.TURNOVER ||
-                        play.actualResult == ActualResult.TURNOVER_TOUCHDOWN -> {
+                    play.actualResult == ActualResult.TURNOVER ||
+                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN -> {
                     // End the current drive
                     isDriveInProgress = false
                 }

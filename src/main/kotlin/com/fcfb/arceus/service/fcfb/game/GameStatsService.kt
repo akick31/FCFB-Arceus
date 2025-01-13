@@ -96,7 +96,8 @@ class GameStatsService(
             statsHandler.updateGameStats(
                 game,
                 allPlays,
-                play)
+                play,
+            )
         }
     }
 

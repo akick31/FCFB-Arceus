@@ -26,7 +26,6 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
-import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
