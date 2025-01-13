@@ -2,7 +2,10 @@ package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.GameStats
+import com.fcfb.arceus.handlers.game.StatsHandler
+import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.GameStatsRepository
+import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.stereotype.Component
 
@@ -10,6 +13,9 @@ import org.springframework.stereotype.Component
 class GameStatsService(
     private val gameStatsRepository: GameStatsRepository,
     private val teamService: TeamService,
+    private val gameRepository: GameRepository,
+    private val playRepository: PlayRepository,
+    private val statsHandler: StatsHandler,
 ) {
     /**
      * Create a game stats entry
@@ -56,6 +62,43 @@ class GameStatsService(
         gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats")
 
         return listOf(homeStats, awayStats)
+    }
+
+    /**
+     * Generate game stats for all games
+     */
+    fun generateAllGameStats() {
+        // Get all games
+        val allGames = gameRepository.getAllGames()
+
+        // Iterate through the games and generate the game stats
+        for (game in allGames) {
+            generateGameStats(game.gameId)
+        }
+    }
+
+    /**
+     * Generate game stats for a game
+     */
+    fun generateGameStats(gameId: Int) {
+        // Delete previous stats from game
+        deleteByGameId(gameId)
+
+        // Create new game stats for game
+        val game = gameRepository.getGameById(gameId)
+        createGameStats(game)
+
+        // Get game and all plays
+        val allPlays = playRepository.getAllPlaysByGameId(gameId)
+
+        // Iterate through the plays and update the game stats
+        for (play in allPlays) {
+            statsHandler.updateGameStats(
+                game,
+                allPlays,
+                play,
+            )
+        }
     }
 
     /**

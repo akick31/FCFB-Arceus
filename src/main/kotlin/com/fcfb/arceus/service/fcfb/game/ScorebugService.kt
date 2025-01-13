@@ -330,8 +330,8 @@ class ScorebugService(
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 10,
-                (yPos + 10) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                width + 12,
+                (yPos + 6) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else if (game.possession == TeamSide.HOME && team.name == game.homeTeam && game.gameStatus != GameStatus.FINAL) {
             val unicodeChar = "\u25C0"
@@ -347,7 +347,7 @@ class ScorebugService(
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
-                width + 10,
+                width + 12,
                 (yPos + 28) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else {
@@ -467,7 +467,12 @@ class ScorebugService(
         g.fillRect(xPos, rowY, 160, rowHeight)
 
         // Draw Clock text
-        val clockText = getClockText(game.quarter, game.clock)
+        val clockText =
+            if (game.gameStatus != GameStatus.FINAL) {
+                getClockText(game.quarter, game.clock)
+            } else {
+                ""
+            }
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val clockTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK

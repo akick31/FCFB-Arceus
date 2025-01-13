@@ -26,7 +26,6 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
-import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
@@ -213,9 +212,6 @@ class GameService(
         var count = 0
         for (game in gamesToStart) {
             try {
-                if (count == 15) {
-                    sleep(300000)
-                }
                 val startedGame =
                     startGame(
                         StartRequest(
