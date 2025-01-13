@@ -24,5 +24,9 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
             .maxSessionsPreventsLogin(false)
             .expiredUrl("/sessionExpired")
             .and()
+            .and()
+            .requiresChannel()
+            .requestMatchers { true } // All requests are redirected to HTTPS
+            .requiresSecure()
     }
 }
