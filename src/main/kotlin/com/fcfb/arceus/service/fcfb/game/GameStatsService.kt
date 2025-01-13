@@ -65,6 +65,19 @@ class GameStatsService(
     }
 
     /**
+     * Generate game stats for all games
+     */
+    fun generateAllGameStats() {
+        // Get all games
+        val allGames = gameRepository.getAllGames()
+
+        // Iterate through the games and generate the game stats
+        for (game in allGames) {
+            generateGameStats(game.gameId)
+        }
+    }
+
+    /**
      * Generate game stats for a game
      */
     fun generateGameStats(gameId: Int) {

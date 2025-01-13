@@ -33,4 +33,11 @@ class GameStatsController(
     fun generateGameStats(
         @RequestParam("gameId") gameId: Int,
     ) = gameStatsService.generateGameStats(gameId)
+
+    /**
+     * Generate game stats for all games
+     * @return
+     */
+    @PostMapping("/generate/all")
+    fun generateAllGameStats() = gameStatsService.generateAllGameStats()
 }
