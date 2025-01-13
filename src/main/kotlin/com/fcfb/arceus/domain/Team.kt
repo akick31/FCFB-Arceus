@@ -27,6 +27,18 @@ class Team {
     var id: Int? = 0
 
     @Basic
+    @Column(name = "name")
+    var name: String? = null
+
+    @Basic
+    @Column(name = "abbreviation")
+    var abbreviation: String? = null
+
+    @Basic
+    @Column(name = "short_name")
+    var shortName: String? = null
+
+    @Basic
     @Column(name = "logo")
     var logo: String? = null
 
@@ -49,18 +61,6 @@ class Team {
     @Type(type = "json")
     @Column(name = "coach_discord_ids")
     var coachDiscordIds: MutableList<String>? = mutableListOf()
-
-    @Basic
-    @Column(name = "name")
-    var name: String? = null
-
-    @Basic
-    @Column(name = "short_name")
-    var shortName: String? = null
-
-    @Basic
-    @Column(name = "abbreviation")
-    var abbreviation: String? = null
 
     @Basic
     @Column(name = "primary_color")

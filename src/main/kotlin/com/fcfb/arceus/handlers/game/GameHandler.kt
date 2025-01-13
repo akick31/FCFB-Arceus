@@ -97,6 +97,8 @@ class GameHandler(
         if (quarter == 0) {
             // End of game
             game.quarter = 4
+            game.clock = "0:00"
+            game.clockStopped = true
             game.gameStatus = GameStatus.FINAL
             endGame(game)
         } else if (game.gameStatus == GameStatus.OVERTIME) {
@@ -187,6 +189,8 @@ class GameHandler(
             game.waitingOn = waitingOn
         } else if (quarter >= 5 && game.gameStatus == GameStatus.IN_PROGRESS) {
             // Start of Overtime
+            game.clock = "0:00"
+            game.quarter = quarter
             game.gameStatus = GameStatus.END_OF_REGULATION
             game.ballLocation = 75
             game.down = 1

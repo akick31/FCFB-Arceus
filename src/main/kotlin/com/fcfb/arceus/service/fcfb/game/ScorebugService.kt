@@ -2,6 +2,7 @@ package com.fcfb.arceus.service.fcfb.game
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameStatus
+import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.service.fcfb.TeamService
@@ -23,6 +24,7 @@ import java.awt.geom.Point2D
 import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
+import java.io.InputStream
 import java.net.URL
 import javax.imageio.ImageIO
 
@@ -36,6 +38,7 @@ class ScorebugService(
 
     fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
         val game = gameService.getGameById(gameId)
+        generateScorebug(gameId)
 
         try {
             val scorebug = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
@@ -178,39 +181,39 @@ class ScorebugService(
         // Calculate the width of the text
         if (team.coachesPollRanking == 0) {
             var teamName = "${team.name}"
-            g.font = Font("Helvetica", Font.PLAIN, 37)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             val textWidth = g.fontMetrics.stringWidth(teamName)
-            if (textWidth > 245) {
+            if (textWidth > 260) {
                 teamName = "${team.shortName}"
                 val width = g.fontMetrics.stringWidth(teamName)
-                if (width > 245 || team.shortName == null) {
+                if (width > 260 || team.shortName == null) {
                     teamName = "${team.abbreviation}"
                 }
             }
             g.color = Color(255, 255, 255)
-            g.font = Font("Helvetica", Font.PLAIN, 37)
-            g.drawString(teamName, 10, yPos + rowHeight / 2 + 5)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
+            g.drawString(teamName, 10, yPos + rowHeight / 2 + 6)
         } else {
             val ranking = "${team.coachesPollRanking ?: ""}"
             var teamName = "${team.name}"
-            g.font = Font("Helvetica", Font.PLAIN, 37) // Get the text width as if it was all the same size
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             val textWidth = g.fontMetrics.stringWidth(ranking + teamName + 20)
-            if (textWidth > 245) {
+            if (textWidth > 260) {
                 teamName = "${team.shortName}"
                 val width = g.fontMetrics.stringWidth(teamName)
-                if (width > 245 || team.shortName == null) {
+                if (width > 260 || team.shortName == null) {
                     teamName = "${team.abbreviation}"
                 }
             }
             // Reduce the font size for the ranking
             g.color = Color(255, 255, 255)
-            g.font = Font("Helvetica", Font.PLAIN, 32)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
             val rankingWidth = g.fontMetrics.stringWidth(ranking)
-            g.drawString(ranking, 10, yPos + rowHeight / 2 + 5)
+            g.drawString(ranking, 10, yPos + rowHeight / 2 + 6)
 
             g.color = Color(255, 255, 255)
-            g.font = Font("Helvetica", Font.PLAIN, 37)
-            g.drawString(teamName, rankingWidth + 20, yPos + rowHeight / 2 + 5)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
+            g.drawString(teamName, rankingWidth + 15, yPos + rowHeight / 2 + 6)
         }
 
         // Draw the timeout boxes
@@ -218,9 +221,9 @@ class ScorebugService(
 
         // Draw the team record
         val record = "${team.currentWins}-${team.currentLosses}"
-        g.font = Font("Helvetica", Font.PLAIN, 32)
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
         g.color = Color(255, 255, 255)
-        g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 5)
+        g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 6)
 
         // Horizontal line to span the entire width between teams
         g.color = Color(255, 255, 255)
@@ -317,38 +320,38 @@ class ScorebugService(
             val unicodeChar = "\u25C0"
             val charHeight = g.fontMetrics.ascent
 
-            g.font = Font("Helvetica", Font.BOLD, 75)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaBoldFont(g)).deriveFont(Font.BOLD, 75f)
             var ascent = g.fontMetrics.ascent
             val width = g.fontMetrics.stringWidth(score)
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
 
             // Reduce the font size for the Unicode character
-            g.font = Font("Helvetica", Font.PLAIN, 35)
+            g.font = Font("Arial", Font.PLAIN, 35)
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
                 width + 10,
-                (yPos + 10) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                (yPos + 6) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else if (game.possession == TeamSide.HOME && team.name == game.homeTeam && game.gameStatus != GameStatus.FINAL) {
             val unicodeChar = "\u25C0"
             val charHeight = g.fontMetrics.ascent
 
-            g.font = Font("Helvetica", Font.BOLD, 75)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaBoldFont(g)).deriveFont(Font.BOLD, 75f)
             var ascent = g.fontMetrics.ascent
             val width = g.fontMetrics.stringWidth(score)
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
 
             // Reduce the font size for the Unicode character
-            g.font = Font("Helvetica", Font.PLAIN, 35)
+            g.font = Font("Arial", Font.PLAIN, 35)
             ascent = g.fontMetrics.ascent
             g.drawString(
                 unicodeChar,
                 width + 10,
-                (yPos + 30) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                (yPos + 28) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else {
-            g.font = Font("Helvetica", Font.BOLD, 75)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaBoldFont(g)).deriveFont(Font.BOLD, 75f)
             val ascent = g.fontMetrics.ascent
             g.drawString(score, 10, (yPos - 2) + rowHeight / 2 + ascent / 2)
         }
@@ -449,7 +452,7 @@ class ScorebugService(
 
         // Draw Quarter text
         val quarterText = getQuarterText(game.quarter)
-        g.font = Font("Helvetica", Font.PLAIN, 40)
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val quarterTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK
         g.drawString(
@@ -465,7 +468,7 @@ class ScorebugService(
 
         // Draw Clock text
         val clockText = getClockText(game.quarter, game.clock)
-        g.font = Font("Helvetica", Font.PLAIN, 40)
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val clockTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK
         g.drawString(
@@ -489,8 +492,8 @@ class ScorebugService(
                 game.ballLocation,
                 game.possession,
             )
-        var fontSize = 30
-        g.font = Font("Helvetica", Font.PLAIN, fontSize)
+        var fontSize = 29
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, fontSize.toFloat())
 
         // Calculate the width of the text
         var textWidth = g.fontMetrics.stringWidth(ballLocationText)
@@ -499,7 +502,7 @@ class ScorebugService(
         // Decrease font size if text overflows
         while (textWidth > 85 && fontSize > 10) {
             fontSize -= 2
-            g.font = Font("Helvetica", Font.PLAIN, fontSize)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, fontSize.toFloat())
             textWidth = g.fontMetrics.stringWidth(ballLocationText)
         }
 
@@ -549,13 +552,13 @@ class ScorebugService(
 
         // Draw Down & Distance text
         if (game.gameStatus != GameStatus.FINAL) {
-            val downDistanceText = getDownDistanceText(game.down, game.yardsToGo, game.ballLocation)
-            g.font = Font("Helvetica", Font.PLAIN, 43)
+            val downDistanceText = getDownDistanceText(game)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
             val ascent = g.fontMetrics.ascent
             g.color = Color.BLACK
             g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
         } else {
-            g.font = Font("Helvetica", Font.PLAIN, 43)
+            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
             val ascent = g.fontMetrics.ascent
             val textWidth = g.fontMetrics.stringWidth("Final")
             g.color = Color.BLACK
@@ -608,11 +611,16 @@ class ScorebugService(
      * @param yardsToGo
      * @param ballLocation
      */
-    private fun getDownDistanceText(
-        down: Int,
-        yardsToGo: Int,
-        ballLocation: Int,
-    ): String {
+    private fun getDownDistanceText(game: Game): String {
+        val down = game.down
+        val yardsToGo = game.yardsToGo
+        val ballLocation = game.ballLocation
+        if (game.currentPlayType == PlayType.KICKOFF) {
+            return "Kickoff"
+        }
+        if (game.currentPlayType == PlayType.PAT) {
+            return "PAT"
+        }
         return when (down) {
             1 -> "1st"
             2 -> "2nd"
@@ -675,5 +683,19 @@ class ScorebugService(
                 }
             else -> "Unknown Location"
         }
+    }
+
+    private fun getHelveticaFont(g: Graphics2D): InputStream? {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+        return this::class.java.classLoader.getResourceAsStream("Helvetica.ttf")
+    }
+
+    private fun getHelveticaBoldFont(g: Graphics2D): InputStream? {
+        g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON)
+        g.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, RenderingHints.VALUE_FRACTIONALMETRICS_ON)
+        return this::class.java.classLoader.getResourceAsStream("Helvetica-Bold.ttf")
     }
 }
