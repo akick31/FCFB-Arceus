@@ -192,7 +192,7 @@ class ScorebugService(
             }
             g.color = Color(255, 255, 255)
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
-            g.drawString(teamName, 10, yPos + rowHeight / 2 + 6)
+            g.drawString(teamName, 10, yPos + rowHeight / 2 + 10)
         } else {
             val ranking = "${team.coachesPollRanking ?: ""}"
             var teamName = "${team.name}"
@@ -209,21 +209,21 @@ class ScorebugService(
             g.color = Color(255, 255, 255)
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
             val rankingWidth = g.fontMetrics.stringWidth(ranking)
-            g.drawString(ranking, 10, yPos + rowHeight / 2 + 6)
+            g.drawString(ranking, 10, yPos + rowHeight / 2 + 10)
 
             g.color = Color(255, 255, 255)
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
-            g.drawString(teamName, rankingWidth + 15, yPos + rowHeight / 2 + 6)
+            g.drawString(teamName, rankingWidth + 15, yPos + rowHeight / 2 + 10)
         }
 
         // Draw the timeout boxes
-        drawTimeoutBoxes(g, yPos + 5, rowHeight, if (team.name == game.homeTeam) game.homeTimeouts else game.awayTimeouts)
+        drawTimeoutBoxes(g, yPos + 7, rowHeight, if (team.name == game.homeTeam) game.homeTimeouts else game.awayTimeouts)
 
         // Draw the team record
         val record = "${team.currentWins}-${team.currentLosses}"
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
         g.color = Color(255, 255, 255)
-        g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 6)
+        g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 10)
 
         // Horizontal line to span the entire width between teams
         g.color = Color(255, 255, 255)
@@ -331,7 +331,7 @@ class ScorebugService(
             g.drawString(
                 unicodeChar,
                 width + 10,
-                (yPos + 6) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
+                (yPos + 10) + rowHeight / 2 + ascent / 2 - (charHeight / 2),
             )
         } else if (game.possession == TeamSide.HOME && team.name == game.homeTeam && game.gameStatus != GameStatus.FINAL) {
             val unicodeChar = "\u25C0"
