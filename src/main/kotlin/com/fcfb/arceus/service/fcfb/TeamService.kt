@@ -441,11 +441,7 @@ class TeamService(
     /**
      * Get open teams
      */
-    fun getOpenTeams() {
-        val teams = teamRepository.getAllTeams()
-        val users = userService.getAllUsers()
-        val openTeams = mutableListOf<Team>()
-    }
+    fun getOpenTeams() = teamRepository.getOpenTeams()
 
     /**
      * Get all teams in a conference
