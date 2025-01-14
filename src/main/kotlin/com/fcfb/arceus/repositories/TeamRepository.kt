@@ -12,6 +12,18 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
 
     fun getTeamByName(name: String?): Team
 
+    @Query(
+        value =
+            "SELECT t.name " +
+                "FROM team t " +
+                "WHERE NOT EXISTS (" +
+                "SELECT 1 " +
+                "FROM user u " +
+                "WHERE u.team = t.name)",
+        nativeQuery = true,
+    )
+    fun getOpenTeams(): List<String>?
+
     @Query(value = "SELECT * FROM team", nativeQuery = true)
     fun getAllTeams(): Team
 }
