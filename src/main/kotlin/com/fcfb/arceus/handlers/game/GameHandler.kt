@@ -106,45 +106,59 @@ class GameHandler(
             game.clock = "0:00"
             if (play.actualResult == ActualResult.GOOD ||
                 play.actualResult == ActualResult.NO_GOOD ||
+                play.actualResult == ActualResult.BLOCKED ||
                 play.actualResult == ActualResult.SUCCESS ||
                 play.actualResult == ActualResult.FAILED ||
                 play.actualResult == ActualResult.DEFENSE_TWO_POINT ||
                 play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
-                play.actualResult == ActualResult.TURNOVER
+                play.actualResult == ActualResult.TURNOVER ||
+                play.actualResult == ActualResult.TOUCHDOWN ||
+                play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                play.actualResult == ActualResult.KICK_SIX
             ) {
                 // Handle the end of each half of overtime
                 if (game.overtimeHalf == 1) {
-                    game.overtimeHalf = 2
-                    game.possession =
-                        if (game.possession == TeamSide.HOME) {
-                            TeamSide.AWAY
-                        } else {
-                            TeamSide.HOME
-                        }
-                    game.ballLocation = 75
-                    game.down = 1
-                    game.yardsToGo = 10
-                    game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
-                } else {
-                    if (homeScore != awayScore) {
-                        // End of game, one team has won
-                        game.gameStatus = GameStatus.FINAL
-                        endGame(game)
+                    if (play.actualResult == ActualResult.TOUCHDOWN ||
+                        play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                        play.actualResult == ActualResult.KICK_SIX) {
+                        game.possession = possession
+                        game.waitingOn = waitingOn
+                        game.ballLocation = ballLocation
+                        game.down = down
+                        game.yardsToGo = yardsToGo
                     } else {
-                        game.overtimeHalf = 1
+                        game.overtimeHalf = 2
                         game.possession =
                             if (game.possession == TeamSide.HOME) {
-                                TeamSide.HOME
-                            } else {
                                 TeamSide.AWAY
+                            } else {
+                                TeamSide.HOME
                             }
                         game.ballLocation = 75
                         game.down = 1
                         game.yardsToGo = 10
-                        game.quarter += 1
-                        game.homeTimeouts = 1
-                        game.awayTimeouts = 1
-                        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                        game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                    }
+                } else {
+                    if (homeScore != awayScore) {
+                        // End of game, one team has won
+                        // If the game is within 2 points, kick the PAT
+                        if ((play.actualResult == ActualResult.TOUCHDOWN ||
+                            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                            play.actualResult == ActualResult.KICK_SIX) &&
+                            (abs(homeScore - awayScore) <= 2 ||
+                             abs(awayScore - homeScore) <= 2)) {
+                                game.possession = possession
+                                game.waitingOn = waitingOn
+                                game.ballLocation = ballLocation
+                                game.down = down
+                                game.yardsToGo = yardsToGo
+                        } else {
+                            game.gameStatus = GameStatus.FINAL
+                            endGame(game)
+                        }
+                    } else {
+                        endOvertimePeriod(game, possession)
                     }
                 }
             } else {
@@ -222,6 +236,31 @@ class GameHandler(
         scorebugService.generateScorebug(game)
 
         return game
+    }
+
+    /**
+     * End the overtime period and advance to the next one
+     * @param game
+     * @param possession
+     */
+    fun endOvertimePeriod(
+        game: Game,
+        possession: TeamSide
+    ) {
+        game.overtimeHalf = 1
+        game.possession =
+            if (game.possession == TeamSide.HOME) {
+                TeamSide.HOME
+            } else {
+                TeamSide.AWAY
+            }
+        game.ballLocation = 75
+        game.down = 1
+        game.yardsToGo = 10
+        game.quarter += 1
+        game.homeTimeouts = 1
+        game.awayTimeouts = 1
+        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
     }
 
     /**
