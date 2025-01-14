@@ -553,10 +553,10 @@ class StatsHandler(
         currentLongestFieldGoal: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD && (
-                ((play.ballLocation) + 17) > currentLongestFieldGoal
+                ((100 - play.ballLocation) + 17) > currentLongestFieldGoal
             )
         ) {
-            return (play.ballLocation) + 17
+            return ((100 - play.ballLocation)) + 17
         }
         return currentLongestFieldGoal
     }
