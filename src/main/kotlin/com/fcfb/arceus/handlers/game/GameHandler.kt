@@ -192,6 +192,7 @@ class GameHandler(
             game.clock = "0:00"
             game.quarter = quarter
             game.gameStatus = GameStatus.END_OF_REGULATION
+            game.currentPlayType = PlayType.NORMAL
             game.ballLocation = 75
             game.down = 1
             game.yardsToGo = 10
