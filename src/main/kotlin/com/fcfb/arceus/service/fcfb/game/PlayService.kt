@@ -27,6 +27,7 @@ class PlayService(
     private val encryptionUtils: EncryptionUtils,
     private val gameService: GameService,
     private val scorebugService: ScorebugService,
+    private val gameStatsService: GameStatsService,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
@@ -289,6 +290,7 @@ class PlayService(
             game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
             game.gameTimer = gameService.calculateDelayOfGameTimer()
             playRepository.deleteById(gamePlay.playId)
+            gameStatsService.generateGameStats(gameId)
             gameService.saveGame(game)
             return previousPlay
         } catch (e: Exception) {
@@ -301,7 +303,7 @@ class PlayService(
      * Get the response speed
      * @param game
      */
-    fun getResponseSpeed(game: Game): Long {
+    private fun getResponseSpeed(game: Game): Long {
         val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
         val parsedDateTime = game.lastMessageTimestamp?.let { LocalDateTime.parse(it, formatter) }
         val currentDateTime = LocalDateTime.now()

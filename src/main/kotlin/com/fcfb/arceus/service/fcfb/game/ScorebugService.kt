@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -26,6 +27,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
+import java.util.Base64
 import javax.imageio.ImageIO
 
 @Component
@@ -36,9 +38,13 @@ class ScorebugService(
     @Value("\${images.path}")
     private val imagePath: String? = null
 
+    /**
+     * Get the scorebug image for a game
+     * @param gameId
+     */
     fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
         val game = gameService.getGameById(gameId)
-        generateScorebug(gameId)
+        generateScorebug(game)
 
         try {
             val scorebug = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
@@ -58,15 +64,73 @@ class ScorebugService(
         }
     }
 
-    fun generateScorebug(gameId: Int): String {
-        val game = gameService.getGameById(gameId)
-        generateScorebug(game)
+    /**
+     * Get the latest scorebug image for a game without generating
+     * @param gameId
+     */
+    fun getLatestScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
+        try {
+            val scorebug = File("$imagePath/scorebugs/${gameId}_scorebug.png").readBytes()
 
-        // Return the image in the response
-        Logger.info("Scorebug generated for $gameId")
-        return "Scorebug generated for $gameId"
+            // Set the response headers
+            val headers =
+                HttpHeaders().apply {
+                    contentType = MediaType.IMAGE_PNG
+                    contentLength = scorebug.size.toLong()
+                }
+
+            // Return the image in the response
+            return ResponseEntity(scorebug, headers, HttpStatus.OK)
+        } catch (e: Exception) {
+            Logger.error("Error fetching scorebug image: ${e.message}")
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 
+    /**
+     * Get the scorebug images for a conference
+     * @param season
+     * @param week
+     * @param conference
+     */
+    fun getScorebugsForConference(
+        season: Int,
+        week: Int,
+        conference: Conference,
+    ): ResponseEntity<List<Map<String, Any>>> {
+        try {
+            val teams = teamService.getTeamsInConference(conference) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+            val games = gameService.getGamesWithTeams(teams, season, week)
+            if (games.isEmpty()) {
+                return ResponseEntity(HttpStatus.NOT_FOUND)
+            }
+
+            val scorebugs = mutableListOf<Map<String, Any>>()
+
+            for (game in games) {
+                generateScorebug(game)
+                val fileBytes = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
+                val base64Image = Base64.getEncoder().encodeToString(fileBytes)
+
+                scorebugs.add(
+                    mapOf(
+                        "gameId" to game.gameId.toString(),
+                        "image" to base64Image,
+                    ),
+                )
+            }
+
+            return ResponseEntity(scorebugs, HttpStatus.OK)
+        } catch (e: Exception) {
+            Logger.error("Error fetching scorebug images: ${e.message}")
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
+
+    /**
+     * Generates a scorebug image for the game
+     * @param game
+     */
     fun generateScorebug(game: Game): BufferedImage {
         val homeTeam = teamService.getTeamByName(game.homeTeam)
         val awayTeam = teamService.getTeamByName(game.awayTeam)

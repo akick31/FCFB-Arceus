@@ -36,4 +36,18 @@ interface ScheduleRepository : CrudRepository<Schedule?, Int?> {
         season: Int,
         team: String,
     ): List<Schedule>?
+
+    @Query(
+        value =
+            "SELECT * FROM schedule " +
+                "WHERE (home_team = :team OR away_team = :team) AND " +
+                "season = :season AND " +
+                "week = :week",
+        nativeQuery = true,
+    )
+    fun findGameInSchedule(
+        team: String,
+        season: Int,
+        week: Int,
+    ): Schedule?
 }

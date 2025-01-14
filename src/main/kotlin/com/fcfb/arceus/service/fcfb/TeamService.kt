@@ -12,6 +12,7 @@ import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_CHAMPIONSHIP
 import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_GAME
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
@@ -411,8 +412,10 @@ class TeamService(
         val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
         for (coach in coachDiscordIds) {
             val user = userService.getUserDTOByDiscordId(coach)
-            user.team = null
-            userService.updateUser(user)
+            if (user.team == existingTeam.name) {
+                user.team = null
+                userService.updateUser(user)
+            }
         }
 
         coachTransactionLogService.logCoachTransaction(
@@ -434,6 +437,20 @@ class TeamService(
         saveTeam(existingTeam)
         return existingTeam
     }
+
+    /**
+     * Get open teams
+     */
+    fun getOpenTeams() {
+        val teams = teamRepository.getAllTeams()
+        val users = userService.getAllUsers()
+        val openTeams = mutableListOf<Team>()
+    }
+
+    /**
+     * Get all teams in a conference
+     */
+    fun getTeamsInConference(conference: Conference) = teamRepository.getTeamsInConference(conference.name)
 
     /**
      * Save a team

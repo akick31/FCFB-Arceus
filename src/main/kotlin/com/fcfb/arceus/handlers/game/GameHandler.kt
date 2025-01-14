@@ -120,7 +120,8 @@ class GameHandler(
                 if (game.overtimeHalf == 1) {
                     if (play.actualResult == ActualResult.TOUCHDOWN ||
                         play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                        play.actualResult == ActualResult.KICK_SIX) {
+                        play.actualResult == ActualResult.KICK_SIX
+                    ) {
                         game.possession = possession
                         game.waitingOn = waitingOn
                         game.ballLocation = ballLocation
@@ -143,16 +144,21 @@ class GameHandler(
                     if (homeScore != awayScore) {
                         // End of game, one team has won
                         // If the game is within 2 points, kick the PAT
-                        if ((play.actualResult == ActualResult.TOUCHDOWN ||
-                            play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                            play.actualResult == ActualResult.KICK_SIX) &&
-                            (abs(homeScore - awayScore) <= 2 ||
-                             abs(awayScore - homeScore) <= 2)) {
-                                game.possession = possession
-                                game.waitingOn = waitingOn
-                                game.ballLocation = ballLocation
-                                game.down = down
-                                game.yardsToGo = yardsToGo
+                        if ((
+                                play.actualResult == ActualResult.TOUCHDOWN ||
+                                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                                    play.actualResult == ActualResult.KICK_SIX
+                            ) &&
+                            (
+                                abs(homeScore - awayScore) <= 2 ||
+                                    abs(awayScore - homeScore) <= 2
+                            )
+                        ) {
+                            game.possession = possession
+                            game.waitingOn = waitingOn
+                            game.ballLocation = ballLocation
+                            game.down = down
+                            game.yardsToGo = yardsToGo
                         } else {
                             game.gameStatus = GameStatus.FINAL
                             endGame(game)
@@ -245,7 +251,7 @@ class GameHandler(
      */
     fun endOvertimePeriod(
         game: Game,
-        possession: TeamSide
+        possession: TeamSide,
     ) {
         game.overtimeHalf = 1
         game.possession =

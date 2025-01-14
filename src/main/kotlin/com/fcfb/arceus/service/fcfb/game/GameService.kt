@@ -11,6 +11,7 @@ import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
@@ -273,6 +274,7 @@ class GameService(
             if (game.gameType != GameType.SCRIMMAGE) {
                 teamService.updateTeamWinsAndLosses(game)
                 userService.updateUserWinsAndLosses(game)
+                scheduleService.markGameAsFinished(game)
             }
             if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
                 seasonService.endSeason(game)
@@ -537,7 +539,7 @@ class GameService(
     ): Game {
         val game = getGameById(gameId)
         val userData = userService.getUserDTOByDiscordId(discordId)
-        val coach = userData.coachName
+        val coach = userData.discordTag
 
         when (team) {
             game.homeTeam -> {
@@ -591,4 +593,25 @@ class GameService(
      * Get all ongoing games
      */
     fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
+
+    /**
+     * Get all games with the teams in it for the requested week
+     * @param teams
+     * @param season
+     * @param week
+     */
+    fun getGamesWithTeams(
+        teams: List<Team>,
+        season: Int,
+        week: Int,
+    ): List<Game> {
+        val games = mutableListOf<Game>()
+        for (team in teams) {
+            val game = gameRepository.getGamesByTeamSeasonAndWeek(team.name ?: "", season, week)
+            if (game != null) {
+                games.add(game)
+            }
+        }
+        return games
+    }
 }
