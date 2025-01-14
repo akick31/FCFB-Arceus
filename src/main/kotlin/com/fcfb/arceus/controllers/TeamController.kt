@@ -102,6 +102,12 @@ class TeamController(
     ) = teamService.fireCoach(team, processedBy)
 
     /**
+     * Get open teams
+     */
+    @GetMapping("/open")
+    fun getOpenTeams() = teamService.getOpenTeams()
+
+    /**
      * Delete a team
      */
     @DeleteMapping("")

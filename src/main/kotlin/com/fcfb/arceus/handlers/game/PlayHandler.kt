@@ -890,9 +890,13 @@ class PlayHandler(
                     5
                 }
             clock = 0
-        } else if (clock <= 0 && isScoringPlay(actualResult)
-        ) {
+        } else if ((clock - playTime) <= 0 && isScoringPlay(actualResult)) {
             clock = 0
+            if (quarter == 4 &&
+                ((homeScore - awayScore) >= 2 || (awayScore - homeScore) >= 2)
+            ) {
+                quarter = 0
+            }
         } else if (clock > 0) {
             clock = initialClock - playTime
             if (clock <= 0 && !isScoringPlay(actualResult) && quarter < 4) {
@@ -912,6 +916,11 @@ class PlayHandler(
                 clock = 0
             } else if (clock <= 0 && isScoringPlay(actualResult)) {
                 clock = 0
+                if (quarter == 4 &&
+                    ((homeScore - awayScore) >= 2 || (awayScore - homeScore) >= 2)
+                ) {
+                    quarter = 0
+                }
             }
         }
         return Triple(possession, clock, quarter)

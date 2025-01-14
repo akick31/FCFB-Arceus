@@ -39,6 +39,21 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(
         value =
             "SELECT * FROM game " +
+                "WHERE (home_team = :team OR away_team = :team) " +
+                "AND season = :season " +
+                "AND week = :week " +
+                "AND game_type != 'SCRIMMAGE'",
+        nativeQuery = true,
+    )
+    fun getGamesByTeamSeasonAndWeek(
+        team: String,
+        season: Int,
+        week: Int,
+    ): Game?
+
+    @Query(
+        value =
+            "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') <= CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND game_status != 'FINAL' " +
                 "AND game_status != 'PREGAME'",
