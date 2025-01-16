@@ -153,9 +153,9 @@ class PlayHandler(
                 }
             }
             Scenario.KNEEL -> {
-                yards = -3
+                yards = -2
                 actualResult = ActualResult.KNEEL
-                ballLocation -= 3
+                ballLocation -= 2
                 if (ballLocation <= 0) {
                     ballLocation = 1
                 }
