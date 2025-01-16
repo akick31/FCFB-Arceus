@@ -60,6 +60,7 @@ class ScheduleService(
     private fun findGameInSchedule(game: Game) =
         scheduleRepository.findGameInSchedule(
             game.homeTeam,
+            game.awayTeam,
             game.season ?: 0,
             game.week ?: 0,
         )
