@@ -15,6 +15,7 @@ import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.service.fcfb.game.GameService
+import com.fcfb.arceus.service.fcfb.game.ScheduleService
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
 import org.springframework.stereotype.Component
@@ -28,6 +29,7 @@ class GameHandler(
     private val teamService: TeamService,
     private val userService: UserService,
     private val seasonService: SeasonService,
+    private val scheduleService: ScheduleService,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -100,7 +102,6 @@ class GameHandler(
             game.clock = "0:00"
             game.clockStopped = true
             game.gameStatus = GameStatus.FINAL
-            endGame(game)
         } else if (game.gameStatus == GameStatus.OVERTIME) {
             // Overtime
             game.clock = "0:00"
@@ -161,7 +162,6 @@ class GameHandler(
                             game.yardsToGo = yardsToGo
                         } else {
                             game.gameStatus = GameStatus.FINAL
-                            endGame(game)
                         }
                     } else {
                         endOvertimePeriod(game, possession)
@@ -240,6 +240,10 @@ class GameHandler(
 
         gameRepository.save(game)
         scorebugService.generateScorebug(game)
+
+        if (game.gameStatus == GameStatus.FINAL) {
+            endGame(game)
+        }
 
         return game
     }
@@ -327,12 +331,14 @@ class GameHandler(
      * Run through end of game tasks
      */
     private fun endGame(game: Game) {
-        if (game.gameType != GameType.SCRIMMAGE) {
-            teamService.updateTeamWinsAndLosses(game)
-            userService.updateUserWinsAndLosses(game)
+        val updatedGame = gameRepository.getGameById(game.gameId)
+        if (updatedGame.gameType != GameType.SCRIMMAGE) {
+            teamService.updateTeamWinsAndLosses(updatedGame)
+            userService.updateUserWinsAndLosses(updatedGame)
+            scheduleService.markGameAsFinished(updatedGame)
         }
-        if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-            seasonService.endSeason(game)
+        if (updatedGame.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+            seasonService.endSeason(updatedGame)
         }
     }
 }
