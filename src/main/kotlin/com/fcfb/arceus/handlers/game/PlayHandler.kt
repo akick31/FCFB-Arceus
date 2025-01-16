@@ -10,11 +10,13 @@ import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.game.RangesService
 import com.fcfb.arceus.utils.InvalidActualResultException
 import com.fcfb.arceus.utils.InvalidPlayTypeException
 import com.fcfb.arceus.utils.InvalidScenarioException
+import com.fcfb.arceus.utils.NumberNotFoundException
 import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
 
@@ -41,18 +43,61 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+
+        val difference =
+            if (offensiveNumber != null) {
+                gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
+            } else {
+                null
+            }
         var possession = gamePlay.possession
         val (offensivePlaybook, defensivePlaybook) = getPlaybooks(game, possession)
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
-        val resultInformation = rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
+        val resultInformation =
+            if (difference != null) {
+                rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
+            } else {
+                when (playCall) {
+                    PlayCall.SPIKE -> {
+                        Ranges(
+                            PlayType.NORMAL.description,
+                            offensivePlaybook.description,
+                            defensivePlaybook.description,
+                            0,
+                            0,
+                            0,
+                            Scenario.SPIKE,
+                            0,
+                            0,
+                            0,
+                        )
+                    }
+
+                    PlayCall.KNEEL -> {
+                        Ranges(
+                            PlayType.NORMAL.description,
+                            offensivePlaybook.description,
+                            defensivePlaybook.description,
+                            0,
+                            0,
+                            0,
+                            Scenario.KNEEL,
+                            1,
+                            0,
+                            0,
+                        )
+                    }
+
+                    else -> throw NumberNotFoundException()
+                }
+            }
         var result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
@@ -284,14 +329,18 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         var ballLocation = 100 - game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
@@ -413,14 +462,18 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         var ballLocation = game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
@@ -572,14 +625,18 @@ class PlayHandler(
         allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.KICKOFF) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
@@ -694,14 +751,18 @@ class PlayHandler(
         allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.PAT) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         val possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
@@ -1058,8 +1119,8 @@ class PlayHandler(
         down: Int,
         yardsToGo: Int,
         decryptedDefensiveNumber: String,
-        offensiveNumber: String,
-        difference: Int,
+        offensiveNumber: Int?,
+        difference: Int?,
         yards: Int,
         timeoutUsed: Boolean,
         homeTimeoutCalled: Boolean,
@@ -1104,7 +1165,7 @@ class PlayHandler(
 
         // Update gamePlay values
         gamePlay.defensiveNumber = decryptedDefensiveNumber
-        gamePlay.offensiveNumber = offensiveNumber
+        gamePlay.offensiveNumber = offensiveNumber?.toString()
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
         gamePlay.playCall = playCall

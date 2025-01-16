@@ -44,7 +44,7 @@ class PlayController(
     fun offensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("offensiveSubmitter") offensiveSubmitter: String,
-        @RequestParam("offensiveNumber") offensiveNumber: Int,
+        @RequestParam("offensiveNumber") offensiveNumber: Int?,
         @RequestParam("playCall") playCall: PlayCall,
         @RequestParam("runoffType") runoffType: RunoffType,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean,

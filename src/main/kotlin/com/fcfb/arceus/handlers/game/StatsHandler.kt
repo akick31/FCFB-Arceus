@@ -805,7 +805,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -823,7 +823,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -841,7 +841,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -859,7 +859,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -1030,7 +1030,7 @@ class StatsHandler(
     }
 
     private fun calculateAverageDiff(allPlays: List<Play>): Double {
-        val average = allPlays.map { it.difference }.average()
+        val average = allPlays.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
