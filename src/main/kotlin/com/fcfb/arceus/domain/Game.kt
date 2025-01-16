@@ -475,7 +475,6 @@ class Game {
 
     enum class Platform(val description: String) {
         DISCORD("DISCORD"),
-        REDDIT("REDDIT"),
         ;
 
         companion object {

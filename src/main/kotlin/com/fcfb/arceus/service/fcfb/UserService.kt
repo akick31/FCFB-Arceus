@@ -108,7 +108,6 @@ class UserService(
                 user.email,
                 passwordEncoder.encode(user.password),
                 user.position,
-                user.redditUsername,
                 USER,
                 salt,
                 null,
@@ -270,7 +269,6 @@ class UserService(
             discordTag = user.discordTag
             discordId = user.discordId
             position = user.position
-            redditUsername = user.redditUsername
             role = user.role
             team = user.team
             wins = user.wins
@@ -310,7 +308,6 @@ class UserService(
             discordTag = user.discordTag
             discordId = user.discordId
             position = user.position
-            redditUsername = user.redditUsername
             role = user.role
             team = user.team
             wins = user.wins

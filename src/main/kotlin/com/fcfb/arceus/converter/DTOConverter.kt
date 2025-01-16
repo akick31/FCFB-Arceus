@@ -14,7 +14,6 @@ class DTOConverter {
             discordTag = user.discordTag,
             discordId = user.discordId,
             position = user.position,
-            redditUsername = user.redditUsername,
             role = user.role,
             team = user.team,
             delayOfGameInstances = user.delayOfGameInstances,
