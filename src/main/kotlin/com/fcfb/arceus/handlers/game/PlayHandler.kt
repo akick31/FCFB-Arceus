@@ -826,7 +826,10 @@ class PlayHandler(
                 else -> 0
             }
         } else {
-            0
+            when {
+                playCall == PlayCall.SPIKE -> 1
+                else -> 0
+            }
         }
     }
 
