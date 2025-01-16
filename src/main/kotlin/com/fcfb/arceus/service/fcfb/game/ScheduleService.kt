@@ -13,6 +13,8 @@ class ScheduleService(
 ) {
     /**
      * Get all games for a given season and week
+     * @param season
+     * @param week
      */
     fun getGamesToStartBySeasonAndWeek(
         season: Int,
@@ -21,6 +23,7 @@ class ScheduleService(
 
     /**
      * Mark a game as started
+     * @param gameToSchedule
      */
     fun markGameAsStarted(gameToSchedule: Schedule) {
         gameToSchedule.started = true
@@ -28,7 +31,20 @@ class ScheduleService(
     }
 
     /**
+     * Mark a manually started game as started
+     * @param game
+     */
+    fun markManuallyStartedGameAsStarted(game: Game) {
+        val gameInSchedule = findGameInSchedule(game)
+        gameInSchedule?.started = true
+        if (gameInSchedule != null) {
+            scheduleRepository.save(gameInSchedule)
+        }
+    }
+
+    /**
      * Mark a game as finished
+     * @param game
      */
     fun markGameAsFinished(game: Game) {
         val gameInSchedule = findGameInSchedule(game)
@@ -44,6 +60,7 @@ class ScheduleService(
     private fun findGameInSchedule(game: Game) =
         scheduleRepository.findGameInSchedule(
             game.homeTeam,
+            game.awayTeam,
             game.season ?: 0,
             game.week ?: 0,
         )

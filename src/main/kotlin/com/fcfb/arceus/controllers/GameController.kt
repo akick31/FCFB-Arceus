@@ -67,7 +67,7 @@ class GameController(
     @PostMapping("/start")
     fun startGame(
         @RequestBody startRequest: StartRequest,
-    ) = gameService.startGame(startRequest, null)
+    ) = gameService.startSingleGame(startRequest, null)
 
     /**
      * Start all games for a week

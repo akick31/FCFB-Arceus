@@ -56,14 +56,25 @@ class GameService(
     /**
      * Save a game state
      */
-    fun saveGame(game: Game) = gameRepository.save(game)
+    fun saveGame(game: Game): Game = gameRepository.save(game)
+
+    fun startSingleGame(
+        startRequest: StartRequest,
+        week: Int?,
+    ): Game {
+        val game = startGame(startRequest, week)
+        if (startRequest.gameType != GameType.SCRIMMAGE) {
+            scheduleService.markManuallyStartedGameAsStarted(game)
+        }
+        return game
+    }
 
     /**
      * Start a game
      * @param startRequest
      * @return
      */
-    fun startGame(
+    private fun startGame(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
