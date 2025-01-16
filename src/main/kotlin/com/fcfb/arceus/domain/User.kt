@@ -49,10 +49,6 @@ class User {
     @Column(name = "position")
     lateinit var position: CoachPosition
 
-    @Basic
-    @Column(name = "reddit_username")
-    var redditUsername: String? = null
-
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "role")
@@ -146,7 +142,6 @@ class User {
         email: String,
         password: String,
         position: CoachPosition,
-        redditUsername: String?,
         role: Role,
         salt: String,
         team: String?,
@@ -176,7 +171,6 @@ class User {
         this.email = email
         this.password = password
         this.position = position
-        this.redditUsername = redditUsername
         this.role = role
         this.salt = salt
         this.team = team

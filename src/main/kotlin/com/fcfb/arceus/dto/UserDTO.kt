@@ -12,7 +12,6 @@ data class UserDTO(
     var discordTag: String,
     var discordId: String?,
     var position: CoachPosition,
-    var redditUsername: String?,
     var role: Role,
     var team: String?,
     var delayOfGameInstances: Int,
