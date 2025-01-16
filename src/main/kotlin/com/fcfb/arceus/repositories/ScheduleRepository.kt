@@ -40,7 +40,8 @@ interface ScheduleRepository : CrudRepository<Schedule?, Int?> {
     @Query(
         value =
             "SELECT * FROM schedule " +
-                "WHERE (home_team = :homeTeam OR away_team = :awayTeam) AND " +
+                "WHERE home_team = :homeTeam AND " +
+                "away_team = :awayTeam AND " +
                 "season = :season AND " +
                 "week = :week",
         nativeQuery = true,
