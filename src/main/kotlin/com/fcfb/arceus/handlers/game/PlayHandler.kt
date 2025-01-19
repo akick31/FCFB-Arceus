@@ -204,6 +204,7 @@ class PlayHandler(
                 if (ballLocation <= 0) {
                     ballLocation = 1
                 }
+                yardsToGo -= yards
                 down += 1
                 if (down > 4) {
                     actualResult = ActualResult.TURNOVER_ON_DOWNS
