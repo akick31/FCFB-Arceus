@@ -90,7 +90,7 @@ class Play {
 
     @Basic
     @Column(name = "difference")
-    var difference: Int = 0
+    var difference: Int? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
