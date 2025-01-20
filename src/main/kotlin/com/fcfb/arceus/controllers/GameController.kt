@@ -152,9 +152,9 @@ class GameController(
     ) = gameService.updateRequestMessageId(gameId, requestMessageId)
 
     /**
-     * Update the request message id
+     * Update the last message timestamp
      * @param gameId
-     * @param requestMessageId
+     * @param gameId
      * @return
      */
     @PutMapping("/last_message_timestamp")
@@ -182,7 +182,7 @@ class GameController(
      * Sub a coach in the game for a team
      * @param gameId
      * @param team
-     * @param coachId
+     * @param discordId
      */
     @PutMapping("/sub")
     fun subCoachIntoGame(
@@ -193,6 +193,7 @@ class GameController(
 
     /**
      * Restart a game
+     * @param channelId
      */
     @PostMapping("/restart")
     fun restartGame(
@@ -200,8 +201,26 @@ class GameController(
     ) = gameService.restartGame(channelId)
 
     /**
+     * Mark the game as having pinged the close game role
+     * @param gameId
+     */
+    @PutMapping("/close_game_pinged")
+    fun markCloseGamePinged(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.markCloseGamePinged(gameId)
+
+    /**
+     * Mark the game as having pinged the close game role
+     * @param gameId
+     */
+    @PutMapping("/upset_alert_pinged")
+    fun markUpsetAlertPinged(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.markUpsetAlertPinged(gameId)
+
+    /**
      * Delete an ongoing game
-     * @param id
+     * @param channelId
      * @return
      */
     @DeleteMapping("")
