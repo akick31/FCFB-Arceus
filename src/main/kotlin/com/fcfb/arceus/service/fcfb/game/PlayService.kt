@@ -114,7 +114,7 @@ class PlayService(
     fun offensiveNumberSubmitted(
         gameId: Int,
         offensiveSubmitter: String,
-        offensiveNumber: Int,
+        offensiveNumber: Int?,
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
@@ -140,7 +140,7 @@ class PlayService(
                             playCall,
                             runoffType,
                             offensiveTimeoutCalled,
-                            offensiveNumber.toString(),
+                            offensiveNumber,
                             decryptedDefensiveNumber,
                         )
 
@@ -151,7 +151,7 @@ class PlayService(
                             allPlays,
                             game,
                             playCall,
-                            offensiveNumber.toString(),
+                            offensiveNumber,
                             decryptedDefensiveNumber,
                         )
 
@@ -162,7 +162,7 @@ class PlayService(
                             allPlays,
                             game,
                             playCall,
-                            offensiveNumber.toString(),
+                            offensiveNumber,
                             decryptedDefensiveNumber,
                         )
 
@@ -175,7 +175,7 @@ class PlayService(
                             playCall,
                             runoffType,
                             offensiveTimeoutCalled,
-                            offensiveNumber.toString(),
+                            offensiveNumber,
                             decryptedDefensiveNumber,
                         )
 
@@ -188,7 +188,7 @@ class PlayService(
                             playCall,
                             runoffType,
                             offensiveTimeoutCalled,
-                            offensiveNumber.toString(),
+                            offensiveNumber,
                             decryptedDefensiveNumber,
                         )
             }

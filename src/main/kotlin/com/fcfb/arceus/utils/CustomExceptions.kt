@@ -42,6 +42,12 @@ class NoTeamFoundException : Exception("No team found") {
     }
 }
 
+class NumberNotFoundException : Exception("Number not found") {
+    override fun toString(): String {
+        return "NumberNotFoundException: ${super.message}"
+    }
+}
+
 class ResultNotFoundException : Exception("Result not found") {
     override fun toString(): String {
         return "ResultNotFoundException: ${super.message}"
