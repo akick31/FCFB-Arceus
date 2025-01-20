@@ -397,18 +397,18 @@ class GameHandler(
         awayTeamRanking = if (awayTeamRanking == 0 || awayTeamRanking == null) 100 else awayTeamRanking
 
         if ((
-            (game.homeScore <= game.awayScore && homeTeamRanking < awayTeamRanking) ||
-                (game.awayScore <= game.homeScore && awayTeamRanking < homeTeamRanking)
-        ) &&
+                (game.homeScore <= game.awayScore && homeTeamRanking < awayTeamRanking) ||
+                    (game.awayScore <= game.homeScore && awayTeamRanking < homeTeamRanking)
+            ) &&
             game.quarter >= 4 &&
             play.clock <= 210
         ) {
             return true
         }
         if ((
-            (abs(game.homeScore-game.awayScore) <= 8 && homeTeamRanking < awayTeamRanking) ||
-            (abs(game.awayScore-game.homeScore) <= 8 && awayTeamRanking < homeTeamRanking)
-        ) &&
+                (abs(game.homeScore - game.awayScore) <= 8 && homeTeamRanking < awayTeamRanking) ||
+                    (abs(game.awayScore - game.homeScore) <= 8 && awayTeamRanking < homeTeamRanking)
+            ) &&
             game.quarter >= 4 &&
             play.clock <= 210
         ) {
