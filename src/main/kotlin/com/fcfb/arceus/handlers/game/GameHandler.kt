@@ -10,6 +10,7 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
@@ -93,6 +94,22 @@ class GameHandler(
             }
         } else {
             game.currentPlayType = PlayType.NORMAL
+        }
+
+        // Update pinged close game if game is going to be close
+        if (checkIfCloseGame(game, play)) {
+            game.closeGame = true
+        }
+
+        // Update pinged close game if game is going to be close
+        if (checkIfUpsetAlert(
+                game,
+                play,
+                teamService.getTeamByName(game.homeTeam),
+                teamService.getTeamByName(game.awayTeam),
+            )
+        ) {
+            game.upsetAlert = true
         }
 
         // Update the quarter/overtime stuff
@@ -313,6 +330,11 @@ class GameHandler(
         return String.format("%d:%02d", minutes, remainingSeconds)
     }
 
+    /**
+     * Handle the halftime possession change
+     * @param game
+     * @return
+     */
     fun handleHalfTimePossessionChange(game: Game): TeamSide {
         return if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
             TeamSide.AWAY
@@ -340,5 +362,45 @@ class GameHandler(
         if (updatedGame.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
             seasonService.endSeason(updatedGame)
         }
+    }
+
+    /**
+     * Determines if the game is close
+     * @param game the game
+     * @param play the play
+     */
+    private fun checkIfCloseGame(
+        game: Game,
+        play: Play,
+    ): Boolean {
+        return abs(game.homeScore - game.awayScore) <= 8 &&
+            play.quarter >= 4 &&
+            play.clock <= 210
+    }
+
+    /**
+     * Determine if there is an upset alert. A game is an upset alert
+     * if at least one of the teams is ranked and the game is close
+     * @param homeTeam
+     * @param awayTeam
+     */
+    private fun checkIfUpsetAlert(
+        game: Game,
+        play: Play,
+        homeTeam: Team,
+        awayTeam: Team,
+    ): Boolean {
+        var homeTeamRanking = if (homeTeam.playoffCommitteeRanking == 0) homeTeam.coachesPollRanking else homeTeam.playoffCommitteeRanking
+        var awayTeamRanking = if (awayTeam.playoffCommitteeRanking == 0) awayTeam.coachesPollRanking else awayTeam.playoffCommitteeRanking
+
+        homeTeamRanking = if (homeTeamRanking == 0 || homeTeamRanking == null) 100 else homeTeamRanking
+        awayTeamRanking = if (awayTeamRanking == 0 || awayTeamRanking == null) 100 else awayTeamRanking
+
+        return (
+            (game.homeScore <= game.awayScore && homeTeamRanking < awayTeamRanking) ||
+                (game.awayScore <= game.homeScore && awayTeamRanking < homeTeamRanking)
+        ) &&
+            game.quarter >= 4 &&
+            play.clock <= 210
     }
 }

@@ -78,4 +78,14 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Modifying
     @Query(value = "UPDATE game SET game_warned = True WHERE game_id = ?", nativeQuery = true)
     fun updateGameAsWarned(gameId: Int)
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE game SET close_game_pinged = true WHERE game_id = ?", nativeQuery = true)
+    fun markCloseGamePinged(gameId: Int)
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE game SET upset_alert_pinged = true WHERE game_id = ?", nativeQuery = true)
+    fun markUpsetAlertPinged(gameId: Int)
 }

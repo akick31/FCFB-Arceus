@@ -167,6 +167,10 @@ class GameService(
                         gameStatus = GameStatus.PREGAME,
                         gameMode = GameMode.NORMAL,
                         overtimeHalf = 0,
+                        closeGame = false,
+                        closeGamePinged = false,
+                        upsetAlert = false,
+                        upsetAlertPinged = false,
                     ),
                 )
 
@@ -599,6 +603,18 @@ class GameService(
      * @param gameId
      */
     fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
+
+    /**
+     * Mark a game as close game pinged
+     * @param gameId
+     */
+    fun markCloseGamePinged(gameId: Int) = gameRepository.markCloseGamePinged(gameId)
+
+    /**
+     * Mark a game as upset alert pinged
+     * @param gameId
+     */
+    fun markUpsetAlertPinged(gameId: Int) = gameRepository.markUpsetAlertPinged(gameId)
 
     /**
      * Get all ongoing games
