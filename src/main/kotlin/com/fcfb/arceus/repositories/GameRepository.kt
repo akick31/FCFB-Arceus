@@ -21,7 +21,7 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE away_platform_id = ?", nativeQuery = true)
     fun getGameByAwayPlatformId(awayPlatformId: ULong): Game?
 
-    @Query(value = "SELECT * FROM game", nativeQuery = true)
+    @Query(value = "SELECT * FROM game WHERE game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllGames(): List<Game>
 
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
