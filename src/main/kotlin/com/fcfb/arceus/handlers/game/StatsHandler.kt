@@ -9,6 +9,9 @@ import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameStatsRepository
 import org.springframework.stereotype.Component
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class StatsHandler(
@@ -64,24 +67,24 @@ class StatsHandler(
             calculateTotalYards(
                 stats.passYards, stats.rushYards,
             )
-        opponentStats.interceptionsLost =
+        stats.interceptionsLost =
             calculateInterceptionsLost(
-                play, opponentStats.interceptionsLost,
+                play, stats.interceptionsLost,
             )
         stats.interceptionsForced = opponentStats.interceptionsLost
-        opponentStats.fumblesLost =
+        stats.fumblesLost =
             calculateFumblesLost(
-                play, opponentStats.fumblesLost,
+                play, stats.fumblesLost,
             )
         stats.fumblesForced = opponentStats.fumblesLost
-        opponentStats.turnoversLost =
+        stats.turnoversLost =
             calculateTurnoversLost(
-                opponentStats.interceptionsLost, opponentStats.fumblesLost,
+                stats.interceptionsLost, stats.fumblesLost,
             )
         stats.turnoversForced = opponentStats.turnoversLost
-        opponentStats.turnoverTouchdownsLost =
+        stats.turnoverTouchdownsLost =
             calculateTurnoverTouchdownsLost(
-                play, opponentStats.turnoverTouchdownsLost,
+                play, stats.turnoverTouchdownsLost,
             )
         stats.turnoverTouchdownsForced = opponentStats.turnoverTouchdownsLost
         stats.fieldGoalMade =
@@ -258,6 +261,10 @@ class StatsHandler(
             calculatePercentage(
                 stats.redZoneSuccesses, stats.redZoneAttempts,
             )
+        stats.redZonePercentage =
+            calculatePercentage(
+                stats.redZoneAttempts, stats.numberOfDrives,
+            )
         stats.turnoverDifferential =
             calculateTurnoverDifferential(
                 stats.turnoversLost, stats.turnoversForced,
@@ -289,6 +296,14 @@ class StatsHandler(
         opponentStats.gameStatus = game.gameStatus
         stats.averageDiff = calculateAverageDiff(allPlays)
         opponentStats.averageDiff = calculateAverageDiff(allPlays)
+        stats.lastModifiedTs =
+            ZonedDateTime.now(
+                ZoneId.of("America/New_York"),
+            ).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
+        opponentStats.lastModifiedTs =
+            ZonedDateTime.now(
+                ZoneId.of("America/New_York"),
+            ).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
         gameStatsRepository.save(stats)
         gameStatsRepository.save(opponentStats)
         return listOf(stats, opponentStats)
