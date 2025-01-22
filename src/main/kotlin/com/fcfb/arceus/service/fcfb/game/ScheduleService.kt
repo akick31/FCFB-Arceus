@@ -51,8 +51,21 @@ class ScheduleService(
         gameInSchedule?.finished = true
         if (gameInSchedule != null) {
             scheduleRepository.save(gameInSchedule)
+            if (checkIfWeekIsOver(game.season ?: 0, game.week ?: 0)) {
+                seasonService.incrementWeek()
+            }
         }
     }
+
+    /**
+     * Check if the current week is over
+     * @param season
+     * @param week
+     */
+    private fun checkIfWeekIsOver(
+        season: Int,
+        week: Int,
+    ) = scheduleRepository.checkIfWeekIsOver(season, week) == 1
 
     /**
      * Find the game in the schedule
