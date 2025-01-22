@@ -5,6 +5,8 @@ import org.hibernate.annotations.TypeDef
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
+import javax.persistence.EnumType
+import javax.persistence.Enumerated
 import javax.persistence.GeneratedValue
 import javax.persistence.GenerationType
 import javax.persistence.Id
@@ -19,25 +21,22 @@ class RequestMessageLog {
     @Column(name = "id", nullable = false)
     var id: Int? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "message_type", nullable = false)
     var messageType: MessageType? = null
 
     @Basic
     @Column(name = "game_id", nullable = false)
-    var gameId: String? = null
+    var gameId: Int? = null
 
     @Basic
     @Column(name = "play_id")
-    var playId: String? = null
+    var playId: Int? = null
 
     @Basic
     @Column(name = "message_id", nullable = false)
-    var messageId: Int? = null
-
-    @Basic
-    @Column(name = "message_content", nullable = false)
-    var messageContent: String? = null
+    var messageId: Long? = null
 
     @Basic
     @Column(name = "message_location", nullable = false)
@@ -49,10 +48,9 @@ class RequestMessageLog {
 
     constructor(
         messageType: MessageType,
-        gameId: String,
-        playId: String?,
-        messageId: Int,
-        messageContent: String,
+        gameId: Int,
+        playId: Int?,
+        messageId: Long,
         messageLocation: String,
         messageTs: String?,
     ) {
@@ -60,7 +58,6 @@ class RequestMessageLog {
         this.gameId = gameId
         this.playId = playId
         this.messageId = messageId
-        this.messageContent = messageContent
         this.messageLocation = messageLocation
         this.messageTs = messageTs
     }
@@ -68,7 +65,7 @@ class RequestMessageLog {
     constructor()
 
     enum class MessageType(val description: String) {
-        OFFENSE("Offense"),
-        DEFENSE("Defense"),
+        GAME_THREAD("Game Thread"),
+        PRIVATE_MESSAGE("Private Message"),
     }
 }

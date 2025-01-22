@@ -17,6 +17,9 @@ class RequestMessageLogService(
      * @return
      */
     fun logRequestMessage(requestMessageLog: RequestMessageLog): RequestMessageLog {
+        if (requestMessageLog.playId == 0) {
+            requestMessageLog.playId = null
+        }
         requestMessageLog.messageTs =
             ZonedDateTime.now(
                 ZoneId.of("America/New_York"),
