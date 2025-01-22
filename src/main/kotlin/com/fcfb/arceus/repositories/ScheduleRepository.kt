@@ -31,7 +31,10 @@ interface ScheduleRepository : CrudRepository<Schedule?, Int?> {
         team: String,
     ): String?
 
-    @Query(value = "SELECT * FROM schedule WHERE season = :season AND (home_team = :team OR away_team = :team)", nativeQuery = true)
+    @Query(
+        value = "SELECT * FROM schedule WHERE season = :season AND (home_team = :team OR away_team = :team)",
+        nativeQuery = true,
+    )
     fun getScheduleBySeasonAndTeam(
         season: Int,
         team: String,
@@ -52,4 +55,23 @@ interface ScheduleRepository : CrudRepository<Schedule?, Int?> {
         season: Int,
         week: Int,
     ): Schedule?
+
+    @Query(
+        value = """
+        SELECT 
+            CASE 
+                WHEN NOT EXISTS (
+                    SELECT 1 
+                    FROM schedule 
+                    WHERE season = :season AND week = :week AND finished = false
+                ) THEN true
+                ELSE false
+            END AS allFinished
+        """,
+        nativeQuery = true,
+    )
+    fun checkIfWeekIsOver(
+        season: Int,
+        week: Int,
+    ): Int
 }
