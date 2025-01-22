@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb
+package com.fcfb.arceus.service.log
 
 import com.fcfb.arceus.domain.RequestMessageLog
 import com.fcfb.arceus.repositories.RequestMessageLogRepository

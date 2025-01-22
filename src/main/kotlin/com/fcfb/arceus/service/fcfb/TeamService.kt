@@ -19,6 +19,7 @@ import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.service.log.CoachTransactionLogService
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
 import com.fcfb.arceus.utils.NoTeamFoundException
 import com.fcfb.arceus.utils.TooManyCoachesException
