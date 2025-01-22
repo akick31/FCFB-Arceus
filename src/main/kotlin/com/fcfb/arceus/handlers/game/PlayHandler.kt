@@ -103,7 +103,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -354,7 +354,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -486,7 +486,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -859,6 +859,7 @@ class PlayHandler(
      * @param offensivePlaybook
      */
     private fun getRunoffTime(
+        game: Game,
         clockStopped: Boolean?,
         clock: Int,
         timeoutUsed: Boolean,
@@ -870,7 +871,6 @@ class PlayHandler(
             when {
                 playCall == PlayCall.SPIKE -> 3
                 playCall == PlayCall.KNEEL -> 40
-                runoffType == RunoffType.CHEW -> 30
                 runoffType == RunoffType.HURRY -> 7
                 runoffType == RunoffType.FINAL ->
                     if (clock <= 7) {
@@ -880,6 +880,8 @@ class PlayHandler(
                     } else {
                         clock - 1
                     }
+                runoffType == RunoffType.CHEW -> 30
+                game.gameMode == Game.GameMode.CHEW -> 30
                 offensivePlaybook == OffensivePlaybook.PRO -> 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> 20
