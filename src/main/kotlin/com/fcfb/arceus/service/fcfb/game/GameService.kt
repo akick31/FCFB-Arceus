@@ -27,6 +27,7 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
+import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
@@ -92,6 +93,16 @@ class GameService(
             val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
             val homeCoachDiscordIds = homeTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
             val awayCoachDiscordIds = awayTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+
+            if (homeCoachUsernames.isEmpty() || awayCoachUsernames.isEmpty()
+            ) {
+                throw NoCoachesFoundException()
+            }
+
+            if (homeCoachDiscordIds.isEmpty() || awayCoachDiscordIds.isEmpty()
+            ) {
+                throw NoCoachDiscordIdsFoundException()
+            }
 
             val homeOffensivePlaybook = homeTeamData.offensivePlaybook
             val awayOffensivePlaybook = awayTeamData.offensivePlaybook
@@ -228,6 +239,10 @@ class GameService(
         var count = 0
         for (game in gamesToStart) {
             try {
+                if (count >= 30) {
+                    sleep(300000)
+                    count = 0
+                }
                 val startedGame =
                     startGame(
                         StartRequest(
