@@ -242,6 +242,7 @@ class GameService(
                 if (count >= 30) {
                     sleep(300000)
                     count = 0
+                    Logger.info("Block of 30 games started, sleeping for 5 minutes")
                 }
                 val startedGame =
                     startGame(
