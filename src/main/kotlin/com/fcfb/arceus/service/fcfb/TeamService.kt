@@ -429,10 +429,10 @@ class TeamService(
                 processedBy,
             ),
         )
-        existingTeam.coachUsernames = mutableListOf()
-        existingTeam.coachNames = mutableListOf()
-        existingTeam.coachDiscordTags = mutableListOf()
-        existingTeam.coachDiscordIds = mutableListOf()
+        existingTeam.coachUsernames = null
+        existingTeam.coachNames = null
+        existingTeam.coachDiscordTags = null
+        existingTeam.coachDiscordIds = null
         existingTeam.offensivePlaybook = OffensivePlaybook.AIR_RAID
         existingTeam.defensivePlaybook = DefensivePlaybook.FOUR_THREE
         saveTeam(existingTeam)
