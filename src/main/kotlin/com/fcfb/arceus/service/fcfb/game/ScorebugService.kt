@@ -166,8 +166,12 @@ class ScorebugService(
         // Draw the home team name section with adjusted height
         drawTeamNameSection(g, game, homeTeam, width, 140, adjustedRowHeightForTeamName)
 
-        drawClockInformationSection(g, rowHeight - 10, game, homeTeam, awayTeam)
-        drawDownAndDistanceSection(g, rowHeight - 10, game)
+        if (game.gameStatus != GameStatus.FINAL) {
+            drawClockInformationSection(g, rowHeight - 10, game, homeTeam, awayTeam)
+            drawDownAndDistanceSection(g, rowHeight - 10, game)
+        } else {
+            drawFinalSection(g, (rowHeight - 10) * 2, game)
+        }
 
         // Draw a border around the entire scorebug
         drawBorder(g, width, height)
@@ -208,8 +212,8 @@ class ScorebugService(
         height: Int,
     ): BufferedImage {
         // Create a new BufferedImage for the smaller version
-        val scaledWidth = (width * 0.65).toInt()
-        val scaledHeight = (height * 0.65).toInt()
+        val scaledWidth = (width * 0.50).toInt()
+        val scaledHeight = (height * 0.50).toInt()
         val scaledImage = BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB)
         val gScaled: Graphics2D = scaledImage.createGraphics()
 
@@ -531,12 +535,7 @@ class ScorebugService(
         g.fillRect(xPos, rowY, 160, rowHeight)
 
         // Draw Clock text
-        val clockText =
-            if (game.gameStatus != GameStatus.FINAL) {
-                getClockText(game.quarter, game.clock)
-            } else {
-                ""
-            }
+        val clockText = getClockText(game.quarter, game.clock)
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val clockTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK
@@ -619,20 +618,40 @@ class ScorebugService(
         g.stroke = BasicStroke(3f)
         g.drawRect(0, rowY, 360, rowHeight)
 
-        // Draw Down & Distance text
-        if (game.gameStatus != GameStatus.FINAL) {
-            val downDistanceText = getDownDistanceText(game)
-            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
-            val ascent = g.fontMetrics.ascent
-            g.color = Color.BLACK
-            g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
-        } else {
-            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
-            val ascent = g.fontMetrics.ascent
-            val textWidth = g.fontMetrics.stringWidth("Final")
-            g.color = Color.BLACK
-            g.drawString("Final", 180 - textWidth / 2, rowY + rowHeight / 2 + ascent / 2)
+        val downDistanceText = getDownDistanceText(game)
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
+        val ascent = g.fontMetrics.ascent
+        g.color = Color.BLACK
+        g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
+    }
+
+    /**
+     * Draws the final section of the scorebug
+     * @param g
+     * @param rowHeight
+     */
+    private fun drawFinalSection(
+        g: Graphics2D,
+        rowHeight: Int,
+        game: Game,
+    ) {
+        val rowY = 280
+        g.color = Color(255, 255, 255)
+        g.fillRect(0, rowY, 360, rowHeight)
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
+        g.drawRect(0, rowY, 360, rowHeight)
+
+        var finalText = "FINAL"
+        if (game.quarter >= 6) {
+            finalText += "/${game.quarter - 4} OT"
+        } else if (game.quarter == 5) {
+            finalText += "/OT"
         }
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.BOLD, 43f)
+        val ascent = g.fontMetrics.ascent
+        g.color = Color.BLACK
+        g.drawString(finalText, 10, rowY + rowHeight / 2 + ascent / 2)
     }
 
     /**
