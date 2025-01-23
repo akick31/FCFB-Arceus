@@ -80,6 +80,12 @@ class GameStats(
     @Column(name = "rush_success_percentage")
     var rushSuccessPercentage: Double = 0.0,
     @Basic
+    @Column(name = "pass_successes")
+    var passSuccesses: Int = 0,
+    @Basic
+    @Column(name = "pass_success_percentage")
+    var passSuccessPercentage: Double = 0.0,
+    @Basic
     @Column(name = "rush_yards")
     var rushYards: Int = 0,
     @Basic

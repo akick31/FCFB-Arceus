@@ -59,6 +59,14 @@ class StatsHandler(
             calculatePercentage(
                 stats.rushSuccesses, stats.rushAttempts,
             )
+        stats.passSuccesses =
+            calculatePassSuccesses(
+                play, stats.passSuccesses,
+            )
+        stats.passSuccessPercentage =
+            calculatePercentage(
+                stats.passSuccesses, stats.passAttempts,
+            )
         stats.rushYards =
             calculateRushYards(
                 play, stats.rushYards,
@@ -488,6 +496,31 @@ class StatsHandler(
             return currentRushYards + (play.yards)
         }
         return currentRushYards
+    }
+
+    private fun calculatePassSuccesses(
+        play: Play,
+        currentPassSuccesses: Int,
+    ): Int {
+        if (play.playCall != PlayCall.PASS) return currentPassSuccesses
+
+        val yardsToGo = play.yardsToGo
+        val yardsGained = play.yards
+        val down = play.down
+
+        val isSuccess =
+            when (down) {
+                1 -> yardsGained >= (yardsToGo * 0.5)
+                2 -> yardsGained >= (yardsToGo * 0.7)
+                3, 4 -> yardsGained >= yardsToGo
+                else -> false
+            }
+
+        return if (isSuccess || play.actualResult == ActualResult.TOUCHDOWN) {
+            currentPassSuccesses + 1
+        } else {
+            currentPassSuccesses
+        }
     }
 
     private fun calculateTotalYards(
