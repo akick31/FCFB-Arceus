@@ -23,7 +23,7 @@ COPY nginx_prd.conf /etc/nginx/nginx.conf
 EXPOSE 1212 1213
 
 # Script to start Nginx, obtain SSL certificates, and run the application
-COPY ./prd-docker-entrypoint.sh /docker-entrypoint.sh
+COPY ./docker-entrypoint.sh /docker-entrypoint.sh
 RUN chmod +x /docker-entrypoint.sh
 
 # Set the entrypoint script
