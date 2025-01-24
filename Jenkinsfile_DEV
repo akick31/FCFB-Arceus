@@ -68,7 +68,7 @@ pipeline {
                 script {
                     def propertiesContent = """
                         # Domain configuration
-                        domain.url=${env.DOMAIN_URL}
+                        domain.url=https://dev.api.fakecollegefootball.com
                         server.servlet.context-path=/arceus
                         server.port=462
 
