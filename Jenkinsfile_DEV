@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'fcfb-arceus-dev'
         CONTAINER_NAME = 'FCFB-Arceus-DEV'
-        DOCKERFILE = 'Dockerfile'
+        DOCKERFILE = 'Dockerfile_DEV'
         APP_PROPERTIES = './src/main/resources/application.properties'
         DB_URL = credentials('DEV_DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
@@ -144,8 +144,11 @@ pipeline {
                     echo 'Starting the new Arceus container...'
                     sh """
                         docker run --network="host" -d --restart=always --name ${CONTAINER_NAME} \\
+                            -v /etc/letsencrypt:/etc/letsencrypt \\
+                            -v /var/www/certbot:/var/www/certbot \\
                             -v /var/images:/app/images \\
                             --env-file ${APP_PROPERTIES} \\
+                            -p 1313:1313 -p 1314:1314 \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """
                 }

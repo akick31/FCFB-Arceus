@@ -1,0 +1,30 @@
+# Use a lightweight JDK 17 image
+FROM openjdk:17-jdk-slim
+
+# Install necessary packages: Nginx, Certbot, fonts for Java
+RUN apt-get update && apt-get install -y \
+    nginx \
+    certbot \
+    python3-certbot-nginx \
+    fontconfig \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR file from the Gradle build directory into the container
+COPY ./build/libs/*.jar app.jar
+
+# Copy Nginx configuration
+COPY nginx_prd.conf /etc/nginx/nginx.conf
+
+# Expose HTTP and HTTPS ports
+EXPOSE 12 13 1212 1213
+
+# Script to start Nginx, obtain SSL certificates, and run the application
+COPY prd-docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /prd-docker-entrypoint.sh
+
+# Set the entrypoint script
+ENTRYPOINT ["/docker-entrypoint.sh"]
