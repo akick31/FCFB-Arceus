@@ -70,7 +70,7 @@ pipeline {
                         # Domain configuration
                         domain.url=${env.DOMAIN_URL}
                         server.servlet.context-path=/arceus
-                        server.port=8080
+                        server.port=462
 
                         # Images configuration
                         images.path=/app/images
