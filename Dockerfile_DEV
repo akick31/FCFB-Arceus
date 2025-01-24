@@ -24,7 +24,7 @@ EXPOSE 1313 1314
 
 # Script to start Nginx, obtain SSL certificates, and run the application
 COPY ./dev-docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x dev-docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Set the entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"]

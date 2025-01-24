@@ -20,11 +20,11 @@ COPY ./build/libs/*.jar app.jar
 COPY nginx_prd.conf /etc/nginx/nginx.conf
 
 # Expose HTTP and HTTPS ports
-EXPOSE 12 13 1212 1213
+EXPOSE 1212 1213
 
 # Script to start Nginx, obtain SSL certificates, and run the application
-COPY prd-docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /prd-docker-entrypoint.sh
+COPY ./prd-docker-entrypoint.sh /docker-entrypoint.sh
+RUN chmod +x /docker-entrypoint.sh
 
 # Set the entrypoint script
 ENTRYPOINT ["/docker-entrypoint.sh"]
