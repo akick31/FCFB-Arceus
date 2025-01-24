@@ -150,7 +150,7 @@ pipeline {
                             -v /var/www/certbot:/var/www/certbot \\
                             -v /var/images:/app/images \\
                             --env-file ${APP_PROPERTIES} \\
-                            -p 1212:1212 -p 1213:1213 \\
+                            -p 1212:1212 -p 443:443 \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """
                 }
