@@ -132,7 +132,7 @@ pipeline {
                 script {
                     echo 'Building the new Arceus Docker image...'
                     sh """
-                        docker build -t ${IMAGE_NAME}:${DOCKERFILE} .
+                        docker build -f ${DOCKERFILE} -t ${IMAGE_NAME}:${DOCKERFILE} .
                     """
                 }
             }
