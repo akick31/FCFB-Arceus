@@ -20,7 +20,7 @@ COPY ./build/libs/*.jar app.jar
 COPY nginx_dev.conf /etc/nginx/nginx.conf
 
 # Expose HTTP and HTTPS ports
-EXPOSE 1313 1314
+EXPOSE 1313 443
 
 # Script to start Nginx, obtain SSL certificates, and run the application
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh
