@@ -85,7 +85,7 @@ class DiscordService(
 
     /**
      * Get a user by their Discord Tag
-     * @param discordId
+     * @param tag
      * @return User
      */
     suspend fun getUserByDiscordTag(tag: String): User {

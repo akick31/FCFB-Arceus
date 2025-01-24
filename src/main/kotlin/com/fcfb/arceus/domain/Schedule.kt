@@ -55,4 +55,8 @@ class Schedule {
     @Basic
     @Column(name = "started")
     var started: Boolean? = false
+
+    @Basic
+    @Column(name = "finished")
+    var finished: Boolean? = false
 }

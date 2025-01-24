@@ -10,11 +10,13 @@ import com.fcfb.arceus.domain.Game.RunoffType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.fcfb.game.RangesService
 import com.fcfb.arceus.utils.InvalidActualResultException
 import com.fcfb.arceus.utils.InvalidPlayTypeException
 import com.fcfb.arceus.utils.InvalidScenarioException
+import com.fcfb.arceus.utils.NumberNotFoundException
 import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
 
@@ -41,24 +43,67 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+
+        val difference =
+            if (offensiveNumber != null) {
+                gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
+            } else {
+                null
+            }
         var possession = gamePlay.possession
         val (offensivePlaybook, defensivePlaybook) = getPlaybooks(game, possession)
         val (timeoutUsed, homeTimeoutCalled, awayTimeoutCalled) = getTimeoutUsage(game, gamePlay, offensiveTimeoutCalled)
 
-        val resultInformation = rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
+        val resultInformation =
+            if (difference != null) {
+                rangesService.getNormalResult(playCall, offensivePlaybook, defensivePlaybook, difference)
+            } else {
+                when (playCall) {
+                    PlayCall.SPIKE -> {
+                        Ranges(
+                            PlayType.NORMAL.description,
+                            offensivePlaybook.description,
+                            defensivePlaybook.description,
+                            0,
+                            0,
+                            0,
+                            Scenario.SPIKE,
+                            0,
+                            0,
+                            0,
+                        )
+                    }
+
+                    PlayCall.KNEEL -> {
+                        Ranges(
+                            PlayType.NORMAL.description,
+                            offensivePlaybook.description,
+                            defensivePlaybook.description,
+                            0,
+                            0,
+                            0,
+                            Scenario.KNEEL,
+                            1,
+                            0,
+                            0,
+                        )
+                    }
+
+                    else -> throw NumberNotFoundException()
+                }
+            }
         var result = resultInformation.result ?: throw ResultNotFoundException()
         val playTime = resultInformation.playTime
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -153,12 +198,13 @@ class PlayHandler(
                 }
             }
             Scenario.KNEEL -> {
-                yards = -3
+                yards = -2
                 actualResult = ActualResult.KNEEL
-                ballLocation -= 3
+                ballLocation -= 2
                 if (ballLocation <= 0) {
                     ballLocation = 1
                 }
+                yardsToGo -= yards
                 down += 1
                 if (down > 4) {
                     actualResult = ActualResult.TURNOVER_ON_DOWNS
@@ -170,21 +216,19 @@ class PlayHandler(
             }
             else -> {
                 yards = result.description.toInt()
+                val originalBallLocation = ballLocation
+                ballLocation += yards
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
-                    yards = 100 - ballLocation
-                    ballLocation += yards
+                    yards = 100 - originalBallLocation
                 } else if (ballLocation <= 0) {
                     actualResult = ActualResult.SAFETY
-                    yards = ballLocation
-                    ballLocation += yards
+                    yards = 0 - originalBallLocation
                 } else if (yards >= yardsToGo) {
                     down = 1
                     yardsToGo = 10
                     actualResult = ActualResult.FIRST_DOWN
-                    ballLocation += yards
                 } else {
-                    ballLocation += yards
                     down += 1
                     if (down > 4) {
                         actualResult = ActualResult.TURNOVER_ON_DOWNS
@@ -286,14 +330,18 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         var ballLocation = 100 - game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
@@ -306,7 +354,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -415,14 +463,18 @@ class PlayHandler(
         playCall: PlayCall,
         runoffType: RunoffType,
         offensiveTimeoutCalled: Boolean,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.NORMAL) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         var ballLocation = game.ballLocation
         val (offensivePlaybook, _) = getPlaybooks(game, possession)
@@ -434,7 +486,7 @@ class PlayHandler(
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
-        val runoffTime = getRunoffTime(clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
+        val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
             result = Scenario.END_OF_HALF
         }
@@ -574,14 +626,18 @@ class PlayHandler(
         allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.KICKOFF) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         var possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
@@ -696,14 +752,18 @@ class PlayHandler(
         allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
-        offensiveNumber: String,
+        offensiveNumber: Int?,
         decryptedDefensiveNumber: String,
     ): Play {
         if (game.currentPlayType != PlayType.PAT) {
             throw InvalidPlayTypeException()
         }
 
-        val difference = gameHandler.getDifference(offensiveNumber.toInt(), decryptedDefensiveNumber.toInt())
+        if (offensiveNumber == null) {
+            throw NumberNotFoundException()
+        }
+
+        val difference = gameHandler.getDifference(offensiveNumber, decryptedDefensiveNumber.toInt())
         val possession = gamePlay.possession
         val resultInformation = rangesService.getNonNormalResult(playCall, difference)
         val result = resultInformation.result ?: throw ResultNotFoundException()
@@ -799,6 +859,7 @@ class PlayHandler(
      * @param offensivePlaybook
      */
     private fun getRunoffTime(
+        game: Game,
         clockStopped: Boolean?,
         clock: Int,
         timeoutUsed: Boolean,
@@ -810,7 +871,6 @@ class PlayHandler(
             when {
                 playCall == PlayCall.SPIKE -> 3
                 playCall == PlayCall.KNEEL -> 40
-                runoffType == RunoffType.CHEW -> 30
                 runoffType == RunoffType.HURRY -> 7
                 runoffType == RunoffType.FINAL ->
                     if (clock <= 7) {
@@ -820,6 +880,8 @@ class PlayHandler(
                     } else {
                         clock - 1
                     }
+                runoffType == RunoffType.CHEW -> 30
+                game.gameMode == Game.GameMode.CHEW -> 30
                 offensivePlaybook == OffensivePlaybook.PRO -> 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> 20
@@ -828,7 +890,10 @@ class PlayHandler(
                 else -> 0
             }
         } else {
-            0
+            when {
+                playCall == PlayCall.SPIKE -> 1
+                else -> 0
+            }
         }
     }
 
@@ -892,9 +957,13 @@ class PlayHandler(
                     5
                 }
             clock = 0
-        } else if (clock <= 0 && isScoringPlay(actualResult)
-        ) {
+        } else if ((clock - playTime) <= 0 && isScoringPlay(actualResult)) {
             clock = 0
+            if (quarter == 4 &&
+                ((homeScore - awayScore) >= 2 || (awayScore - homeScore) >= 2)
+            ) {
+                quarter = 0
+            }
         } else if (clock > 0) {
             clock = initialClock - playTime
             if (clock <= 0 && !isScoringPlay(actualResult) && quarter < 4) {
@@ -914,6 +983,11 @@ class PlayHandler(
                 clock = 0
             } else if (clock <= 0 && isScoringPlay(actualResult)) {
                 clock = 0
+                if (quarter == 4 &&
+                    ((homeScore - awayScore) >= 2 || (awayScore - homeScore) >= 2)
+                ) {
+                    quarter = 0
+                }
             }
         }
         return Triple(possession, clock, quarter)
@@ -1048,8 +1122,8 @@ class PlayHandler(
         down: Int,
         yardsToGo: Int,
         decryptedDefensiveNumber: String,
-        offensiveNumber: String,
-        difference: Int,
+        offensiveNumber: Int?,
+        difference: Int?,
         yards: Int,
         timeoutUsed: Boolean,
         homeTimeoutCalled: Boolean,
@@ -1094,7 +1168,7 @@ class PlayHandler(
 
         // Update gamePlay values
         gamePlay.defensiveNumber = decryptedDefensiveNumber
-        gamePlay.offensiveNumber = offensiveNumber
+        gamePlay.offensiveNumber = offensiveNumber?.toString()
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
         gamePlay.playCall = playCall

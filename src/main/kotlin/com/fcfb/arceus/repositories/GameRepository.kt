@@ -21,7 +21,7 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE away_platform_id = ?", nativeQuery = true)
     fun getGameByAwayPlatformId(awayPlatformId: ULong): Game?
 
-    @Query(value = "SELECT * FROM game", nativeQuery = true)
+    @Query(value = "SELECT * FROM game WHERE game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllGames(): List<Game>
 
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
@@ -35,6 +35,21 @@ interface GameRepository : CrudRepository<Game?, Int?> {
 
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type = 'SCRIMMAGE'", nativeQuery = true)
     fun getAllOngoingScrimmageGames(): List<Game>
+
+    @Query(
+        value =
+            "SELECT * FROM game " +
+                "WHERE (home_team = :team OR away_team = :team) " +
+                "AND season = :season " +
+                "AND week = :week " +
+                "AND game_type != 'SCRIMMAGE'",
+        nativeQuery = true,
+    )
+    fun getGamesByTeamSeasonAndWeek(
+        team: String,
+        season: Int,
+        week: Int,
+    ): Game?
 
     @Query(
         value =
@@ -63,4 +78,14 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Modifying
     @Query(value = "UPDATE game SET game_warned = True WHERE game_id = ?", nativeQuery = true)
     fun updateGameAsWarned(gameId: Int)
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE game SET close_game_pinged = true WHERE game_id = ?", nativeQuery = true)
+    fun markCloseGamePinged(gameId: Int)
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE game SET upset_alert_pinged = true WHERE game_id = ?", nativeQuery = true)
+    fun markUpsetAlertPinged(gameId: Int)
 }

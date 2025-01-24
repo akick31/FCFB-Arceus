@@ -11,6 +11,7 @@ import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
@@ -26,6 +27,7 @@ import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
 import org.springframework.stereotype.Component
+import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
 import java.time.LocalDateTime
@@ -55,14 +57,25 @@ class GameService(
     /**
      * Save a game state
      */
-    fun saveGame(game: Game) = gameRepository.save(game)
+    fun saveGame(game: Game): Game = gameRepository.save(game)
+
+    fun startSingleGame(
+        startRequest: StartRequest,
+        week: Int?,
+    ): Game {
+        val game = startGame(startRequest, week)
+        if (startRequest.gameType != GameType.SCRIMMAGE) {
+            scheduleService.markManuallyStartedGameAsStarted(game)
+        }
+        return game
+    }
 
     /**
      * Start a game
      * @param startRequest
      * @return
      */
-    fun startGame(
+    private fun startGame(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
@@ -80,6 +93,16 @@ class GameService(
             val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
             val homeCoachDiscordIds = homeTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
             val awayCoachDiscordIds = awayTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+
+            if (homeCoachUsernames.isEmpty() || awayCoachUsernames.isEmpty()
+            ) {
+                throw NoCoachesFoundException()
+            }
+
+            if (homeCoachDiscordIds.isEmpty() || awayCoachDiscordIds.isEmpty()
+            ) {
+                throw NoCoachDiscordIdsFoundException()
+            }
 
             val homeOffensivePlaybook = homeTeamData.offensivePlaybook
             val awayOffensivePlaybook = awayTeamData.offensivePlaybook
@@ -155,6 +178,10 @@ class GameService(
                         gameStatus = GameStatus.PREGAME,
                         gameMode = GameMode.NORMAL,
                         overtimeHalf = 0,
+                        closeGame = false,
+                        closeGamePinged = false,
+                        upsetAlert = false,
+                        upsetAlertPinged = false,
                     ),
                 )
 
@@ -212,6 +239,11 @@ class GameService(
         var count = 0
         for (game in gamesToStart) {
             try {
+                if (count >= 30) {
+                    sleep(300000)
+                    count = 0
+                    Logger.info("Block of 30 games started, sleeping for 5 minutes")
+                }
                 val startedGame =
                     startGame(
                         StartRequest(
@@ -273,6 +305,7 @@ class GameService(
             if (game.gameType != GameType.SCRIMMAGE) {
                 teamService.updateTeamWinsAndLosses(game)
                 userService.updateUserWinsAndLosses(game)
+                scheduleService.markGameAsFinished(game)
             }
             if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
                 seasonService.endSeason(game)
@@ -537,7 +570,7 @@ class GameService(
     ): Game {
         val game = getGameById(gameId)
         val userData = userService.getUserDTOByDiscordId(discordId)
-        val coach = userData.coachName
+        val coach = userData.discordTag
 
         when (team) {
             game.homeTeam -> {
@@ -588,7 +621,40 @@ class GameService(
     fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
 
     /**
+     * Mark a game as close game pinged
+     * @param gameId
+     */
+    fun markCloseGamePinged(gameId: Int) = gameRepository.markCloseGamePinged(gameId)
+
+    /**
+     * Mark a game as upset alert pinged
+     * @param gameId
+     */
+    fun markUpsetAlertPinged(gameId: Int) = gameRepository.markUpsetAlertPinged(gameId)
+
+    /**
      * Get all ongoing games
      */
     fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
+
+    /**
+     * Get all games with the teams in it for the requested week
+     * @param teams
+     * @param season
+     * @param week
+     */
+    fun getGamesWithTeams(
+        teams: List<Team>,
+        season: Int,
+        week: Int,
+    ): List<Game> {
+        val games = mutableListOf<Game>()
+        for (team in teams) {
+            val game = gameRepository.getGamesByTeamSeasonAndWeek(team.name ?: "", season, week)
+            if (game != null) {
+                games.add(game)
+            }
+        }
+        return games
+    }
 }

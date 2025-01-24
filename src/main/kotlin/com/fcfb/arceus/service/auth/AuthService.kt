@@ -25,7 +25,7 @@ class AuthService(
     suspend fun createUser(user: User): User {
         try {
             val newUser = userService.createUser(user)
-            emailService.sendVerificationEmail(newUser.email, newUser.id!!, newUser.verificationToken)
+            emailService.sendVerificationEmail(newUser.email, newUser.id, newUser.verificationToken)
             Logger.info("User ${user.username} registered successfully. Verification email sent.")
             return newUser
         } catch (e: Exception) {

@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -26,6 +27,7 @@ import java.io.File
 import java.io.IOException
 import java.io.InputStream
 import java.net.URL
+import java.util.Base64
 import javax.imageio.ImageIO
 
 @Component
@@ -36,9 +38,13 @@ class ScorebugService(
     @Value("\${images.path}")
     private val imagePath: String? = null
 
+    /**
+     * Get the scorebug image for a game
+     * @param gameId
+     */
     fun getScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
         val game = gameService.getGameById(gameId)
-        generateScorebug(gameId)
+        generateScorebug(game)
 
         try {
             val scorebug = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
@@ -58,15 +64,73 @@ class ScorebugService(
         }
     }
 
-    fun generateScorebug(gameId: Int): String {
-        val game = gameService.getGameById(gameId)
-        generateScorebug(game)
+    /**
+     * Get the latest scorebug image for a game without generating
+     * @param gameId
+     */
+    fun getLatestScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
+        try {
+            val scorebug = File("$imagePath/scorebugs/${gameId}_scorebug.png").readBytes()
 
-        // Return the image in the response
-        Logger.info("Scorebug generated for $gameId")
-        return "Scorebug generated for $gameId"
+            // Set the response headers
+            val headers =
+                HttpHeaders().apply {
+                    contentType = MediaType.IMAGE_PNG
+                    contentLength = scorebug.size.toLong()
+                }
+
+            // Return the image in the response
+            return ResponseEntity(scorebug, headers, HttpStatus.OK)
+        } catch (e: Exception) {
+            Logger.error("Error fetching scorebug image: ${e.message}")
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
     }
 
+    /**
+     * Get the scorebug images for a conference
+     * @param season
+     * @param week
+     * @param conference
+     */
+    fun getScorebugsForConference(
+        season: Int,
+        week: Int,
+        conference: Conference,
+    ): ResponseEntity<List<Map<String, Any>>> {
+        try {
+            val teams = teamService.getTeamsInConference(conference) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+            val games = gameService.getGamesWithTeams(teams, season, week)
+            if (games.isEmpty()) {
+                return ResponseEntity(HttpStatus.NOT_FOUND)
+            }
+
+            val scorebugs = mutableListOf<Map<String, Any>>()
+
+            for (game in games) {
+                generateScorebug(game)
+                val fileBytes = File("$imagePath/scorebugs/${game.gameId}_scorebug.png").readBytes()
+                val base64Image = Base64.getEncoder().encodeToString(fileBytes)
+
+                scorebugs.add(
+                    mapOf(
+                        "gameId" to game.gameId.toString(),
+                        "image" to base64Image,
+                    ),
+                )
+            }
+
+            return ResponseEntity(scorebugs, HttpStatus.OK)
+        } catch (e: Exception) {
+            Logger.error("Error fetching scorebug images: ${e.message}")
+            return ResponseEntity(HttpStatus.NOT_FOUND)
+        }
+    }
+
+    /**
+     * Generates a scorebug image for the game
+     * @param game
+     */
     fun generateScorebug(game: Game): BufferedImage {
         val homeTeam = teamService.getTeamByName(game.homeTeam)
         val awayTeam = teamService.getTeamByName(game.awayTeam)
@@ -102,8 +166,12 @@ class ScorebugService(
         // Draw the home team name section with adjusted height
         drawTeamNameSection(g, game, homeTeam, width, 140, adjustedRowHeightForTeamName)
 
-        drawClockInformationSection(g, rowHeight - 10, game, homeTeam, awayTeam)
-        drawDownAndDistanceSection(g, rowHeight - 10, game)
+        if (game.gameStatus != GameStatus.FINAL) {
+            drawClockInformationSection(g, rowHeight - 10, game, homeTeam, awayTeam)
+            drawDownAndDistanceSection(g, rowHeight - 10, game)
+        } else {
+            drawFinalSection(g, (rowHeight - 10) * 2, game)
+        }
 
         // Draw a border around the entire scorebug
         drawBorder(g, width, height)
@@ -144,8 +212,8 @@ class ScorebugService(
         height: Int,
     ): BufferedImage {
         // Create a new BufferedImage for the smaller version
-        val scaledWidth = (width * 0.65).toInt()
-        val scaledHeight = (height * 0.65).toInt()
+        val scaledWidth = (width * 0.50).toInt()
+        val scaledHeight = (height * 0.50).toInt()
         val scaledImage = BufferedImage(scaledWidth, scaledHeight, BufferedImage.TYPE_INT_ARGB)
         val gScaled: Graphics2D = scaledImage.createGraphics()
 
@@ -467,12 +535,7 @@ class ScorebugService(
         g.fillRect(xPos, rowY, 160, rowHeight)
 
         // Draw Clock text
-        val clockText =
-            if (game.gameStatus != GameStatus.FINAL) {
-                getClockText(game.quarter, game.clock)
-            } else {
-                ""
-            }
+        val clockText = getClockText(game.quarter, game.clock)
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
         val clockTextAscent = g.fontMetrics.ascent
         g.color = Color.BLACK
@@ -555,20 +618,40 @@ class ScorebugService(
         g.stroke = BasicStroke(3f)
         g.drawRect(0, rowY, 360, rowHeight)
 
-        // Draw Down & Distance text
-        if (game.gameStatus != GameStatus.FINAL) {
-            val downDistanceText = getDownDistanceText(game)
-            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
-            val ascent = g.fontMetrics.ascent
-            g.color = Color.BLACK
-            g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
-        } else {
-            g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
-            val ascent = g.fontMetrics.ascent
-            val textWidth = g.fontMetrics.stringWidth("Final")
-            g.color = Color.BLACK
-            g.drawString("Final", 180 - textWidth / 2, rowY + rowHeight / 2 + ascent / 2)
+        val downDistanceText = getDownDistanceText(game)
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 43f)
+        val ascent = g.fontMetrics.ascent
+        g.color = Color.BLACK
+        g.drawString(downDistanceText, 10, rowY + rowHeight / 2 + ascent / 2)
+    }
+
+    /**
+     * Draws the final section of the scorebug
+     * @param g
+     * @param rowHeight
+     */
+    private fun drawFinalSection(
+        g: Graphics2D,
+        rowHeight: Int,
+        game: Game,
+    ) {
+        val rowY = 280
+        g.color = Color(255, 255, 255)
+        g.fillRect(0, rowY, 360, rowHeight)
+        g.color = Color.LIGHT_GRAY
+        g.stroke = BasicStroke(3f)
+        g.drawRect(0, rowY, 360, rowHeight)
+
+        var finalText = "FINAL"
+        if (game.quarter >= 6) {
+            finalText += "/${game.quarter - 4} OT"
+        } else if (game.quarter == 5) {
+            finalText += "/OT"
         }
+        g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.BOLD, 43f)
+        val ascent = g.fontMetrics.ascent
+        g.color = Color.BLACK
+        g.drawString(finalText, 10, rowY + rowHeight / 2 + ascent / 2)
     }
 
     /**

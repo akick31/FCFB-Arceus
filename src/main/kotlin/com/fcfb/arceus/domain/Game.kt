@@ -294,6 +294,26 @@ class Game {
     @JsonProperty("overtime_half")
     var overtimeHalf: Int? = 0
 
+    @Basic
+    @Column(name = "close_game")
+    @JsonProperty("close_game")
+    var closeGame: Boolean = false
+
+    @Basic
+    @Column(name = "close_game_pinged")
+    @JsonProperty("close_game_pinged")
+    var closeGamePinged: Boolean = false
+
+    @Basic
+    @Column(name = "upset_alert")
+    @JsonProperty("upset_alert")
+    var upsetAlert: Boolean = false
+
+    @Basic
+    @Column(name = "upset_alert_pinged")
+    @JsonProperty("upset_alert_pinged")
+    var upsetAlertPinged: Boolean = false
+
     constructor(
         homeTeam: String,
         awayTeam: String,
@@ -346,6 +366,10 @@ class Game {
         gameType: GameType?,
         gameMode: GameMode?,
         overtimeHalf: Int?,
+        closeGame: Boolean,
+        closeGamePinged: Boolean,
+        upsetAlert: Boolean,
+        upsetAlertPinged: Boolean,
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -398,6 +422,10 @@ class Game {
         this.gameType = gameType
         this.gameMode = gameMode
         this.overtimeHalf = overtimeHalf
+        this.closeGame = closeGame
+        this.closeGamePinged = closeGamePinged
+        this.upsetAlert = upsetAlert
+        this.upsetAlertPinged = upsetAlertPinged
     }
 
     constructor()
@@ -475,7 +503,6 @@ class Game {
 
     enum class Platform(val description: String) {
         DISCORD("DISCORD"),
-        REDDIT("REDDIT"),
         ;
 
         companion object {

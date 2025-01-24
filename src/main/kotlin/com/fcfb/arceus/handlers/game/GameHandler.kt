@@ -10,11 +10,13 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.service.fcfb.game.GameService
+import com.fcfb.arceus.service.fcfb.game.ScheduleService
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
 import org.springframework.stereotype.Component
@@ -28,6 +30,7 @@ class GameHandler(
     private val teamService: TeamService,
     private val userService: UserService,
     private val seasonService: SeasonService,
+    private val scheduleService: ScheduleService,
 ) {
     fun updateGameInformation(
         game: Game,
@@ -93,6 +96,22 @@ class GameHandler(
             game.currentPlayType = PlayType.NORMAL
         }
 
+        // Update pinged close game if game is going to be close
+        if (checkIfCloseGame(game, play)) {
+            game.closeGame = true
+        }
+
+        // Update pinged close game if game is going to be close
+        if (checkIfUpsetAlert(
+                game,
+                play,
+                teamService.getTeamByName(game.homeTeam),
+                teamService.getTeamByName(game.awayTeam),
+            )
+        ) {
+            game.upsetAlert = true
+        }
+
         // Update the quarter/overtime stuff
         if (quarter == 0) {
             // End of game
@@ -100,51 +119,69 @@ class GameHandler(
             game.clock = "0:00"
             game.clockStopped = true
             game.gameStatus = GameStatus.FINAL
-            endGame(game)
         } else if (game.gameStatus == GameStatus.OVERTIME) {
             // Overtime
             game.clock = "0:00"
             if (play.actualResult == ActualResult.GOOD ||
                 play.actualResult == ActualResult.NO_GOOD ||
+                play.actualResult == ActualResult.BLOCKED ||
                 play.actualResult == ActualResult.SUCCESS ||
                 play.actualResult == ActualResult.FAILED ||
                 play.actualResult == ActualResult.DEFENSE_TWO_POINT ||
                 play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
-                play.actualResult == ActualResult.TURNOVER
+                play.actualResult == ActualResult.TURNOVER ||
+                play.actualResult == ActualResult.TOUCHDOWN ||
+                play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                play.actualResult == ActualResult.KICK_SIX
             ) {
                 // Handle the end of each half of overtime
                 if (game.overtimeHalf == 1) {
-                    game.overtimeHalf = 2
-                    game.possession =
-                        if (game.possession == TeamSide.HOME) {
-                            TeamSide.AWAY
-                        } else {
-                            TeamSide.HOME
-                        }
-                    game.ballLocation = 75
-                    game.down = 1
-                    game.yardsToGo = 10
-                    game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
-                } else {
-                    if (homeScore != awayScore) {
-                        // End of game, one team has won
-                        game.gameStatus = GameStatus.FINAL
-                        endGame(game)
+                    if (play.actualResult == ActualResult.TOUCHDOWN ||
+                        play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                        play.actualResult == ActualResult.KICK_SIX
+                    ) {
+                        game.possession = possession
+                        game.waitingOn = waitingOn
+                        game.ballLocation = ballLocation
+                        game.down = down
+                        game.yardsToGo = yardsToGo
                     } else {
-                        game.overtimeHalf = 1
+                        game.overtimeHalf = 2
                         game.possession =
                             if (game.possession == TeamSide.HOME) {
-                                TeamSide.HOME
-                            } else {
                                 TeamSide.AWAY
+                            } else {
+                                TeamSide.HOME
                             }
                         game.ballLocation = 75
                         game.down = 1
                         game.yardsToGo = 10
-                        game.quarter += 1
-                        game.homeTimeouts = 1
-                        game.awayTimeouts = 1
-                        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                        game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                    }
+                } else {
+                    if (homeScore != awayScore) {
+                        // End of game, one team has won
+                        // If the game is within 2 points, kick the PAT
+                        if ((
+                                play.actualResult == ActualResult.TOUCHDOWN ||
+                                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                                    play.actualResult == ActualResult.KICK_SIX
+                            ) &&
+                            (
+                                abs(homeScore - awayScore) <= 2 ||
+                                    abs(awayScore - homeScore) <= 2
+                            )
+                        ) {
+                            game.possession = possession
+                            game.waitingOn = waitingOn
+                            game.ballLocation = ballLocation
+                            game.down = down
+                            game.yardsToGo = yardsToGo
+                        } else {
+                            game.gameStatus = GameStatus.FINAL
+                        }
+                    } else {
+                        endOvertimePeriod(game, possession)
                     }
                 }
             } else {
@@ -192,6 +229,7 @@ class GameHandler(
             game.clock = "0:00"
             game.quarter = quarter
             game.gameStatus = GameStatus.END_OF_REGULATION
+            game.currentPlayType = PlayType.NORMAL
             game.ballLocation = 75
             game.down = 1
             game.yardsToGo = 10
@@ -220,7 +258,36 @@ class GameHandler(
         gameRepository.save(game)
         scorebugService.generateScorebug(game)
 
+        if (game.gameStatus == GameStatus.FINAL) {
+            endGame(game)
+        }
+
         return game
+    }
+
+    /**
+     * End the overtime period and advance to the next one
+     * @param game
+     * @param possession
+     */
+    fun endOvertimePeriod(
+        game: Game,
+        possession: TeamSide,
+    ) {
+        game.overtimeHalf = 1
+        game.possession =
+            if (game.possession == TeamSide.HOME) {
+                TeamSide.HOME
+            } else {
+                TeamSide.AWAY
+            }
+        game.ballLocation = 75
+        game.down = 1
+        game.yardsToGo = 10
+        game.quarter += 1
+        game.homeTimeouts = 1
+        game.awayTimeouts = 1
+        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
     }
 
     /**
@@ -263,6 +330,11 @@ class GameHandler(
         return String.format("%d:%02d", minutes, remainingSeconds)
     }
 
+    /**
+     * Handle the halftime possession change
+     * @param game
+     * @return
+     */
     fun handleHalfTimePossessionChange(game: Game): TeamSide {
         return if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
             TeamSide.AWAY
@@ -281,12 +353,67 @@ class GameHandler(
      * Run through end of game tasks
      */
     private fun endGame(game: Game) {
-        if (game.gameType != GameType.SCRIMMAGE) {
-            teamService.updateTeamWinsAndLosses(game)
-            userService.updateUserWinsAndLosses(game)
+        val updatedGame = gameRepository.getGameById(game.gameId)
+        if (updatedGame.gameType != GameType.SCRIMMAGE) {
+            teamService.updateTeamWinsAndLosses(updatedGame)
+            userService.updateUserWinsAndLosses(updatedGame)
+            scheduleService.markGameAsFinished(updatedGame)
         }
-        if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-            seasonService.endSeason(game)
+        if (updatedGame.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
+            seasonService.endSeason(updatedGame)
         }
+    }
+
+    /**
+     * Determines if the game is close
+     * @param game the game
+     * @param play the play
+     */
+    private fun checkIfCloseGame(
+        game: Game,
+        play: Play,
+    ): Boolean {
+        return abs(game.homeScore - game.awayScore) <= 8 &&
+            play.quarter >= 4 &&
+            play.clock <= 210
+    }
+
+    /**
+     * Determine if there is an upset alert. A game is an upset alert
+     * if at least one of the teams is ranked and the game is close
+     * @param homeTeam
+     * @param awayTeam
+     */
+    private fun checkIfUpsetAlert(
+        game: Game,
+        play: Play,
+        homeTeam: Team,
+        awayTeam: Team,
+    ): Boolean {
+        var homeTeamRanking = if (homeTeam.playoffCommitteeRanking == 0) homeTeam.coachesPollRanking else homeTeam.playoffCommitteeRanking
+        var awayTeamRanking = if (awayTeam.playoffCommitteeRanking == 0) awayTeam.coachesPollRanking else awayTeam.playoffCommitteeRanking
+
+        homeTeamRanking = if (homeTeamRanking == 0 || homeTeamRanking == null) 100 else homeTeamRanking
+        awayTeamRanking = if (awayTeamRanking == 0 || awayTeamRanking == null) 100 else awayTeamRanking
+
+        if ((
+                (game.homeScore <= game.awayScore && homeTeamRanking < awayTeamRanking) ||
+                    (game.awayScore <= game.homeScore && awayTeamRanking < homeTeamRanking)
+            ) &&
+            game.quarter >= 4 &&
+            play.clock <= 210
+        ) {
+            return true
+        }
+        if ((
+                (abs(game.homeScore - game.awayScore) <= 8 && homeTeamRanking < awayTeamRanking) ||
+                    (abs(game.awayScore - game.homeScore) <= 8 && awayTeamRanking < homeTeamRanking)
+            ) &&
+            game.quarter >= 4 &&
+            play.clock <= 210
+        ) {
+            return true
+        }
+        return false
     }
 }

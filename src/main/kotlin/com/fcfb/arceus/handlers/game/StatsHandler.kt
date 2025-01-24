@@ -9,6 +9,9 @@ import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameStatsRepository
 import org.springframework.stereotype.Component
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Component
 class StatsHandler(
@@ -56,6 +59,14 @@ class StatsHandler(
             calculatePercentage(
                 stats.rushSuccesses, stats.rushAttempts,
             )
+        stats.passSuccesses =
+            calculatePassSuccesses(
+                play, stats.passSuccesses,
+            )
+        stats.passSuccessPercentage =
+            calculatePercentage(
+                stats.passSuccesses, stats.passAttempts,
+            )
         stats.rushYards =
             calculateRushYards(
                 play, stats.rushYards,
@@ -64,24 +75,24 @@ class StatsHandler(
             calculateTotalYards(
                 stats.passYards, stats.rushYards,
             )
-        opponentStats.interceptionsLost =
+        stats.interceptionsLost =
             calculateInterceptionsLost(
-                play, opponentStats.interceptionsLost,
+                play, stats.interceptionsLost,
             )
         stats.interceptionsForced = opponentStats.interceptionsLost
-        opponentStats.fumblesLost =
+        stats.fumblesLost =
             calculateFumblesLost(
-                play, opponentStats.fumblesLost,
+                play, stats.fumblesLost,
             )
         stats.fumblesForced = opponentStats.fumblesLost
-        opponentStats.turnoversLost =
+        stats.turnoversLost =
             calculateTurnoversLost(
-                opponentStats.interceptionsLost, opponentStats.fumblesLost,
+                stats.interceptionsLost, stats.fumblesLost,
             )
         stats.turnoversForced = opponentStats.turnoversLost
-        opponentStats.turnoverTouchdownsLost =
+        stats.turnoverTouchdownsLost =
             calculateTurnoverTouchdownsLost(
-                play, opponentStats.turnoverTouchdownsLost,
+                play, stats.turnoverTouchdownsLost,
             )
         stats.turnoverTouchdownsForced = opponentStats.turnoverTouchdownsLost
         stats.fieldGoalMade =
@@ -258,6 +269,10 @@ class StatsHandler(
             calculatePercentage(
                 stats.redZoneSuccesses, stats.redZoneAttempts,
             )
+        stats.redZonePercentage =
+            calculatePercentage(
+                stats.redZoneAttempts, stats.numberOfDrives,
+            )
         stats.turnoverDifferential =
             calculateTurnoverDifferential(
                 stats.turnoversLost, stats.turnoversForced,
@@ -289,6 +304,14 @@ class StatsHandler(
         opponentStats.gameStatus = game.gameStatus
         stats.averageDiff = calculateAverageDiff(allPlays)
         opponentStats.averageDiff = calculateAverageDiff(allPlays)
+        stats.lastModifiedTs =
+            ZonedDateTime.now(
+                ZoneId.of("America/New_York"),
+            ).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
+        opponentStats.lastModifiedTs =
+            ZonedDateTime.now(
+                ZoneId.of("America/New_York"),
+            ).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss"))
         gameStatsRepository.save(stats)
         gameStatsRepository.save(opponentStats)
         return listOf(stats, opponentStats)
@@ -475,6 +498,31 @@ class StatsHandler(
         return currentRushYards
     }
 
+    private fun calculatePassSuccesses(
+        play: Play,
+        currentPassSuccesses: Int,
+    ): Int {
+        if (play.playCall != PlayCall.PASS) return currentPassSuccesses
+
+        val yardsToGo = play.yardsToGo
+        val yardsGained = play.yards
+        val down = play.down
+
+        val isSuccess =
+            when (down) {
+                1 -> yardsGained >= (yardsToGo * 0.5)
+                2 -> yardsGained >= (yardsToGo * 0.7)
+                3, 4 -> yardsGained >= yardsToGo
+                else -> false
+            }
+
+        return if (isSuccess || play.actualResult == ActualResult.TOUCHDOWN) {
+            currentPassSuccesses + 1
+        } else {
+            currentPassSuccesses
+        }
+    }
+
     private fun calculateTotalYards(
         passingYards: Int,
         rushingYards: Int,
@@ -553,10 +601,10 @@ class StatsHandler(
         currentLongestFieldGoal: Int,
     ): Int {
         if (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD && (
-                ((play.ballLocation) + 17) > currentLongestFieldGoal
+                ((100 - play.ballLocation) + 17) > currentLongestFieldGoal
             )
         ) {
-            return (play.ballLocation) + 17
+            return ((100 - play.ballLocation)) + 17
         }
         return currentLongestFieldGoal
     }
@@ -805,7 +853,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -823,7 +871,7 @@ class StatsHandler(
                     it.playCall != PlayCall.TWO_POINT &&
                     it.playCall != PlayCall.KNEEL &&
                     it.playCall != PlayCall.SPIKE
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -841,7 +889,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -859,7 +907,7 @@ class StatsHandler(
                             it.playCall == PlayCall.FIELD_GOAL ||
                             it.playCall == PlayCall.PUNT
                     )
-            }.map { it.difference }.average()
+            }.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 
@@ -1030,7 +1078,7 @@ class StatsHandler(
     }
 
     private fun calculateAverageDiff(allPlays: List<Play>): Double {
-        val average = allPlays.map { it.difference }.average()
+        val average = allPlays.mapNotNull { it.difference }.average()
         return if (average.isNaN()) 0.0 else average
     }
 

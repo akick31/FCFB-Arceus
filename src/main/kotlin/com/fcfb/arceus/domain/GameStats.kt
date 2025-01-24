@@ -80,6 +80,12 @@ class GameStats(
     @Column(name = "rush_success_percentage")
     var rushSuccessPercentage: Double = 0.0,
     @Basic
+    @Column(name = "pass_successes")
+    var passSuccesses: Int = 0,
+    @Basic
+    @Column(name = "pass_success_percentage")
+    var passSuccessPercentage: Double = 0.0,
+    @Basic
     @Column(name = "rush_yards")
     var rushYards: Int = 0,
     @Basic
@@ -262,6 +268,9 @@ class GameStats(
     @Column(name = "red_zone_success_percentage")
     var redZoneSuccessPercentage: Double = 0.0,
     @Basic
+    @Column(name = "red_zone_percentage")
+    var redZonePercentage: Double = 0.0,
+    @Basic
     @Column(name = "average_diff")
     var averageDiff: Double? = 0.9,
     @Basic
@@ -288,4 +297,7 @@ class GameStats(
     @Basic
     @Column(name = "average_response_speed")
     var averageResponseSpeed: Double = 0.0,
+    @Basic
+    @Column(name = "last_modified_ts")
+    var lastModifiedTs: String? = null,
 )

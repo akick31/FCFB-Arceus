@@ -1,5 +1,6 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -17,4 +18,16 @@ class ScorebugController(
     fun getScorebugByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = scorebugService.getScorebugByGameId(gameId)
+
+    @GetMapping("/latest")
+    fun getLatestScorebugByGameId(
+        @RequestParam("gameId") gameId: Int,
+    ) = scorebugService.getLatestScorebugByGameId(gameId)
+
+    @GetMapping("/conference")
+    fun getScorebugsForConference(
+        @RequestParam("season") season: Int,
+        @RequestParam("week") week: Int,
+        @RequestParam("conference") conference: Conference,
+    ) = scorebugService.getScorebugsForConference(season, week, conference)
 }
