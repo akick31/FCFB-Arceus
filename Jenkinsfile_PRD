@@ -81,6 +81,7 @@ pipeline {
                         spring.datasource.password=${env.DB_PASSWORD}
                         spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
                         spring.jpa.hibernate.ddl-auto=update
+                        spring.jpa.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
                         spring.jpa.show-sql=false
                         spring.jackson.property-naming-strategy=SNAKE_CASE
                         spring.main.headless=true
