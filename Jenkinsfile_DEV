@@ -70,6 +70,7 @@ pipeline {
                         # Domain configuration
                         domain.url=https://dev.api.fakecollegefootball.com
                         server.servlet.context-path=/arceus
+                        server.address=0.0.0.0
                         server.port=462
 
                         # Images configuration
