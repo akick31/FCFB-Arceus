@@ -1,6 +1,10 @@
 pipeline {
     agent any
 
+    parameters {
+        gitParameter(name: 'BRANCH_NAME', type: 'BRANCH', defaultValue: 'origin/main', description: 'Choose the branch to build')
+    }
+
     environment {
         IMAGE_NAME = 'fcfb-arceus-dev'
         CONTAINER_NAME = 'FCFB-Arceus-DEV'
@@ -23,8 +27,10 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the Arceus project...'
-                checkout scm
+                script {
+                    echo "Checking out branch: ${params.BRANCH_NAME}"
+                    sh "git checkout ${params.BRANCH_NAME}"
+                }
             }
         }
         stage('Get Version') {
