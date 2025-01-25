@@ -16,9 +16,5 @@ COPY ./build/libs/*.jar app.jar
 # Expose HTTP and HTTPS ports
 EXPOSE 1212
 
-# Script to start Nginx, obtain SSL certificates, and run the application
-COPY ./docker-entrypoint.sh /docker-entrypoint.sh
-RUN chmod +x /docker-entrypoint.sh
-
 # Set the entrypoint script
-ENTRYPOINT ["/docker-entrypoint.sh"]
+ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "app.jar"]
