@@ -740,7 +740,7 @@ class ScorebugService(
         possession: TeamSide,
     ): String {
         return when {
-            ballLocation == 50 -> "50 yard line"
+            ballLocation == 50 -> "50"
             ballLocation < 50 &&
                 possession == TeamSide.HOME ->
                 if (homeTeamAbbreviation != awayTeamAbbreviation) {
