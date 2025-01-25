@@ -71,6 +71,12 @@ class GameStats(
     @Column(name = "pass_yards")
     var passYards: Int = 0,
     @Basic
+    @Column(name = "sacks_allowed")
+    var sacksAllowed: Int = 0,
+    @Basic
+    @Column(name = "sacks_forced")
+    var sacksForced: Int = 0,
+    @Basic
     @Column(name = "rush_attempts")
     var rushAttempts: Int = 0,
     @Basic

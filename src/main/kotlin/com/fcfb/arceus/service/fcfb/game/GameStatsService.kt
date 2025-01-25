@@ -39,7 +39,7 @@ class GameStatsService(
                 subdivision = game.subdivision,
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
-                record = homeTeam.currentWins.toString() + "-" + homeTeam.currentLosses.toString(),
+                record = game.homeWins.toString() + "-" + game.homeLosses.toString(),
             )
         gameStatsRepository.save(homeStats) ?: throw Exception("Could not create game stats")
 
@@ -57,7 +57,7 @@ class GameStatsService(
                 subdivision = game.subdivision,
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
-                record = awayTeam.currentWins.toString() + "-" + awayTeam.currentLosses.toString(),
+                record = game.awayWins.toString() + "-" + game.awayLosses.toString(),
             )
         gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats")
 
