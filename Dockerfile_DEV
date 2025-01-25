@@ -1,7 +1,7 @@
 # Use a lightweight JDK 17 image
 FROM openjdk:17-jdk-slim
 
-# Install font-related packages for Java to handle fonts
+# Install necessary packages
 RUN apt-get update && apt-get install -y \
     fontconfig \
     fonts-dejavu-core \
@@ -13,8 +13,8 @@ WORKDIR /app
 # Copy the built JAR file from the Gradle build directory into the container
 COPY ./build/libs/*.jar app.jar
 
-# Expose the application port (based on your project configuration)
-EXPOSE 1212
+# Expose HTTP and HTTPS ports
+EXPOSE 1313
 
-# Run the Kotlin Spring Boot application with headless mode enabled
+# Set the entrypoint script
 ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "app.jar"]

@@ -4,7 +4,7 @@ pipeline {
     environment {
         IMAGE_NAME = 'fcfb-arceus-prd'
         CONTAINER_NAME = 'FCFB-Arceus-PRD'
-        DOCKERFILE = 'Dockerfile'
+        DOCKERFILE = 'Dockerfile_PRD'
         APP_PROPERTIES = './src/main/resources/application.properties'
         DB_URL = credentials('DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
@@ -68,8 +68,9 @@ pipeline {
                 script {
                     def propertiesContent = """
                         # Domain configuration
-                        domain.url=${env.DOMAIN_URL}
+                        domain.url=https://api.fakecollegefootball.com
                         server.servlet.context-path=/arceus
+                        server.address=0.0.0.0
                         server.port=1212
 
                         # Images configuration
@@ -81,6 +82,7 @@ pipeline {
                         spring.datasource.password=${env.DB_PASSWORD}
                         spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
                         spring.jpa.hibernate.ddl-auto=update
+                        spring.jpa.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
                         spring.jpa.show-sql=false
                         spring.jackson.property-naming-strategy=SNAKE_CASE
                         spring.main.headless=true
@@ -132,7 +134,7 @@ pipeline {
                 script {
                     echo 'Building the new Arceus Docker image...'
                     sh """
-                        docker build -t ${IMAGE_NAME}:${DOCKERFILE} .
+                        docker build -f ${DOCKERFILE} -t ${IMAGE_NAME}:${DOCKERFILE} .
                     """
                 }
             }

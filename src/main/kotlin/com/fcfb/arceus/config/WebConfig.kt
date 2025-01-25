@@ -23,6 +23,5 @@ open class WebConfig : WebSecurityConfigurerAdapter() {
             .maximumSessions(1)
             .maxSessionsPreventsLogin(false)
             .expiredUrl("/sessionExpired")
-            .and()
     }
 }
