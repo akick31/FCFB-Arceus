@@ -47,6 +47,11 @@ class StatsHandler(
             calculatePassYards(
                 play, stats.passYards,
             )
+        stats.sacksAllowed =
+            calculateSacksAllowed(
+                play, stats.sacksAllowed,
+            )
+        stats.sacksForced = opponentStats.sacksAllowed
         stats.rushAttempts =
             calculateRushAttempts(
                 play, stats.rushAttempts,
@@ -426,6 +431,16 @@ class StatsHandler(
             return currentPassYards + (play.yards)
         }
         return currentPassYards
+    }
+
+    private fun calculateSacksAllowed(
+        play: Play,
+        currentSacksAllowed: Int,
+    ): Int {
+        if (play.playCall == PlayCall.PASS && play.actualResult == ActualResult.LOSS) {
+            return currentSacksAllowed + 1
+        }
+        return currentSacksAllowed
     }
 
     private fun calculateRushAttempts(

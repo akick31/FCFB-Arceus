@@ -1179,6 +1179,8 @@ class PlayHandler(
         gamePlay.runoffTime = runoffTime
         gamePlay.difference = difference
         gamePlay.timeoutUsed = timeoutUsed
+        gamePlay.homeScore = homeScore
+        gamePlay.awayScore = awayScore
         gamePlay.playFinished = true
 
         if (initialPossession == TeamSide.HOME) {
