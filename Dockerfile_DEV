@@ -3,9 +3,6 @@ FROM openjdk:17-jdk-slim
 
 # Install necessary packages: Nginx, Certbot, fonts for Java
 RUN apt-get update && apt-get install -y \
-    nginx \
-    certbot \
-    python3-certbot-nginx \
     fontconfig \
     fonts-dejavu-core \
     && rm -rf /var/lib/apt/lists/*
@@ -16,11 +13,8 @@ WORKDIR /app
 # Copy the built JAR file from the Gradle build directory into the container
 COPY ./build/libs/*.jar app.jar
 
-# Copy Nginx configuration
-COPY nginx_dev.conf /etc/nginx/nginx.conf
-
 # Expose HTTP and HTTPS ports
-EXPOSE 1313 1314
+EXPOSE 1313
 
 # Script to start Nginx, obtain SSL certificates, and run the application
 COPY ./docker-entrypoint.sh /docker-entrypoint.sh

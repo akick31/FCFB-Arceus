@@ -71,7 +71,7 @@ pipeline {
                         domain.url=https://dev.api.fakecollegefootball.com
                         server.servlet.context-path=/arceus
                         server.address=0.0.0.0
-                        server.port=462
+                        server.port=1313
 
                         # Images configuration
                         images.path=/app/images
@@ -146,11 +146,8 @@ pipeline {
                     echo 'Starting the new Arceus container...'
                     sh """
                         docker run --network="host" -d --restart=always --name ${CONTAINER_NAME} \\
-                            -v /etc/letsencrypt:/etc/letsencrypt \\
-                            -v /var/www/certbot:/var/www/certbot \\
                             -v /var/images:/app/images \\
                             --env-file ${APP_PROPERTIES} \\
-                            -p 1313:1313 -p 443:443 \\
                             ${IMAGE_NAME}:${DOCKERFILE}
                     """
                 }

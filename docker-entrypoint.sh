@@ -1,8 +1,5 @@
 #!/bin/bash
 
-# Start Nginx in the background
-service nginx start
-
 # Obtain SSL certificates if they don't exist
 if [ ! -f "/etc/letsencrypt/live/api.fakecollegefootball.com/fullchain.pem" ]; then
     certbot --nginx --non-interactive --agree-tos --email nfcaaofficial@gmail.com -d api.fakecollegefootball.com
