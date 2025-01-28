@@ -33,6 +33,7 @@ class GameStats(
     @Basic
     @Column(name = "team_rank")
     var teamRank: Int = 0,
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "tv_channel")
     var tvChannel: TVChannel? = null,
