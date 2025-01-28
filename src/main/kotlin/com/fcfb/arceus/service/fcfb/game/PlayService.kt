@@ -10,6 +10,7 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.handlers.game.GameHandler
 import com.fcfb.arceus.handlers.game.PlayHandler
 import com.fcfb.arceus.repositories.PlayRepository
+import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.DefensiveNumberNotFound
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
@@ -28,6 +29,7 @@ class PlayService(
     private val gameService: GameService,
     private val scorebugService: ScorebugService,
     private val gameStatsService: GameStatsService,
+    private val userService: UserService,
 ) {
     private var headers: HttpHeaders = HttpHeaders()
 
@@ -213,8 +215,29 @@ class PlayService(
             if (gamePlay.actualResult == ActualResult.DELAY_OF_GAME) {
                 if (game.waitingOn == TeamSide.HOME) {
                     game.awayScore -= 8
+                    if (game.gameType != Game.GameType.SCRIMMAGE) {
+                        val user = userService.getUserByDiscordId(game.homeCoachDiscordIds?.get(0) ?: "")
+                        user.delayOfGameInstances -= 1
+                        userService.saveUser(user)
+                    }
                 } else {
                     game.homeScore -= 8
+                    if (game.gameType != Game.GameType.SCRIMMAGE) {
+                        val user = userService.getUserByDiscordId(game.awayCoachDiscordIds?.get(0) ?: "")
+                        user.delayOfGameInstances -= 1
+                        userService.saveUser(user)
+                    }
+                }
+                when (previousPlay.playCall) {
+                    PlayCall.KICKOFF_NORMAL, PlayCall.KICKOFF_ONSIDE, PlayCall.KICKOFF_SQUIB -> {
+                        game.currentPlayType = PlayType.KICKOFF
+                    }
+                    PlayCall.PAT, PlayCall.TWO_POINT -> {
+                        game.currentPlayType = PlayType.PAT
+                    }
+                    else -> {
+                        game.currentPlayType = PlayType.NORMAL
+                    }
                 }
             }
             if (playHandler.isScoringPlay(gamePlay.actualResult)) {
@@ -277,6 +300,13 @@ class PlayService(
                     game.homeTimeouts--
                 } else {
                     game.awayTimeouts--
+                }
+            }
+            if (game.gameStatus == Game.GameStatus.FINAL) {
+                if (game.quarter <= 4) {
+                    game.gameStatus = Game.GameStatus.IN_PROGRESS
+                } else {
+                    game.gameStatus = Game.GameStatus.OVERTIME
                 }
             }
 
@@ -343,14 +373,16 @@ class PlayService(
     fun getAllPlaysByDiscordTag(discordTag: String) = playRepository.getAllPlaysByDiscordTag(discordTag)
 
     /**
-     * Get the number of delay of game instances for a team
+     * Get the number of delay of game instances for a home team
      * @param gameId
-     * @param benefactingTeam
      */
-    fun getDelayOfGameInstances(
-        gameId: Int,
-        benefactingTeam: TeamSide,
-    ) = playRepository.getDelayOfGameInstances(gameId, benefactingTeam.description)
+    fun getHomeDelayOfGameInstances(gameId: Int) = playRepository.getHomeDelayOfGameInstances(gameId)
+
+    /**
+     * Get the number of delay of game instances for an away team
+     * @param gameId
+     */
+    fun getAwayDelayOfGameInstances(gameId: Int) = playRepository.getAwayDelayOfGameInstances(gameId)
 
     /**
      * Delete all plays for a game

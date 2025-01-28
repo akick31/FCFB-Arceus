@@ -35,7 +35,7 @@ class DelayOfGameMonitor(
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
             val updatedGame = applyDelayOfGame(game)
-            val isDelayofGameOut = getIsDelayOfGameOut(game)
+            val isDelayofGameOut = getIsDelayOfGameOut(updatedGame)
             if (isDelayofGameOut) {
                 gameService.endSingleGame(
                     game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong() ?: throw Exception("No platform ID found"),
@@ -51,10 +51,10 @@ class DelayOfGameMonitor(
             return false
         }
         if (game.waitingOn == TeamSide.HOME) {
-            val instances = playService.getDelayOfGameInstances(game.gameId, TeamSide.AWAY)
+            val instances = playService.getHomeDelayOfGameInstances(game.gameId)
             return instances >= 3
         } else {
-            val instances = playService.getDelayOfGameInstances(game.gameId, TeamSide.HOME)
+            val instances = playService.getAwayDelayOfGameInstances(game.gameId)
             return instances >= 3
         }
     }
@@ -94,8 +94,13 @@ class DelayOfGameMonitor(
                 currentPlay.offensiveNumber = null
                 currentPlay.defensiveNumber = null
                 currentPlay.difference = null
-                currentPlay.result = Scenario.DELAY_OF_GAME
-                currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+                if (game.waitingOn == TeamSide.HOME) {
+                    currentPlay.result = Scenario.DELAY_OF_GAME_HOME
+                    currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+                } else {
+                    currentPlay.result = Scenario.DELAY_OF_GAME_AWAY
+                    currentPlay.actualResult = ActualResult.DELAY_OF_GAME
+                }
                 playRepository.save(currentPlay)
             } else {
                 val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
@@ -103,8 +108,13 @@ class DelayOfGameMonitor(
                 play.offensiveNumber = null
                 play.defensiveNumber = null
                 play.difference = null
-                play.result = Scenario.DELAY_OF_GAME
-                play.actualResult = ActualResult.DELAY_OF_GAME
+                if (game.waitingOn == TeamSide.HOME) {
+                    play.result = Scenario.DELAY_OF_GAME_HOME
+                    play.actualResult = ActualResult.DELAY_OF_GAME
+                } else {
+                    play.result = Scenario.DELAY_OF_GAME_AWAY
+                    play.actualResult = ActualResult.DELAY_OF_GAME
+                }
                 playRepository.save(play)
             }
 
