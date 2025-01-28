@@ -376,17 +376,13 @@ class PlayService(
      * Get the number of delay of game instances for a home team
      * @param gameId
      */
-    fun getHomeDelayOfGameInstances(
-        gameId: Int
-    ) = playRepository.getHomeDelayOfGameInstances(gameId)
+    fun getHomeDelayOfGameInstances(gameId: Int) = playRepository.getHomeDelayOfGameInstances(gameId)
 
     /**
      * Get the number of delay of game instances for an away team
      * @param gameId
      */
-    fun getAwayDelayOfGameInstances(
-        gameId: Int
-    ) = playRepository.getAwayDelayOfGameInstances(gameId)
+    fun getAwayDelayOfGameInstances(gameId: Int) = playRepository.getAwayDelayOfGameInstances(gameId)
 
     /**
      * Delete all plays for a game

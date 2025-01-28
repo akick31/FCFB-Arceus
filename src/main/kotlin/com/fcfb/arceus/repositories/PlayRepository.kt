@@ -37,17 +37,13 @@ interface PlayRepository : CrudRepository<Play?, Int?> {
         value = "SELECT COUNT(*) FROM play WHERE game_id = :gameId AND result = 'DELAY OF GAME ON HOME TEAM'",
         nativeQuery = true,
     )
-    fun getHomeDelayOfGameInstances(
-        gameId: Int,
-    ): Int
+    fun getHomeDelayOfGameInstances(gameId: Int): Int
 
     @Query(
         value = "SELECT COUNT(*) FROM play WHERE game_id = :gameId AND result = 'DELAY OF GAME ON AWAY TEAM'",
         nativeQuery = true,
     )
-    fun getAwayDelayOfGameInstances(
-        gameId: Int,
-    ): Int
+    fun getAwayDelayOfGameInstances(gameId: Int): Int
 
     @Transactional
     @Modifying
