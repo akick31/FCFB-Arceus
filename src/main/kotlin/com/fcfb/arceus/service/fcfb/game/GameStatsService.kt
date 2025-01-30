@@ -22,14 +22,10 @@ class GameStatsService(
      * @param game
      */
     fun createGameStats(game: Game): List<GameStats> {
-        val homeTeam = teamService.getTeamByName(game.homeTeam)
-        val awayTeam = teamService.getTeamByName(game.awayTeam)
-
         val homeStats =
             GameStats(
                 gameId = game.gameId,
                 team = game.homeTeam,
-                teamRank = homeTeam.playoffCommitteeRanking ?: homeTeam.coachesPollRanking ?: 0,
                 tvChannel = game.tvChannel,
                 coaches = game.homeCoaches,
                 offensivePlaybook = game.homeOffensivePlaybook,
@@ -39,7 +35,6 @@ class GameStatsService(
                 subdivision = game.subdivision,
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
-                record = game.homeWins.toString() + "-" + game.homeLosses.toString(),
             )
         gameStatsRepository.save(homeStats) ?: throw Exception("Could not create game stats")
 
@@ -47,7 +42,6 @@ class GameStatsService(
             GameStats(
                 gameId = game.gameId,
                 team = game.awayTeam,
-                teamRank = awayTeam.playoffCommitteeRanking ?: awayTeam.coachesPollRanking ?: 0,
                 tvChannel = game.tvChannel,
                 coaches = game.awayCoaches,
                 offensivePlaybook = game.awayOffensivePlaybook,
@@ -57,7 +51,6 @@ class GameStatsService(
                 subdivision = game.subdivision,
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
-                record = game.awayWins.toString() + "-" + game.awayLosses.toString(),
             )
         gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats")
 
@@ -81,6 +74,7 @@ class GameStatsService(
      * Generate game stats for a game
      */
     fun generateGameStats(gameId: Int) {
+        // Get previous ranking
         // Delete previous stats from game
         deleteByGameId(gameId)
 

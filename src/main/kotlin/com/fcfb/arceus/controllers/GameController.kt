@@ -1,10 +1,17 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
+import com.fcfb.arceus.service.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.game.GameService
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -35,29 +42,24 @@ class GameController(
      * Get all ongoing games
      * @return
      */
-    @GetMapping("/all/ongoing")
-    fun getAllOngoingGames() = gameService.getAllOngoingGames()
-
-    /**
-     * Get all past games
-     * @return
-     */
-    @GetMapping("/all/past")
-    fun getAllPastGames() = gameService.getAllPastGames()
-
-    /**
-     * Get all past scrimmage games
-     * @return
-     */
-    @GetMapping("/all/past/scrimmage")
-    fun getAllPastScrimmageGames() = gameService.getAllPastScrimmageGames()
-
-    /**
-     * Get all ongoing scrimmage games
-     * @return
-     */
-    @GetMapping("/all/ongoing/scrimmage")
-    fun getAllOngoingScrimmageGames() = gameService.getAllOngoingScrimmageGames()
+    @GetMapping("/filtered")
+    fun getFilteredGames(
+        @RequestParam(required = false) filters: List<GameFilter>?,
+        @RequestParam(required = false) category: GameCategory?,
+        @RequestParam(defaultValue = "CLOSEST_TO_END") sort: GameSort,
+        @RequestParam(required = false) conference: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) week: Int?,
+        @PageableDefault(size = 20) pageable: Pageable,
+    ) = gameService.getFilteredGames(
+            filters = filters ?: emptyList(),
+            category = category,
+            conference = conference,
+            season = season,
+            week = week,
+            sort = sort,
+            pageable = pageable,
+        )
 
     /**
      * Start a game

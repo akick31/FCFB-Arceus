@@ -30,9 +30,6 @@ class GameStats(
     @Basic
     @Column(name = "team")
     var team: String? = null,
-    @Basic
-    @Column(name = "team_rank")
-    var teamRank: Int = 0,
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "tv_channel")
@@ -254,9 +251,6 @@ class GameStats(
     @Basic
     @Column(name = "rush_touchdowns")
     var rushTouchdowns: Int = 0,
-    @Basic
-    @Column(name = "record")
-    var record: String? = null,
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_type")
