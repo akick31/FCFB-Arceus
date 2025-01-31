@@ -7,5 +7,5 @@ data class ScorebugResponse(
     val scorebug: ByteArray?,
     val homeTeam: String,
     val awayTeam: String,
-    val status: Game.GameStatus?
+    val status: Game.GameStatus?,
 )

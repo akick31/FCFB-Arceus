@@ -1,13 +1,10 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Team.Conference
-import com.fcfb.arceus.models.response.ScorebugResponse
 import com.fcfb.arceus.service.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.GameSpecificationService.GameSort
-import com.fcfb.arceus.service.fcfb.game.GameService
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -51,14 +48,14 @@ class ScorebugController(
         @RequestParam(required = false) conference: String?,
         @RequestParam(required = false) season: Int?,
         @RequestParam(required = false) week: Int?,
-        @PageableDefault(size = 20) pageable: Pageable
+        @PageableDefault(size = 20) pageable: Pageable,
     ) = scorebugService.getFilteredScorebugs(
-            filters = filters ?: emptyList(),
-            category = category,
-            conference = conference,
-            season = season,
-            week = week,
-            sort = sort,
-            pageable = pageable
-        )
+        filters = filters ?: emptyList(),
+        category = category,
+        conference = conference,
+        season = season,
+        week = week,
+        sort = sort,
+        pageable = pageable,
+    )
 }

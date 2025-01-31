@@ -1,6 +1,5 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
@@ -9,7 +8,6 @@ import com.fcfb.arceus.service.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.game.GameService
-import org.springframework.data.domain.Page
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin
@@ -52,14 +50,14 @@ class GameController(
         @RequestParam(required = false) week: Int?,
         @PageableDefault(size = 20) pageable: Pageable,
     ) = gameService.getFilteredGames(
-            filters = filters ?: emptyList(),
-            category = category,
-            conference = conference,
-            season = season,
-            week = week,
-            sort = sort,
-            pageable = pageable,
-        )
+        filters = filters ?: emptyList(),
+        category = category,
+        conference = conference,
+        season = season,
+        week = week,
+        sort = sort,
+        pageable = pageable,
+    )
 
     /**
      * Start a game

@@ -1,6 +1,5 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.GameStats
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

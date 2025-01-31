@@ -12,11 +12,9 @@ import com.fcfb.arceus.service.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
-import org.springframework.data.domain.Page
-import org.springframework.data.domain.Pageable
-import org.springframework.data.web.PageableDefault
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -65,36 +63,39 @@ class ScorebugService(
         week: Int?,
         pageable: Pageable,
     ): ResponseEntity<PageImpl<ScorebugResponse>> {
-        val filteredGames = gameService.getFilteredGames(
-            filters = filters ?: emptyList(),
-            category = category,
-            conference = conference,
-            season = season,
-            week = week,
-            sort = sort,
-            pageable = pageable,
-        )
-
-        val scorebugResponses = filteredGames.content.map { game ->
-            var scorebug = getScorebugBytes(game.gameId)
-            if (scorebug == null) {
-                generateScorebug(game)
-                scorebug = getScorebugBytes(game.gameId)
-            }
-            ScorebugResponse(
-                gameId = game.gameId,
-                scorebug = scorebug,
-                homeTeam = game.homeTeam,
-                awayTeam = game.awayTeam,
-                status = game.gameStatus
+        val filteredGames =
+            gameService.getFilteredGames(
+                filters = filters ?: emptyList(),
+                category = category,
+                conference = conference,
+                season = season,
+                week = week,
+                sort = sort,
+                pageable = pageable,
             )
-        }
 
-        val pageResponse = PageImpl(
-            scorebugResponses,
-            filteredGames.pageable,
-            filteredGames.totalElements
-        )
+        val scorebugResponses =
+            filteredGames.content.map { game ->
+                var scorebug = getScorebugBytes(game.gameId)
+                if (scorebug == null) {
+                    generateScorebug(game)
+                    scorebug = getScorebugBytes(game.gameId)
+                }
+                ScorebugResponse(
+                    gameId = game.gameId,
+                    scorebug = scorebug,
+                    homeTeam = game.homeTeam,
+                    awayTeam = game.awayTeam,
+                    status = game.gameStatus,
+                )
+            }
+
+        val pageResponse =
+            PageImpl(
+                scorebugResponses,
+                filteredGames.pageable,
+                filteredGames.totalElements,
+            )
 
         return ResponseEntity.ok(pageResponse)
     }
@@ -317,7 +318,7 @@ class ScorebugService(
         rowHeight: Int,
     ) {
         drawTeamSection(g, Color.decode(team.primaryColor), yPos, rowHeight)
-        val teamRanking = if (team.name == game.homeTeam ) game.homeTeamRank else game.awayTeamRank
+        val teamRanking = if (team.name == game.homeTeam) game.homeTeamRank else game.awayTeamRank
 
         // Calculate the width of the text
         if (teamRanking == 0) {
@@ -335,7 +336,7 @@ class ScorebugService(
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             g.drawString(teamName, 10, yPos + rowHeight / 2 + 10)
         } else {
-            val ranking = "${teamRanking?: ""}"
+            val ranking = "${teamRanking ?: ""}"
             var teamName = "${team.name}"
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             val textWidth = g.fontMetrics.stringWidth(ranking + teamName + 20)

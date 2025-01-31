@@ -28,8 +28,10 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllOngoingGames(): List<Game>
 
-    @Query("SELECT DISTINCT * FROM game WHERE (home_team_rank BETWEEN 1 AND 25 OR away_team_rank BETWEEN 1 AND 25)",
-        nativeQuery = true)
+    @Query(
+        "SELECT DISTINCT * FROM game WHERE (home_team_rank BETWEEN 1 AND 25 OR away_team_rank BETWEEN 1 AND 25)",
+        nativeQuery = true,
+    )
     fun getRankedGames(): List<Game>
 
     @Query(

@@ -4,7 +4,6 @@ package com.fcfb.arceus.service
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.service.fcfb.TeamService
-import com.fcfb.arceus.service.fcfb.game.GameService
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Component
 import javax.persistence.criteria.CriteriaBuilder
@@ -20,15 +19,15 @@ class GameSpecificationService(
     enum class GameFilter {
         RANKED_GAME,
         CONFERENCE_GAME,
-        OUT_OF_CONFERENCE_GAME,
+        OUT_OF_CONFERENCE,
         CONFERENCE_CHAMPIONSHIP,
-        BOWL_GAME,
+        BOWL,
         PLAYOFFS,
         NATIONAL_CHAMPIONSHIP,
         PREGAME,
         OPENING_KICKOFF,
         IN_PROGRESS,
-        OVERTIME
+        OVERTIME,
     }
 
     enum class GameCategory {
@@ -94,13 +93,13 @@ class GameSpecificationService(
                     GameFilter.CONFERENCE_GAME -> {
                         predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.CONFERENCE_GAME))
                     }
-                    GameFilter.OUT_OF_CONFERENCE_GAME -> {
+                    GameFilter.OUT_OF_CONFERENCE -> {
                         predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.OUT_OF_CONFERENCE))
                     }
                     GameFilter.CONFERENCE_CHAMPIONSHIP -> {
                         predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.CONFERENCE_CHAMPIONSHIP))
                     }
-                    GameFilter.BOWL_GAME -> {
+                    GameFilter.BOWL -> {
                         predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.BOWL))
                     }
                     GameFilter.PLAYOFFS -> {
