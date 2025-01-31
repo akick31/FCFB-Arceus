@@ -12,7 +12,6 @@ import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_CHAMPIONSHIP
 import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_GAME
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
 import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
@@ -447,7 +446,7 @@ class TeamService(
     /**
      * Get all teams in a conference
      */
-    fun getTeamsInConference(conference: Conference) = teamRepository.getTeamsInConference(conference.name)
+    fun getTeamsInConference(conference: String) = teamRepository.getTeamsInConference(conference)
 
     /**
      * Save a team

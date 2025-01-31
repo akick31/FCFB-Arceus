@@ -1,6 +1,7 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Game
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -8,7 +9,7 @@ import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
 
 @Repository
-interface GameRepository : CrudRepository<Game?, Int?> {
+interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<Game> {
     @Query(value = "SELECT * FROM game WHERE game_id =?", nativeQuery = true)
     fun getGameById(gameId: Int): Game
 
@@ -27,14 +28,11 @@ interface GameRepository : CrudRepository<Game?, Int?> {
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllOngoingGames(): List<Game>
 
-    @Query(value = "SELECT * FROM game WHERE game_status = 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
-    fun getAllPastGames(): List<Game>
-
-    @Query(value = "SELECT * FROM game WHERE game_status = 'FINAL' AND game_type = 'SCRIMMAGE'", nativeQuery = true)
-    fun getAllPastScrimmageGames(): List<Game>
-
-    @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type = 'SCRIMMAGE'", nativeQuery = true)
-    fun getAllOngoingScrimmageGames(): List<Game>
+    @Query(
+        "SELECT DISTINCT * FROM game WHERE (home_team_rank BETWEEN 1 AND 25 OR away_team_rank BETWEEN 1 AND 25)",
+        nativeQuery = true,
+    )
+    fun getRankedGames(): List<Game>
 
     @Query(
         value =

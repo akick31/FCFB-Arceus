@@ -123,6 +123,11 @@ class Game {
     var tvChannel: TVChannel? = null
 
     @Basic
+    @Column(name = "home_team_rank")
+    @JsonProperty("home_team_rank")
+    var homeTeamRank: Int? = 0
+
+    @Basic
     @Column(name = "home_wins")
     @JsonProperty("home_wins")
     var homeWins: Int? = null
@@ -141,6 +146,11 @@ class Game {
     @Column(name = "away_losses")
     @JsonProperty("away_losses")
     var awayLosses: Int? = null
+
+    @Basic
+    @Column(name = "away_team_rank")
+    @JsonProperty("away_team_rank")
+    var awayTeamRank: Int? = 0
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -334,8 +344,10 @@ class Game {
         down: Int,
         yardsToGo: Int,
         tvChannel: TVChannel?,
+        homeTeamRank: Int?,
         homeWins: Int?,
         homeLosses: Int?,
+        awayTeamRank: Int?,
         awayWins: Int?,
         awayLosses: Int?,
         subdivision: Subdivision?,
@@ -390,8 +402,10 @@ class Game {
         this.down = down
         this.yardsToGo = yardsToGo
         this.tvChannel = tvChannel
+        this.homeTeamRank = homeTeamRank
         this.homeWins = homeWins
         this.homeLosses = homeLosses
+        this.awayTeamRank = awayTeamRank
         this.awayWins = awayWins
         this.awayLosses = awayLosses
         this.subdivision = subdivision

@@ -15,6 +15,10 @@ import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
+import com.fcfb.arceus.service.GameSpecificationService
+import com.fcfb.arceus.service.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
@@ -26,6 +30,10 @@ import com.fcfb.arceus.utils.NoGameFoundException
 import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
+import org.springframework.data.domain.Page
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Pageable
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 import java.lang.Thread.sleep
 import java.sql.Timestamp
@@ -46,6 +54,7 @@ class GameService(
     private val gameStatsService: GameStatsService,
     private val seasonService: SeasonService,
     private val scheduleService: ScheduleService,
+    private val gameSpecificationService: GameSpecificationService,
 ) {
     /**
      * Get an ongoing game by id
@@ -146,8 +155,10 @@ class GameService(
                         down = 1,
                         yardsToGo = 10,
                         tvChannel = startRequest.tvChannel,
+                        homeTeamRank = homeTeamData.playoffCommitteeRanking ?: homeTeamData.coachesPollRanking ?: 0,
                         homeWins = homeTeamData.currentWins,
                         homeLosses = homeTeamData.currentLosses,
+                        awayTeamRank = awayTeamData.playoffCommitteeRanking ?: awayTeamData.coachesPollRanking ?: 0,
                         awayWins = awayTeamData.currentWins,
                         awayLosses = awayTeamData.currentLosses,
                         subdivision = subdivision,
@@ -590,19 +601,34 @@ class GameService(
     }
 
     /**
-     * Get all past games
+     * Get filtered games
+     * @param filters
+     * @param sort
+     * @param conference
+     * @param season
+     * @param week
+     * @param pageable
      */
-    fun getAllPastGames() = gameRepository.getAllPastGames()
+    fun getFilteredGames(
+        filters: List<GameFilter>,
+        category: GameCategory?,
+        conference: String?,
+        season: Int?,
+        week: Int?,
+        sort: GameSort,
+        pageable: Pageable,
+    ): Page<Game> {
+        val filterSpec = gameSpecificationService.createSpecification(filters, category, conference, season, week)
+        val sortOrders = gameSpecificationService.createSort(sort)
+        val sortedPageable =
+            PageRequest.of(
+                pageable.pageNumber,
+                pageable.pageSize,
+                Sort.by(sortOrders),
+            )
 
-    /**
-     * Get all past scrimmage games
-     */
-    fun getAllPastScrimmageGames() = gameRepository.getAllPastScrimmageGames()
-
-    /**
-     * Get all ongoing scrimmage games
-     */
-    fun getAllOngoingScrimmageGames() = gameRepository.getAllOngoingScrimmageGames()
+        return gameRepository.findAll(filterSpec, sortedPageable)
+    }
 
     /**
      * Find expired timers
@@ -633,9 +659,14 @@ class GameService(
     fun markUpsetAlertPinged(gameId: Int) = gameRepository.markUpsetAlertPinged(gameId)
 
     /**
+     * Get all games
+     */
+    fun getAllGames() = gameRepository.getAllGames()
+
+    /**
      * Get all ongoing games
      */
-    fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
+    private fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
 
     /**
      * Get all games with the teams in it for the requested week

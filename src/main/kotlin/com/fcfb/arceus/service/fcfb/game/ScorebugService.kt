@@ -6,9 +6,15 @@ import com.fcfb.arceus.domain.Game.PlayType
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.Team.Conference
+import com.fcfb.arceus.models.response.ScorebugResponse
+import com.fcfb.arceus.service.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
+import org.springframework.data.domain.PageImpl
+import org.springframework.data.domain.Pageable
 import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
@@ -37,6 +43,84 @@ class ScorebugService(
 ) {
     @Value("\${images.path}")
     private val imagePath: String? = null
+
+    /**
+     * Get the scorebug for a game filtered
+     * @param filters
+     * @param category
+     * @param sort
+     * @param conference
+     * @param season
+     * @param week
+     * @param pageable
+     */
+    fun getFilteredScorebugs(
+        filters: List<GameFilter>?,
+        category: GameCategory?,
+        sort: GameSort,
+        conference: String?,
+        season: Int?,
+        week: Int?,
+        pageable: Pageable,
+    ): ResponseEntity<PageImpl<ScorebugResponse>> {
+        val filteredGames =
+            gameService.getFilteredGames(
+                filters = filters ?: emptyList(),
+                category = category,
+                conference = conference,
+                season = season,
+                week = week,
+                sort = sort,
+                pageable = pageable,
+            )
+
+        val scorebugResponses =
+            filteredGames.content.map { game ->
+                var scorebug = getScorebugBytes(game.gameId)
+                if (scorebug == null) {
+                    generateScorebug(game)
+                    scorebug = getScorebugBytes(game.gameId)
+                }
+                ScorebugResponse(
+                    gameId = game.gameId,
+                    scorebug = scorebug,
+                    homeTeam = game.homeTeam,
+                    awayTeam = game.awayTeam,
+                    status = game.gameStatus,
+                )
+            }
+
+        val pageResponse =
+            PageImpl(
+                scorebugResponses,
+                filteredGames.pageable,
+                filteredGames.totalElements,
+            )
+
+        return ResponseEntity.ok(pageResponse)
+    }
+
+    /**
+     * Generate all scorebugs
+     */
+    fun generateAllScorebugs() {
+        val games = gameService.getAllGames()
+        for (game in games) {
+            generateScorebug(game)
+        }
+    }
+
+    /**
+     * Get the scorebug byte array for a game
+     * @param gameId
+     */
+    private fun getScorebugBytes(gameId: Int): ByteArray? {
+        return try {
+            File("$imagePath/scorebugs/${gameId}_scorebug.png").readBytes()
+        } catch (e: Exception) {
+            null
+        }
+    }
 
     /**
      * Get the scorebug image for a game
@@ -69,22 +153,11 @@ class ScorebugService(
      * @param gameId
      */
     fun getLatestScorebugByGameId(gameId: Int): ResponseEntity<ByteArray> {
-        try {
-            val scorebug = File("$imagePath/scorebugs/${gameId}_scorebug.png").readBytes()
-
-            // Set the response headers
-            val headers =
-                HttpHeaders().apply {
-                    contentType = MediaType.IMAGE_PNG
-                    contentLength = scorebug.size.toLong()
-                }
-
-            // Return the image in the response
-            return ResponseEntity(scorebug, headers, HttpStatus.OK)
-        } catch (e: Exception) {
-            Logger.error("Error fetching scorebug image: ${e.message}")
-            return ResponseEntity(HttpStatus.NOT_FOUND)
-        }
+        val bytes = getScorebugBytes(gameId) ?: return ResponseEntity.notFound().build()
+        return ResponseEntity.ok()
+            .contentType(MediaType.IMAGE_PNG)
+            .contentLength(bytes.size.toLong())
+            .body(bytes)
     }
 
     /**
@@ -99,7 +172,7 @@ class ScorebugService(
         conference: Conference,
     ): ResponseEntity<List<Map<String, Any>>> {
         try {
-            val teams = teamService.getTeamsInConference(conference) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
+            val teams = teamService.getTeamsInConference(conference.name) ?: return ResponseEntity(HttpStatus.NOT_FOUND)
             val games = gameService.getGamesWithTeams(teams, season, week)
             if (games.isEmpty()) {
                 return ResponseEntity(HttpStatus.NOT_FOUND)
@@ -245,9 +318,10 @@ class ScorebugService(
         rowHeight: Int,
     ) {
         drawTeamSection(g, Color.decode(team.primaryColor), yPos, rowHeight)
+        val teamRanking = if (team.name == game.homeTeam) game.homeTeamRank else game.awayTeamRank
 
         // Calculate the width of the text
-        if (team.coachesPollRanking == 0) {
+        if (teamRanking == 0) {
             var teamName = "${team.name}"
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             val textWidth = g.fontMetrics.stringWidth(teamName)
@@ -262,7 +336,7 @@ class ScorebugService(
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             g.drawString(teamName, 10, yPos + rowHeight / 2 + 10)
         } else {
-            val ranking = "${team.coachesPollRanking ?: ""}"
+            val ranking = "${teamRanking ?: ""}"
             var teamName = "${team.name}"
             g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 40f)
             val textWidth = g.fontMetrics.stringWidth(ranking + teamName + 20)
@@ -288,7 +362,12 @@ class ScorebugService(
         drawTimeoutBoxes(g, yPos + 7, rowHeight, if (team.name == game.homeTeam) game.homeTimeouts else game.awayTimeouts)
 
         // Draw the team record
-        val record = "${team.currentWins}-${team.currentLosses}"
+        val record =
+            if (team.name == game.homeTeam) {
+                "${game.homeWins}-${game.homeLosses}"
+            } else {
+                "${game.awayWins}-${game.awayLosses}"
+            }
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
         g.color = Color(255, 255, 255)
         g.drawString(record, width - 10 - g.fontMetrics.stringWidth(record), yPos + rowHeight / 2 + 10)
