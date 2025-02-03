@@ -364,9 +364,25 @@ class ScorebugService(
         // Draw the team record
         val record =
             if (team.name == game.homeTeam) {
-                "${game.homeWins}-${game.homeLosses}"
+                if (game.gameStatus == GameStatus.FINAL) {
+                    if (game.homeScore > game.awayScore) {
+                        "${game.homeWins?.plus(1)}-${game.homeLosses}"
+                    } else {
+                        "${game.homeWins}-${game.homeLosses?.plus(1)}"
+                    }
+                } else {
+                    "${game.homeWins}-${game.homeLosses}"
+                }
             } else {
-                "${game.awayWins}-${game.awayLosses}"
+                if (game.gameStatus == GameStatus.FINAL) {
+                    if (game.awayScore > game.homeScore) {
+                        "${game.awayWins?.plus(1)}-${game.awayLosses}"
+                    } else {
+                        "${game.awayWins}-${game.awayLosses?.plus(1)}"
+                    }
+                } else {
+                    "${game.awayWins}-${game.awayLosses}"
+                }
             }
         g.font = Font.createFont(Font.TRUETYPE_FONT, getHelveticaFont(g)).deriveFont(Font.PLAIN, 33f)
         g.color = Color(255, 255, 255)
