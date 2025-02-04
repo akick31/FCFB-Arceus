@@ -1408,8 +1408,13 @@ class PlayService(
         }
 
         // Update gamePlay values
-        gamePlay.defensiveNumber = decryptedDefensiveNumber
-        gamePlay.offensiveNumber = offensiveNumber?.toString()
+        if (playCall == PlayCall.SPIKE || playCall == PlayCall.KNEEL) {
+            gamePlay.defensiveNumber = null
+            gamePlay.offensiveNumber = null
+        } else {
+            gamePlay.defensiveNumber = decryptedDefensiveNumber
+            gamePlay.offensiveNumber = offensiveNumber?.toString()
+        }
         gamePlay.offensiveSubmitter = gamePlay.offensiveSubmitter
         gamePlay.defensiveSubmitter = gamePlay.defensiveSubmitter
         gamePlay.playCall = playCall
