@@ -1,7 +1,7 @@
 package com.fcfb.arceus.converter
 
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.models.dto.UserDTO
 import org.springframework.stereotype.Component
 
 @Component

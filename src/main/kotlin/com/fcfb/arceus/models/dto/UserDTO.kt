@@ -1,4 +1,4 @@
-package com.fcfb.arceus.dto
+package com.fcfb.arceus.models.dto
 
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook

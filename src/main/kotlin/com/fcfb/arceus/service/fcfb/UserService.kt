@@ -5,7 +5,7 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.Role.USER
-import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.http.HttpStatus
