@@ -32,6 +32,7 @@ class DTOConverter {
             nationalChampionshipLosses = user.nationalChampionshipLosses,
             offensivePlaybook = user.offensivePlaybook,
             defensivePlaybook = user.defensivePlaybook,
+            averageResponseTime = user.averageResponseTime,
         )
     }
 }

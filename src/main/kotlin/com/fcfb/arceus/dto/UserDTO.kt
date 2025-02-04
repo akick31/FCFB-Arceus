@@ -30,4 +30,5 @@ data class UserDTO(
     var nationalChampionshipLosses: Int,
     var offensivePlaybook: OffensivePlaybook,
     var defensivePlaybook: DefensivePlaybook,
+    var averageResponseTime: Double,
 )

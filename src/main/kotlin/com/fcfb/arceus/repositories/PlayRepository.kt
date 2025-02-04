@@ -45,6 +45,25 @@ interface PlayRepository : CrudRepository<Play?, Int?> {
     )
     fun getAwayDelayOfGameInstances(gameId: Int): Int
 
+    @Query(
+        value =
+            "SELECT AVG(" +
+                "CASE " +
+                "WHEN p.offensive_submitter = :discordTag THEN p.offensive_response_speed " +
+                "WHEN p.defensive_submitter = :discordTag THEN p.defensive_response_speed " +
+                "END " +
+                ") AS avg_response_time " +
+                "FROM play p " +
+                "JOIN game g ON p.game_id = g.game_id " +
+                "WHERE (p.offensive_submitter = :discordTag OR p.defensive_submitter = :discordTag) " +
+                "AND g.season = :season",
+        nativeQuery = true,
+    )
+    fun getUserAverageResponseTime(
+        discordTag: String,
+        season: Int,
+    ): Double
+
     @Transactional
     @Modifying
     @Query(value = "DELETE FROM play WHERE game_id =?", nativeQuery = true)

@@ -44,6 +44,22 @@ class UserService(
         }
     }
 
+    /**
+     * After a game ends, update the user's average response time
+     * @param userId
+     * @param responseTime
+     */
+    fun updateUserAverageResponseTime(
+        userId: Long,
+        responseTime: Double,
+    ) = userRepository.updateAverageResponseTime(userId, responseTime)
+
+    /**
+     * Update a user's record after a game
+     * @param user
+     * @param gameType
+     * @param isWin
+     */
     private fun updateUserRecord(
         user: UserDTO,
         gameType: GameType,
@@ -127,6 +143,7 @@ class UserService(
                 0,
                 user.offensivePlaybook,
                 user.defensivePlaybook,
+                0.0,
                 0,
                 verificationToken,
             )
@@ -197,7 +214,13 @@ class UserService(
      * Get a user by its name
      * @param name
      */
-    fun getUserByName(name: String) = dtoConverter.convertToUserDTO(userRepository.getByCoachName(name))
+    fun getUserByName(name: String) = userRepository.getByCoachName(name)
+
+    /**
+     * Get a user DTO by its name
+     * @param name
+     */
+    fun getUserDTOByName(name: String) = dtoConverter.convertToUserDTO(userRepository.getByCoachName(name))
 
     /**
      * Update a user's password
@@ -256,7 +279,6 @@ class UserService(
 
     /**
      * Update a user
-     * @param id
      * @param user
      * @return UserDTO
      */
