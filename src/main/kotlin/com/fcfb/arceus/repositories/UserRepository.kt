@@ -1,9 +1,11 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.User
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import javax.transaction.Transactional
 
 @Repository
 interface UserRepository : CrudRepository<User?, String?> {
@@ -26,6 +28,14 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     @Query("SELECT * FROM user WHERE username = :usernameOrEmail OR email = :usernameOrEmail", nativeQuery = true)
     fun getByUsernameOrEmail(usernameOrEmail: String): User
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE user u SET u.average_response_time = :responseTime WHERE u.id = :id", nativeQuery = true)
+    fun updateAverageResponseTime(
+        id: Long?,
+        responseTime: Double,
+    )
 
     fun getByVerificationToken(token: String?): User
 }
