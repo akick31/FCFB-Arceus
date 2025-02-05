@@ -37,5 +37,8 @@ interface UserRepository : CrudRepository<User?, String?> {
         responseTime: Double,
     )
 
+    @Query("SELECT * FROM user WHERE email = :email", nativeQuery = true)
+    fun getUserByEmail(email: String?): User?
+
     fun getByVerificationToken(token: String?): User
 }

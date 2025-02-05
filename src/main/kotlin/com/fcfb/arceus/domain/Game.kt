@@ -491,8 +491,9 @@ class Game {
         ;
 
         companion object {
-            fun fromString(description: String): DefensivePlaybook? {
+            fun fromString(description: String): DefensivePlaybook {
                 return entries.find { it.description == description }
+                    ?: throw IllegalArgumentException("Unknown DefensivePlaybook: $description")
             }
         }
     }

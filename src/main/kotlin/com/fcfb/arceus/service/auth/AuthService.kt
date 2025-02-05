@@ -6,8 +6,10 @@ import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.UserUnauthorizedException
+import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
@@ -86,5 +88,41 @@ class AuthService(
         userService.saveUser(user)
         emailService.sendVerificationEmail(user.email, user.id, verificationToken)
         return user
+    }
+
+    /**
+     * Send password reset email
+     * @param email
+     * @return
+     */
+    fun forgotPassword(email: String): ResponseEntity<String> {
+        val user = userService.updateResetToken(email)
+            ?: return ResponseEntity.badRequest().body("Email not found")
+
+        emailService.sendPasswordResetEmail(user.email, user.id, user.resetToken ?: "")
+        return ResponseEntity.ok("Reset email sent")
+    }
+
+    /**
+     * Reset user password
+     * @param token
+     * @param userId
+     * @param newPassword
+     * @return
+     */
+    fun resetPassword(
+        token: String,
+        userId: Long,
+        newPassword: String,
+    ): ResponseEntity<String> {
+        val user = userService.getUserById(userId)
+
+        if (user.resetToken != token ||
+            user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true) {
+            return ResponseEntity.badRequest().body("Invalid or expired token")
+        }
+
+        userService.updateUserPassword(user.id, newPassword)
+        return ResponseEntity.ok("Password updated successfully")
     }
 }

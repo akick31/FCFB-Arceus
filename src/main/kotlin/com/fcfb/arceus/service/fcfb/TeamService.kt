@@ -123,11 +123,11 @@ class TeamService(
      * Get all teams
      */
     fun getAllTeams(): List<Team> {
-        val teamData = teamRepository.findAll()
+        val teamData = teamRepository.getAllActiveTeams()
         if (!teamData.iterator().hasNext()) {
             throw NoTeamFoundException()
         }
-        return teamData.filterNotNull()
+        return teamData
     }
 
     /**
@@ -178,6 +178,7 @@ class TeamService(
                         0,
                         0,
                         0,
+                        true,
                     ),
                 )
             return newTeam
