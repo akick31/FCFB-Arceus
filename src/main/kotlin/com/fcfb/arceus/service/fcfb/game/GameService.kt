@@ -583,12 +583,12 @@ class GameService(
         val userData = userService.getUserDTOByDiscordId(discordId)
         val coach = userData.discordTag
 
-        when (team) {
-            game.homeTeam -> {
+        when (team.lowercase()) {
+            game.homeTeam.lowercase() -> {
                 game.homeCoaches = listOf(coach)
                 game.homeCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())
             }
-            game.awayTeam -> {
+            game.awayTeam.lowercase() -> {
                 game.awayCoaches = listOf(coach)
                 game.awayCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())
             }
