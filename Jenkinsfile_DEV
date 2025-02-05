@@ -75,6 +75,7 @@ pipeline {
                     def propertiesContent = """
                         # Domain configuration
                         domain.url=https://dev.api.fakecollegefootball.com
+                        website.url=http://dev.fakecollegefootball.com
                         server.servlet.context-path=/arceus
                         server.address=0.0.0.0
                         server.port=1313
