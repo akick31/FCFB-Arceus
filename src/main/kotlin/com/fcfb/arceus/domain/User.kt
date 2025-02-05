@@ -127,6 +127,10 @@ class User {
     lateinit var defensivePlaybook: DefensivePlaybook
 
     @Basic
+    @Column(name = "average_response_time")
+    var averageResponseTime: Double = 0.0
+
+    @Basic
     @Column(name = "approved")
     var approved: Byte = 0
 
@@ -161,6 +165,7 @@ class User {
         nationalChampionshipLosses: Int,
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
+        averageResponseTime: Double,
         approved: Byte,
         verificationToken: String,
     ) {
@@ -190,6 +195,7 @@ class User {
         this.nationalChampionshipLosses = nationalChampionshipLosses
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
+        this.averageResponseTime = averageResponseTime
         this.approved = approved
         this.verificationToken = verificationToken
     }

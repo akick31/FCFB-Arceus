@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -39,9 +39,9 @@ class UserController(
     fun getNewSignups() = userService.getNewSignups()
 
     @GetMapping("/name")
-    fun getUserByName(
+    fun getUserDTOByName(
         @RequestParam name: String,
-    ) = userService.getUserByName(name)
+    ) = userService.getUserDTOByName(name)
 
     @PutMapping("/update/password")
     fun updateUserPassword(
