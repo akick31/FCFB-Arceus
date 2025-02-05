@@ -11,6 +11,7 @@ import com.fcfb.arceus.service.discord.DiscordService
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
@@ -146,6 +147,8 @@ class UserService(
                 0.0,
                 0,
                 verificationToken,
+                null,
+                null,
             )
 
         saveUser(newUser)
@@ -197,6 +200,11 @@ class UserService(
     fun getByVerificationToken(token: String) = userRepository.getByVerificationToken(token)
 
     /**
+     * Get a user by its email
+     */
+    private fun getUserByEmail(email: String) = userRepository.getUserByEmail(email)
+
+    /**
      * Get all users
      * @return List<UserDTO>
      */
@@ -236,6 +244,8 @@ class UserService(
         val passwordEncoder = BCryptPasswordEncoder()
         user.password = passwordEncoder.encode(newPassword)
         user.salt = passwordEncoder.encode(newPassword)
+        user.resetToken = null
+        user.resetTokenExpiration = null
 
         userRepository.save(user)
         return dtoConverter.convertToUserDTO(user)
@@ -275,6 +285,24 @@ class UserService(
         }
         saveUser(user)
         return dtoConverter.convertToUserDTO(user)
+    }
+
+    /**
+     * Update a user's reset token
+     * @param email
+     */
+    fun updateResetToken(email: String): User? {
+        val user = getUserByEmail(email)
+        val resetToken = UUID.randomUUID().toString()
+        user?.apply {
+            this.resetToken = resetToken
+            this.resetTokenExpiration = LocalDateTime.now().plusHours(1).toString()
+        }
+        if (user != null) {
+            saveUser(user)
+            return user
+        }
+        return null
     }
 
     /**

@@ -41,10 +41,33 @@ class EmailService(private val mailSender: JavaMailSender) {
         sendEmail(email, subject, emailBody)
     }
 
+    fun sendPasswordResetEmail(
+        email: String,
+        userId: Long,
+        resetToken: String,
+    ) {
+        val subject = "Reset your Fake College Football password"
+        val emailBody =
+            """
+            Dear User,
+            
+            You have requested to reset your Fake College Football password. To reset your password, please click on the following link:
+            
+            $domainUrl/reset-password?userId=$userId&token=$resetToken
+            
+            If you did not request to reset your password, please ignore this email. This link will expire in 1 hour.
+            
+            Best regards,
+            The Fake College Football Team
+            """.trimIndent()
+
+        sendEmail(email, subject, emailBody)
+    }
+
     /**
      * Send an email
      */
-    fun sendEmail(
+    private fun sendEmail(
         to: String,
         subject: String,
         text: String,

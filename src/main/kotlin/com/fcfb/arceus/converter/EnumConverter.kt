@@ -27,7 +27,14 @@ class DefensivePlaybookConverter : AttributeConverter<DefensivePlaybook, String>
     }
 
     override fun convertToEntityAttribute(dbData: String?): DefensivePlaybook? {
-        return dbData?.let { DefensivePlaybook.fromString(it) }
+        return dbData?.let {
+            try {
+                DefensivePlaybook.fromString(it)
+            } catch (e: IllegalArgumentException) {
+                println("Error converting DefensivePlaybook: $it")
+                null
+            }
+        }
     }
 }
 

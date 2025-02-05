@@ -43,12 +43,6 @@ class UserController(
         @RequestParam name: String,
     ) = userService.getUserDTOByName(name)
 
-    @PutMapping("/update/password")
-    fun updateUserPassword(
-        @RequestParam id: Long,
-        @RequestParam newPassword: String,
-    ) = userService.updateUserPassword(id, newPassword)
-
     @PutMapping("/update/email")
     fun updateUserEmail(
         @RequestParam id: Long,

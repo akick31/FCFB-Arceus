@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface TeamRepository : CrudRepository<Team?, Int?> {
+    @Query(value = "SELECT * FROM team WHERE active = true", nativeQuery = true)
+    fun getAllActiveTeams(): List<Team>
+
     @Query(value = "SELECT * FROM team WHERE conference = :conference", nativeQuery = true)
     fun getTeamsInConference(conference: String): List<Team>?
 
@@ -17,7 +20,8 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
         value =
             "SELECT t.name " +
                 "FROM team t " +
-                "WHERE NOT EXISTS (" +
+                "WHERE t.active = true " + // Ensure the team is active
+                "AND NOT EXISTS (" +
                 "SELECT 1 " +
                 "FROM user u " +
                 "WHERE u.team = t.name)",

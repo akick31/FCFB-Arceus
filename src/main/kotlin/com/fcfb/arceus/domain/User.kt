@@ -138,6 +138,14 @@ class User {
     @Column(name = "verification_token")
     lateinit var verificationToken: String
 
+    @Basic
+    @Column(name = "reset_token")
+    var resetToken: String? = null
+
+    @Basic
+    @Column(name = "reset_token_expiration")
+    var resetTokenExpiration: String? = null
+
     constructor(
         username: String,
         coachName: String,
@@ -168,6 +176,8 @@ class User {
         averageResponseTime: Double,
         approved: Byte,
         verificationToken: String,
+        resetToken: String?,
+        resetTokenExpiration: String?,
     ) {
         this.username = username
         this.coachName = coachName
@@ -198,6 +208,8 @@ class User {
         this.averageResponseTime = averageResponseTime
         this.approved = approved
         this.verificationToken = verificationToken
+        this.resetToken = resetToken
+        this.resetTokenExpiration = resetTokenExpiration
     }
 
     constructor()

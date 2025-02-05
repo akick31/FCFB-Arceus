@@ -159,6 +159,10 @@ class Team {
     @Column(name = "national_championship_losses")
     var nationalChampionshipLosses: Int = 0
 
+    @Basic
+    @Column(name = "active")
+    var active: Boolean = true
+
     constructor(
         logo: String?,
         scorebugLogo: String?,
@@ -193,6 +197,7 @@ class Team {
         playoffLosses: Int,
         nationalChampionshipWins: Int,
         nationalChampionshipLosses: Int,
+        active: Boolean,
     ) {
         this.logo = logo
         this.scorebugLogo = scorebugLogo
@@ -227,6 +232,7 @@ class Team {
         this.playoffLosses = playoffLosses
         this.nationalChampionshipWins = nationalChampionshipWins
         this.nationalChampionshipLosses = nationalChampionshipLosses
+        this.active = active
     }
 
     constructor()
