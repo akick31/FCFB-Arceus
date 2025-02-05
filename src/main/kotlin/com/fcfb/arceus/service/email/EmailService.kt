@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service
 
 @Service
 class EmailService(private val mailSender: JavaMailSender) {
-    @Value("\${domain.url}")
-    private lateinit var domainUrl: String
+    @Value("\${website.url}")
+    private lateinit var websiteUrl: String
 
     /**
      * Send a verification email
@@ -26,7 +26,7 @@ class EmailService(private val mailSender: JavaMailSender) {
             
             Thank you for registering with Fake College Football! To complete your registration and gain full access to the game, please verify your email address by clicking on the following link:
             
-            $domainUrl/verify?id=$userId&token=$verificationToken
+            $websiteUrl/verify?id=$userId&token=$verificationToken
             
             After verifying your email, we invite you to join our Discord community to get your team and play the game. You can join our Discord server using the following invite link:
             
@@ -53,7 +53,7 @@ class EmailService(private val mailSender: JavaMailSender) {
             
             You have requested to reset your Fake College Football password. To reset your password, please click on the following link:
             
-            $domainUrl/reset-password?userId=$userId&token=$resetToken
+            $websiteUrl/reset-password?userId=$userId&token=$resetToken
             
             If you did not request to reset your password, please ignore this email. This link will expire in 1 hour.
             
