@@ -148,7 +148,7 @@ class UserService(
                 0,
                 verificationToken,
                 null,
-                null
+                null,
             )
 
         saveUser(newUser)
@@ -291,9 +291,7 @@ class UserService(
      * Update a user's reset token
      * @param email
      */
-    fun updateResetToken(
-        email: String,
-    ): User? {
+    fun updateResetToken(email: String): User? {
         val user = getUserByEmail(email)
         val resetToken = UUID.randomUUID().toString()
         user?.apply {

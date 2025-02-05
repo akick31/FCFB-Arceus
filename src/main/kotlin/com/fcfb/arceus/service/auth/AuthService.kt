@@ -96,8 +96,9 @@ class AuthService(
      * @return
      */
     fun forgotPassword(email: String): ResponseEntity<String> {
-        val user = userService.updateResetToken(email)
-            ?: return ResponseEntity.badRequest().body("Email not found")
+        val user =
+            userService.updateResetToken(email)
+                ?: return ResponseEntity.badRequest().body("Email not found")
 
         emailService.sendPasswordResetEmail(user.email, user.id, user.resetToken ?: "")
         return ResponseEntity.ok("Reset email sent")
@@ -118,7 +119,8 @@ class AuthService(
         val user = userService.getUserById(userId)
 
         if (user.resetToken != token ||
-            user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true) {
+            user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true
+        ) {
             return ResponseEntity.badRequest().body("Invalid or expired token")
         }
 

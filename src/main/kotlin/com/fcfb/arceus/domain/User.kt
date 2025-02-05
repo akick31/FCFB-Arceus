@@ -177,7 +177,7 @@ class User {
         approved: Byte,
         verificationToken: String,
         resetToken: String?,
-        resetTokenExpiration: String?
+        resetTokenExpiration: String?,
     ) {
         this.username = username
         this.coachName = coachName

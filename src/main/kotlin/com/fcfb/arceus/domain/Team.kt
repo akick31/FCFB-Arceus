@@ -197,7 +197,7 @@ class Team {
         playoffLosses: Int,
         nationalChampionshipWins: Int,
         nationalChampionshipLosses: Int,
-        active: Boolean
+        active: Boolean,
     ) {
         this.logo = logo
         this.scorebugLogo = scorebugLogo

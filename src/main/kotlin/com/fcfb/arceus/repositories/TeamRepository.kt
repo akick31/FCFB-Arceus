@@ -18,9 +18,9 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
 
     @Query(
         value =
-        "SELECT t.name " +
+            "SELECT t.name " +
                 "FROM team t " +
-                "WHERE t.active = true " +  // Ensure the team is active
+                "WHERE t.active = true " + // Ensure the team is active
                 "AND NOT EXISTS (" +
                 "SELECT 1 " +
                 "FROM user u " +

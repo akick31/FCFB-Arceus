@@ -46,13 +46,13 @@ class AuthController(
     // Add to AuthController.kt
     @PostMapping("/forgot-password")
     fun forgotPassword(
-        @RequestParam email: String
+        @RequestParam email: String,
     ) = authService.forgotPassword(email)
 
     @PostMapping("/reset-password")
     fun resetPassword(
         @RequestParam token: String,
         @RequestParam userId: Long,
-        @RequestParam newPassword: String
+        @RequestParam newPassword: String,
     ) = authService.resetPassword(token, userId, newPassword)
 }
