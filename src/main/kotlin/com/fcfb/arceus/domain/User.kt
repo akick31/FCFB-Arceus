@@ -166,8 +166,6 @@ class User {
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
         averageResponseTime: Double,
-        approved: Byte,
-        verificationToken: String,
         resetToken: String?,
         resetTokenExpiration: String?,
     ) {
