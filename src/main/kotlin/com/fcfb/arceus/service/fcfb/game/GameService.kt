@@ -138,6 +138,20 @@ class GameService(
                 currentWeek = week
             }
 
+            val homeTeamRank =
+                if (homeTeamData.playoffCommitteeRanking != null && homeTeamData.playoffCommitteeRanking != 0) {
+                    homeTeamData.playoffCommitteeRanking
+                } else {
+                    homeTeamData.coachesPollRanking ?: 0
+                }
+
+            val awayTeamRank =
+                if (awayTeamData.playoffCommitteeRanking != null && awayTeamData.playoffCommitteeRanking != 0) {
+                    awayTeamData.playoffCommitteeRanking
+                } else {
+                    awayTeamData.coachesPollRanking ?: 0
+                }
+
             // Create and save the Game object and Stats object
             val newGame =
                 gameRepository.save(
@@ -161,10 +175,10 @@ class GameService(
                         down = 1,
                         yardsToGo = 10,
                         tvChannel = startRequest.tvChannel,
-                        homeTeamRank = homeTeamData.playoffCommitteeRanking ?: homeTeamData.coachesPollRanking ?: 0,
+                        homeTeamRank = homeTeamRank,
                         homeWins = homeTeamData.currentWins,
                         homeLosses = homeTeamData.currentLosses,
-                        awayTeamRank = awayTeamData.playoffCommitteeRanking ?: awayTeamData.coachesPollRanking ?: 0,
+                        awayTeamRank = awayTeamRank,
                         awayWins = awayTeamData.currentWins,
                         awayLosses = awayTeamData.currentLosses,
                         subdivision = subdivision,
