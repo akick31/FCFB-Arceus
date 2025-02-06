@@ -144,8 +144,6 @@ class UserService(
                 user.offensivePlaybook,
                 user.defensivePlaybook,
                 0.0,
-                0,
-                verificationToken,
                 null,
                 null,
             )
