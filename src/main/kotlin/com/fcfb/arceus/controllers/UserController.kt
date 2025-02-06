@@ -1,6 +1,7 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.models.dto.UserDTO
+import com.fcfb.arceus.models.requests.UserValidationRequest
 import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
@@ -54,6 +55,11 @@ class UserController(
 
     @PostMapping("/encrypt_emails")
     fun encryptEmails() = userService.encryptEmails()
+
+    @PostMapping("/validate")
+    fun validateUser(
+        @RequestBody userValidationRequest: UserValidationRequest,
+    ) = userService.validateUser(userValidationRequest)
 
     @DeleteMapping("")
     fun deleteTeam(

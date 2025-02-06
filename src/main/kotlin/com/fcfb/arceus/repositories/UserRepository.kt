@@ -36,4 +36,12 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     @Query("SELECT * FROM user WHERE email = :email", nativeQuery = true)
     fun getUserByEmail(email: String?): User?
+
+    fun existsByDiscordId(discordId: String?): Boolean
+
+    fun existsByDiscordTag(discordUsername: String?): Boolean
+
+    fun existsByUsername(username: String?): Boolean
+
+    fun existsByEmail(email: String?): Boolean
 }

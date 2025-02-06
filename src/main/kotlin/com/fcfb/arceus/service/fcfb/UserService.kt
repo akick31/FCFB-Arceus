@@ -6,6 +6,8 @@ import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.models.dto.UserDTO
+import com.fcfb.arceus.models.requests.UserValidationRequest
+import com.fcfb.arceus.models.response.UserValidationResponse
 import com.fcfb.arceus.repositories.UserRepository
 import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.http.HttpStatus
@@ -273,6 +275,27 @@ class UserService(
         return null
     }
 
+    /**
+     * Validate a user
+     * @param userValidationRequest
+     */
+    fun validateUser(userValidationRequest: UserValidationRequest): UserValidationResponse {
+        val discordIdExists = userRepository.existsByDiscordId(userValidationRequest.discordId)
+        val discordTagExists = userRepository.existsByDiscordTag(userValidationRequest.discordTag)
+        val usernameExists = userRepository.existsByUsername(userValidationRequest.username)
+        val emailExists = userRepository.existsByEmail(userValidationRequest.email)
+
+        return UserValidationResponse(
+            discordIdExists,
+            discordTagExists,
+            usernameExists,
+            emailExists,
+        )
+    }
+
+    /**
+     * Encrypt all user emails
+     */
     fun encryptEmails() {
         val users = userRepository.findAll().filterNotNull()
         users.forEach {
