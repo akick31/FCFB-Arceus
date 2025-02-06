@@ -645,12 +645,14 @@ class GameService(
 
         try {
             val result = Random().nextInt(2)
-            // 1 is heads, away team called tails, they lose
             val coinTossWinner =
-                if (result == 1 && coinTossCall === CoinTossCall.TAILS) {
-                    TeamSide.HOME
-                } else {
+                if (
+                    (result == 1 && coinTossCall == CoinTossCall.HEADS) ||
+                    (result == 0 && coinTossCall == CoinTossCall.TAILS)
+                ) {
                     TeamSide.AWAY
+                } else {
+                    TeamSide.HOME
                 }
             if (game.gameStatus == GameStatus.PREGAME) {
                 game.coinTossWinner = coinTossWinner
