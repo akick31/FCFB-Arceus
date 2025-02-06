@@ -71,10 +71,9 @@ class AuthService(
      * @param token
      * @return
      */
-    fun verifyEmail(token: String): String {
+    fun verifyEmail(token: String): Boolean {
         val newSignup = newSignupService.getByVerificationToken(token)
-        newSignupService.approveNewSignup(newSignup.id)
-        return "Email verified successfully"
+        return newSignupService.approveNewSignup(newSignup)
     }
 
     /**

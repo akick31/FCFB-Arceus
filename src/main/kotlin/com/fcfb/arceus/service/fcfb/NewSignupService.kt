@@ -52,9 +52,8 @@ class NewSignupService(
      * @param id
      * @return Boolean
      */
-    fun approveNewSignup(id: Long): Boolean {
+    fun approveNewSignup(newSignup: NewSignup): Boolean {
         try {
-            val newSignup = getNewSignupById(id)
             newSignup.apply {
                 approved = true
             }
