@@ -23,9 +23,6 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     fun getEntityByTeam(team: String?): User
 
-    @Query("SELECT * FROM user WHERE team IS NULL", nativeQuery = true)
-    fun getNewSignups(): List<User>
-
     @Query("SELECT * FROM user WHERE username = :usernameOrEmail OR email = :usernameOrEmail", nativeQuery = true)
     fun getByUsernameOrEmail(usernameOrEmail: String): User
 
@@ -39,6 +36,4 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     @Query("SELECT * FROM user WHERE email = :email", nativeQuery = true)
     fun getUserByEmail(email: String?): User?
-
-    fun getByVerificationToken(token: String?): User
 }

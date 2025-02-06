@@ -7,7 +7,7 @@ import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.repositories.UserRepository
-import com.fcfb.arceus.service.discord.DiscordService
+import com.fcfb.arceus.utils.EncryptionUtils
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
@@ -17,7 +17,7 @@ import java.util.UUID
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val discordService: DiscordService,
+    private val encryptionUtils: EncryptionUtils,
     private val dtoConverter: DTOConverter,
 ) {
     /**
@@ -108,21 +108,18 @@ class UserService(
      * Create a new user
      * @param user
      */
-    suspend fun createUser(user: User): User {
+    fun createUser(user: User): User {
         val passwordEncoder = BCryptPasswordEncoder()
         val salt = passwordEncoder.encode(user.password)
         val verificationToken = UUID.randomUUID().toString()
-
-        val discordUser = discordService.getUserByDiscordTag(user.discordTag)
-        val discordId = discordUser.id.toString()
 
         val newUser =
             User(
                 user.username,
                 user.coachName,
                 user.discordTag,
-                discordId,
-                user.email,
+                user.discordId,
+                encryptionUtils.encrypt(user.email),
                 passwordEncoder.encode(user.password),
                 user.position,
                 USER,
@@ -194,12 +191,6 @@ class UserService(
     fun getUserByUsernameOrEmail(usernameOrEmail: String) = userRepository.getByUsernameOrEmail(usernameOrEmail)
 
     /**
-     * Get a user by its verification token
-     * @param token
-     */
-    fun getByVerificationToken(token: String) = userRepository.getByVerificationToken(token)
-
-    /**
      * Get a user by its email
      */
     private fun getUserByEmail(email: String) = userRepository.getUserByEmail(email)
@@ -210,11 +201,6 @@ class UserService(
      */
     fun getAllUsers(): List<UserDTO> {
         val userData = userRepository.findAll().filterNotNull()
-        return userData.map { dtoConverter.convertToUserDTO(it) }
-    }
-
-    fun getNewSignups(): List<UserDTO> {
-        val userData = userRepository.getNewSignups()
         return userData.map { dtoConverter.convertToUserDTO(it) }
     }
 
@@ -252,24 +238,6 @@ class UserService(
     }
 
     /**
-     * Approve a user
-     * @param id
-     * @return Boolean
-     */
-    fun approveUser(id: Long): Boolean {
-        try {
-            val user = getUserById(id)
-            user.apply {
-                approved = 1
-            }
-            saveUser(user)
-            return true
-        } catch (e: Exception) {
-            return false
-        }
-    }
-
-    /**
      * Update a user's email
      * @param id
      * @param email
@@ -292,7 +260,7 @@ class UserService(
      * @param email
      */
     fun updateResetToken(email: String): User? {
-        val user = getUserByEmail(email)
+        val user = getUserByEmail(encryptionUtils.encrypt(email))
         val resetToken = UUID.randomUUID().toString()
         user?.apply {
             this.resetToken = resetToken
@@ -303,6 +271,14 @@ class UserService(
             return user
         }
         return null
+    }
+
+    fun encryptEmails() {
+        val users = userRepository.findAll().filterNotNull()
+        users.forEach {
+            it.email = encryptionUtils.encrypt(it.email)
+            userRepository.save(it)
+        }
     }
 
     /**

@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.service.auth.AuthService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
@@ -18,9 +18,9 @@ class AuthController(
     private val authService: AuthService,
 ) {
     @PostMapping("/register")
-    suspend fun createUser(
-        @RequestBody user: User,
-    ) = authService.createUser(user)
+    fun registerUser(
+        @RequestBody newSignup: NewSignup,
+    ) = authService.createNewSignup(newSignup)
 
     @PostMapping("/login")
     fun login(

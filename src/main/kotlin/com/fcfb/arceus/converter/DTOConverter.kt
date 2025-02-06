@@ -1,6 +1,8 @@
 package com.fcfb.arceus.converter
 
+import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.models.dto.NewSignupDTO
 import com.fcfb.arceus.models.dto.UserDTO
 import org.springframework.stereotype.Component
 
@@ -33,6 +35,23 @@ class DTOConverter {
             offensivePlaybook = user.offensivePlaybook,
             defensivePlaybook = user.defensivePlaybook,
             averageResponseTime = user.averageResponseTime,
+        )
+    }
+
+    fun convertToNewSignupDTO(newSignup: NewSignup): NewSignupDTO {
+        return NewSignupDTO(
+            id = newSignup.id,
+            username = newSignup.username,
+            coachName = newSignup.coachName,
+            discordTag = newSignup.discordTag,
+            discordId = newSignup.discordId,
+            position = newSignup.position,
+            teamChoiceOne = newSignup.teamChoiceOne,
+            teamChoiceTwo = newSignup.teamChoiceTwo,
+            teamChoiceThree = newSignup.teamChoiceThree,
+            offensivePlaybook = newSignup.offensivePlaybook,
+            defensivePlaybook = newSignup.defensivePlaybook,
+            approved = newSignup.approved,
         )
     }
 }

@@ -5,6 +5,7 @@ import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestMapping
@@ -35,9 +36,6 @@ class UserController(
     @GetMapping("")
     fun getAllUsers() = userService.getAllUsers()
 
-    @GetMapping("/new_signups")
-    fun getNewSignups() = userService.getNewSignups()
-
     @GetMapping("/name")
     fun getUserDTOByName(
         @RequestParam name: String,
@@ -53,6 +51,9 @@ class UserController(
     fun updateUserRole(
         @RequestBody user: UserDTO,
     ) = userService.updateUser(user)
+
+    @PostMapping("/encrypt_emails")
+    fun encryptEmails() = userService.encryptEmails()
 
     @DeleteMapping("")
     fun deleteTeam(
