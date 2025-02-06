@@ -131,14 +131,6 @@ class User {
     var averageResponseTime: Double = 0.0
 
     @Basic
-    @Column(name = "approved")
-    var approved: Byte = 0
-
-    @Basic
-    @Column(name = "verification_token")
-    lateinit var verificationToken: String
-
-    @Basic
     @Column(name = "reset_token")
     var resetToken: String? = null
 
@@ -206,8 +198,6 @@ class User {
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
         this.averageResponseTime = averageResponseTime
-        this.approved = approved
-        this.verificationToken = verificationToken
         this.resetToken = resetToken
         this.resetTokenExpiration = resetTokenExpiration
     }

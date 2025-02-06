@@ -1,5 +1,6 @@
 package com.fcfb.arceus.service.email
 
+import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
@@ -7,7 +8,10 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 
 @Service
-class EmailService(private val mailSender: JavaMailSender) {
+class EmailService(
+    private val encryptionUtils: EncryptionUtils,
+    private val mailSender: JavaMailSender,
+) {
     @Value("\${website.url}")
     private lateinit var websiteUrl: String
 
@@ -74,7 +78,7 @@ class EmailService(private val mailSender: JavaMailSender) {
     ) {
         try {
             val message = SimpleMailMessage()
-            message.setTo(to)
+            message.setTo(encryptionUtils.decrypt(to))
             message.setSubject(subject)
             message.setText(text)
             mailSender.send(message)

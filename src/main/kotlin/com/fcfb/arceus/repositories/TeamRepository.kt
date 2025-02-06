@@ -20,11 +20,8 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
         value =
             "SELECT t.name " +
                 "FROM team t " +
-                "WHERE t.active = true " + // Ensure the team is active
-                "AND NOT EXISTS (" +
-                "SELECT 1 " +
-                "FROM user u " +
-                "WHERE u.team = t.name)",
+                "WHERE t.active = true " +
+                "AND t.is_taken = false ",
         nativeQuery = true,
     )
     fun getOpenTeams(): List<String>?

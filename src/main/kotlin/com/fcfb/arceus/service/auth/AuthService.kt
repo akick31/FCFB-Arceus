@@ -1,8 +1,9 @@
 package com.fcfb.arceus.service.auth
 
-import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.models.website.LoginResponse
 import com.fcfb.arceus.service.email.EmailService
+import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.UserUnauthorizedException
@@ -16,22 +17,23 @@ import java.util.UUID
 class AuthService(
     private val emailService: EmailService,
     private val userService: UserService,
+    private val newSignupService: NewSignupService,
     private val sessionService: SessionService,
     private val passwordEncoder: PasswordEncoder,
 ) {
     /**
      * Create a new user
-     * @param user
+     * @param newSignup
      * @return
      */
-    suspend fun createUser(user: User): User {
+    fun createNewSignup(newSignup: NewSignup): NewSignup {
         try {
-            val newUser = userService.createUser(user)
-            emailService.sendVerificationEmail(newUser.email, newUser.id, newUser.verificationToken)
-            Logger.info("User ${user.username} registered successfully. Verification email sent.")
-            return newUser
+            val newSignup = newSignupService.createNewSignup(newSignup)
+            emailService.sendVerificationEmail(newSignup.email, newSignup.id, newSignup.verificationToken)
+            Logger.info("User ${newSignup.username} registered successfully. Verification email sent.")
+            return newSignup
         } catch (e: Exception) {
-            Logger.error("Error creating user: ", e.message)
+            Logger.error("Error creating new sign up: ", e.message)
             throw e
         }
     }
@@ -69,11 +71,9 @@ class AuthService(
      * @param token
      * @return
      */
-    fun verifyEmail(token: String): String {
-        val user = userService.getByVerificationToken(token)
-        user.approved = 1
-        userService.approveUser(user.id)
-        return "Email verified successfully"
+    fun verifyEmail(token: String): Boolean {
+        val newSignup = newSignupService.getByVerificationToken(token)
+        return newSignupService.approveNewSignup(newSignup)
     }
 
     /**
@@ -81,13 +81,13 @@ class AuthService(
      * @param id
      * @return
      */
-    fun resetVerificationToken(id: Long): User {
-        val user = userService.getUserById(id)
+    fun resetVerificationToken(id: Long): NewSignup {
+        val newSignup = newSignupService.getNewSignupById(id)
         val verificationToken = UUID.randomUUID().toString()
-        user.verificationToken = verificationToken
-        userService.saveUser(user)
-        emailService.sendVerificationEmail(user.email, user.id, verificationToken)
-        return user
+        newSignup.verificationToken = verificationToken
+        newSignupService.saveNewSignup(newSignup)
+        emailService.sendVerificationEmail(newSignup.email, newSignup.id, verificationToken)
+        return newSignup
     }
 
     /**

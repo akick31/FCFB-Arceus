@@ -18,6 +18,8 @@ pipeline {
         DISCORD_TOKEN = credentials('REFBOT_DISCORD_TOKEN')
         DISCORD_GUILD_ID = credentials('DISCORD_GUILD_ID')
         DISCORD_FORUM_CHANNEL_ID = credentials('DISCORD_FORUM_CHANNEL_ID')
+        DISCORD_CLIENT_ID = credentials('DISCORD_CLIENT_ID')
+        DISCORD_CLIENT_SECRET = credentials('DISCORD_CLIENT_SECRET')
     }
 
     stages {
@@ -115,6 +117,9 @@ pipeline {
                         discord.bot.url=http://51.81.32.234:1211/fcfb_discord
                         discord.guild.id=${env.DISCORD_GUILD_ID}
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
+                        discord.client.id=${env.DISCORD_CLIENT_ID}
+                        discord.client.secret=${env.DISCORD_CLIENT_SECRET}
+                        discord.oauth.redirect=https://api.fakecollegefootball.com/arceus/discord/redirect
 
                         # Logging configuration
                         logging.level.org.hibernate=warn

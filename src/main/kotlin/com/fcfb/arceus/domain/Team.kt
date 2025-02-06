@@ -160,6 +160,10 @@ class Team {
     var nationalChampionshipLosses: Int = 0
 
     @Basic
+    @Column(name = "is_taken")
+    var isTaken: Boolean = false
+
+    @Basic
     @Column(name = "active")
     var active: Boolean = true
 
@@ -197,6 +201,7 @@ class Team {
         playoffLosses: Int,
         nationalChampionshipWins: Int,
         nationalChampionshipLosses: Int,
+        isTaken: Boolean,
         active: Boolean,
     ) {
         this.logo = logo
@@ -232,6 +237,7 @@ class Team {
         this.playoffLosses = playoffLosses
         this.nationalChampionshipWins = nationalChampionshipWins
         this.nationalChampionshipLosses = nationalChampionshipLosses
+        this.isTaken = isTaken
         this.active = active
     }
 
