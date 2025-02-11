@@ -27,6 +27,7 @@ import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
+import com.fcfb.arceus.utils.GameNotFoundException
 import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
@@ -63,13 +64,6 @@ class GameService(
     private val gameSpecificationService: GameSpecificationService,
 ) {
     /**
-     * Get an ongoing game by id
-     * @param id
-     * @return
-     */
-    fun getGameById(id: Int) = gameRepository.getGameById(id)
-
-    /**
      * Save a game state
      */
     fun saveGame(game: Game): Game = gameRepository.save(game)
@@ -101,8 +95,8 @@ class GameService(
             val formattedDateTime = calculateDelayOfGameTimer()
 
             // Validate request fields
-            val homeTeam = homeTeamData.name ?: throw TeamNotFoundException()
-            val awayTeam = awayTeamData.name ?: throw TeamNotFoundException()
+            val homeTeam = homeTeamData.name ?: throw TeamNotFoundException("Home team not found")
+            val awayTeam = awayTeamData.name ?: throw TeamNotFoundException("Away team not found")
 
             val homeCoachUsernames = homeTeamData.coachUsernames ?: throw NoCoachesFoundException()
             val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
@@ -531,11 +525,7 @@ class GameService(
      * @return
      */
     fun endSingleGame(channelId: ULong): Game {
-        val game =
-            getGameByPlatformId(channelId) ?: run {
-                Logger.error("Game at $channelId not found")
-                throw Exception("Game not found")
-            }
+        val game = getGameByPlatformId(channelId)
         return endGame(game)
     }
 
@@ -558,7 +548,7 @@ class GameService(
                         playRepository.getUserAverageResponseTime(
                             user.discordTag,
                             seasonService.getCurrentSeason().seasonNumber,
-                        )
+                        ) ?: throw Exception("Could not get average response time for user ${user.username}")
                     userService.updateUserAverageResponseTime(user.id, responseTime)
                 }
 
@@ -614,11 +604,7 @@ class GameService(
      * @return
      */
     fun chewGame(channelId: ULong): Game {
-        val game =
-            getGameByPlatformId(channelId) ?: run {
-                Logger.error("Game at $channelId not found")
-                throw Exception("Game not found")
-            }
+        val game = getGameByPlatformId(channelId)
 
         try {
             game.gameMode = GameMode.CHEW
@@ -747,12 +733,8 @@ class GameService(
      * @param channelId
      * @return
      */
-    fun restartGame(channelId: ULong): Game? {
-        val game =
-            getGameByPlatformId(channelId) ?: run {
-                Logger.error("Game at $channelId not found")
-                return null
-            }
+    fun restartGame(channelId: ULong): Game {
+        val game = getGameByPlatformId(channelId)
         deleteOngoingGame(channelId)
         val startRequest =
             StartRequest(
@@ -773,11 +755,7 @@ class GameService(
      * @return
      */
     fun deleteOngoingGame(channelId: ULong): Boolean {
-        val game =
-            getGameByPlatformId(channelId) ?: run {
-                Logger.error("Game at $channelId not found")
-                return false
-            }
+        val game = getGameByPlatformId(channelId)
         val id = game.gameId
         gameRepository.deleteById(id)
         gameStatsService.deleteByGameId(id)
@@ -1112,19 +1090,6 @@ class GameService(
     }
 
     /**
-     * Get the game by request message id
-     * @param requestMessageId
-     */
-    fun getGameByRequestMessageId(requestMessageId: String) = gameRepository.getGameByRequestMessageId(requestMessageId)
-
-    /**
-     * Get the game by platform id
-     * @param platformId
-     */
-    fun getGameByPlatformId(platformId: ULong) =
-        gameRepository.getGameByHomePlatformId(platformId) ?: gameRepository.getGameByAwayPlatformId(platformId)
-
-    /**
      * Sub a coach in for a team
      * @param gameId
      */
@@ -1147,12 +1112,35 @@ class GameService(
                 game.awayCoachDiscordIds = listOf(userData.discordId ?: throw NoCoachDiscordIdsFoundException())
             }
             else -> {
-                throw TeamNotFoundException()
+                throw TeamNotFoundException("$team not found in game $gameId")
             }
         }
         saveGame(game)
         return game
     }
+
+    /**
+     * Get the game by request message id
+     * @param requestMessageId
+     */
+    fun getGameByRequestMessageId(requestMessageId: String) =
+        gameRepository.getGameByRequestMessageId(requestMessageId)
+            ?: throw GameNotFoundException("Game not found for Request Message ID: $requestMessageId")
+
+    /**
+     * Get the game by platform id
+     * @param platformId
+     */
+    fun getGameByPlatformId(platformId: ULong) =
+        gameRepository.getGameByPlatformId(platformId)
+            ?: throw GameNotFoundException("Game not found for Platform ID: $platformId")
+
+    /**
+     * Get an ongoing game by id
+     * @param id
+     * @return
+     */
+    fun getGameById(id: Int) = gameRepository.getGameById(id) ?: throw GameNotFoundException("No game found with ID: $id")
 
     /**
      * Get filtered games
@@ -1182,17 +1170,33 @@ class GameService(
             )
 
         return gameRepository.findAll(filterSpec, sortedPageable)
+            ?: throw GameNotFoundException(
+                "No games found for the following filters: " +
+                    "filters = $filters, " +
+                    "category = $category, " +
+                    "conference = $conference, " +
+                    "season = $season, " +
+                    "week = $week",
+            )
     }
 
     /**
      * Find expired timers
      */
-    fun findExpiredTimers() = gameRepository.findExpiredTimers()
+    fun findExpiredTimers() =
+        gameRepository.findExpiredTimers().ifEmpty {
+            Logger.info("No games found with expired timers")
+            emptyList()
+        }
 
     /**
      * Find games to warn
      */
-    fun findGamesToWarn() = gameRepository.findGamesToWarn()
+    fun findGamesToWarn() =
+        gameRepository.findGamesToWarn().ifEmpty {
+            Logger.info("No games found to warn")
+            emptyList()
+        }
 
     /**
      * Update a game as warned
@@ -1215,12 +1219,18 @@ class GameService(
     /**
      * Get all games
      */
-    fun getAllGames() = gameRepository.getAllGames()
+    fun getAllGames() =
+        gameRepository.getAllGames().ifEmpty {
+            throw GameNotFoundException("No games found when getting all games")
+        }
 
     /**
      * Get all ongoing games
      */
-    private fun getAllOngoingGames() = gameRepository.getAllOngoingGames()
+    private fun getAllOngoingGames() =
+        gameRepository.getAllOngoingGames().ifEmpty {
+            throw GameNotFoundException("No ongoing games found")
+        }
 
     /**
      * Get all games with the teams in it for the requested week
@@ -1238,6 +1248,8 @@ class GameService(
             val game = gameRepository.getGamesByTeamSeasonAndWeek(team.name ?: "", season, week)
             if (game != null) {
                 games.add(game)
+            } else {
+                throw GameNotFoundException("No games found for ${team.name} in season $season week $week")
             }
         }
         return games

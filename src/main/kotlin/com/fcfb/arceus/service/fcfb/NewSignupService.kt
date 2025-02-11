@@ -49,7 +49,7 @@ class NewSignupService(
 
     /**
      * Approve a new signup
-     * @param id
+     * @param newSignup
      * @return Boolean
      */
     fun approveNewSignup(newSignup: NewSignup): Boolean {

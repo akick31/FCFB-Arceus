@@ -6,12 +6,6 @@ class UserUnauthorizedException : Exception("User is unauthorized") {
     }
 }
 
-class UserNotFoundException : Exception("User not found") {
-    override fun toString(): String {
-        return "UserNotFoundException: ${super.message}"
-    }
-}
-
 class DiscordUserNotFoundException : Exception("Discord user not found") {
     override fun toString(): String {
         return "DiscordUserNotFoundException: ${super.message}"
@@ -33,12 +27,6 @@ class UnableToDeleteGameException : Exception("Unable to delete game") {
 class NoGameFoundException : Exception("No games found to start week") {
     override fun toString(): String {
         return "NoGameFoundException: ${super.message}"
-    }
-}
-
-class NoTeamFoundException : Exception("No team found") {
-    override fun toString(): String {
-        return "NoTeamFoundException: ${super.message}"
     }
 }
 
@@ -120,8 +108,38 @@ class DefensiveNumberNotFound : Exception("Defensive number not found") {
     }
 }
 
-class TeamNotFoundException : Exception("Team not found") {
+class TeamNotFoundException(message: String) : Exception(message) {
     override fun toString(): String {
         return "TeamNotFoundException: ${super.message}"
+    }
+}
+
+class GameNotFoundException(message: String) : RuntimeException(message) {
+    override fun toString(): String {
+        return "GameNotFoundException: ${super.message}"
+    }
+}
+
+class GameStatsNotFoundException(message: String) : Exception(message) {
+    override fun toString(): String {
+        return "GameStatsNotFoundException: ${super.message}"
+    }
+}
+
+class PlayNotFoundException(message: String) : Exception(message) {
+    override fun toString(): String {
+        return "PlayNotFoundException: ${super.message}"
+    }
+}
+
+class ScheduleNotFoundException(message: String) : Exception(message) {
+    override fun toString(): String {
+        return "ScheduleNotFoundException: ${super.message}"
+    }
+}
+
+class UserNotFoundException(message: String) : Exception(message) {
+    override fun toString(): String {
+        return "UserNotFoundException: ${super.message}"
     }
 }

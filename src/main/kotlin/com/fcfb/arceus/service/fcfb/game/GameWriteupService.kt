@@ -15,7 +15,7 @@ class GameWriteupService(
     fun getGameMessageByScenario(
         scenario: String,
         passOrRun: String?,
-    ): String? {
+    ): String {
         val writeups = gameWriteupRepository.findByScenario(scenario, passOrRun)
 
         return if (writeups.isNotEmpty()) {

@@ -10,6 +10,8 @@ import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.GameStatsRepository
 import com.fcfb.arceus.repositories.PlayRepository
+import com.fcfb.arceus.utils.GameNotFoundException
+import com.fcfb.arceus.utils.GameStatsNotFoundException
 import org.springframework.stereotype.Component
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -40,7 +42,7 @@ class GameStatsService(
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
             )
-        gameStatsRepository.save(homeStats) ?: throw Exception("Could not create game stats")
+        gameStatsRepository.save(homeStats) ?: throw Exception("Could not create game stats for home team")
 
         val awayStats =
             GameStats(
@@ -56,7 +58,7 @@ class GameStatsService(
                 gameStatus = game.gameStatus,
                 gameType = game.gameType,
             )
-        gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats")
+        gameStatsRepository.save(awayStats) ?: throw Exception("Could not create game stats for away team")
 
         return listOf(homeStats, awayStats)
     }
@@ -65,12 +67,19 @@ class GameStatsService(
      * Generate game stats for all games
      */
     fun generateAllGameStats() {
-        // Get all games
-        val allGames = gameRepository.getAllGames()
+        try {
+            // Get all games
+            val allGames =
+                gameRepository.getAllGames().ifEmpty {
+                    throw GameNotFoundException("Could not find any games")
+                }
 
-        // Iterate through the games and generate the game stats
-        for (game in allGames) {
-            generateGameStats(game.gameId)
+            // Iterate through the games and generate the game stats
+            for (game in allGames) {
+                generateGameStats(game.gameId)
+            }
+        } catch (e: Exception) {
+            throw Exception("Could not generate game stats")
         }
     }
 
@@ -83,7 +92,9 @@ class GameStatsService(
         deleteByGameId(gameId)
 
         // Create new game stats for game
-        val game = gameRepository.getGameById(gameId)
+        val game =
+            gameRepository.getGameById(gameId)
+                ?: throw Exception("Could not find game with ID $gameId")
         createGameStats(game)
 
         // Get game and all plays
@@ -113,6 +124,7 @@ class GameStatsService(
         gameId: Int,
         team: String,
     ) = gameStatsRepository.getGameStatsByIdAndTeam(gameId, team)
+        ?: throw GameStatsNotFoundException("Could not find game stats for game $gameId and team $team")
 
     /**
      * Delete game stats entry by game ID
@@ -462,13 +474,13 @@ class GameStatsService(
         play: Play,
     ): List<GameStats> {
         if (play.possession == TeamSide.HOME) {
-            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
-            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
+            val stats = getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
+            val opponentStats = getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
             updateScoreStats(play, stats, opponentStats, play.possession)
             return updateStatsForEachTeam(allPlays, play, TeamSide.HOME, game, stats, opponentStats)
         } else {
-            val stats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
-            val opponentStats = gameStatsRepository.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
+            val stats = getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
+            val opponentStats = getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
             updateScoreStats(play, stats, opponentStats, play.possession)
             return updateStatsForEachTeam(allPlays, play, TeamSide.AWAY, game, stats, opponentStats)
         }
