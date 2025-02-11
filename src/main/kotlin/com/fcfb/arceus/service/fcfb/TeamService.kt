@@ -343,6 +343,7 @@ class TeamService(
         }
 
         withContext(Dispatchers.IO) {
+            existingTeam.isTaken = true
             saveTeam(existingTeam)
             userService.updateUser(user)
             coachTransactionLogService.logCoachTransaction(
@@ -430,6 +431,7 @@ class TeamService(
         existingTeam.coachDiscordIds = null
         existingTeam.offensivePlaybook = OffensivePlaybook.AIR_RAID
         existingTeam.defensivePlaybook = DefensivePlaybook.FOUR_THREE
+        existingTeam.isTaken = false
         saveTeam(existingTeam)
         return existingTeam
     }
