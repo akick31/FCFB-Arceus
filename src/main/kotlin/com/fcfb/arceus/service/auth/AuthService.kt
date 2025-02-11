@@ -28,10 +28,10 @@ class AuthService(
      */
     fun createNewSignup(newSignup: NewSignup): NewSignup {
         try {
-            val newSignup = newSignupService.createNewSignup(newSignup)
-            emailService.sendVerificationEmail(newSignup.email, newSignup.id, newSignup.verificationToken)
-            Logger.info("User ${newSignup.username} registered successfully. Verification email sent.")
-            return newSignup
+            val signup = newSignupService.createNewSignup(newSignup)
+            emailService.sendVerificationEmail(signup.email, signup.id, signup.verificationToken)
+            Logger.info("User ${signup.username} registered successfully. Verification email sent.")
+            return signup
         } catch (e: Exception) {
             Logger.error("Error creating new sign up: ", e.message)
             throw e
@@ -96,9 +96,7 @@ class AuthService(
      * @return
      */
     fun forgotPassword(email: String): ResponseEntity<String> {
-        val user =
-            userService.updateResetToken(email)
-                ?: return ResponseEntity.badRequest().body("Email not found")
+        val user = userService.updateResetToken(email)
 
         emailService.sendPasswordResetEmail(user.email, user.id, user.resetToken ?: "")
         return ResponseEntity.ok("Reset email sent")

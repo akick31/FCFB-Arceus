@@ -14,7 +14,7 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
     fun getTeamsInConference(conference: String): List<Team>?
 
     @Query("SELECT * FROM team t WHERE LOWER(t.name) = LOWER(:name)", nativeQuery = true)
-    fun getTeamByName(name: String?): Team
+    fun getTeamByName(name: String?): Team?
 
     @Query(
         value =
@@ -27,5 +27,5 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
     fun getOpenTeams(): List<String>?
 
     @Query(value = "SELECT * FROM team", nativeQuery = true)
-    fun getAllTeams(): Team
+    fun getAllTeams(): Team?
 }

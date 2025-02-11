@@ -12,7 +12,6 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
-import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.utils.DefensiveNumberNotFound
 import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.InvalidActualResultException
@@ -20,6 +19,7 @@ import com.fcfb.arceus.utils.InvalidPlayTypeException
 import com.fcfb.arceus.utils.InvalidScenarioException
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NumberNotFoundException
+import com.fcfb.arceus.utils.PlayNotFoundException
 import com.fcfb.arceus.utils.ResultNotFoundException
 import org.springframework.stereotype.Component
 import java.time.Duration
@@ -33,7 +33,6 @@ class PlayService(
     private val gameService: GameService,
     private val gameStatsService: GameStatsService,
     private val rangesService: RangesService,
-    private val seasonService: SeasonService,
     private val scorebugService: ScorebugService,
 ) {
     /**
@@ -236,44 +235,71 @@ class PlayService(
      * @param playId
      * @return
      */
-    fun getPlayById(playId: Int) = playRepository.getPlayById(playId)
+    fun getPlayById(playId: Int) =
+        playRepository.getPlayById(playId)
+            ?: throw PlayNotFoundException("Play with id $playId not found")
 
     /**
      * Get the previous play of a game
      * @param gameId
      * @return
      */
-    fun getPreviousPlay(gameId: Int) = playRepository.getPreviousPlay(gameId)
+    fun getPreviousPlay(gameId: Int) =
+        playRepository.getPreviousPlay(gameId)
+            ?: throw PlayNotFoundException("No previous play found for game $gameId")
 
     /**
      * Get the current play of a game
      * @param gameId
      */
-    fun getCurrentPlay(gameId: Int) = playRepository.getCurrentPlay(gameId)
+    fun getCurrentPlay(gameId: Int) =
+        playRepository.getCurrentPlay(gameId)
+            ?: throw PlayNotFoundException("No current play found for game $gameId")
 
     /**
      * Get all plays for a game
      * @param gameId
      */
-    fun getAllPlaysByGameId(gameId: Int) = playRepository.getAllPlaysByGameId(gameId)
+    fun getAllPlaysByGameId(gameId: Int) =
+        playRepository.getAllPlaysByGameId(gameId).ifEmpty {
+            throw PlayNotFoundException("No plays found for game $gameId")
+        }
 
     /**
      * Get all plays with a user
      * @param discordTag
      */
-    fun getAllPlaysByDiscordTag(discordTag: String) = playRepository.getAllPlaysByDiscordTag(discordTag)
+    fun getAllPlaysByDiscordTag(discordTag: String) =
+        playRepository.getAllPlaysByDiscordTag(discordTag).ifEmpty {
+            throw PlayNotFoundException("No plays found for user $discordTag")
+        }
 
     /**
      * Get the number of delay of game instances for a home team
      * @param gameId
      */
-    fun getHomeDelayOfGameInstances(gameId: Int) = playRepository.getHomeDelayOfGameInstances(gameId)
+    fun getHomeDelayOfGameInstances(gameId: Int) =
+        playRepository.getHomeDelayOfGameInstances(gameId)
+            ?: throw PlayNotFoundException("No delay of game instances found for game $gameId")
 
     /**
      * Get the number of delay of game instances for an away team
      * @param gameId
      */
-    fun getAwayDelayOfGameInstances(gameId: Int) = playRepository.getAwayDelayOfGameInstances(gameId)
+    fun getAwayDelayOfGameInstances(gameId: Int) =
+        playRepository.getAwayDelayOfGameInstances(gameId)
+            ?: throw PlayNotFoundException("No delay of game instances found for game $gameId")
+
+    /**
+     * Get the average response time for a user
+     * @param discordTag
+     * @param season
+     */
+    fun getUserAverageResponseTime(
+        discordTag: String,
+        season: Int,
+    ) = playRepository.getUserAverageResponseTime(discordTag, season)
+        ?: throw Exception("Could not get average response time for user $discordTag")
 
     /**
      * Runs the play, returns the updated gamePlay

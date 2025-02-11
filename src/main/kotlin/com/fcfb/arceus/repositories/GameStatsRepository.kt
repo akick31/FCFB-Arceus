@@ -13,7 +13,7 @@ interface GameStatsRepository : CrudRepository<GameStats?, Int?> {
     fun getGameStatsByIdAndTeam(
         gameId: Int,
         team: String,
-    ): GameStats
+    ): GameStats?
 
     @Transactional
     @Modifying

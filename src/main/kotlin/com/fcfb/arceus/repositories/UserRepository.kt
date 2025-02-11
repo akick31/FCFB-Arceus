@@ -9,22 +9,22 @@ import javax.transaction.Transactional
 
 @Repository
 interface UserRepository : CrudRepository<User?, String?> {
-    fun getById(id: Long?): User
+    fun getById(id: Long?): User?
 
     @Query("SELECT u FROM User u WHERE u.discordId = :discordId")
-    fun getByDiscordId(discordId: String?): User
+    fun getByDiscordId(discordId: String?): User?
 
-    fun getByCoachName(name: String?): User
+    fun getByCoachName(name: String?): User?
 
-    fun getByTeam(team: String?): User
+    fun getByTeam(team: String?): User?
 
     @Query("SELECT * FROM user WHERE team = :team", nativeQuery = true)
     fun getUsersByTeam(team: String?): List<User>
 
-    fun getEntityByTeam(team: String?): User
+    fun getEntityByTeam(team: String?): User?
 
     @Query("SELECT * FROM user WHERE username = :usernameOrEmail OR email = :usernameOrEmail", nativeQuery = true)
-    fun getByUsernameOrEmail(usernameOrEmail: String): User
+    fun getByUsernameOrEmail(usernameOrEmail: String): User?
 
     @Transactional
     @Modifying

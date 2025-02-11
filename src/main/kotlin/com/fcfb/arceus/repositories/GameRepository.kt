@@ -11,16 +11,13 @@ import javax.transaction.Transactional
 @Repository
 interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<Game> {
     @Query(value = "SELECT * FROM game WHERE game_id =?", nativeQuery = true)
-    fun getGameById(gameId: Int): Game
+    fun getGameById(gameId: Int): Game?
 
     @Query(value = "SELECT * FROM game WHERE JSON_CONTAINS(request_message_id, ?, '\$')", nativeQuery = true)
     fun getGameByRequestMessageId(requestMessageId: String): Game?
 
-    @Query(value = "SELECT * FROM game WHERE home_platform_id = ?", nativeQuery = true)
-    fun getGameByHomePlatformId(homePlatformId: ULong): Game?
-
-    @Query(value = "SELECT * FROM game WHERE away_platform_id = ?", nativeQuery = true)
-    fun getGameByAwayPlatformId(awayPlatformId: ULong): Game?
+    @Query(value = "SELECT * FROM game WHERE home_platform_id = :platformId OR away_platform_id = :platformId", nativeQuery = true)
+    fun getGameByPlatformId(platformId: ULong): Game?
 
     @Query(value = "SELECT * FROM game WHERE game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllGames(): List<Game>
@@ -54,7 +51,8 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
             "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') <= CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND game_status != 'FINAL' " +
-                "AND game_status != 'PREGAME'",
+                "AND game_status != 'PREGAME' " +
+                "AND game_warned = True",
         nativeQuery = true,
     )
     fun findExpiredTimers(): List<Game>

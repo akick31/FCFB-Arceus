@@ -20,7 +20,7 @@ import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.log.CoachTransactionLogService
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
-import com.fcfb.arceus.utils.NoTeamFoundException
+import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.TooManyCoachesException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -111,30 +111,25 @@ class TeamService(
      * Get a team by its ID
      * @param id
      */
-    fun getTeamById(id: Int): Team {
-        val teamData = teamRepository.findById(id)
-        if (!teamData.isPresent) {
-            throw NoTeamFoundException()
-        }
-        return teamData.get()
-    }
+    fun getTeamById(id: Int) =
+        teamRepository.findById(id)
+            ?: throw TeamNotFoundException("Team not found with ID: $id")
 
     /**
      * Get all teams
      */
-    fun getAllTeams(): List<Team> {
-        val teamData = teamRepository.getAllActiveTeams()
-        if (!teamData.iterator().hasNext()) {
-            throw NoTeamFoundException()
+    fun getAllTeams() =
+        teamRepository.getAllActiveTeams().ifEmpty {
+            throw TeamNotFoundException("No active teams found")
         }
-        return teamData
-    }
 
     /**
      * Get a team by its name
      * @param name
      */
-    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name)
+    fun getTeamByName(name: String?) =
+        teamRepository.getTeamByName(name)
+            ?: throw TeamNotFoundException("Team not found with name: $name")
 
     /**
      * Create a new team
@@ -190,7 +185,6 @@ class TeamService(
 
     /**
      * Update a team
-     * @param name
      * @param team
      */
     fun updateTeam(team: Team): Team {

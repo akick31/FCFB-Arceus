@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Schedule
 import com.fcfb.arceus.repositories.ScheduleRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
+import com.fcfb.arceus.utils.ScheduleNotFoundException
 import org.springframework.stereotype.Component
 
 @Component
@@ -36,10 +37,8 @@ class ScheduleService(
      */
     fun markManuallyStartedGameAsStarted(game: Game) {
         val gameInSchedule = findGameInSchedule(game)
-        gameInSchedule?.started = true
-        if (gameInSchedule != null) {
-            scheduleRepository.save(gameInSchedule)
-        }
+        gameInSchedule.started = true
+        scheduleRepository.save(gameInSchedule)
     }
 
     /**
@@ -48,12 +47,10 @@ class ScheduleService(
      */
     fun markGameAsFinished(game: Game) {
         val gameInSchedule = findGameInSchedule(game)
-        gameInSchedule?.finished = true
-        if (gameInSchedule != null) {
-            scheduleRepository.save(gameInSchedule)
-            if (checkIfWeekIsOver(game.season ?: 0, game.week ?: 0)) {
-                seasonService.incrementWeek()
-            }
+        gameInSchedule.finished = true
+        scheduleRepository.save(gameInSchedule)
+        if (checkIfWeekIsOver(game.season ?: 0, game.week ?: 0)) {
+            seasonService.incrementWeek()
         }
     }
 
@@ -76,7 +73,7 @@ class ScheduleService(
             game.awayTeam,
             game.season ?: 0,
             game.week ?: 0,
-        )
+        ) ?: throw ScheduleNotFoundException("Game not found in schedule")
 
     /**
      * Get an opponent team
@@ -87,7 +84,7 @@ class ScheduleService(
             seasonService.getCurrentSeason().seasonNumber,
             seasonService.getCurrentWeek(),
             team,
-        )
+        ) ?: throw ScheduleNotFoundException("Opponent not found for $team")
 
     /**
      * Get the schedule for a given season for a team
@@ -98,4 +95,5 @@ class ScheduleService(
         season: Int,
         team: String,
     ) = scheduleRepository.getScheduleBySeasonAndTeam(season, team)
+        ?: throw ScheduleNotFoundException("Schedule not found for $team")
 }
