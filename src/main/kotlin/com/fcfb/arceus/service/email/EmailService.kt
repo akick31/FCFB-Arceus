@@ -50,7 +50,7 @@ class EmailService(
         userId: Long,
         resetToken: String,
     ) {
-        val subject = "Reset your Fake College Football password"
+        val subject = "Reset Your FCFB Password"
         val emailBody =
             """
             Dear User,

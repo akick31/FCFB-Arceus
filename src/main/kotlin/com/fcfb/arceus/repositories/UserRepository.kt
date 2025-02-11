@@ -23,8 +23,8 @@ interface UserRepository : CrudRepository<User?, String?> {
 
     fun getEntityByTeam(team: String?): User?
 
-    @Query("SELECT * FROM user WHERE username = :usernameOrEmail OR email = :usernameOrEmail", nativeQuery = true)
-    fun getByUsernameOrEmail(usernameOrEmail: String): User?
+    @Query("SELECT * FROM user WHERE username = :username", nativeQuery = true)
+    fun getByUsername(username: String): User?
 
     @Transactional
     @Modifying
@@ -34,7 +34,7 @@ interface UserRepository : CrudRepository<User?, String?> {
         responseTime: Double,
     )
 
-    @Query("SELECT * FROM user WHERE email = :email", nativeQuery = true)
+    @Query("SELECT * FROM user WHERE hashed_email = :email", nativeQuery = true)
     fun getUserByEmail(email: String?): User?
 
     fun existsByDiscordId(discordId: String?): Boolean
