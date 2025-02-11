@@ -53,8 +53,8 @@ class UserController(
         @RequestBody user: UserDTO,
     ) = userService.updateUser(user)
 
-    @PostMapping("/encrypt_emails")
-    fun encryptEmails() = userService.encryptEmails()
+    @PostMapping("/hash_emails")
+    fun encryptEmails() = userService.hashEmails()
 
     @PostMapping("/validate")
     fun validateUser(
