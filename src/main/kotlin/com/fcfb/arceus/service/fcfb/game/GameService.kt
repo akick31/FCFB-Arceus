@@ -1388,7 +1388,7 @@ class GameService(
     private fun updateClockStopped(
         game: Game,
         play: Play,
-        clock: Int
+        clock: Int,
     ) {
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
             play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
@@ -1399,7 +1399,7 @@ class GameService(
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY ||
             game.gameStatus == GameStatus.OVERTIME || game.gameStatus == GameStatus.HALFTIME
 
-        if(clock == 420) {
+        if (clock == 420) {
             game.clockStopped = true
         }
     }
