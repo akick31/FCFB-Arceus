@@ -277,7 +277,7 @@ class GameService(
         timeoutUsed: Boolean,
     ): Game {
         val waitingOn = updateWaitingOn(possession)
-        updateClockStopped(game, play)
+        updateClockStopped(game, play, clock)
         updateTimeouts(game, homeTimeoutCalled, awayTimeoutCalled, timeoutUsed)
         updatePlayType(game, play)
         updateCloseGame(game, play)
@@ -1388,6 +1388,7 @@ class GameService(
     private fun updateClockStopped(
         game: Game,
         play: Play,
+        clock: Int,
     ) {
         game.clockStopped = play.playCall == PlayCall.SPIKE || play.result == Scenario.INCOMPLETE ||
             play.actualResult == ActualResult.TURNOVER_ON_DOWNS ||
@@ -1397,6 +1398,10 @@ class GameService(
             play.playCall == PlayCall.PUNT || play.actualResult == ActualResult.TURNOVER ||
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN || play.actualResult == ActualResult.SAFETY ||
             game.gameStatus == GameStatus.OVERTIME || game.gameStatus == GameStatus.HALFTIME
+
+        if (clock == 420) {
+            game.clockStopped = true
+        }
     }
 
     private fun isEndOfOvertimeHalf(play: Play) =
