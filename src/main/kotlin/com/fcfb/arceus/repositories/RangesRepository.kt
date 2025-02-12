@@ -50,4 +50,16 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         distance: String,
         difference: String,
     ): Ranges?
+
+    @Query(
+        """
+        SELECT play_time FROM ranges 
+        WHERE play_type = :playType 
+        AND result REGEXP '^[0-9]+$' 
+        ORDER BY ABS(CAST(result AS SIGNED) - :yards) 
+        LIMIT 1
+        """,
+        nativeQuery = true
+    )
+    fun getPlayTime(playType: String, yards: Int): Int?
 }
