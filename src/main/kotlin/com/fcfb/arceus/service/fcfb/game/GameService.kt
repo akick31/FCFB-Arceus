@@ -450,9 +450,10 @@ class GameService(
                 }
             }
 
-            val newCurrentPlay = playRepository.getCurrentPlay(game.gameId)
-                ?: playRepository.getPreviousPlay(game.gameId)
-                ?: previousPlay
+            val newCurrentPlay =
+                playRepository.getCurrentPlay(game.gameId)
+                    ?: playRepository.getPreviousPlay(game.gameId)
+                    ?: previousPlay
             game.currentPlayId = newCurrentPlay.playId
             game.possession = previousPlay.possession
             game.quarter = previousPlay.quarter
@@ -1410,13 +1411,11 @@ class GameService(
      * @return
      */
     private fun isDefensiveTouchdownPlay(actualResult: ActualResult?): Boolean {
-        return  actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                actualResult == ActualResult.RETURN_TOUCHDOWN ||
-                actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
-                actualResult == ActualResult.KICK_SIX
+        return actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            actualResult == ActualResult.RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.KICK_SIX
     }
-
-
 
     /**
      * Determine if the clock is stopped

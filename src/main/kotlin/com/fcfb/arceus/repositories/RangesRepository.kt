@@ -59,7 +59,10 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         ORDER BY ABS(CAST(result AS SIGNED) - :yards) 
         LIMIT 1
         """,
-        nativeQuery = true
+        nativeQuery = true,
     )
-    fun getPlayTime(playType: String, yards: Int): Int?
+    fun getPlayTime(
+        playType: String,
+        yards: Int,
+    ): Int?
 }

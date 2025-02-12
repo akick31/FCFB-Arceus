@@ -262,7 +262,6 @@ class PlayService(
      */
     fun getCurrentPlayOrNull(gameId: Int) = playRepository.getCurrentPlay(gameId)
 
-
     /**
      * Get all plays for a game
      * @param gameId

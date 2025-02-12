@@ -76,9 +76,9 @@ class RangesService(
         playCall: PlayCall,
         difference: Int,
     ) = rangesRepository.getNonNormalResult(
-            playCall.description,
-            difference.toString(),
-        ) ?: throw ResultNotFoundException()
+        playCall.description,
+        difference.toString(),
+    ) ?: throw ResultNotFoundException()
 
     /**
      * Get the result of a field goal play
@@ -91,10 +91,10 @@ class RangesService(
         distance: Int,
         difference: Int,
     ) = rangesRepository.getFieldGoalResult(
-            playCall.description,
-            distance.toString(),
-            difference.toString(),
-        ) ?: throw ResultNotFoundException()
+        playCall.description,
+        distance.toString(),
+        difference.toString(),
+    ) ?: throw ResultNotFoundException()
 
     /**
      * Get the result of a punt play
@@ -107,10 +107,10 @@ class RangesService(
         ballLocation: Int,
         difference: Int,
     ) = rangesRepository.getPuntResult(
-            playCall.description,
-            ballLocation.toString(),
-            difference.toString(),
-        ) ?: throw ResultNotFoundException()
+        playCall.description,
+        ballLocation.toString(),
+        difference.toString(),
+    ) ?: throw ResultNotFoundException()
 
     /**
      * Get the play time for a given number of yards
