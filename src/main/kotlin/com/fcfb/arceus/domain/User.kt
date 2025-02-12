@@ -41,6 +41,10 @@ class User {
     lateinit var email: String
 
     @Basic
+    @Column(name = "hashed_email")
+    lateinit var hashedEmail: String
+
+    @Basic
     @Column(name = "password")
     lateinit var password: String
 
@@ -144,6 +148,7 @@ class User {
         discordTag: String,
         discordId: String?,
         email: String,
+        hashedEmail: String,
         password: String,
         position: CoachPosition,
         role: Role,
@@ -174,6 +179,7 @@ class User {
         this.discordTag = discordTag
         this.discordId = discordId
         this.email = email
+        this.hashedEmail = hashedEmail
         this.password = password
         this.position = position
         this.role = role
