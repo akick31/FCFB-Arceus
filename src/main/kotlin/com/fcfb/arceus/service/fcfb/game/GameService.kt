@@ -372,8 +372,16 @@ class GameService(
                     }
                 }
             }
-            if (isTouchdownPlay(gamePlay.actualResult)) {
+            if (isOffensiveTouchdownPlay(gamePlay.actualResult)) {
                 if (gamePlay.possession == TeamSide.HOME) {
+                    game.homeScore -= 6
+                } else {
+                    game.awayScore -= 6
+                }
+                game.currentPlayType = PlayType.NORMAL
+            }
+            if (isDefensiveTouchdownPlay(gamePlay.actualResult)) {
+                if (gamePlay.possession == TeamSide.AWAY) {
                     game.homeScore -= 6
                 } else {
                     game.awayScore -= 6
@@ -442,13 +450,17 @@ class GameService(
                 }
             }
 
+            val newCurrentPlay =
+                playRepository.getCurrentPlay(game.gameId)
+                    ?: playRepository.getPreviousPlay(game.gameId)
+                    ?: previousPlay
+            game.currentPlayId = newCurrentPlay.playId
             game.possession = previousPlay.possession
             game.quarter = previousPlay.quarter
             game.clock = convertClockToString(previousPlay.clock)
             game.ballLocation = previousPlay.ballLocation
             game.down = previousPlay.down
             game.yardsToGo = previousPlay.yardsToGo
-            game.currentPlayId = previousPlay.playId
             game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
             game.gameTimer = calculateDelayOfGameTimer()
             gameStatsService.generateGameStats(game.gameId)
@@ -1368,17 +1380,40 @@ class GameService(
     }
 
     /**
-     * Check if a play is a scoring play
+     * Check if a play is a touchdown play
      * @param actualResult
      * @return
      */
     fun isTouchdownPlay(actualResult: ActualResult?): Boolean {
         return actualResult == ActualResult.TOUCHDOWN ||
+            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
             actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
             actualResult == ActualResult.RETURN_TOUCHDOWN ||
-            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
             actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
-            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.KICK_SIX
+    }
+
+    /**
+     * Check if a play is an offensive scoring play
+     * @param actualResult
+     * @return
+     */
+    private fun isOffensiveTouchdownPlay(actualResult: ActualResult?): Boolean {
+        return actualResult == ActualResult.TOUCHDOWN ||
+            actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN
+    }
+
+    /**
+     * Check if a play is an defensive scoring play
+     * @param actualResult
+     * @return
+     */
+    private fun isDefensiveTouchdownPlay(actualResult: ActualResult?): Boolean {
+        return actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+            actualResult == ActualResult.RETURN_TOUCHDOWN ||
+            actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
             actualResult == ActualResult.KICK_SIX
     }
 

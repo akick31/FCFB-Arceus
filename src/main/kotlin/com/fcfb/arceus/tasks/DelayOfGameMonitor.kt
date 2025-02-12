@@ -87,7 +87,7 @@ class DelayOfGameMonitor(
             }
         }
 
-        val currentPlay = playService.getCurrentPlay(game.gameId)
+        val currentPlay = playService.getCurrentPlayOrNull(game.gameId)
         val savedPlay =
             if (currentPlay != null) {
                 currentPlay.playFinished = true
