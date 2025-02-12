@@ -123,6 +123,7 @@ class UserService(
                 user.discordTag,
                 user.discordId,
                 encryptionUtils.encrypt(user.email),
+                encryptionUtils.hash(user.email),
                 passwordEncoder.encode(user.password),
                 user.position,
                 USER,
@@ -201,14 +202,24 @@ class UserService(
      * Get a user by its username or email
      */
     fun getUserByUsernameOrEmail(usernameOrEmail: String) =
-        userRepository.getByUsernameOrEmail(usernameOrEmail)
-            ?: throw UserNotFoundException("User not found with username or email $usernameOrEmail")
+        try {
+            getUserByEmail(usernameOrEmail)
+        } catch (e: Exception) {
+            getUserByUsername(usernameOrEmail)
+        }
+
+    /**
+     * Get a user by its username
+     */
+    private fun getUserByUsername(username: String) =
+        userRepository.getByUsername(username)
+            ?: throw UserNotFoundException("User not found with username $username")
 
     /**
      * Get a user by its email
      */
     private fun getUserByEmail(email: String) =
-        userRepository.getUserByEmail(email)
+        userRepository.getUserByEmail(encryptionUtils.hash(email))
             ?: throw UserNotFoundException("User not found with email $email")
 
     /**
@@ -281,7 +292,7 @@ class UserService(
      * @param email
      */
     fun updateResetToken(email: String): User {
-        val user = getUserByEmail(encryptionUtils.encrypt(email))
+        val user = getUserByEmail(email)
         val resetToken = UUID.randomUUID().toString()
         user.apply {
             this.resetToken = resetToken
@@ -312,10 +323,10 @@ class UserService(
     /**
      * Encrypt all user emails
      */
-    fun encryptEmails() {
+    fun hashEmails() {
         val users = userRepository.findAll().filterNotNull()
         users.forEach {
-            it.email = encryptionUtils.encrypt(it.email)
+            it.hashedEmail = encryptionUtils.hash(encryptionUtils.decrypt(it.email))
             userRepository.save(it)
         }
     }
