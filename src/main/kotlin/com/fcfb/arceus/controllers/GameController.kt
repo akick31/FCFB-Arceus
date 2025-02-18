@@ -65,7 +65,7 @@ class GameController(
      * @return
      */
     @PostMapping("/start")
-    fun startGame(
+    suspend fun startGame(
         @RequestBody startRequest: StartRequest,
     ) = gameService.startSingleGame(startRequest, null)
 
@@ -76,7 +76,7 @@ class GameController(
      * @return
      */
     @PostMapping("/start_week")
-    fun startWeek(
+    suspend fun startWeek(
         @RequestParam("season") season: Int,
         @RequestParam("week") week: Int,
     ) = gameService.startWeek(season, week)
@@ -196,7 +196,7 @@ class GameController(
      * @param channelId
      */
     @PostMapping("/restart")
-    fun restartGame(
+    suspend fun restartGame(
         @RequestParam("channelId") channelId: ULong,
     ) = gameService.restartGame(channelId)
 

@@ -68,7 +68,7 @@ class GameService(
      */
     fun saveGame(game: Game): Game = gameRepository.save(game)
 
-    fun startSingleGame(
+    suspend fun startSingleGame(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
@@ -84,7 +84,7 @@ class GameService(
      * @param startRequest
      * @return
      */
-    private fun startGame(
+    private suspend fun startGame(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
@@ -465,7 +465,7 @@ class GameService(
      * @param week
      * @return
      */
-    fun startWeek(
+    suspend fun startWeek(
         season: Int,
         week: Int,
     ): List<Game> {
@@ -478,10 +478,10 @@ class GameService(
         var count = 0
         for (game in gamesToStart) {
             try {
-                if (count >= 30) {
+                if (count >= 25) {
                     sleep(300000)
                     count = 0
-                    Logger.info("Block of 30 games started, sleeping for 5 minutes")
+                    Logger.info("Block of 25 games started, sleeping for 5 minutes")
                 }
                 val startedGame =
                     startGame(
@@ -517,6 +517,26 @@ class GameService(
             endedGames.add(endGame(game))
         }
         return endedGames
+    }
+
+    fun endDOGOutGame(
+        game: Game,
+        delayOfGameInstances: Pair<Int, Int>,
+    ): Game {
+        // If the home team has 3 delay of game instances, they lose,
+        // so increment the score by 8 until they are losing
+        if (delayOfGameInstances.first >= 3) {
+            while (game.homeScore >= game.awayScore) {
+                game.awayScore += 8
+            }
+        } else if (delayOfGameInstances.second >= 3) {
+            while (game.awayScore >= game.homeScore) {
+                game.homeScore += 8
+            }
+        }
+        val updatedGame = saveGame(game)
+        endGame(updatedGame)
+        return game
     }
 
     /**
@@ -733,7 +753,7 @@ class GameService(
      * @param channelId
      * @return
      */
-    fun restartGame(channelId: ULong): Game {
+    suspend fun restartGame(channelId: ULong): Game {
         val game = getGameByPlatformId(channelId)
         deleteOngoingGame(channelId)
         val startRequest =

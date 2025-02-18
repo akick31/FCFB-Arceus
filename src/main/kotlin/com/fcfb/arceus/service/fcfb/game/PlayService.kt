@@ -51,7 +51,12 @@ class PlayService(
     ): Play {
         try {
             val game = gameService.getGameById(gameId)
-            val responseSpeed = getResponseSpeed(game)
+            val responseSpeed =
+                if (game.gameStatus != Game.GameStatus.PREGAME) {
+                    getResponseSpeed(game)
+                } else {
+                    null
+                }
 
             val encryptedDefensiveNumber = encryptionUtils.encrypt(defensiveNumber.toString())
             val clock = gameService.convertClockToSeconds(game.clock)
@@ -208,7 +213,7 @@ class PlayService(
     fun rollbackPlay(gameId: Int): Play {
         try {
             val game = gameService.getGameById(gameId)
-            val previousPlay = getPreviousPlay(gameId) ?: throw Exception("No previous play found")
+            val previousPlay = getPreviousPlay(gameId)
             val gamePlay = getPlayById(game.currentPlayId!!)
             gameService.rollbackPlay(game, previousPlay, gamePlay)
             playRepository.deleteById(gamePlay.playId)
