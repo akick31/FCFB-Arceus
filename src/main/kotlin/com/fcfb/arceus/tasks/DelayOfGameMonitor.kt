@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.UserService
@@ -24,7 +25,10 @@ class DelayOfGameMonitor(
     private val scorebugService: ScorebugService,
     private val playRepository: PlayRepository,
 ) {
-    @Scheduled(fixedRate = 60000) // Runs every minute
+    /**
+     * Checks for delay of game every minute
+     */
+    @Scheduled(fixedRate = 60000)
     fun checkForDelayOfGame() {
         val warnedGames = gameService.findGamesToWarn()
         warnedGames.forEach { game ->
@@ -34,31 +38,76 @@ class DelayOfGameMonitor(
         }
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
-            val updatedGame = applyDelayOfGame(game)
-            val isDelayofGameOut = getIsDelayOfGameOut(updatedGame)
-            if (isDelayofGameOut) {
-                gameService.endSingleGame(
-                    game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong() ?: throw Exception("No platform ID found"),
-                )
+            val updatedGame =
+                if (game.gameStatus == Game.GameStatus.PREGAME) {
+                    applyPregameDelayOfGame(game)
+                } else {
+                    applyDelayOfGame(game)
+                }
+            val delayOfGameInstances = getDelayOfGameInstances(updatedGame)
+            val isDelayOfGameOut = delayOfGameInstances.first >= 3 || delayOfGameInstances.second >= 3
+            if (isDelayOfGameOut) {
+                gameService.endDOGOutGame(updatedGame, delayOfGameInstances)
             }
-            discordService.notifyDelayOfGame(updatedGame, isDelayofGameOut)
+            discordService.notifyDelayOfGame(updatedGame, isDelayOfGameOut)
             Logger.info("A delay of game for game ${game.gameId} has been processed")
         }
     }
 
-    private fun getIsDelayOfGameOut(game: Game): Boolean {
+    /**
+     * Get the delay of game instances for a given game
+     * @return Pair of home and away delay of game instances
+     */
+    private fun getDelayOfGameInstances(game: Game): Pair<Int, Int> {
         if (game.gameType == GameType.SCRIMMAGE) {
-            return false
+            return Pair(0, 0)
         }
         if (game.waitingOn == TeamSide.HOME) {
             val instances = playService.getHomeDelayOfGameInstances(game.gameId)
-            return instances >= 3
+            return Pair(instances, 0)
         } else {
             val instances = playService.getAwayDelayOfGameInstances(game.gameId)
-            return instances >= 3
+            return Pair(0, instances)
         }
     }
 
+    /**
+     * Apply a delay of game to a game in pregame status
+     * @param game
+     */
+    private fun applyPregameDelayOfGame(game: Game): Game {
+        game.gameTimer = gameService.calculateDelayOfGameTimer()
+        if (game.waitingOn == TeamSide.HOME) {
+            game.awayScore += 8
+            if (game.gameType != GameType.SCRIMMAGE) {
+                for (coach in game.homeCoachDiscordIds!!) {
+                    val user = userService.getUserByDiscordId(coach)
+                    user.delayOfGameInstances += 1
+                    userService.saveUser(user)
+                }
+            }
+        } else {
+            game.homeScore += 8
+            if (game.gameType != GameType.SCRIMMAGE) {
+                for (coach in game.awayCoachDiscordIds!!) {
+                    val user = userService.getUserByDiscordId(coach)
+                    user.delayOfGameInstances += 1
+                    userService.saveUser(user)
+                }
+            }
+        }
+
+        val savedPlay = saveDelayOfGameOnOffensePlay(game)
+        game.currentPlayId = savedPlay.playId
+        gameService.saveGame(game)
+        scorebugService.generateScorebug(game)
+        return game
+    }
+
+    /**
+     * Apply a delay of game to a game
+     * @param game
+     */
     private fun applyDelayOfGame(game: Game): Game {
         game.gameTimer = gameService.calculateDelayOfGameTimer()
         if (game.waitingOn == TeamSide.HOME) {
@@ -87,35 +136,18 @@ class DelayOfGameMonitor(
             }
         }
 
-        val currentPlay = playService.getCurrentPlayOrNull(game.gameId)
+        val currentPlay =
+            try {
+                playService.getCurrentPlay(game.gameId)
+            } catch (e: Exception) {
+                null
+            }
+
         val savedPlay =
             if (currentPlay != null) {
-                currentPlay.playFinished = true
-                currentPlay.offensiveNumber = null
-                currentPlay.defensiveNumber = null
-                currentPlay.difference = null
-                if (game.waitingOn == TeamSide.HOME) {
-                    currentPlay.result = Scenario.DELAY_OF_GAME_HOME
-                    currentPlay.actualResult = ActualResult.DELAY_OF_GAME
-                } else {
-                    currentPlay.result = Scenario.DELAY_OF_GAME_AWAY
-                    currentPlay.actualResult = ActualResult.DELAY_OF_GAME
-                }
-                playRepository.save(currentPlay)
+                saveDelayOfGameOnDefensePlay(game, currentPlay)
             } else {
-                val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
-                play.playFinished = true
-                play.offensiveNumber = null
-                play.defensiveNumber = null
-                play.difference = null
-                if (game.waitingOn == TeamSide.HOME) {
-                    play.result = Scenario.DELAY_OF_GAME_HOME
-                    play.actualResult = ActualResult.DELAY_OF_GAME
-                } else {
-                    play.result = Scenario.DELAY_OF_GAME_AWAY
-                    play.actualResult = ActualResult.DELAY_OF_GAME
-                }
-                playRepository.save(play)
+                saveDelayOfGameOnOffensePlay(game)
             }
 
         game.currentPlayId = savedPlay.playId
@@ -124,5 +156,46 @@ class DelayOfGameMonitor(
         gameService.saveGame(game)
         scorebugService.generateScorebug(game)
         return game
+    }
+
+    /**
+     * Save a delay of game on defense play, as defense has called a number
+     */
+    private fun saveDelayOfGameOnDefensePlay(
+        game: Game,
+        play: Play,
+    ): Play {
+        play.playFinished = true
+        play.offensiveNumber = null
+        play.defensiveNumber = null
+        play.difference = null
+        if (game.waitingOn == TeamSide.HOME) {
+            play.result = Scenario.DELAY_OF_GAME_HOME
+            play.actualResult = ActualResult.DELAY_OF_GAME
+        } else {
+            play.result = Scenario.DELAY_OF_GAME_AWAY
+            play.actualResult = ActualResult.DELAY_OF_GAME
+        }
+        return playRepository.save(play)
+    }
+
+    /**
+     * Save a delay of game on offense play, as defense hasn't called a number
+     * @param game
+     */
+    private fun saveDelayOfGameOnOffensePlay(game: Game): Play {
+        val play = playService.defensiveNumberSubmitted(game.gameId, "NONE", 0, false)
+        play.playFinished = true
+        play.offensiveNumber = null
+        play.defensiveNumber = null
+        play.difference = null
+        if (game.waitingOn == TeamSide.HOME) {
+            play.result = Scenario.DELAY_OF_GAME_HOME
+            play.actualResult = ActualResult.DELAY_OF_GAME
+        } else {
+            play.result = Scenario.DELAY_OF_GAME_AWAY
+            play.actualResult = ActualResult.DELAY_OF_GAME
+        }
+        return playRepository.save(play)
     }
 }

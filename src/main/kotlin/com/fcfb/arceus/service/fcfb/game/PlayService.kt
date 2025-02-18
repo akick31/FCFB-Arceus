@@ -51,7 +51,12 @@ class PlayService(
     ): Play {
         try {
             val game = gameService.getGameById(gameId)
-            val responseSpeed = getResponseSpeed(game)
+            val responseSpeed =
+                if (game.gameStatus != Game.GameStatus.PREGAME) {
+                    getResponseSpeed(game)
+                } else {
+                    null
+                }
 
             val encryptedDefensiveNumber = encryptionUtils.encrypt(defensiveNumber.toString())
             val clock = gameService.convertClockToSeconds(game.clock)

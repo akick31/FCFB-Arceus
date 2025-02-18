@@ -51,7 +51,6 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
             "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') <= CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND game_status != 'FINAL' " +
-                "AND game_status != 'PREGAME' " +
                 "AND game_warned = True",
         nativeQuery = true,
     )
@@ -64,7 +63,6 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
                 "BETWEEN CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 6 HOUR) " +
                 "AND game_status != 'FINAL' " +
-                "AND game_status != 'PREGAME'" +
                 "AND game_warned = False",
         nativeQuery = true,
     )

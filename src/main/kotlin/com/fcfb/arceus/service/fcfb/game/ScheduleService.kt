@@ -4,6 +4,7 @@ import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Schedule
 import com.fcfb.arceus.repositories.ScheduleRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
+import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.ScheduleNotFoundException
 import org.springframework.stereotype.Component
 
@@ -46,11 +47,15 @@ class ScheduleService(
      * @param game
      */
     fun markGameAsFinished(game: Game) {
-        val gameInSchedule = findGameInSchedule(game)
-        gameInSchedule.finished = true
-        scheduleRepository.save(gameInSchedule)
-        if (checkIfWeekIsOver(game.season ?: 0, game.week ?: 0)) {
-            seasonService.incrementWeek()
+        try {
+            val gameInSchedule = findGameInSchedule(game)
+            gameInSchedule.finished = true
+            scheduleRepository.save(gameInSchedule)
+            if (checkIfWeekIsOver(game.season ?: 0, game.week ?: 0)) {
+                seasonService.incrementWeek()
+            }
+        } catch (e: Exception) {
+            Logger.error("Unable to mark game as finished", e)
         }
     }
 

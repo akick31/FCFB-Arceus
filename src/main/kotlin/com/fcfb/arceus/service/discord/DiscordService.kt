@@ -3,6 +3,7 @@ package com.fcfb.arceus.service.discord
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.utils.DiscordUserNotFoundException
 import com.fcfb.arceus.utils.Logger
+import com.fcfb.arceus.utils.ServerUtils
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.User
@@ -17,6 +18,7 @@ import org.springframework.web.client.RestTemplate
 @Service
 class DiscordService(
     private val restTemplate: RestTemplate,
+    private val serverUtils: ServerUtils,
 ) {
     @Value("\${discord.bot.url}")
     private var discordBotUrl: String? = null
@@ -32,17 +34,21 @@ class DiscordService(
      * @param game
      * @return List<String>?
      */
-    fun startGameThread(game: Game): List<String>? {
+    suspend fun startGameThread(game: Game): List<String>? {
         val discordBotUrl = "$discordBotUrl/start_game"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)
-        try {
-            val response = restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
-            return response.body?.split(",")
+
+        return try {
+            val response =
+                serverUtils.retryWithExponentialBackoff {
+                    restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
+                }
+            response.body?.split(",")
         } catch (e: Exception) {
-            Logger.error("There was an error starting the game thread for ${game.gameId}: " + e.message)
-            return null
+            Logger.error("There was an error starting the game thread for ${game.gameId}: ${e.message}")
+            null
         }
     }
 
