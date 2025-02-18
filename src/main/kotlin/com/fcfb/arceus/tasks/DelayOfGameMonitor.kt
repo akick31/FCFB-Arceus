@@ -142,6 +142,7 @@ class DelayOfGameMonitor(
             } catch (e: Exception) {
                 null
             }
+            
         val savedPlay =
             if (currentPlay != null) {
                 saveDelayOfGameOnDefensePlay(game, currentPlay)

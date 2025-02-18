@@ -262,6 +262,12 @@ class PlayService(
             ?: throw PlayNotFoundException("No current play found for game $gameId")
 
     /**
+     * Get the current play of a game or null
+     * @param gameId
+     */
+    fun getCurrentPlayOrNull(gameId: Int) = playRepository.getCurrentPlay(gameId)
+
+    /**
      * Get all plays for a game
      * @param gameId
      */
@@ -378,7 +384,7 @@ class PlayService(
                 }
             }
         var result = resultInformation.result ?: throw ResultNotFoundException()
-        val playTime = resultInformation.playTime
+        var playTime = resultInformation.playTime
 
         // Determine runoff time between plays
         val clockStopped = game.clockStopped
@@ -399,28 +405,28 @@ class PlayService(
             Scenario.TURNOVER_PLUS_20_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 20
-                if (ballLocation > 100) {
+                if (ballLocation >= 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
             Scenario.TURNOVER_PLUS_15_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 15
-                if (ballLocation > 100) {
+                if (ballLocation >= 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
             Scenario.TURNOVER_PLUS_10_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 10
-                if (ballLocation > 100) {
+                if (ballLocation >= 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
             Scenario.TURNOVER_PLUS_5_YARDS -> {
                 actualResult = ActualResult.TURNOVER
                 ballLocation = 100 - ballLocation + 5
-                if (ballLocation > 100) {
+                if (ballLocation >= 100) {
                     actualResult = ActualResult.TURNOVER_TOUCHDOWN
                 }
             }
@@ -467,6 +473,7 @@ class PlayService(
             Scenario.TOUCHDOWN -> {
                 yards = 100 - ballLocation
                 actualResult = ActualResult.TOUCHDOWN
+                playTime = rangesService.getPlayTime(playCall, yards)
             }
             Scenario.SPIKE -> {
                 actualResult = ActualResult.SPIKE
@@ -500,6 +507,7 @@ class PlayService(
                 if (ballLocation >= 100) {
                     actualResult = ActualResult.TOUCHDOWN
                     yards = 100 - originalBallLocation
+                    playTime = rangesService.getPlayTime(playCall, yards)
                 } else if (ballLocation <= 0) {
                     actualResult = ActualResult.SAFETY
                     yards = 0 - originalBallLocation
