@@ -264,7 +264,9 @@ class TeamService(
         when (coachPosition) {
             HEAD_COACH -> {
                 // Fire previous coach if hiring a new head coach
-                fireCoach(existingTeam.name, processedBy)
+                if (existingTeam.coachUsernames != null) {
+                    fireCoach(existingTeam.name, processedBy)
+                }
                 existingTeam.coachUsernames = mutableListOf(user.username)
                 existingTeam.coachNames = mutableListOf(user.coachName)
                 existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
