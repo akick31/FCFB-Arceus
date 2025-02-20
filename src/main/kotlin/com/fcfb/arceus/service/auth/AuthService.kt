@@ -1,7 +1,6 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.NewSignup
-import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.models.website.LoginResponse
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.NewSignupService

@@ -93,7 +93,7 @@ class NewSignupService(
                     averageResponseTime = 0.0,
                     resetToken = null,
                     resetTokenExpiration = null,
-                )
+                ),
             )
             return true
         } catch (e: Exception) {
