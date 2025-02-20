@@ -4,7 +4,6 @@ import com.fcfb.arceus.converter.DTOConverter
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.models.requests.UserValidationRequest
 import com.fcfb.arceus.models.response.UserValidationResponse
@@ -105,53 +104,6 @@ class UserService(
             }
         }
         updateUser(user)
-    }
-
-    /**
-     * Create a new user
-     * @param user
-     */
-    fun createUser(user: User): User {
-        val passwordEncoder = BCryptPasswordEncoder()
-        val salt = passwordEncoder.encode(user.password)
-        val verificationToken = UUID.randomUUID().toString()
-
-        val newUser =
-            User(
-                user.username,
-                user.coachName,
-                user.discordTag,
-                user.discordId,
-                encryptionUtils.encrypt(user.email),
-                encryptionUtils.hash(user.email),
-                passwordEncoder.encode(user.password),
-                user.position,
-                USER,
-                salt,
-                null,
-                0,
-                0,
-                0,
-                0.0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                user.offensivePlaybook,
-                user.defensivePlaybook,
-                0.0,
-                null,
-                null,
-            )
-
-        saveUser(newUser)
-        return newUser
     }
 
     /**

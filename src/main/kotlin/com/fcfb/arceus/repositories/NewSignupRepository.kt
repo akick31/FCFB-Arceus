@@ -12,5 +12,7 @@ interface NewSignupRepository : CrudRepository<NewSignup?, String?> {
     @Query("SELECT * FROM new_signup", nativeQuery = true)
     fun getNewSignups(): List<NewSignup>
 
+    fun getByDiscordId(discordId: String?): NewSignup?
+
     fun getByVerificationToken(token: String?): NewSignup
 }
