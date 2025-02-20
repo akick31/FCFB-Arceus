@@ -186,6 +186,14 @@ class UserService(
         return userData.map { dtoConverter.convertToUserDTO(it) }
     }
 
+    fun getFreeAgents(): List<UserDTO> {
+        val userData =
+            userRepository.getFreeAgents().ifEmpty {
+                throw UserNotFoundException("No free agents found")
+            }
+        return userData.map { dtoConverter.convertToUserDTO(it) }
+    }
+
     /**
      * Get a user by its name
      * @param name

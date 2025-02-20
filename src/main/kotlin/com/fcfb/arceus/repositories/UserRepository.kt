@@ -37,6 +37,9 @@ interface UserRepository : CrudRepository<User?, String?> {
     @Query("SELECT * FROM user WHERE hashed_email = :email", nativeQuery = true)
     fun getUserByEmail(email: String?): User?
 
+    @Query("SELECT u FROM User u LEFT JOIN Team t ON u.team = t.name WHERE u.team IS NULL OR (t.isTaken = FALSE)")
+    fun getFreeAgents(): List<User>
+
     fun existsByDiscordId(discordId: String?): Boolean
 
     fun existsByDiscordTag(discordUsername: String?): Boolean

@@ -37,6 +37,9 @@ class UserController(
     @GetMapping("")
     fun getAllUsers() = userService.getAllUsers()
 
+    @GetMapping("/free_agents")
+    fun getFreeAgents() = userService.getFreeAgents()
+
     @GetMapping("/name")
     fun getUserDTOByName(
         @RequestParam name: String,
