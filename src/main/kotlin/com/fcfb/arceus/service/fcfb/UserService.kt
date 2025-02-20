@@ -108,53 +108,6 @@ class UserService(
     }
 
     /**
-     * Create a new user
-     * @param user
-     */
-    fun createUser(user: User): User {
-        val passwordEncoder = BCryptPasswordEncoder()
-        val salt = passwordEncoder.encode(user.password)
-        val verificationToken = UUID.randomUUID().toString()
-
-        val newUser =
-            User(
-                user.username,
-                user.coachName,
-                user.discordTag,
-                user.discordId,
-                encryptionUtils.encrypt(user.email),
-                encryptionUtils.hash(user.email),
-                passwordEncoder.encode(user.password),
-                user.position,
-                USER,
-                salt,
-                null,
-                0,
-                0,
-                0,
-                0.0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                user.offensivePlaybook,
-                user.defensivePlaybook,
-                0.0,
-                null,
-                null,
-            )
-
-        saveUser(newUser)
-        return newUser
-    }
-
-    /**
      * Get a user DTO by its ID
      * @param id
      */

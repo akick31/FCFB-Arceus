@@ -35,6 +35,7 @@ class TeamService(
     private val teamRepository: TeamRepository,
     private val userService: UserService,
     private val coachTransactionLogService: CoachTransactionLogService,
+    private val newSignupService: NewSignupService,
 ) {
     /**
      * After a game ends, update the team's wins and losses
@@ -346,6 +347,10 @@ class TeamService(
             existingTeam.isTaken = true
             saveTeam(existingTeam)
             userService.updateUser(user)
+            val signupObject = newSignupService.getNewSignupByDiscordId(discordId)
+            if (signupObject != null) {
+                newSignupService.deleteNewSignup(signupObject)
+            }
             coachTransactionLogService.logCoachTransaction(
                 CoachTransactionLog(
                     existingTeam.name ?: "TEAM_NOT_FOUND",
@@ -383,6 +388,10 @@ class TeamService(
 
         withContext(Dispatchers.IO) {
             saveTeam(existingTeam)
+            val signupObject = newSignupService.getNewSignupByDiscordId(discordId)
+            if (signupObject != null) {
+                newSignupService.deleteNewSignup(signupObject)
+            }
             coachTransactionLogService.logCoachTransaction(
                 CoachTransactionLog(
                     existingTeam.name ?: "TEAM_NOT_FOUND",
