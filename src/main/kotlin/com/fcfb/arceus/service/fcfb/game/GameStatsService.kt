@@ -337,6 +337,10 @@ class GameStatsService(
             calculateAverageYardsPerPlay(
                 allPlays, possession,
             )
+        stats.firstDowns =
+            calculateFirstDowns(
+                allPlays, possession,
+            )
         stats.thirdDownConversionSuccess =
             calculateThirdDownConversionSuccess(
                 play, stats.thirdDownConversionSuccess,
@@ -1054,6 +1058,16 @@ class GameStatsService(
                     it.playCall != PlayCall.TWO_POINT
             }.map { it.yards }.average()
         return if (average.isNaN()) 0.0 else average
+    }
+
+    private fun calculateFirstDowns(
+        allPlays: List<Play>,
+        possession: TeamSide,
+    ): Int {
+        return allPlays.count {
+            it.possession == possession &&
+                it.actualResult == ActualResult.FIRST_DOWN
+        }
     }
 
     private fun calculateThirdDownConversionSuccess(
