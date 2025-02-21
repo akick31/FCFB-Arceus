@@ -573,8 +573,18 @@ class GameService(
                 teamService.updateTeamWinsAndLosses(game)
                 userService.updateUserWinsAndLosses(game)
 
-                val homeUsers = userService.getUsersByTeam(game.homeTeam)
-                val awayUsers = userService.getUsersByTeam(game.awayTeam)
+                val homeUsers =
+                    try {
+                        userService.getUsersByTeam(game.homeTeam)
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
+                val awayUsers =
+                    try {
+                        userService.getUsersByTeam(game.awayTeam)
+                    } catch (e: Exception) {
+                        emptyList()
+                    }
                 for (user in homeUsers + awayUsers) {
                     val responseTime =
                         playRepository.getUserAverageResponseTime(
