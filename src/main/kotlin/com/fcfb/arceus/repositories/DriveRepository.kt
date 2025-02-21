@@ -1,6 +1,5 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Drive
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -9,7 +8,7 @@ import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
 
 @Repository
-interface DriveRepository : CrudRepository<Play?, Int?> {
+interface DriveRepository : CrudRepository<Drive?, Int?> {
     @Query(value = "SELECT * FROM drive WHERE drive_id =?", nativeQuery = true)
     fun getDriveById(driveId: Int): Drive
 
