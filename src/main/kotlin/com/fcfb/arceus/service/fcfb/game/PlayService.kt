@@ -45,6 +45,7 @@ class PlayService(
      */
     fun defensiveNumberSubmitted(
         gameId: Int,
+        driveId: Int,
         defensiveSubmitter: String,
         defensiveNumber: Int,
         timeoutCalled: Boolean = false,
@@ -64,6 +65,7 @@ class PlayService(
                 playRepository.save(
                     Play(
                         gameId,
+                        driveId,
                         game.numPlays.plus(1),
                         game.homeScore,
                         game.awayScore,

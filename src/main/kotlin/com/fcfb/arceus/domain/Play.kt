@@ -27,6 +27,10 @@ class Play {
     var gameId: Int = 0
 
     @Basic
+    @Column(name = "drive_id")
+    var driveId: Int = 0
+
+    @Basic
     @Column(name = "play_number")
     var playNumber: Int = 0
 
@@ -159,6 +163,7 @@ class Play {
 
     constructor(
         gameId: Int,
+        driveId: Int,
         playNumber: Int,
         homeScore: Int,
         awayScore: Int,
@@ -193,6 +198,7 @@ class Play {
         defensiveResponseSpeed: Long?,
     ) {
         this.gameId = gameId
+        this.driveId = driveId
         this.playNumber = playNumber
         this.homeScore = homeScore
         this.awayScore = awayScore
