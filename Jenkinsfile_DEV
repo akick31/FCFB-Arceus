@@ -1,15 +1,20 @@
 pipeline {
     agent any
 
+    parameters {
+        gitParameter(name: 'BRANCH_NAME', type: 'BRANCH', defaultValue: 'origin/main', description: 'Choose the branch to build')
+    }
+
     environment {
-        IMAGE_NAME = 'fcfb-arceus_dev'
-        CONTAINER_NAME = 'FCFB-Arceus_DEV'
-        DOCKERFILE = 'Dockerfile'
+        IMAGE_NAME = 'fcfb-arceus-dev'
+        CONTAINER_NAME = 'FCFB-Arceus-DEV'
+        DOCKERFILE = 'Dockerfile_DEV'
         APP_PROPERTIES = './src/main/resources/application.properties'
         DB_URL = credentials('DEV_DB_URL')
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
         JWT_ENCRYPTION_KEY = credentials('JWT_ENCRYPTION_KEY')
+        JWT_SECRET = credentials('JWT_SECRET')
         EMAIL_HOST = credentials('EMAIL_HOST')
         EMAIL_PORT = credentials('EMAIL_PORT')
         EMAIL = credentials('EMAIL')
@@ -17,13 +22,17 @@ pipeline {
         DISCORD_TOKEN = credentials('DEV_REFBOT_DISCORD_TOKEN')
         DISCORD_GUILD_ID = credentials('DEV_DISCORD_GUILD_ID')
         DISCORD_FORUM_CHANNEL_ID = credentials('DEV_DISCORD_FORUM_CHANNEL_ID')
+        DISCORD_CLIENT_ID = credentials('DEV_DISCORD_CLIENT_ID')
+        DISCORD_CLIENT_SECRET = credentials('DEV_DISCORD_CLIENT_SECRET')
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the Arceus project...'
-                checkout scm
+                script {
+                    echo "Checking out branch: ${params.BRANCH_NAME}"
+                    sh "git checkout ${params.BRANCH_NAME}"
+                }
             }
         }
         stage('Get Version') {
@@ -67,19 +76,22 @@ pipeline {
                 script {
                     def propertiesContent = """
                         # Domain configuration
-                        domain.url=${env.DOMAIN_URL}
+                        domain.url=https://dev.api.fakecollegefootball.com
+                        website.url=http://dev.fakecollegefootball.com
                         server.servlet.context-path=/arceus
+                        server.address=0.0.0.0
                         server.port=1313
 
                         # Images configuration
                         images.path=/app/images
 
                         # Spring Boot configuration
-                        spring.datasource.url=${env.DEV_DB_URL}
+                        spring.datasource.url=${env.DB_URL}
                         spring.datasource.username=${env.DB_USERNAME}
                         spring.datasource.password=${env.DB_PASSWORD}
                         spring.datasource.driver-class-name=org.mariadb.jdbc.Driver
                         spring.jpa.hibernate.ddl-auto=update
+                        spring.jpa.hibernate.dialect=org.hibernate.dialect.MySQL5InnoDBDialect
                         spring.jpa.show-sql=true
                         spring.jackson.property-naming-strategy=SNAKE_CASE
                         spring.main.headless=true
@@ -88,6 +100,7 @@ pipeline {
                         # JWT configuration
                         encryption.key=${env.JWT_ENCRYPTION_KEY}
                         encryption.algorithm=aes
+                        jwt.secret=${env.JWT_SECRET}
 
                         # Email configuration
                         spring.mail.host=${env.EMAIL_HOST}
@@ -97,11 +110,22 @@ pipeline {
                         spring.mail.properties.mail.smtp.auth=true
                         spring.mail.properties.mail.smtp.starttls.enable=true
 
+                        # Health check configuration
+                        management.endpoints.web.exposure.include=*
+                        management.endpoint.health.show-details=always
+                        management.health.defaults.enabled=true
+                        management.health.db.enabled=true
+                        management.health.diskspace.enabled=true
+                        management.health.jvm.enabled=true
+
                         # Discord configuration
                         discord.bot.token=${env.DISCORD_TOKEN}
                         discord.bot.url=http://51.81.32.234:1312/fcfb_discord
                         discord.guild.id=${env.DISCORD_GUILD_ID}
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
+                        discord.client.id=${env.DISCORD_CLIENT_ID}
+                        discord.client.secret=${env.DISCORD_CLIENT_SECRET}
+                        discord.oauth.redirect=https://dev.api.fakecollegefootball.com/arceus/discord/redirect
 
                         # Logging configuration
                         logging.level.org.hibernate=warn
@@ -122,7 +146,7 @@ pipeline {
                 script {
                     echo 'Building the new Arceus Docker image...'
                     sh """
-                        docker build -t ${IMAGE_NAME}:${DOCKERFILE} .
+                        docker build -f ${DOCKERFILE} -t ${IMAGE_NAME}:${DOCKERFILE} .
                     """
                 }
             }

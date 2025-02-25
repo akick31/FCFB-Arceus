@@ -1,0 +1,20 @@
+# Use a lightweight JDK 17 image
+FROM openjdk:17-jdk-slim
+
+# Install necessary packages
+RUN apt-get update && apt-get install -y \
+    fontconfig \
+    fonts-dejavu-core \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set the working directory
+WORKDIR /app
+
+# Copy the built JAR file from the Gradle build directory into the container
+COPY ./build/libs/*.jar app.jar
+
+# Expose HTTP and HTTPS ports
+EXPOSE 1212
+
+# Set the entrypoint script
+ENTRYPOINT ["java", "-Djava.awt.headless=true", "-jar", "app.jar"]

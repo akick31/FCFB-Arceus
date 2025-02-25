@@ -4,19 +4,22 @@ import com.fcfb.arceus.converter.DTOConverter
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.Role.USER
-import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.models.dto.UserDTO
+import com.fcfb.arceus.models.requests.UserValidationRequest
+import com.fcfb.arceus.models.response.UserValidationResponse
 import com.fcfb.arceus.repositories.UserRepository
-import com.fcfb.arceus.service.discord.DiscordService
+import com.fcfb.arceus.utils.EncryptionUtils
+import com.fcfb.arceus.utils.UserNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
+import java.time.LocalDateTime
 import java.util.UUID
 
 @Service
 class UserService(
     private val userRepository: UserRepository,
-    private val discordService: DiscordService,
+    private val encryptionUtils: EncryptionUtils,
     private val dtoConverter: DTOConverter,
 ) {
     /**
@@ -24,111 +27,93 @@ class UserService(
      * @param game
      */
     fun updateUserWinsAndLosses(game: Game) {
-        val homeUser = getUserByTeam(game.homeTeam)
-        val awayUser = getUserByTeam(game.awayTeam)
-
-        if (game.homeScore > game.awayScore) {
-            homeUser.wins += 1
-            awayUser.losses += 1
-            if (game.gameType == GameType.CONFERENCE_GAME) {
-                homeUser.conferenceWins += 1
-                awayUser.conferenceLosses += 1
-            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
-                homeUser.conferenceChampionshipWins += 1
-                awayUser.conferenceChampionshipLosses += 1
-            } else if (game.gameType == GameType.BOWL) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-            } else if (game.gameType == GameType.PLAYOFFS) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-                homeUser.playoffWins += 1
-                awayUser.playoffLosses += 1
-            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-                homeUser.bowlWins += 1
-                awayUser.bowlLosses += 1
-                homeUser.playoffWins += 1
-                awayUser.playoffLosses += 1
-                homeUser.nationalChampionshipWins += 1
-                awayUser.nationalChampionshipLosses += 1
+        val homeUsers =
+            try {
+                getUsersByTeam(game.homeTeam)
+            } catch (e: Exception) {
+                emptyList()
             }
-        } else {
-            homeUser.losses += 1
-            awayUser.wins += 1
-            if (game.gameType == GameType.CONFERENCE_GAME) {
-                homeUser.conferenceLosses += 1
-                awayUser.conferenceWins += 1
-            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
-                homeUser.conferenceChampionshipLosses += 1
-                awayUser.conferenceChampionshipWins += 1
-            } else if (game.gameType == GameType.BOWL) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-            } else if (game.gameType == GameType.PLAYOFFS) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-                homeUser.playoffLosses += 1
-                awayUser.playoffWins += 1
-            } else if (game.gameType == GameType.NATIONAL_CHAMPIONSHIP) {
-                homeUser.bowlLosses += 1
-                awayUser.bowlWins += 1
-                homeUser.playoffLosses += 1
-                awayUser.playoffWins += 1
-                homeUser.nationalChampionshipLosses += 1
-                awayUser.nationalChampionshipWins += 1
+        val awayUsers =
+            try {
+                getUsersByTeam(game.awayTeam)
+            } catch (e: Exception) {
+                emptyList()
+            }
+
+        for (user in homeUsers + awayUsers) {
+            val isHomeUser = user.team == game.homeTeam
+            val isAwayUser = user.team == game.awayTeam
+            if (!isHomeUser && !isAwayUser) {
+                continue
+            }
+            val isWin = if (isHomeUser) game.homeScore > game.awayScore else game.awayScore > game.homeScore
+            val gameType = game.gameType
+
+            if (isHomeUser) {
+                updateUserRecord(user, gameType ?: GameType.SCRIMMAGE, isWin)
+            } else {
+                updateUserRecord(user, gameType ?: GameType.SCRIMMAGE, !isWin)
             }
         }
-        updateUser(homeUser)
-        updateUser(awayUser)
     }
 
     /**
-     * Create a new user
-     * @param user
+     * After a game ends, update the user's average response time
+     * @param userId
+     * @param responseTime
      */
-    suspend fun createUser(user: User): User {
-        val passwordEncoder = BCryptPasswordEncoder()
-        val salt = passwordEncoder.encode(user.password)
-        val verificationToken = UUID.randomUUID().toString()
+    fun updateUserAverageResponseTime(
+        userId: Long,
+        responseTime: Double,
+    ) = userRepository.updateAverageResponseTime(userId, responseTime)
 
-        val discordUser = discordService.getUserByDiscordTag(user.discordTag)
-        val discordId = discordUser.id.toString()
-
-        val newUser =
-            User(
-                user.username,
-                user.coachName,
-                user.discordTag,
-                discordId,
-                user.email,
-                passwordEncoder.encode(user.password),
-                user.position,
-                user.redditUsername,
-                USER,
-                salt,
-                null,
-                0,
-                0,
-                0,
-                0.0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                0,
-                user.offensivePlaybook,
-                user.defensivePlaybook,
-                0,
-                verificationToken,
-            )
-
-        saveUser(newUser)
-        return newUser
+    /**
+     * Update a user's record after a game
+     * @param user
+     * @param gameType
+     * @param isWin
+     */
+    private fun updateUserRecord(
+        user: UserDTO,
+        gameType: GameType,
+        isWin: Boolean,
+    ) {
+        if (isWin) {
+            user.wins += 1
+            when (gameType) {
+                GameType.CONFERENCE_GAME -> user.conferenceWins += 1
+                GameType.CONFERENCE_CHAMPIONSHIP -> user.conferenceChampionshipWins += 1
+                GameType.BOWL -> user.bowlWins += 1
+                GameType.PLAYOFFS -> {
+                    user.bowlWins += 1
+                    user.playoffWins += 1
+                }
+                GameType.NATIONAL_CHAMPIONSHIP -> {
+                    user.bowlWins += 1
+                    user.playoffWins += 1
+                    user.nationalChampionshipWins += 1
+                }
+                else -> {}
+            }
+        } else {
+            user.losses += 1
+            when (gameType) {
+                GameType.CONFERENCE_GAME -> user.conferenceLosses += 1
+                GameType.CONFERENCE_CHAMPIONSHIP -> user.conferenceChampionshipLosses += 1
+                GameType.BOWL -> user.bowlLosses += 1
+                GameType.PLAYOFFS -> {
+                    user.bowlLosses += 1
+                    user.playoffLosses += 1
+                }
+                GameType.NATIONAL_CHAMPIONSHIP -> {
+                    user.bowlLosses += 1
+                    user.playoffLosses += 1
+                    user.nationalChampionshipLosses += 1
+                }
+                else -> {}
+            }
+        }
+        updateUser(user)
     }
 
     /**
@@ -141,37 +126,81 @@ class UserService(
      * Get a user by its ID
      * @param id
      */
-    fun getUserById(id: Long) = userRepository.getById(id)
+    fun getUserById(id: Long) = userRepository.getById(id) ?: throw UserNotFoundException("User not found with id $id")
 
     /**
      * Get a user by its Discord ID
      * @param discordId
      */
-    fun getUserDTOByDiscordId(discordId: String) = dtoConverter.convertToUserDTO(userRepository.getByDiscordId(discordId))
+    fun getUserDTOByDiscordId(discordId: String) =
+        dtoConverter.convertToUserDTO(
+            userRepository.getByDiscordId(discordId)
+                ?: throw UserNotFoundException("User not found with Discord ID $discordId"),
+        )
 
     /**
      * Get a user by its team
      * @param team
      */
-    fun getUserByTeam(team: String) = dtoConverter.convertToUserDTO(userRepository.getByTeam(team))
+    fun getUserByTeam(team: String) =
+        dtoConverter.convertToUserDTO(
+            userRepository.getByTeam(team)
+                ?: throw UserNotFoundException("User not found with team $team"),
+        )
+
+    /**
+     * Get a list of users coaching team
+     * @param team
+     */
+    fun getUsersByTeam(team: String): List<UserDTO> {
+        val users =
+            userRepository.getUsersByTeam(team).ifEmpty {
+                throw UserNotFoundException("No users found coaching team $team")
+            }
+        return users.map { dtoConverter.convertToUserDTO(it) }
+    }
 
     /**
      * Get a user by its username or email
      */
-    fun getUserByUsernameOrEmail(usernameOrEmail: String) = userRepository.getByUsernameOrEmail(usernameOrEmail)
+    fun getUserByUsernameOrEmail(usernameOrEmail: String) =
+        try {
+            getUserByEmail(usernameOrEmail)
+        } catch (e: Exception) {
+            getUserByUsername(usernameOrEmail)
+        }
 
     /**
-     * Get a user by its verification token
-     * @param token
+     * Get a user by its username
      */
-    fun getByVerificationToken(token: String) = userRepository.getByVerificationToken(token)
+    private fun getUserByUsername(username: String) =
+        userRepository.getByUsername(username)
+            ?: throw UserNotFoundException("User not found with username $username")
+
+    /**
+     * Get a user by its email
+     */
+    private fun getUserByEmail(email: String) =
+        userRepository.getUserByEmail(encryptionUtils.hash(email))
+            ?: throw UserNotFoundException("User not found with email $email")
 
     /**
      * Get all users
      * @return List<UserDTO>
      */
     fun getAllUsers(): List<UserDTO> {
-        val userData = userRepository.findAll().filterNotNull()
+        val userData =
+            userRepository.findAll().filterNotNull().ifEmpty {
+                throw UserNotFoundException("No users found")
+            }
+        return userData.map { dtoConverter.convertToUserDTO(it) }
+    }
+
+    fun getFreeAgents(): List<UserDTO> {
+        val userData =
+            userRepository.getFreeAgents().ifEmpty {
+                throw UserNotFoundException("No free agents found")
+            }
         return userData.map { dtoConverter.convertToUserDTO(it) }
     }
 
@@ -179,7 +208,15 @@ class UserService(
      * Get a user by its name
      * @param name
      */
-    fun getUserByName(name: String) = dtoConverter.convertToUserDTO(userRepository.getByCoachName(name))
+    fun getUserByCoachName(name: String) =
+        userRepository.getByCoachName(name)
+            ?: throw UserNotFoundException("User not found with coach name $name")
+
+    /**
+     * Get a user DTO by its name
+     * @param name
+     */
+    fun getUserDTOByName(name: String) = dtoConverter.convertToUserDTO(getUserByCoachName(name))
 
     /**
      * Update a user's password
@@ -195,27 +232,11 @@ class UserService(
         val passwordEncoder = BCryptPasswordEncoder()
         user.password = passwordEncoder.encode(newPassword)
         user.salt = passwordEncoder.encode(newPassword)
+        user.resetToken = null
+        user.resetTokenExpiration = null
 
         userRepository.save(user)
         return dtoConverter.convertToUserDTO(user)
-    }
-
-    /**
-     * Approve a user
-     * @param id
-     * @return Boolean
-     */
-    fun approveUser(id: Long): Boolean {
-        try {
-            val user = getUserById(id)
-            user.apply {
-                approved = 1
-            }
-            saveUser(user)
-            return true
-        } catch (e: Exception) {
-            return false
-        }
     }
 
     /**
@@ -237,8 +258,51 @@ class UserService(
     }
 
     /**
+     * Update a user's reset token
+     * @param email
+     */
+    fun updateResetToken(email: String): User {
+        val user = getUserByEmail(email)
+        val resetToken = UUID.randomUUID().toString()
+        user.apply {
+            this.resetToken = resetToken
+            this.resetTokenExpiration = LocalDateTime.now().plusHours(1).toString()
+        }
+        saveUser(user)
+        return user
+    }
+
+    /**
+     * Validate a user
+     * @param userValidationRequest
+     */
+    fun validateUser(userValidationRequest: UserValidationRequest): UserValidationResponse {
+        val discordIdExists = userRepository.existsByDiscordId(userValidationRequest.discordId)
+        val discordTagExists = userRepository.existsByDiscordTag(userValidationRequest.discordTag)
+        val usernameExists = userRepository.existsByUsername(userValidationRequest.username)
+        val emailExists = userRepository.existsByEmail(userValidationRequest.email)
+
+        return UserValidationResponse(
+            discordIdExists,
+            discordTagExists,
+            usernameExists,
+            emailExists,
+        )
+    }
+
+    /**
+     * Encrypt all user emails
+     */
+    fun hashEmails() {
+        val users = userRepository.findAll().filterNotNull()
+        users.forEach {
+            it.hashedEmail = encryptionUtils.hash(encryptionUtils.decrypt(it.email))
+            userRepository.save(it)
+        }
+    }
+
+    /**
      * Update a user
-     * @param id
      * @param user
      * @return UserDTO
      */
@@ -251,7 +315,6 @@ class UserService(
             discordTag = user.discordTag
             discordId = user.discordId
             position = user.position
-            redditUsername = user.redditUsername
             role = user.role
             team = user.team
             wins = user.wins
@@ -291,7 +354,6 @@ class UserService(
             discordTag = user.discordTag
             discordId = user.discordId
             position = user.position
-            redditUsername = user.redditUsername
             role = user.role
             team = user.team
             wins = user.wins
@@ -318,7 +380,8 @@ class UserService(
     /**
      * Get a user by their Discord id
      */
-    fun getUserByDiscordId(id: String) = userRepository.getByDiscordId(id)
+    fun getUserByDiscordId(id: String) =
+        userRepository.getByDiscordId(id) ?: throw UserNotFoundException("User not found with Discord ID $id")
 
     /**
      * Save a user

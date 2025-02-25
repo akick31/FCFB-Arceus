@@ -45,11 +45,21 @@ class PlayController(
     fun offensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("offensiveSubmitter") offensiveSubmitter: String,
-        @RequestParam("offensiveNumber") offensiveNumber: Int,
+        @RequestParam("offensiveNumber") offensiveNumber: Int?,
         @RequestParam("playCall") playCall: PlayCall,
         @RequestParam("runoffType") runoffType: RunoffType,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean,
     ) = playService.offensiveNumberSubmitted(gameId, offensiveSubmitter, offensiveNumber, playCall, runoffType, timeoutCalled)
+
+    /**
+     * Rollback the last play
+     * @param gameId
+     * @return
+     */
+    @PutMapping("/rollback")
+    fun rollbackPlay(
+        @RequestParam("gameId") gameId: Int,
+    ) = playService.rollbackPlay(gameId)
 
     /**
      * Get a play by its id
@@ -90,5 +100,14 @@ class PlayController(
     fun getAllPlaysByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = playService.getAllPlaysByGameId(gameId)
-    // TODO: Rollback play
+
+    /**
+     * Get all plays with a user present
+     * @param discordTag
+     * @return
+     */
+    @GetMapping("/all/user")
+    fun getAllPlaysByDiscordTag(
+        @RequestParam("discordTag") discordTag: String,
+    ) = playService.getAllPlaysByDiscordTag(discordTag)
 }

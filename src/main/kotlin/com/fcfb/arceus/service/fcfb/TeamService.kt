@@ -1,5 +1,9 @@
 package com.fcfb.arceus.service.fcfb
 
+import com.fcfb.arceus.domain.CoachTransactionLog
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.FIRED
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED
+import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED_INTERIM
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.GameType
@@ -14,18 +18,24 @@ import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
 import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
 import com.fcfb.arceus.repositories.TeamRepository
+import com.fcfb.arceus.service.log.CoachTransactionLogService
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
-import com.fcfb.arceus.utils.NoTeamFoundException
+import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.TooManyCoachesException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
 @Service
 class TeamService(
     private val teamRepository: TeamRepository,
     private val userService: UserService,
+    private val coachTransactionLogService: CoachTransactionLogService,
+    private val newSignupService: NewSignupService,
 ) {
     /**
      * After a game ends, update the team's wins and losses
@@ -94,38 +104,33 @@ class TeamService(
                 awayTeam.nationalChampionshipWins += 1
             }
         }
-        updateTeam(game.homeTeam, homeTeam)
-        updateTeam(game.awayTeam, awayTeam)
+        updateTeam(homeTeam)
+        updateTeam(awayTeam)
     }
 
     /**
      * Get a team by its ID
      * @param id
      */
-    fun getTeamById(id: Int): Team {
-        val teamData = teamRepository.findById(id)
-        if (!teamData.isPresent) {
-            throw NoTeamFoundException()
-        }
-        return teamData.get()
-    }
+    fun getTeamById(id: Int) =
+        teamRepository.findById(id)
+            ?: throw TeamNotFoundException("Team not found with ID: $id")
 
     /**
      * Get all teams
      */
-    fun getAllTeams(): List<Team> {
-        val teamData = teamRepository.findAll()
-        if (!teamData.iterator().hasNext()) {
-            throw NoTeamFoundException()
+    fun getAllTeams() =
+        teamRepository.getAllActiveTeams().ifEmpty {
+            throw TeamNotFoundException("No active teams found")
         }
-        return teamData.filterNotNull()
-    }
 
     /**
      * Get a team by its name
      * @param name
      */
-    fun getTeamByName(name: String?) = teamRepository.getTeamByName(name)
+    fun getTeamByName(name: String?) =
+        teamRepository.getTeamByName(name)
+            ?: throw TeamNotFoundException("Team not found with name: $name")
 
     /**
      * Create a new team
@@ -137,16 +142,18 @@ class TeamService(
                 teamRepository.save(
                     Team(
                         team.logo,
+                        team.scorebugLogo,
                         team.coachUsernames ?: mutableListOf(),
                         team.coachNames ?: mutableListOf(),
                         team.coachDiscordTags ?: mutableListOf(),
                         team.coachDiscordIds ?: mutableListOf(),
-                        0,
                         team.name,
-                        0,
+                        team.shortName,
                         team.abbreviation,
                         team.primaryColor,
                         team.secondaryColor,
+                        0,
+                        0,
                         team.subdivision,
                         team.offensivePlaybook,
                         team.defensivePlaybook,
@@ -167,6 +174,8 @@ class TeamService(
                         0,
                         0,
                         0,
+                        false,
+                        true,
                     ),
                 )
             return newTeam
@@ -177,14 +186,10 @@ class TeamService(
 
     /**
      * Update a team
-     * @param name
      * @param team
      */
-    fun updateTeam(
-        name: String?,
-        team: Team,
-    ): Team {
-        val existingTeam = getTeamByName(name)
+    fun updateTeam(team: Team): Team {
+        val existingTeam = getTeamByName(team.name)
 
         existingTeam.apply {
             this.name = team.name
@@ -222,22 +227,46 @@ class TeamService(
     }
 
     /**
+     * Update team color
+     */
+    fun updateTeamColor(
+        team: String,
+        color: String,
+    ): Team {
+        val existingTeam = getTeamByName(team)
+        val hexRegex = Regex("^#([a-fA-F0-9]{3}|[a-fA-F0-9]{4}|[a-fA-F0-9]{6}|[a-fA-F0-9]{8})$")
+        if (!hexRegex.matches(color)) {
+            throw IllegalArgumentException("Invalid color")
+        }
+
+        existingTeam.apply {
+            primaryColor = color
+        }
+        teamRepository.save(existingTeam)
+        return existingTeam
+    }
+
+    /**
      * Hire a coach for a team
-     * @param name
+     * @param team
      * @param discordId
      * @param coachPosition
      */
     suspend fun hireCoach(
-        name: String?,
+        team: String?,
         discordId: String,
         coachPosition: CoachPosition,
+        processedBy: String,
     ): Team {
-        val updatedName = name?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedName)
+        val existingTeam = getTeamByName(team)
         val user = userService.getUserDTOByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
             HEAD_COACH -> {
+                // Fire previous coach if hiring a new head coach
+                if (existingTeam.coachUsernames != null) {
+                    fireCoach(existingTeam.name, processedBy)
+                }
                 existingTeam.coachUsernames = mutableListOf(user.username)
                 existingTeam.coachNames = mutableListOf(user.coachName)
                 existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
@@ -317,8 +346,64 @@ class TeamService(
         }
 
         withContext(Dispatchers.IO) {
+            existingTeam.isTaken = true
             saveTeam(existingTeam)
             userService.updateUser(user)
+            val signupObject = newSignupService.getNewSignupByDiscordId(discordId)
+            if (signupObject != null) {
+                newSignupService.deleteNewSignup(signupObject)
+            }
+            coachTransactionLogService.logCoachTransaction(
+                CoachTransactionLog(
+                    existingTeam.name ?: "TEAM_NOT_FOUND",
+                    coachPosition,
+                    mutableListOf(user.username),
+                    HIRED,
+                    ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                    processedBy,
+                ),
+            )
+        }
+        return existingTeam
+    }
+
+    /**
+     * Hire an interim coach for a team
+     * @param team
+     * @param discordId
+     * @param processedBy
+     */
+    suspend fun hireInterimCoach(
+        team: String?,
+        discordId: String,
+        processedBy: String,
+    ): Team {
+        val existingTeam = getTeamByName(team)
+        val user = userService.getUserDTOByDiscordId(discordId)
+
+        existingTeam.coachUsernames = mutableListOf(user.username)
+        existingTeam.coachNames = mutableListOf(user.coachName)
+        existingTeam.coachDiscordTags = mutableListOf(user.discordTag)
+        existingTeam.coachDiscordIds = mutableListOf(discordId)
+        existingTeam.offensivePlaybook = user.offensivePlaybook
+        existingTeam.defensivePlaybook = user.defensivePlaybook
+
+        withContext(Dispatchers.IO) {
+            saveTeam(existingTeam)
+            val signupObject = newSignupService.getNewSignupByDiscordId(discordId)
+            if (signupObject != null) {
+                newSignupService.deleteNewSignup(signupObject)
+            }
+            coachTransactionLogService.logCoachTransaction(
+                CoachTransactionLog(
+                    existingTeam.name ?: "TEAM_NOT_FOUND",
+                    HEAD_COACH,
+                    mutableListOf(user.username),
+                    HIRED_INTERIM,
+                    ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                    processedBy,
+                ),
+            )
         }
         return existingTeam
     }
@@ -327,25 +412,50 @@ class TeamService(
      * Fire all coaches for a team
      * @param name
      */
-    fun fireCoach(name: String?): Team {
-        val updatedName = name?.replace("_", " ")
-        val existingTeam = getTeamByName(updatedName)
+    fun fireCoach(
+        name: String?,
+        processedBy: String,
+    ): Team {
+        val existingTeam = getTeamByName(name)
         val coachDiscordIds = existingTeam.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
         for (coach in coachDiscordIds) {
             val user = userService.getUserDTOByDiscordId(coach)
-            user.team = null
-            userService.updateUser(user)
+            if (user.team == existingTeam.name) {
+                user.team = null
+                userService.updateUser(user)
+            }
         }
 
-        existingTeam.coachUsernames = mutableListOf()
-        existingTeam.coachNames = mutableListOf()
-        existingTeam.coachDiscordTags = mutableListOf()
-        existingTeam.coachDiscordIds = mutableListOf()
+        coachTransactionLogService.logCoachTransaction(
+            CoachTransactionLog(
+                existingTeam.name ?: "TEAM_NOT_FOUND",
+                HEAD_COACH,
+                existingTeam.coachUsernames,
+                FIRED,
+                ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
+                processedBy,
+            ),
+        )
+        existingTeam.coachUsernames = null
+        existingTeam.coachNames = null
+        existingTeam.coachDiscordTags = null
+        existingTeam.coachDiscordIds = null
         existingTeam.offensivePlaybook = OffensivePlaybook.AIR_RAID
         existingTeam.defensivePlaybook = DefensivePlaybook.FOUR_THREE
+        existingTeam.isTaken = false
         saveTeam(existingTeam)
         return existingTeam
     }
+
+    /**
+     * Get open teams
+     */
+    fun getOpenTeams() = teamRepository.getOpenTeams()
+
+    /**
+     * Get all teams in a conference
+     */
+    fun getTeamsInConference(conference: String) = teamRepository.getTeamsInConference(conference)
 
     /**
      * Save a team

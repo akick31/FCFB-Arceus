@@ -123,14 +123,9 @@ class Game {
     var tvChannel: TVChannel? = null
 
     @Basic
-    @Column(name = "start_time")
-    @JsonProperty("start_time")
-    var startTime: String? = null
-
-    @Basic
-    @Column(name = "location")
-    @JsonProperty("location")
-    var location: String? = null
+    @Column(name = "home_team_rank")
+    @JsonProperty("home_team_rank")
+    var homeTeamRank: Int? = 0
 
     @Basic
     @Column(name = "home_wins")
@@ -151,6 +146,11 @@ class Game {
     @Column(name = "away_losses")
     @JsonProperty("away_losses")
     var awayLosses: Int? = null
+
+    @Basic
+    @Column(name = "away_team_rank")
+    @JsonProperty("away_team_rank")
+    var awayTeamRank: Int? = 0
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -213,6 +213,18 @@ class Game {
 
     @Enumerated(EnumType.STRING)
     @Basic
+    @Column(name = "overtime_coin_toss_winner")
+    @JsonProperty("overtime_coin_toss_winner")
+    var overtimeCoinTossWinner: TeamSide? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "overtime_coin_toss_choice")
+    @JsonProperty("overtime_coin_toss_choice")
+    var overtimeCoinTossChoice: OvertimeCoinTossChoice? = null
+
+    @Enumerated(EnumType.STRING)
+    @Basic
     @Column(name = "home_platform")
     @JsonProperty("home_platform")
     lateinit var homePlatform: Platform
@@ -234,9 +246,19 @@ class Game {
     var awayPlatformId: String? = null
 
     @Basic
+    @Column(name = "last_message_timestamp")
+    @JsonProperty("last_message_timestamp")
+    var lastMessageTimestamp: String? = null
+
+    @Basic
     @Column(name = "game_timer")
     @JsonProperty("game_timer")
     var gameTimer: String? = null
+
+    @Basic
+    @Column(name = "game_warned")
+    @JsonProperty("game_warned")
+    var gameWarned: Boolean? = false
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -271,6 +293,37 @@ class Game {
     @JsonProperty("game_type")
     var gameType: GameType? = null
 
+    @Enumerated(EnumType.STRING)
+    @Basic
+    @Column(name = "game_mode")
+    @JsonProperty("game_mode")
+    var gameMode: GameMode? = null
+
+    @Basic
+    @Column(name = "overtime_half")
+    @JsonProperty("overtime_half")
+    var overtimeHalf: Int? = 0
+
+    @Basic
+    @Column(name = "close_game")
+    @JsonProperty("close_game")
+    var closeGame: Boolean = false
+
+    @Basic
+    @Column(name = "close_game_pinged")
+    @JsonProperty("close_game_pinged")
+    var closeGamePinged: Boolean = false
+
+    @Basic
+    @Column(name = "upset_alert")
+    @JsonProperty("upset_alert")
+    var upsetAlert: Boolean = false
+
+    @Basic
+    @Column(name = "upset_alert_pinged")
+    @JsonProperty("upset_alert_pinged")
+    var upsetAlertPinged: Boolean = false
+
     constructor(
         homeTeam: String,
         awayTeam: String,
@@ -291,10 +344,10 @@ class Game {
         down: Int,
         yardsToGo: Int,
         tvChannel: TVChannel?,
-        startTime: String?,
-        location: String?,
+        homeTeamRank: Int?,
         homeWins: Int?,
         homeLosses: Int?,
+        awayTeamRank: Int?,
         awayWins: Int?,
         awayLosses: Int?,
         subdivision: Subdivision?,
@@ -308,17 +361,27 @@ class Game {
         awayTimeouts: Int,
         coinTossWinner: TeamSide?,
         coinTossChoice: CoinTossChoice?,
+        overtimeCoinTossWinner: TeamSide?,
+        overtimeCoinTossChoice: OvertimeCoinTossChoice?,
         homePlatform: Platform,
         homePlatformId: String?,
         awayPlatform: Platform,
         awayPlatformId: String?,
+        lastMessageTimestamp: String?,
         gameTimer: String?,
+        gameWarned: Boolean?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         clockStopped: Boolean,
         requestMessageId: List<String>?,
         gameStatus: GameStatus?,
         gameType: GameType?,
+        gameMode: GameMode?,
+        overtimeHalf: Int?,
+        closeGame: Boolean,
+        closeGamePinged: Boolean,
+        upsetAlert: Boolean,
+        upsetAlertPinged: Boolean,
     ) {
         this.homeTeam = homeTeam
         this.awayTeam = awayTeam
@@ -339,10 +402,10 @@ class Game {
         this.down = down
         this.yardsToGo = yardsToGo
         this.tvChannel = tvChannel
-        this.startTime = startTime
-        this.location = location
+        this.homeTeamRank = homeTeamRank
         this.homeWins = homeWins
         this.homeLosses = homeLosses
+        this.awayTeamRank = awayTeamRank
         this.awayWins = awayWins
         this.awayLosses = awayLosses
         this.subdivision = subdivision
@@ -356,17 +419,27 @@ class Game {
         this.awayTimeouts = awayTimeouts
         this.coinTossWinner = coinTossWinner
         this.coinTossChoice = coinTossChoice
+        this.overtimeCoinTossWinner = overtimeCoinTossWinner
+        this.overtimeCoinTossChoice = overtimeCoinTossChoice
         this.homePlatform = homePlatform
         this.homePlatformId = homePlatformId
         this.awayPlatform = awayPlatform
         this.awayPlatformId = awayPlatformId
+        this.lastMessageTimestamp = lastMessageTimestamp
         this.gameTimer = gameTimer
+        this.gameWarned = gameWarned
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
         this.clockStopped = clockStopped
         this.requestMessageId = requestMessageId
         this.gameStatus = gameStatus
         this.gameType = gameType
+        this.gameMode = gameMode
+        this.overtimeHalf = overtimeHalf
+        this.closeGame = closeGame
+        this.closeGamePinged = closeGamePinged
+        this.upsetAlert = upsetAlert
+        this.upsetAlertPinged = upsetAlertPinged
     }
 
     constructor()
@@ -418,8 +491,9 @@ class Game {
         ;
 
         companion object {
-            fun fromString(description: String): DefensivePlaybook? {
+            fun fromString(description: String): DefensivePlaybook {
                 return entries.find { it.description == description }
+                    ?: throw IllegalArgumentException("Unknown DefensivePlaybook: $description")
             }
         }
     }
@@ -433,11 +507,17 @@ class Game {
         FS1("FS1"),
         FS2("FS2"),
         NBC("NBC"),
+        ACC_NETWORK("ACC Network"),
+        BIG_TEN_NETWORK("Big Ten Network"),
+        CBS_SPORTS_NETWORK("CBS Sports Network"),
+        THE_CW("The CW"),
+        ESPNU("ESPNU"),
+        ESPN_PLUS("ESPN+"),
+        SEC_NETWORK("SEC Network"),
     }
 
     enum class Platform(val description: String) {
         DISCORD("DISCORD"),
-        REDDIT("REDDIT"),
         ;
 
         companion object {
@@ -472,6 +552,7 @@ class Game {
         FIRST_DOWN("FIRST DOWN"),
         GAIN("GAIN"),
         NO_GAIN("NO GAIN"),
+        LOSS("LOSS"),
         TURNOVER_ON_DOWNS("TURNOVER ON DOWNS"),
         TOUCHDOWN("TOUCHDOWN"),
         SAFETY("SAFETY"),
@@ -497,12 +578,15 @@ class Game {
         PUNT_TEAM_TOUCHDOWN("PUNT TEAM TOUCHDOWN"),
         MUFFED_PUNT("MUFFED PUNT"),
         DELAY_OF_GAME("DELAY OF GAME"),
+        END_OF_HALF("END OF HALF"),
     }
 
     enum class RunoffType(val description: String) {
+        FINAL("FINAL"),
         CHEW("CHEW"),
         HURRY("HURRY"),
         NORMAL("NORMAL"),
+        NONE("NONE"),
     }
 
     enum class Scenario(val description: String) {
@@ -510,6 +594,9 @@ class Game {
         PLAY_RESULT("PLAY RESULT"),
         COIN_TOSS("COIN_TOSS"),
         COIN_TOSS_CHOICE("COIN TOSS CHOICE"),
+        OVERTIME_START("OVERTIME START"),
+        OVERTIME_COIN_TOSS("OVERTIME COIN TOSS"),
+        OVERTIME_COIN_TOSS_CHOICE("OVERTIME COIN TOSS CHOICE"),
         KICKOFF_NUMBER_REQUEST("KICKOFF NUMBER REQUEST"),
         NORMAL_NUMBER_REQUEST("NORMAL NUMBER REQUEST"),
         DM_NUMBER_REQUEST("DM NUMBER REQUEST"),
@@ -605,8 +692,14 @@ class Game {
         SIXTY_YARD_PUNT("60 YARD PUNT"),
         SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
         SEVENTY_YARD_PUNT("70 YARD PUNT"),
-        DELAY_OF_GAME("DELAY OF GAME"),
+        DELAY_OF_GAME_WARNING("DELAY OF GAME WARNING"),
+        DELAY_OF_GAME_NOTIFICATION("DELAY OF GAME NOTIFICATION"),
+        PREGAME_DELAY_OF_GAME_NOTIFICATION("PREGAME DELAY OF GAME NOTIFICATION"),
+        DELAY_OF_GAME_HOME("DELAY OF GAME ON HOME TEAM"),
+        DELAY_OF_GAME_AWAY("DELAY OF GAME ON AWAY TEAM"),
+        CHEW_MODE_ENABLED("CHEW MODE ENABLED"),
         GAME_OVER("GAME OVER"),
+        END_OF_HALF("END OF HALF"),
         ;
 
         companion object {
@@ -624,6 +717,11 @@ class Game {
     enum class CoinTossChoice(val description: String) {
         RECEIVE("receive"),
         DEFER("defer"),
+    }
+
+    enum class OvertimeCoinTossChoice(val description: String) {
+        OFFENSE("offense"),
+        DEFENSE("defense"),
     }
 
     enum class CoinTossCall(val description: String) {
@@ -653,6 +751,19 @@ class Game {
             fun fromDescription(description: String): GameType =
                 entries.find { it.description.equals(description, ignoreCase = true) }
                     ?: throw IllegalArgumentException("Unknown game type: $description")
+        }
+    }
+
+    enum class GameMode(val description: String) {
+        NORMAL("Normal"),
+        CHEW("Chew"),
+        ;
+
+        companion object {
+            @JsonCreator
+            fun fromDescription(description: String): GameMode =
+                entries.find { it.description.equals(description, ignoreCase = true) }
+                    ?: throw IllegalArgumentException("Unknown game mode: $description")
         }
     }
 }

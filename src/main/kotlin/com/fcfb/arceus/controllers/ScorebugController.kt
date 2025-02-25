@@ -1,6 +1,12 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.Team.Conference
+import com.fcfb.arceus.service.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.game.ScorebugService
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -14,13 +20,42 @@ import org.springframework.web.bind.annotation.RestController
 class ScorebugController(
     private var scorebugService: ScorebugService,
 ) {
+    @PostMapping("/generate/all")
+    fun generateAllScorebugs() = scorebugService.generateAllScorebugs()
+
     @GetMapping("")
     fun getScorebugByGameId(
         @RequestParam("gameId") gameId: Int,
     ) = scorebugService.getScorebugByGameId(gameId)
 
-    @PostMapping("/generate")
-    fun generateScorebug(
+    @GetMapping("/latest")
+    fun getLatestScorebugByGameId(
         @RequestParam("gameId") gameId: Int,
-    ) = scorebugService.generateScorebug(gameId)
+    ) = scorebugService.getLatestScorebugByGameId(gameId)
+
+    @GetMapping("/conference")
+    fun getScorebugsForConference(
+        @RequestParam("season") season: Int,
+        @RequestParam("week") week: Int,
+        @RequestParam("conference") conference: Conference,
+    ) = scorebugService.getScorebugsForConference(season, week, conference)
+
+    @GetMapping("/filtered")
+    fun getFilteredScorebugs(
+        @RequestParam(required = false) filters: List<GameFilter>?,
+        @RequestParam(required = false) category: GameCategory?,
+        @RequestParam(defaultValue = "CLOSEST_TO_END") sort: GameSort,
+        @RequestParam(required = false) conference: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) week: Int?,
+        @PageableDefault(size = 20) pageable: Pageable,
+    ) = scorebugService.getFilteredScorebugs(
+        filters = filters ?: emptyList(),
+        category = category,
+        conference = conference,
+        season = season,
+        week = week,
+        sort = sort,
+        pageable = pageable,
+    )
 }

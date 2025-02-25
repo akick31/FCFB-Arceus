@@ -1,4 +1,4 @@
-package com.fcfb.arceus.dto
+package com.fcfb.arceus.models.dto
 
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
@@ -12,7 +12,6 @@ data class UserDTO(
     var discordTag: String,
     var discordId: String?,
     var position: CoachPosition,
-    var redditUsername: String?,
     var role: Role,
     var team: String?,
     var delayOfGameInstances: Int,
@@ -31,4 +30,5 @@ data class UserDTO(
     var nationalChampionshipLosses: Int,
     var offensivePlaybook: OffensivePlaybook,
     var defensivePlaybook: DefensivePlaybook,
+    var averageResponseTime: Double,
 )

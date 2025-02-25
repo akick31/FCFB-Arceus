@@ -4,7 +4,6 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
-import java.math.BigInteger
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -95,7 +94,7 @@ class Play {
 
     @Basic
     @Column(name = "difference")
-    var difference: Int = 0
+    var difference: Int? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -156,11 +155,11 @@ class Play {
 
     @Basic
     @Column(name = "offensive_response_speed")
-    var offensiveResponseSpeed: BigInteger? = null
+    var offensiveResponseSpeed: Long? = null
 
     @Basic
     @Column(name = "defensive_response_speed")
-    var defensiveResponseSpeed: BigInteger? = null
+    var defensiveResponseSpeed: Long? = null
 
     constructor(
         gameId: Int,
@@ -195,8 +194,8 @@ class Play {
         homeTimeouts: Int,
         awayTimeouts: Int,
         playFinished: Boolean,
-        offensiveResponseSpeed: BigInteger?,
-        defensiveResponseSpeed: BigInteger?,
+        offensiveResponseSpeed: Long?,
+        defensiveResponseSpeed: Long?,
     ) {
         this.gameId = gameId
         this.driveId = driveId

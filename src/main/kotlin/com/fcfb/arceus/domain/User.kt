@@ -41,6 +41,10 @@ class User {
     lateinit var email: String
 
     @Basic
+    @Column(name = "hashed_email")
+    lateinit var hashedEmail: String
+
+    @Basic
     @Column(name = "password")
     lateinit var password: String
 
@@ -48,10 +52,6 @@ class User {
     @Basic
     @Column(name = "position")
     lateinit var position: CoachPosition
-
-    @Basic
-    @Column(name = "reddit_username")
-    var redditUsername: String? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -131,12 +131,16 @@ class User {
     lateinit var defensivePlaybook: DefensivePlaybook
 
     @Basic
-    @Column(name = "approved")
-    var approved: Byte = 0
+    @Column(name = "average_response_time")
+    var averageResponseTime: Double = 0.0
 
     @Basic
-    @Column(name = "verification_token")
-    lateinit var verificationToken: String
+    @Column(name = "reset_token")
+    var resetToken: String? = null
+
+    @Basic
+    @Column(name = "reset_token_expiration")
+    var resetTokenExpiration: String? = null
 
     constructor(
         username: String,
@@ -144,9 +148,9 @@ class User {
         discordTag: String,
         discordId: String?,
         email: String,
+        hashedEmail: String,
         password: String,
         position: CoachPosition,
-        redditUsername: String?,
         role: Role,
         salt: String,
         team: String?,
@@ -166,17 +170,18 @@ class User {
         nationalChampionshipLosses: Int,
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
-        approved: Byte,
-        verificationToken: String,
+        averageResponseTime: Double,
+        resetToken: String?,
+        resetTokenExpiration: String?,
     ) {
         this.username = username
         this.coachName = coachName
         this.discordTag = discordTag
         this.discordId = discordId
         this.email = email
+        this.hashedEmail = hashedEmail
         this.password = password
         this.position = position
-        this.redditUsername = redditUsername
         this.role = role
         this.salt = salt
         this.team = team
@@ -196,8 +201,9 @@ class User {
         this.nationalChampionshipLosses = nationalChampionshipLosses
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
-        this.approved = approved
-        this.verificationToken = verificationToken
+        this.averageResponseTime = averageResponseTime
+        this.resetToken = resetToken
+        this.resetTokenExpiration = resetTokenExpiration
     }
 
     constructor()

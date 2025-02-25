@@ -1,38 +1,39 @@
 package com.fcfb.arceus.service.auth
 
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.models.website.Session
-import com.fcfb.arceus.repositories.SessionRepository
+import com.fcfb.arceus.domain.NewSignup
+import com.fcfb.arceus.models.website.LoginResponse
 import com.fcfb.arceus.service.email.EmailService
+import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.SessionUtils
 import com.fcfb.arceus.utils.UserUnauthorizedException
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.http.ResponseEntity
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.UUID
 
 @Component
 class AuthService(
-    private val sessionUtils: SessionUtils,
     private val emailService: EmailService,
     private val userService: UserService,
-    private val sessionRepository: SessionRepository,
+    private val newSignupService: NewSignupService,
+    private val sessionService: SessionService,
+    private val passwordEncoder: PasswordEncoder,
 ) {
     /**
      * Create a new user
-     * @param user
+     * @param newSignup
      * @return
      */
-    suspend fun createUser(user: User): User {
+    fun createNewSignup(newSignup: NewSignup): NewSignup {
         try {
-            val newUser = userService.createUser(user)
-            emailService.sendVerificationEmail(newUser.email, newUser.id!!, newUser.verificationToken)
-            Logger.info("User ${user.username} registered successfully. Verification email sent.")
-            return newUser
+            val signup = newSignupService.createNewSignup(newSignup)
+            emailService.sendVerificationEmail(signup.email, signup.id, signup.verificationToken)
+            Logger.info("User ${signup.username} registered successfully. Verification email sent.")
+            return signup
         } catch (e: Exception) {
-            Logger.error("Error creating user: ", e.message)
+            Logger.error("Error creating new sign up: ", e.message)
             throw e
         }
     }
@@ -43,20 +44,16 @@ class AuthService(
      * @param password
      * @return
      */
-    fun loginUser(
+    fun login(
         usernameOrEmail: String,
         password: String,
-    ): Session {
+    ): LoginResponse {
         val user = userService.getUserByUsernameOrEmail(usernameOrEmail)
-        val passwordEncoder = BCryptPasswordEncoder()
-        return if (passwordEncoder.matches(password, user.password)) {
-            val token = sessionUtils.generateSessionToken()
-            val expirationTime = LocalDateTime.now().plusHours(1)
-            val session = sessionRepository.save(Session(user.id, token, expirationTime))
-            session
-        } else {
+        if (!passwordEncoder.matches(password, user.password)) {
             throw UserUnauthorizedException()
         }
+        val token = sessionService.generateToken(user.id)
+        return LoginResponse(token, user.id, user.role)
     }
 
     /**
@@ -64,8 +61,8 @@ class AuthService(
      * @param token
      * @return
      */
-    fun logoutUser(token: String): String {
-        sessionRepository.deleteByToken(token)
+    fun logout(token: String): String {
+        sessionService.blacklistUserSession(token)
         return "User logged out successfully"
     }
 
@@ -74,11 +71,9 @@ class AuthService(
      * @param token
      * @return
      */
-    fun verifyEmail(token: String): String {
-        val user = userService.getByVerificationToken(token)
-        user.approved = 1
-        userService.approveUser(user.id)
-        return "Email verified successfully"
+    fun verifyEmail(token: String): Boolean {
+        val newSignup = newSignupService.getByVerificationToken(token)
+        return newSignupService.approveNewSignup(newSignup)
     }
 
     /**
@@ -86,12 +81,48 @@ class AuthService(
      * @param id
      * @return
      */
-    fun resetVerificationToken(id: Long): User {
-        val user = userService.getUserById(id)
+    fun resetVerificationToken(id: Long): NewSignup {
+        val newSignup = newSignupService.getNewSignupById(id)
         val verificationToken = UUID.randomUUID().toString()
-        user.verificationToken = verificationToken
-        userService.saveUser(user)
-        emailService.sendVerificationEmail(user.email, user.id, verificationToken)
-        return user
+        newSignup.verificationToken = verificationToken
+        newSignupService.saveNewSignup(newSignup)
+        emailService.sendVerificationEmail(newSignup.email, newSignup.id, verificationToken)
+        return newSignup
+    }
+
+    /**
+     * Send password reset email
+     * @param email
+     * @return
+     */
+    fun forgotPassword(email: String): ResponseEntity<String> {
+        val user = userService.updateResetToken(email)
+
+        emailService.sendPasswordResetEmail(user.email, user.id, user.resetToken ?: "")
+        return ResponseEntity.ok("Reset email sent")
+    }
+
+    /**
+     * Reset user password
+     * @param token
+     * @param userId
+     * @param newPassword
+     * @return
+     */
+    fun resetPassword(
+        token: String,
+        userId: Long,
+        newPassword: String,
+    ): ResponseEntity<String> {
+        val user = userService.getUserById(userId)
+
+        if (user.resetToken != token ||
+            user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true
+        ) {
+            return ResponseEntity.badRequest().body("Invalid or expired token")
+        }
+
+        userService.updateUserPassword(user.id, newPassword)
+        return ResponseEntity.ok("Password updated successfully")
     }
 }

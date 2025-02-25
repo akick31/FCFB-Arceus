@@ -3,6 +3,7 @@ package com.fcfb.arceus.utils
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Component
 import java.nio.charset.StandardCharsets
+import java.security.MessageDigest
 import java.security.SecureRandom
 import java.util.Base64
 import javax.crypto.Cipher
@@ -58,5 +59,12 @@ class EncryptionUtils {
         // Decrypt and return the result
         val decryptedBytes = cipher.doFinal(encryptedBytes)
         return String(decryptedBytes, StandardCharsets.UTF_8)
+    }
+
+    fun hash(value: String): String {
+        val bytes = value.toByteArray()
+        val md = MessageDigest.getInstance("SHA-256")
+        val digest = md.digest(bytes)
+        return digest.joinToString("") { "%02x".format(it) }
     }
 }

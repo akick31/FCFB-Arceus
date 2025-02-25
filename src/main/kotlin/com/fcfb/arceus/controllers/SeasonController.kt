@@ -18,4 +18,7 @@ class SeasonController(
 
     @GetMapping("/current")
     fun getCurrentSeason() = seasonService.getCurrentSeason()
+
+    @GetMapping("/week")
+    fun getCurrentWeek() = seasonService.getCurrentWeek()
 }

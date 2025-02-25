@@ -30,15 +30,7 @@ class GameStats(
     @Basic
     @Column(name = "team")
     var team: String? = null,
-    @Basic
-    @Column(name = "team_rank")
-    var teamRank: Int = 0,
-    @Basic
-    @Column(name = "start_time")
-    var startTime: String? = null,
-    @Basic
-    @Column(name = "location")
-    var location: String? = null,
+    @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "tv_channel")
     var tvChannel: TVChannel? = null,
@@ -77,6 +69,12 @@ class GameStats(
     @Column(name = "pass_yards")
     var passYards: Int = 0,
     @Basic
+    @Column(name = "sacks_allowed")
+    var sacksAllowed: Int = 0,
+    @Basic
+    @Column(name = "sacks_forced")
+    var sacksForced: Int = 0,
+    @Basic
     @Column(name = "rush_attempts")
     var rushAttempts: Int = 0,
     @Basic
@@ -85,6 +83,12 @@ class GameStats(
     @Basic
     @Column(name = "rush_success_percentage")
     var rushSuccessPercentage: Double = 0.0,
+    @Basic
+    @Column(name = "pass_successes")
+    var passSuccesses: Int = 0,
+    @Basic
+    @Column(name = "pass_success_percentage")
+    var passSuccessPercentage: Double = 0.0,
     @Basic
     @Column(name = "rush_yards")
     var rushYards: Int = 0,
@@ -218,6 +222,9 @@ class GameStats(
     @Column(name = "average_yards_per_play")
     var averageYardsPerPlay: Double = 0.0,
     @Basic
+    @Column(name = "first_downs")
+    var firstDowns: Int = 0,
+    @Basic
     @Column(name = "third_down_conversion_success")
     var thirdDownConversionSuccess: Int = 0,
     @Basic
@@ -247,9 +254,6 @@ class GameStats(
     @Basic
     @Column(name = "rush_touchdowns")
     var rushTouchdowns: Int = 0,
-    @Basic
-    @Column(name = "record")
-    var record: String? = null,
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_type")
@@ -267,6 +271,9 @@ class GameStats(
     @Basic
     @Column(name = "red_zone_success_percentage")
     var redZoneSuccessPercentage: Double = 0.0,
+    @Basic
+    @Column(name = "red_zone_percentage")
+    var redZonePercentage: Double = 0.0,
     @Basic
     @Column(name = "average_diff")
     var averageDiff: Double? = 0.9,
@@ -291,4 +298,10 @@ class GameStats(
     @Basic
     @Column(name = "safeties_committed")
     var safetiesCommitted: Int = 0,
+    @Basic
+    @Column(name = "average_response_speed")
+    var averageResponseSpeed: Double = 0.0,
+    @Basic
+    @Column(name = "last_modified_ts")
+    var lastModifiedTs: String? = null,
 )

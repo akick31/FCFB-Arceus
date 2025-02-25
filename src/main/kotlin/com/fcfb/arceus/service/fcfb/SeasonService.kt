@@ -70,4 +70,13 @@ class SeasonService(
      * Get the current week
      */
     fun getCurrentWeek() = seasonRepository.getCurrentSeason()?.currentWeek ?: throw CurrentWeekNotFoundException()
+
+    /**
+     * Increment the current week
+     */
+    fun incrementWeek() {
+        val season = getCurrentSeason()
+        season.currentWeek = season.currentWeek.plus(1)
+        seasonRepository.save(season)
+    }
 }

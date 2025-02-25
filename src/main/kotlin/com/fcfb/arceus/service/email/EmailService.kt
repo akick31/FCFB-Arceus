@@ -1,5 +1,6 @@
 package com.fcfb.arceus.service.email
 
+import com.fcfb.arceus.utils.EncryptionUtils
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
@@ -7,9 +8,12 @@ import org.springframework.mail.javamail.JavaMailSender
 import org.springframework.stereotype.Service
 
 @Service
-class EmailService(private val mailSender: JavaMailSender) {
-    @Value("\${domain.url}")
-    private lateinit var domainUrl: String
+class EmailService(
+    private val encryptionUtils: EncryptionUtils,
+    private val mailSender: JavaMailSender,
+) {
+    @Value("\${website.url}")
+    private lateinit var websiteUrl: String
 
     /**
      * Send a verification email
@@ -26,7 +30,7 @@ class EmailService(private val mailSender: JavaMailSender) {
             
             Thank you for registering with Fake College Football! To complete your registration and gain full access to the game, please verify your email address by clicking on the following link:
             
-            $domainUrl/verify?id=$userId&token=$verificationToken
+            $websiteUrl/verify?id=$userId&token=$verificationToken
             
             After verifying your email, we invite you to join our Discord community to get your team and play the game. You can join our Discord server using the following invite link:
             
@@ -41,17 +45,40 @@ class EmailService(private val mailSender: JavaMailSender) {
         sendEmail(email, subject, emailBody)
     }
 
+    fun sendPasswordResetEmail(
+        email: String,
+        userId: Long,
+        resetToken: String,
+    ) {
+        val subject = "Reset Your FCFB Password"
+        val emailBody =
+            """
+            Dear User,
+            
+            You have requested to reset your Fake College Football password. To reset your password, please click on the following link:
+            
+            $websiteUrl/reset-password?userId=$userId&token=$resetToken
+            
+            If you did not request to reset your password, please ignore this email. This link will expire in 1 hour.
+            
+            Best regards,
+            The Fake College Football Team
+            """.trimIndent()
+
+        sendEmail(email, subject, emailBody)
+    }
+
     /**
      * Send an email
      */
-    fun sendEmail(
+    private fun sendEmail(
         to: String,
         subject: String,
         text: String,
     ) {
         try {
             val message = SimpleMailMessage()
-            message.setTo(to)
+            message.setTo(encryptionUtils.decrypt(to))
             message.setSubject(subject)
             message.setText(text)
             mailSender.send(message)

@@ -27,8 +27,24 @@ class Team {
     var id: Int? = 0
 
     @Basic
+    @Column(name = "name")
+    var name: String? = null
+
+    @Basic
+    @Column(name = "abbreviation")
+    var abbreviation: String? = null
+
+    @Basic
+    @Column(name = "short_name")
+    var shortName: String? = null
+
+    @Basic
     @Column(name = "logo")
     var logo: String? = null
+
+    @Basic
+    @Column(name = "scorebug_logo")
+    var scorebugLogo: String? = null
 
     @Type(type = "json")
     @Column(name = "coach_usernames")
@@ -47,28 +63,20 @@ class Team {
     var coachDiscordIds: MutableList<String>? = mutableListOf()
 
     @Basic
-    @Column(name = "coaches_poll_ranking")
-    var coachesPollRanking: Int? = null
-
-    @Basic
-    @Column(name = "name")
-    var name: String? = null
-
-    @Basic
-    @Column(name = "playoff_committee_ranking")
-    var playoffCommitteeRanking: Int? = null
-
-    @Basic
-    @Column(name = "abbreviation")
-    var abbreviation: String? = null
-
-    @Basic
     @Column(name = "primary_color")
     var primaryColor: String? = null
 
     @Basic
     @Column(name = "secondary_color")
     var secondaryColor: String? = null
+
+    @Basic
+    @Column(name = "coaches_poll_ranking")
+    var coachesPollRanking: Int? = null
+
+    @Basic
+    @Column(name = "playoff_committee_ranking")
+    var playoffCommitteeRanking: Int? = null
 
     @Convert(converter = SubdivisionConverter::class)
     @Column(name = "subdivision")
@@ -151,18 +159,28 @@ class Team {
     @Column(name = "national_championship_losses")
     var nationalChampionshipLosses: Int = 0
 
+    @Basic
+    @Column(name = "is_taken")
+    var isTaken: Boolean = false
+
+    @Basic
+    @Column(name = "active")
+    var active: Boolean = true
+
     constructor(
         logo: String?,
+        scorebugLogo: String?,
         coachUsernames: MutableList<String>,
         coachNames: MutableList<String>,
         coachDiscordTags: MutableList<String>,
         coachDiscordIds: MutableList<String>,
-        coachesPollRanking: Int?,
         name: String?,
-        playoffCommitteeRanking: Int?,
+        shortName: String?,
         abbreviation: String?,
         primaryColor: String?,
         secondaryColor: String?,
+        coachesPollRanking: Int?,
+        playoffCommitteeRanking: Int?,
         subdivision: Subdivision?,
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
@@ -183,18 +201,22 @@ class Team {
         playoffLosses: Int,
         nationalChampionshipWins: Int,
         nationalChampionshipLosses: Int,
+        isTaken: Boolean,
+        active: Boolean,
     ) {
         this.logo = logo
+        this.scorebugLogo = scorebugLogo
         this.coachUsernames = coachUsernames
         this.coachNames = coachNames
         this.coachDiscordTags = coachDiscordTags
         this.coachDiscordIds = coachDiscordIds
-        this.coachesPollRanking = coachesPollRanking
         this.name = name
-        this.playoffCommitteeRanking = playoffCommitteeRanking
+        this.shortName = shortName
         this.abbreviation = abbreviation
         this.primaryColor = primaryColor
         this.secondaryColor = secondaryColor
+        this.coachesPollRanking = coachesPollRanking
+        this.playoffCommitteeRanking = playoffCommitteeRanking
         this.subdivision = subdivision
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
@@ -215,6 +237,8 @@ class Team {
         this.playoffLosses = playoffLosses
         this.nationalChampionshipWins = nationalChampionshipWins
         this.nationalChampionshipLosses = nationalChampionshipLosses
+        this.isTaken = isTaken
+        this.active = active
     }
 
     constructor()

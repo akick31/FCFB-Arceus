@@ -2,8 +2,14 @@ package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
+import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
+import com.fcfb.arceus.service.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.fcfb.game.GameService
+import org.springframework.data.domain.Pageable
+import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
@@ -31,14 +37,49 @@ class GameController(
     ) = gameService.getGameById(id)
 
     /**
+     * Get all ongoing games
+     * @return
+     */
+    @GetMapping("/filtered")
+    fun getFilteredGames(
+        @RequestParam(required = false) filters: List<GameFilter>?,
+        @RequestParam(required = false) category: GameCategory?,
+        @RequestParam(defaultValue = "CLOSEST_TO_END") sort: GameSort,
+        @RequestParam(required = false) conference: String?,
+        @RequestParam(required = false) season: Int?,
+        @RequestParam(required = false) week: Int?,
+        @PageableDefault(size = 20) pageable: Pageable,
+    ) = gameService.getFilteredGames(
+        filters = filters ?: emptyList(),
+        category = category,
+        conference = conference,
+        season = season,
+        week = week,
+        sort = sort,
+        pageable = pageable,
+    )
+
+    /**
      * Start a game
      * @param startRequest
      * @return
      */
     @PostMapping("/start")
-    fun startGame(
+    suspend fun startGame(
         @RequestBody startRequest: StartRequest,
-    ) = gameService.startGame(startRequest)
+    ) = gameService.startSingleGame(startRequest, null)
+
+    /**
+     * Start all games for a week
+     * @param season
+     * @param week
+     * @return
+     */
+    @PostMapping("/start_week")
+    suspend fun startWeek(
+        @RequestParam("season") season: Int,
+        @RequestParam("week") week: Int,
+    ) = gameService.startWeek(season, week)
 
     /**
      * End a game
@@ -46,7 +87,21 @@ class GameController(
     @PostMapping("/end")
     fun endGame(
         @RequestParam("channelId") channelId: ULong,
-    ) = gameService.endGame(channelId)
+    ) = gameService.endSingleGame(channelId)
+
+    /**
+     * End all ongoing games
+     */
+    @PostMapping("/end_all")
+    fun endAllGames() = gameService.endAllGames()
+
+    /**
+     * Chew a game
+     */
+    @PostMapping("/chew")
+    fun chewGame(
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.chewGame(channelId)
 
     /**
      * Run the game's coin toss
@@ -73,6 +128,18 @@ class GameController(
     ) = gameService.makeCoinTossChoice(gameId, coinTossChoice)
 
     /**
+     * Set the coin toss offense or defense choice
+     * @param gameId
+     * @param coinTossChoice
+     * @return
+     */
+    @PutMapping("/make_overtime_coin_toss_choice")
+    fun makeCoinTossChoice(
+        @RequestParam("gameId") gameId: String,
+        @RequestParam("coinTossChoice") coinTossChoice: OvertimeCoinTossChoice,
+    ) = gameService.makeOvertimeCoinTossChoice(gameId, coinTossChoice)
+
+    /**
      * Update the request message id
      * @param gameId
      * @param requestMessageId
@@ -83,6 +150,17 @@ class GameController(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("requestMessageId") requestMessageId: String,
     ) = gameService.updateRequestMessageId(gameId, requestMessageId)
+
+    /**
+     * Update the last message timestamp
+     * @param gameId
+     * @param gameId
+     * @return
+     */
+    @PutMapping("/last_message_timestamp")
+    fun updateLastMessageTimestamp(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.updateLastMessageTimestamp(gameId)
 
     /**
      * Get the game by request message id
@@ -104,24 +182,49 @@ class GameController(
      * Sub a coach in the game for a team
      * @param gameId
      * @param team
-     * @param coachId
+     * @param discordId
      */
     @PutMapping("/sub")
-    fun subCoach(
+    fun subCoachIntoGame(
         @RequestParam("gameId") gameId: Int,
         @RequestParam("team") team: String,
-        @RequestParam("coachId") coachId: String,
-    ) = gameService.subCoach(gameId, team, coachId)
+        @RequestParam("discordId") discordId: String,
+    ) = gameService.subCoachIntoGame(gameId, team, discordId)
+
+    /**
+     * Restart a game
+     * @param channelId
+     */
+    @PostMapping("/restart")
+    suspend fun restartGame(
+        @RequestParam("channelId") channelId: ULong,
+    ) = gameService.restartGame(channelId)
+
+    /**
+     * Mark the game as having pinged the close game role
+     * @param gameId
+     */
+    @PutMapping("/close_game_pinged")
+    fun markCloseGamePinged(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.markCloseGamePinged(gameId)
+
+    /**
+     * Mark the game as having pinged the close game role
+     * @param gameId
+     */
+    @PutMapping("/upset_alert_pinged")
+    fun markUpsetAlertPinged(
+        @RequestParam("gameId") gameId: Int,
+    ) = gameService.markUpsetAlertPinged(gameId)
 
     /**
      * Delete an ongoing game
-     * @param id
+     * @param channelId
      * @return
      */
     @DeleteMapping("")
     fun deleteOngoingGame(
         @RequestParam("channelId") channelId: ULong,
     ) = gameService.deleteOngoingGame(channelId)
-
-    // TODO: end game
 }
