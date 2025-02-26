@@ -222,6 +222,9 @@ class GameStats(
     @Column(name = "average_yards_per_play")
     var averageYardsPerPlay: Double = 0.0,
     @Basic
+    @Column(name = "first_downs")
+    var firstDowns: Int = 0,
+    @Basic
     @Column(name = "third_down_conversion_success")
     var thirdDownConversionSuccess: Int = 0,
     @Basic

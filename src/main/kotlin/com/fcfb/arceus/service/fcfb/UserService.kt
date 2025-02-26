@@ -27,8 +27,18 @@ class UserService(
      * @param game
      */
     fun updateUserWinsAndLosses(game: Game) {
-        val homeUsers = getUsersByTeam(game.homeTeam)
-        val awayUsers = getUsersByTeam(game.awayTeam)
+        val homeUsers =
+            try {
+                getUsersByTeam(game.homeTeam)
+            } catch (e: Exception) {
+                emptyList()
+            }
+        val awayUsers =
+            try {
+                getUsersByTeam(game.awayTeam)
+            } catch (e: Exception) {
+                emptyList()
+            }
 
         for (user in homeUsers + awayUsers) {
             val isHomeUser = user.team == game.homeTeam
