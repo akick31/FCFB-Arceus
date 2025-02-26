@@ -1228,9 +1228,9 @@ class GameStatsService(
 
                 // If the current play is in the red zone
                 (play.ballLocation) >= 80 &&
-                        !visitedRedZoneOnDrive &&
-                        isDriveInProgress &&
-                        play.playCall != PlayCall.PAT -> {
+                    !visitedRedZoneOnDrive &&
+                    isDriveInProgress &&
+                    play.playCall != PlayCall.PAT -> {
                     // Increment the red zone attempts
                     redZoneAttempts++
                     visitedRedZoneOnDrive = true
