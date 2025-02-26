@@ -12,6 +12,7 @@ import com.fcfb.arceus.repositories.GameStatsRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.GameNotFoundException
 import com.fcfb.arceus.utils.GameStatsNotFoundException
+import com.fcfb.arceus.utils.Logger
 import org.springframework.stereotype.Component
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -64,6 +65,27 @@ class GameStatsService(
     }
 
     /**
+     * Generate game stats for all games more recent than the given game ID
+     */
+    fun generateGameStatsForGamesMoreRecentThanGameId(gameId: Int) {
+        try {
+            // Get all games more recent than the given game ID
+            val allGames =
+                gameRepository.getAllGamesMoreRecentThanGameId(gameId).ifEmpty {
+                    throw GameNotFoundException("Could not find any games more recent than game ID $gameId")
+                }
+
+            // Iterate through the games and generate the game stats
+            for (game in allGames) {
+                Logger.info("Generating game stats for game ${game.gameId}")
+                generateGameStats(game.gameId)
+            }
+        } catch (e: Exception) {
+            throw Exception("Could not generate game stats for games more recent than game ID $gameId")
+        }
+    }
+
+    /**
      * Generate game stats for all games
      */
     fun generateAllGameStats() {
@@ -76,6 +98,7 @@ class GameStatsService(
 
             // Iterate through the games and generate the game stats
             for (game in allGames) {
+                Logger.info("Generating game stats for game ${game.gameId}")
                 generateGameStats(game.gameId)
             }
         } catch (e: Exception) {
