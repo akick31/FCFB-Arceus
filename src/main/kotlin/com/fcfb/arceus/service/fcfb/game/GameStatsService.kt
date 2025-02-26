@@ -161,6 +161,10 @@ class GameStatsService(
             calculatePassYards(
                 play, stats.passYards,
             )
+        stats.longestPass =
+            calculateLongestPass(
+                play, stats.longestPass,
+            )
         stats.sacksAllowed =
             calculateSacksAllowed(
                 play, stats.sacksAllowed,
@@ -189,6 +193,10 @@ class GameStatsService(
         stats.rushYards =
             calculateRushYards(
                 play, stats.rushYards,
+            )
+        stats.longestRun =
+            calculateLongestRun(
+                play, stats.longestRun,
             )
         stats.totalYards =
             calculateTotalYards(
@@ -551,6 +559,16 @@ class GameStatsService(
         return currentPassYards
     }
 
+    private fun calculateLongestPass(
+        play: Play,
+        currentLongestPass: Int,
+    ): Int {
+        if (play.playCall == PlayCall.PASS && play.result != Scenario.INCOMPLETE) {
+            return if (play.yards > currentLongestPass) play.yards else currentLongestPass
+        }
+        return currentLongestPass
+    }
+
     private fun calculateSacksAllowed(
         play: Play,
         currentSacksAllowed: Int,
@@ -629,6 +647,16 @@ class GameStatsService(
             return currentRushYards + (play.yards)
         }
         return currentRushYards
+    }
+
+    private fun calculateLongestRun(
+        play: Play,
+        currentLongestRun: Int,
+    ): Int {
+        if (play.playCall == PlayCall.RUN && play.result != Scenario.INCOMPLETE) {
+            return if (play.yards > currentLongestRun) play.yards else currentLongestRun
+        }
+        return currentLongestRun
     }
 
     private fun calculatePassSuccesses(
@@ -1199,7 +1227,10 @@ class GameStatsService(
                 }
 
                 // If the current play is in the red zone
-                (play.ballLocation) >= 80 && !visitedRedZoneOnDrive && play.playCall != PlayCall.PAT -> {
+                (play.ballLocation) >= 80 &&
+                    !visitedRedZoneOnDrive &&
+                    isDriveInProgress &&
+                    play.playCall != PlayCall.PAT -> {
                     // Increment the red zone attempts
                     redZoneAttempts++
                     visitedRedZoneOnDrive = true

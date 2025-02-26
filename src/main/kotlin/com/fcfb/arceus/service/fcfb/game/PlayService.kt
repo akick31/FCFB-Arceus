@@ -127,7 +127,6 @@ class PlayService(
     ): Play {
         try {
             val game = gameService.getGameById(gameId)
-            val allPlays = getAllPlaysByGameId(gameId)
             var gamePlay = getPlayById(game.currentPlayId!!)
             val responseSpeed = getResponseSpeed(game)
 
@@ -141,7 +140,6 @@ class PlayService(
                     gamePlay =
                         runNormalPlay(
                             gamePlay,
-                            allPlays,
                             game,
                             playCall,
                             runoffType,
@@ -154,7 +152,6 @@ class PlayService(
                     gamePlay =
                         runPointAfterPlay(
                             gamePlay,
-                            allPlays,
                             game,
                             playCall,
                             offensiveNumber,
@@ -165,7 +162,6 @@ class PlayService(
                     gamePlay =
                         runKickoffPlay(
                             gamePlay,
-                            allPlays,
                             game,
                             playCall,
                             offensiveNumber,
@@ -176,7 +172,6 @@ class PlayService(
                     gamePlay =
                         runFieldGoalPlay(
                             gamePlay,
-                            allPlays,
                             game,
                             playCall,
                             runoffType,
@@ -189,7 +184,6 @@ class PlayService(
                     gamePlay =
                         runPuntPlay(
                             gamePlay,
-                            allPlays,
                             game,
                             playCall,
                             runoffType,
@@ -323,7 +317,6 @@ class PlayService(
      */
     private fun runNormalPlay(
         gamePlay: Play,
-        allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
@@ -583,7 +576,6 @@ class PlayService(
 
         return updatePlayValues(
             game,
-            allPlays,
             gamePlay,
             playCall,
             result,
@@ -612,7 +604,6 @@ class PlayService(
      */
     private fun runFieldGoalPlay(
         gamePlay: Play,
-        allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
@@ -712,7 +703,6 @@ class PlayService(
 
         return updatePlayValues(
             game,
-            allPlays,
             gamePlay,
             playCall,
             result,
@@ -745,7 +735,6 @@ class PlayService(
      */
     private fun runPuntPlay(
         gamePlay: Play,
-        allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
         runoffType: RunoffType,
@@ -877,7 +866,6 @@ class PlayService(
 
         return updatePlayValues(
             game,
-            allPlays,
             gamePlay,
             playCall,
             result,
@@ -910,7 +898,6 @@ class PlayService(
      */
     private fun runKickoffPlay(
         gamePlay: Play,
-        allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
         offensiveNumber: Int?,
@@ -1003,7 +990,6 @@ class PlayService(
 
         return updatePlayValues(
             game,
-            allPlays,
             gamePlay,
             playCall,
             result,
@@ -1036,7 +1022,6 @@ class PlayService(
      */
     private fun runPointAfterPlay(
         gamePlay: Play,
-        allPlays: List<Play>,
         game: Game,
         playCall: PlayCall,
         offensiveNumber: Int?,
@@ -1098,7 +1083,6 @@ class PlayService(
 
         return updatePlayValues(
             game,
-            allPlays,
             gamePlay,
             playCall,
             result,
@@ -1388,7 +1372,6 @@ class PlayService(
      */
     private fun updatePlayValues(
         game: Game,
-        allPlays: List<Play>,
         gamePlay: Play,
         playCall: PlayCall,
         result: Scenario,
@@ -1498,6 +1481,7 @@ class PlayService(
 
         scorebugService.generateScorebug(game)
 
+        val allPlays = playRepository.getAllPlaysByGameId(game.gameId)
         gameStatsService.updateGameStats(
             game,
             allPlays,
