@@ -22,6 +22,9 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
     @Query(value = "SELECT * FROM game WHERE game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllGames(): List<Game>
 
+    @Query(value = "SELECT * FROM game WHERE game_type != 'SCRIMMAGE' AND game_id >= :gameId", nativeQuery = true)
+    fun getAllGamesMoreRecentThanGameId(gameId: Int): List<Game>
+
     @Query(value = "SELECT * FROM game WHERE game_status != 'FINAL' AND game_type != 'SCRIMMAGE'", nativeQuery = true)
     fun getAllOngoingGames(): List<Game>
 

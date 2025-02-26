@@ -1348,7 +1348,6 @@ class PlayService(
     /**
      * Update the play values
      * @param game
-     * @param allPlays
      * @param gamePlay
      * @param playCall
      * @param result
