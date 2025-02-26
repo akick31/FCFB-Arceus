@@ -383,7 +383,7 @@ class PlayService(
         val clockStopped = game.clockStopped
         val runoffTime = getRunoffTime(game, clockStopped, gamePlay.clock, timeoutUsed, playCall, runoffType, offensivePlaybook)
         if (gamePlay.clock - runoffTime < 0 && (game.quarter == 2 || game.quarter == 4)) {
-            result = Scenario.ENDgit _OF_HALF
+            result = Scenario.END_OF_HALF
         }
 
         var homeScore = game.homeScore
