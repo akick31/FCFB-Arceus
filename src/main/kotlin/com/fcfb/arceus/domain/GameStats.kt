@@ -69,6 +69,9 @@ class GameStats(
     @Column(name = "pass_yards")
     var passYards: Int = 0,
     @Basic
+    @Column(name = "longest_pass")
+    var longestPass: Int = 0,
+    @Basic
     @Column(name = "sacks_allowed")
     var sacksAllowed: Int = 0,
     @Basic
@@ -92,6 +95,9 @@ class GameStats(
     @Basic
     @Column(name = "rush_yards")
     var rushYards: Int = 0,
+    @Basic
+    @Column(name = "longest_run")
+    var longestRun: Int = 0,
     @Basic
     @Column(name = "total_yards")
     var totalYards: Int = 0,

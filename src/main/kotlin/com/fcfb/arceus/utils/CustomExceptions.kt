@@ -143,3 +143,9 @@ class UserNotFoundException(message: String) : Exception(message) {
         return "UserNotFoundException: ${super.message}"
     }
 }
+
+class InvalidCoinTossChoiceException(message: String) : Exception(message) {
+    override fun toString(): String {
+        return "InvalidCoinTossChoiceException: ${super.message}"
+    }
+}

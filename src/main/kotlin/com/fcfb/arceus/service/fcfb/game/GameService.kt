@@ -28,6 +28,7 @@ import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.GameNotFoundException
+import com.fcfb.arceus.utils.InvalidCoinTossChoiceException
 import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
@@ -730,6 +731,9 @@ class GameService(
             return saveGame(game)
         } catch (e: Exception) {
             Logger.error("Error in ${game.gameId}: " + e.message!!)
+            if (e is IllegalArgumentException) {
+                throw InvalidCoinTossChoiceException("Invalid coin toss choice: $coinTossChoice")
+            }
             throw e
         }
     }
@@ -766,6 +770,9 @@ class GameService(
             return saveGame(game)
         } catch (e: Exception) {
             Logger.error("Error in ${game.gameId}: " + e.message!!)
+            if (e is IllegalArgumentException) {
+                throw InvalidCoinTossChoiceException("Invalid coin toss choice $coinTossChoice")
+            }
             throw e
         }
     }

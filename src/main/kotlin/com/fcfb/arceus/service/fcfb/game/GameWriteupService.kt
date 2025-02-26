@@ -10,13 +10,13 @@ class GameWriteupService(
     /**
      * Get a game message by scenario
      * @param scenario
-     * @param passOrRun
+     * @param playCall
      */
     fun getGameMessageByScenario(
         scenario: String,
-        passOrRun: String?,
+        playCall: String?,
     ): String {
-        val writeups = gameWriteupRepository.findByScenario(scenario, passOrRun)
+        val writeups = gameWriteupRepository.findByScenario(scenario, playCall)
 
         return if (writeups.isNotEmpty()) {
             writeups.random().message ?: "No message found"

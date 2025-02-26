@@ -21,8 +21,8 @@ class GameWriteup {
     var scenario: String? = null
 
     @Basic
-    @Column(name = "pass_or_run")
-    var passOrRun: String? = null
+    @Column(name = "play_call")
+    var playCall: String? = null
 
     @Basic
     @Column(name = "message")
@@ -30,11 +30,11 @@ class GameWriteup {
 
     constructor(
         scenario: String?,
-        passOrRun: String?,
+        playCall: String?,
         message: String?,
     ) {
         this.scenario = scenario
-        this.passOrRun = passOrRun
+        this.playCall = playCall
         this.message = message
     }
 
