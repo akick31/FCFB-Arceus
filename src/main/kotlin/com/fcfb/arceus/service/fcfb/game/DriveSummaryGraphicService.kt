@@ -1,13 +1,10 @@
 package com.fcfb.arceus.service.fcfb.game
 
-import com.fcfb.arceus.domain.Drive
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.GameStatus
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
@@ -19,13 +16,11 @@ import org.springframework.stereotype.Component
 import java.awt.AlphaComposite
 import java.awt.BasicStroke
 import java.awt.Color
-import java.awt.Font
 import java.awt.Graphics2D
 import java.awt.RenderingHints
 import java.awt.image.BufferedImage
 import java.io.File
 import javax.imageio.ImageIO
-import kotlin.properties.Delegates
 
 @Component
 class DriveSummaryGraphicService(
@@ -36,11 +31,11 @@ class DriveSummaryGraphicService(
     @Value("../app/images")
     private val imagePath: String? = null
 
-    private val folderName = "${imagePath}/driveSummaryGraphics"
+    private val folderName = "$imagePath/driveSummaryGraphics"
 
     private val fileSuffix = "png"
 
-    private fun fileName(gameId: Int) = "${folderName}/${gameId}_drive_summary.${fileSuffix}"
+    private fun fileName(gameId: Int) = "$folderName/${gameId}_drive_summary.$fileSuffix"
 
     fun getDriveSummaryGraphicByGameId(gameId: Int): ResponseEntity<ByteArray> {
         val fileName = fileName(gameId)
@@ -102,13 +97,20 @@ class DriveSummaryGraphicService(
         // Draw the yard lines
         val yardLineColor = Color.WHITE
         val goalLineColor = Color.BLACK
-        val yardLineInterval = 5  // Draw yard lines every 5 yards
+        val yardLineInterval = 5 // Draw yard lines every 5 yards
         drawYardLines(g, fieldWidth, fieldHeight, endzoneWidth, fieldScale, yardLineInterval, yardLineColor, goalLineColor)
 
         // Draw the play lines
         val playLineSpacing = 2 // Every other horizontal line is a play line
         for ((playNumber, play) in plays.withIndex()) {
-            drawPlayLine(play, playNumber + 1, playLineSpacing, g, endzoneWidth, fieldScale) // Need to add 1 to playNumber to give top space
+            drawPlayLine(
+                play,
+                playNumber + 1,
+                playLineSpacing,
+                g,
+                endzoneWidth,
+                fieldScale,
+            ) // Need to add 1 to playNumber to give top space
         }
 
         // Create a new BufferedImage for the smaller version
@@ -137,9 +139,9 @@ class DriveSummaryGraphicService(
         if (!directory.exists()) {
             // Create the directory and any necessary parent directories
             if (directory.mkdirs()) {
-                // Logger.info("Directory created: ${directory.absolutePath}")
+                Logger.info("Directory created: ${directory.absolutePath}")
             } else {
-                // Logger.error("Failed to create directory: ${directory.absolutePath}")
+                Logger.error("Failed to create directory: ${directory.absolutePath}")
             }
         }
 
@@ -149,7 +151,7 @@ class DriveSummaryGraphicService(
 
     private fun drawBaseField(
         g: Graphics2D,
-        fieldWidth: Int,  // Always 120
+        fieldWidth: Int, // Always 120
         fieldHeight: Int, // Always 60
         fieldScale: Int,
         homeEndzoneColor: Color,
@@ -280,11 +282,11 @@ class DriveSummaryGraphicService(
 
         fun isStandardPunt(): Boolean {
             return isPunt() &&
-                    !isBlockedPunt() &&
-                    !isTouchbackPunt() &&
-                    !isReturnTouchdownPunt() &&
-                    !isMuffedPunt() &&
-                    !isTouchdownPunt()
+                !isBlockedPunt() &&
+                !isTouchbackPunt() &&
+                !isReturnTouchdownPunt() &&
+                !isMuffedPunt() &&
+                !isTouchdownPunt()
         }
 
         fun isBlockedPunt(): Boolean {
@@ -436,19 +438,22 @@ class DriveSummaryGraphicService(
                 PlayCall.PUNT -> Color.BLACK // Black for punt (kicks to other team in general)
                 PlayCall.SPIKE -> Color.MAGENTA // Magenta for spike
                 PlayCall.KNEEL -> Color.CYAN // Cyan for kneel
-                PlayCall.FIELD_GOAL -> when {
-                    isMadeFieldGoal() -> Color.YELLOW // Yellow for made field goal
-                    else -> Color.BLACK // Black for missed field goal
-                }
-                PlayCall.PAT -> when {
-                    isMadePointAfter() -> Color.YELLOW // Yellow for made point after
-                    else -> Color.BLACK // Black for missed point after
-                }
-                PlayCall.TWO_POINT -> when {
-                    isSuccessfulTwoPointAttempt() -> Color.ORANGE // Orange for successful two-point attempt
-                    else -> Color.BLACK // Black for failed two-point attempt
-                }
-                else -> Color.BLACK // Black for any other play type (shouldn't happen, because there aren't any other play types; ignoring kickoffs)
+                PlayCall.FIELD_GOAL ->
+                    when {
+                        isMadeFieldGoal() -> Color.YELLOW // Yellow for made field goal
+                        else -> Color.BLACK // Black for missed field goal
+                    }
+                PlayCall.PAT ->
+                    when {
+                        isMadePointAfter() -> Color.YELLOW // Yellow for made point after
+                        else -> Color.BLACK // Black for missed point after
+                    }
+                PlayCall.TWO_POINT ->
+                    when {
+                        isSuccessfulTwoPointAttempt() -> Color.ORANGE // Orange for successful two-point attempt
+                        else -> Color.BLACK // Black for failed two-point attempt
+                    }
+                else -> Color.BLACK // Black for any other play type (shouldn't happen)
             }
         }
 
@@ -498,11 +503,16 @@ class DriveSummaryGraphicService(
         /**
          * Get the yards from the back of the left endzone
          */
-        fun getAbsoluteYardage(yardsFromOpposingEndzone: Int, endzoneWidth: Int): Int {
+        fun getAbsoluteYardage(
+            yardsFromOpposingEndzone: Int,
+            endzoneWidth: Int,
+        ): Int {
             // Add endzone width to the left side
             return when (getPlayDirection()) {
-                PlayDirection.HOME_TEAM_ON_OFFENSE -> yardsFromOpposingEndzone + endzoneWidth  // Moving towards right endzone. If the team has gone 80 yards (at opposing 20), they are 80 + endzoneWidth from the back of the left endzone
-                PlayDirection.AWAY_TEAM_ON_OFFENSE -> endzoneWidth + (100 - yardsFromOpposingEndzone)  // Moving towards left endzone. If the team has gone 80 yards (at opposing 20), they are endzoneWidth + (100 - 80) from the back of the left endzone
+                // Moving towards right endzone. Opposing 20 = 80 + endzoneWidth from back of left endzone
+                PlayDirection.HOME_TEAM_ON_OFFENSE -> yardsFromOpposingEndzone + endzoneWidth
+                // Moving towards left endzone. Opposing 20 = endzoneWidth + (100 - 80) from back of left endzone
+                PlayDirection.AWAY_TEAM_ON_OFFENSE -> endzoneWidth + (100 - yardsFromOpposingEndzone)
             }
         }
 
@@ -512,15 +522,16 @@ class DriveSummaryGraphicService(
 
         fun getPlayEndingAbsoluteYardage(endzoneWidth: Int): Int {
             val distanceType = getPlayDistanceType()
-            val yardageChange = when (distanceType) {
-                PlayDistanceType.GAIN -> startingYardsFromOppositeEndzone + yardageChange
-                PlayDistanceType.NO_GAIN -> startingYardsFromOppositeEndzone
-                PlayDistanceType.LOSS -> startingYardsFromOppositeEndzone + yardageChange // Already negative
-                PlayDistanceType.TURNOVER -> startingYardsFromOppositeEndzone + yardageChange // TODO: Audit this behavior
-                PlayDistanceType.ENDZONE -> 100 // Take them to the endzone line
-                PlayDistanceType.OTHER_ENDZONE -> 0 // Take them to the other endzone line
-                PlayDistanceType.FIELD_GOAL -> 100 + endzoneWidth // Take them to the back of the endzone
-            }
+            val yardageChange =
+                when (distanceType) {
+                    PlayDistanceType.GAIN -> startingYardsFromOppositeEndzone + yardageChange
+                    PlayDistanceType.NO_GAIN -> startingYardsFromOppositeEndzone
+                    PlayDistanceType.LOSS -> startingYardsFromOppositeEndzone + yardageChange // Already negative
+                    PlayDistanceType.TURNOVER -> startingYardsFromOppositeEndzone + yardageChange // TODO: Audit this behavior
+                    PlayDistanceType.ENDZONE -> 100 // Take them to the endzone line
+                    PlayDistanceType.OTHER_ENDZONE -> 0 // Take them to the other endzone line
+                    PlayDistanceType.FIELD_GOAL -> 100 + endzoneWidth // Take them to the back of the endzone
+                }
             return getAbsoluteYardage(yardageChange, endzoneWidth)
         }
     }
