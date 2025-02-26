@@ -14,10 +14,10 @@ import org.springframework.web.bind.annotation.RestController
 class DriveSummaryGraphicController(
     private var driveSummaryGraphicService: DriveSummaryGraphicService,
 ) {
-    //@GetMapping("")
-    //fun getDriveSummaryGraphicByGameId(
-    //    @RequestParam("gameId") gameId: Int,
-    //) = driveSummaryGraphicService.getDriveSummaryGraphicByGameId(gameId)
+    @GetMapping("")
+    fun getDriveSummaryGraphicByGameId(
+        @RequestParam("gameId") gameId: Int,
+    ) = driveSummaryGraphicService.getDriveSummaryGraphicByGameId(gameId)
 
     @PostMapping("/generate")
     fun generateDriveSummaryGraphic(
