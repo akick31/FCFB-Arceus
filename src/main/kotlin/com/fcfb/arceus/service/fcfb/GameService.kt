@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
@@ -19,14 +19,10 @@ import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
-import com.fcfb.arceus.service.GameSpecificationService
-import com.fcfb.arceus.service.GameSpecificationService.GameCategory
-import com.fcfb.arceus.service.GameSpecificationService.GameFilter
-import com.fcfb.arceus.service.GameSpecificationService.GameSort
 import com.fcfb.arceus.service.discord.DiscordService
-import com.fcfb.arceus.service.fcfb.SeasonService
-import com.fcfb.arceus.service.fcfb.TeamService
-import com.fcfb.arceus.service.fcfb.UserService
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
 import com.fcfb.arceus.utils.GameNotFoundException
 import com.fcfb.arceus.utils.InvalidCoinTossChoiceException
 import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
@@ -41,7 +37,7 @@ import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
 import org.springframework.data.domain.Sort
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.lang.Thread.sleep
 import java.sql.Timestamp
 import java.time.Instant
@@ -52,7 +48,7 @@ import java.time.format.DateTimeFormatter
 import java.util.Random
 import kotlin.math.abs
 
-@Component
+@Service
 class GameService(
     private val gameRepository: GameRepository,
     private val playRepository: PlayRepository,
@@ -647,7 +643,7 @@ class GameService(
         game.quarter += 1
         game.homeTimeouts = 1
         game.awayTimeouts = 1
-        game.waitingOn = if (possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+        game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
     }
 
     /**
@@ -1122,7 +1118,7 @@ class GameService(
                     game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
                 }
             } else {
-                if (homeScore != awayScore) {
+                if (homeScore != awayScore || game.currentPlayType == PlayType.PAT) {
                     // End of game, one team has won
                     // If the game is within 2 points, kick the PAT
                     if (isGameMathmaticallyOver(play, homeScore, awayScore)) {

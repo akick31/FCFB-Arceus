@@ -1,10 +1,10 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Team.Conference
-import com.fcfb.arceus.service.GameSpecificationService.GameCategory
-import com.fcfb.arceus.service.GameSpecificationService.GameFilter
-import com.fcfb.arceus.service.GameSpecificationService.GameSort
-import com.fcfb.arceus.service.fcfb.game.ScorebugService
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
+import com.fcfb.arceus.service.fcfb.ScorebugService
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin

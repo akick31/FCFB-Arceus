@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game.DefensivePlaybook
 import com.fcfb.arceus.domain.Game.OffensivePlaybook
@@ -8,9 +8,9 @@ import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.RangesRepository
 import com.fcfb.arceus.utils.ResultNotFoundException
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class RangesService(
     private val rangesRepository: RangesRepository,
 ) {

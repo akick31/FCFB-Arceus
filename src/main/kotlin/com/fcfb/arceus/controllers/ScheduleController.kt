@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.service.fcfb.game.ScheduleService
+import com.fcfb.arceus.service.fcfb.ScheduleService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
