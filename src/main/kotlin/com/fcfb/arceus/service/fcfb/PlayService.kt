@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
@@ -21,12 +21,12 @@ import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.NumberNotFoundException
 import com.fcfb.arceus.utils.PlayNotFoundException
 import com.fcfb.arceus.utils.ResultNotFoundException
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
-@Component
+@Service
 class PlayService(
     private val playRepository: PlayRepository,
     private val encryptionUtils: EncryptionUtils,

@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.GameStatus
@@ -7,10 +7,9 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.models.response.ScorebugResponse
-import com.fcfb.arceus.service.GameSpecificationService.GameCategory
-import com.fcfb.arceus.service.GameSpecificationService.GameFilter
-import com.fcfb.arceus.service.GameSpecificationService.GameSort
-import com.fcfb.arceus.service.fcfb.TeamService
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
 import com.fcfb.arceus.utils.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
@@ -19,7 +18,7 @@ import org.springframework.http.HttpHeaders
 import org.springframework.http.HttpStatus
 import org.springframework.http.MediaType
 import org.springframework.http.ResponseEntity
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.awt.AlphaComposite
 import java.awt.BasicStroke
 import java.awt.Color
@@ -36,7 +35,7 @@ import java.net.URL
 import java.util.Base64
 import javax.imageio.ImageIO
 
-@Component
+@Service
 class ScorebugService(
     private val teamService: TeamService,
     private val gameService: GameService,

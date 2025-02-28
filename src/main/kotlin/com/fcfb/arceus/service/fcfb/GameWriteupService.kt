@@ -1,9 +1,9 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.repositories.GameWriteupRepository
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 
-@Component
+@Service
 class GameWriteupService(
     private val gameWriteupRepository: GameWriteupRepository,
 ) {

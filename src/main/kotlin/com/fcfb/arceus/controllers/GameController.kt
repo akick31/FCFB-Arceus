@@ -4,10 +4,10 @@ import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
-import com.fcfb.arceus.service.GameSpecificationService.GameCategory
-import com.fcfb.arceus.service.GameSpecificationService.GameFilter
-import com.fcfb.arceus.service.GameSpecificationService.GameSort
-import com.fcfb.arceus.service.fcfb.game.GameService
+import com.fcfb.arceus.service.fcfb.GameService
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
+import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
 import org.springframework.data.domain.Pageable
 import org.springframework.data.web.PageableDefault
 import org.springframework.web.bind.annotation.CrossOrigin

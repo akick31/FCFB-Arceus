@@ -8,10 +8,10 @@ import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
+import com.fcfb.arceus.service.fcfb.GameService
+import com.fcfb.arceus.service.fcfb.PlayService
+import com.fcfb.arceus.service.fcfb.ScorebugService
 import com.fcfb.arceus.service.fcfb.UserService
-import com.fcfb.arceus.service.fcfb.game.GameService
-import com.fcfb.arceus.service.fcfb.game.PlayService
-import com.fcfb.arceus.service.fcfb.game.ScorebugService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service

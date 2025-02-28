@@ -1,4 +1,4 @@
-package com.fcfb.arceus.service.fcfb.game
+package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.Game.ActualResult
@@ -13,12 +13,12 @@ import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.GameNotFoundException
 import com.fcfb.arceus.utils.GameStatsNotFoundException
 import com.fcfb.arceus.utils.Logger
-import org.springframework.stereotype.Component
+import org.springframework.stereotype.Service
 import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 
-@Component
+@Service
 class GameStatsService(
     private val gameStatsRepository: GameStatsRepository,
     private val gameRepository: GameRepository,
