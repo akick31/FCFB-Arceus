@@ -16,6 +16,7 @@ import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
@@ -572,13 +573,21 @@ class GameService(
 
                 val homeUsers =
                     try {
-                        userService.getUsersByTeam(game.homeTeam)
+                        val userList = mutableListOf<User>()
+                        for (coach in game.homeCoachDiscordIds!!) {
+                            userList.add(userService.getUserByDiscordId(coach))
+                        }
+                        userList
                     } catch (e: Exception) {
                         emptyList()
                     }
                 val awayUsers =
                     try {
-                        userService.getUsersByTeam(game.awayTeam)
+                        val userList = mutableListOf<User>()
+                        for (coach in game.awayCoachDiscordIds!!) {
+                            userList.add(userService.getUserByDiscordId(coach))
+                        }
+                        userList
                     } catch (e: Exception) {
                         emptyList()
                     }
