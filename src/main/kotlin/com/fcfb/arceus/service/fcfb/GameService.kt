@@ -606,7 +606,7 @@ class GameService(
                 seasonService.endSeason(game)
             }
             saveGame(game)
-            
+
             val homeStats = gameStatsService.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
             val awayStats = gameStatsService.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
             homeStats.gameStatus = GameStatus.FINAL
