@@ -607,16 +607,6 @@ class GameService(
             }
             saveGame(game)
 
-            // Update the game stats one last time
-            gameStatsService.deleteByGameId(game.gameId)
-            val allPlays = playRepository.getAllPlaysByGameId(game.gameId)
-            for (play in allPlays) {
-                gameStatsService.updateGameStats(
-                    game,
-                    allPlays,
-                    play,
-                )
-            }
             val homeStats = gameStatsService.getGameStatsByIdAndTeam(game.gameId, game.homeTeam)
             val awayStats = gameStatsService.getGameStatsByIdAndTeam(game.gameId, game.awayTeam)
             homeStats.gameStatus = GameStatus.FINAL
