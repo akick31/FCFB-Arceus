@@ -608,6 +608,7 @@ class GameService(
             saveGame(game)
 
             // Update the game stats one last time
+            gameStatsService.deleteByGameId(game.gameId)
             val allPlays = playRepository.getAllPlaysByGameId(game.gameId)
             for (play in allPlays) {
                 gameStatsService.updateGameStats(
@@ -835,7 +836,7 @@ class GameService(
         // Get the current date and time
         val now = ZonedDateTime.now(ZoneId.of("America/New_York"))
 
-        // Add 24 hours to the current date and time
+        // Add 18 hours to the current date and time
         val futureTime = now.plusHours(18)
 
         // Define the desired date and time format
