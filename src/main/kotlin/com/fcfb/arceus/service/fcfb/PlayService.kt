@@ -1410,7 +1410,7 @@ class PlayService(
                     playTime,
                 )
             if (updatedQuarter != quarter) {
-                finalPlayTime = clock  + (420 - updatedClock)
+                finalPlayTime = clock + (420 - updatedClock)
             }
             possession = updatedPossession
             clock = updatedClock
