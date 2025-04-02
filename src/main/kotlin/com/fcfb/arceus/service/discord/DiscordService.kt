@@ -93,9 +93,7 @@ class DiscordService(
     /**
      * Notify commissioners of a new signup
      */
-    fun sendRegistrationNotice(
-        signupInfo: SignupInfo
-    ) {
+    fun sendRegistrationNotice(signupInfo: SignupInfo) {
         val discordBotUrl = "$discordBotUrl/new_signup"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON

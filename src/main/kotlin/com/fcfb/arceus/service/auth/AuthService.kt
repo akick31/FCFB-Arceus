@@ -14,7 +14,6 @@ import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDateTime
 import java.util.UUID
-import kotlin.math.sign
 
 @Component
 class AuthService(
@@ -34,13 +33,14 @@ class AuthService(
         try {
             val signup = newSignupService.createNewSignup(newSignup)
             emailService.sendVerificationEmail(signup.email, signup.id, signup.verificationToken)
-            val signupInfo = SignupInfo(
-                signup.discordTag,
-                signup.discordId ?: "",
-                signup.teamChoiceOne,
-                signup.teamChoiceTwo,
-                signup.teamChoiceThree,
-            )
+            val signupInfo =
+                SignupInfo(
+                    signup.discordTag,
+                    signup.discordId ?: "",
+                    signup.teamChoiceOne,
+                    signup.teamChoiceTwo,
+                    signup.teamChoiceThree,
+                )
             discordService.sendRegistrationNotice(signupInfo)
             Logger.info("User ${signup.username} registered successfully. Verification email sent.")
             return signup
