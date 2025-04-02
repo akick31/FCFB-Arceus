@@ -1,6 +1,7 @@
 package com.fcfb.arceus.service.discord
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.models.requests.SignupInfo
 import com.fcfb.arceus.utils.DiscordUserNotFoundException
 import com.fcfb.arceus.utils.Logger
 import com.fcfb.arceus.utils.ServerUtils
@@ -86,6 +87,21 @@ class DiscordService(
             restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
         } catch (e: Exception) {
             Logger.error("There was an error notifying the delay of game  warning for ${game.gameId}: " + e.message)
+        }
+    }
+
+    /**
+     * Notify commissioners of a new signup
+     */
+    fun sendRegistrationNotice(signupInfo: SignupInfo) {
+        val discordBotUrl = "$discordBotUrl/new_signup"
+        val headers = HttpHeaders()
+        headers.contentType = MediaType.APPLICATION_JSON
+        val requestEntity = HttpEntity(signupInfo, headers)
+        try {
+            restTemplate.postForEntity(discordBotUrl, requestEntity, String::class.java)
+        } catch (e: Exception) {
+            Logger.error("There was an error notifying the commissioners of a new signup: " + e.message)
         }
     }
 

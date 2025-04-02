@@ -1,7 +1,9 @@
 package com.fcfb.arceus.service.auth
 
 import com.fcfb.arceus.domain.NewSignup
+import com.fcfb.arceus.models.requests.SignupInfo
 import com.fcfb.arceus.models.website.LoginResponse
+import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.service.fcfb.UserService
@@ -15,6 +17,7 @@ import java.util.UUID
 
 @Component
 class AuthService(
+    private val discordService: DiscordService,
     private val emailService: EmailService,
     private val userService: UserService,
     private val newSignupService: NewSignupService,
@@ -30,6 +33,15 @@ class AuthService(
         try {
             val signup = newSignupService.createNewSignup(newSignup)
             emailService.sendVerificationEmail(signup.email, signup.id, signup.verificationToken)
+            val signupInfo =
+                SignupInfo(
+                    signup.discordTag,
+                    signup.discordId ?: "",
+                    signup.teamChoiceOne,
+                    signup.teamChoiceTwo,
+                    signup.teamChoiceThree,
+                )
+            discordService.sendRegistrationNotice(signupInfo)
             Logger.info("User ${signup.username} registered successfully. Verification email sent.")
             return signup
         } catch (e: Exception) {
