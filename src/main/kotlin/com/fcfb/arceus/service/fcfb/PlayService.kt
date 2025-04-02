@@ -1394,6 +1394,7 @@ class PlayService(
         var clock = gamePlay.clock.minus(runoffTime)
         var quarter = gamePlay.quarter
         var possession = initialPossession
+        var finalPlayTime = playTime
 
         if (playCall != PlayCall.PAT && playCall != PlayCall.TWO_POINT) {
             val (updatedPossession, updatedClock, updatedQuarter) =
@@ -1408,6 +1409,9 @@ class PlayService(
                     awayScore,
                     playTime,
                 )
+            if (updatedQuarter != quarter) {
+                finalPlayTime = clock + (420 - updatedClock)
+            }
             possession = updatedPossession
             clock = updatedClock
             quarter = updatedQuarter
@@ -1442,7 +1446,7 @@ class PlayService(
         gamePlay.result = result
         gamePlay.actualResult = actualResult
         gamePlay.yards = yards
-        gamePlay.playTime = playTime
+        gamePlay.playTime = finalPlayTime
         gamePlay.runoffTime = runoffTime
         gamePlay.difference = difference
         gamePlay.timeoutUsed = timeoutUsed
