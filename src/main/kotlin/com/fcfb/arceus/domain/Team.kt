@@ -249,6 +249,7 @@ class Team {
         BIG_12("Big 12"),
         BIG_TEN("Big Ten"),
         CUSA("C-USA"),
+        FAKE_TEAM("Fake Team"),
         FBS_INDEPENDENT("FBS Independent"),
         MAC("MAC"),
         MOUNTAIN_WEST("Mountain West"),

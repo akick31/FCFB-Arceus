@@ -458,6 +458,7 @@ class Game {
         FCFB("FCFB"),
         FBS("FBS"),
         FCS("FCS"),
+        FAKE("FAKE"),
         ;
 
         companion object {
