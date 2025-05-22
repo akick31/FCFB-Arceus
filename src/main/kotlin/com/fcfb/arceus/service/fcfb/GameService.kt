@@ -5,15 +5,22 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.CoinTossCall
 import com.fcfb.arceus.domain.Game.CoinTossChoice
 import com.fcfb.arceus.domain.Game.GameMode
+import com.fcfb.arceus.domain.Game.GameMode.NORMAL
 import com.fcfb.arceus.domain.Game.GameStatus
+import com.fcfb.arceus.domain.Game.GameStatus.END_OF_REGULATION
+import com.fcfb.arceus.domain.Game.GameStatus.PREGAME
 import com.fcfb.arceus.domain.Game.GameType
+import com.fcfb.arceus.domain.Game.GameType.SCRIMMAGE
 import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.Game.Platform
 import com.fcfb.arceus.domain.Game.PlayCall
 import com.fcfb.arceus.domain.Game.PlayType
+import com.fcfb.arceus.domain.Game.PlayType.KICKOFF
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.Game.TeamSide.AWAY
+import com.fcfb.arceus.domain.Game.TeamSide.HOME
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.User
@@ -34,6 +41,8 @@ import com.fcfb.arceus.utils.NoGameFoundException
 import com.fcfb.arceus.utils.TeamNotFoundException
 import com.fcfb.arceus.utils.UnableToCreateGameThreadException
 import com.fcfb.arceus.utils.UnableToDeleteGameException
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import org.springframework.data.domain.Page
 import org.springframework.data.domain.PageRequest
 import org.springframework.data.domain.Pageable
@@ -70,8 +79,8 @@ class GameService(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
-        val game = startGame(startRequest, week)
-        if (startRequest.gameType != GameType.SCRIMMAGE) {
+        val game = startNormalGame(startRequest, week)
+        if (startRequest.gameType != SCRIMMAGE) {
             scheduleService.markManuallyStartedGameAsStarted(game)
         }
         return game
@@ -82,7 +91,7 @@ class GameService(
      * @param startRequest
      * @return
      */
-    private suspend fun startGame(
+    private suspend fun startNormalGame(
         startRequest: StartRequest,
         week: Int?,
     ): Game {
@@ -119,126 +128,240 @@ class GameService(
             val homePlatform = Platform.DISCORD
             val awayPlatform = Platform.DISCORD
 
-            var (season, currentWeek) =
-                if (startRequest.gameType != GameType.SCRIMMAGE) {
-                    seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
-                } else {
-                    null to null
-                }
-
-            if (week != null) {
-                currentWeek = week
-            }
-
-            val homeTeamRank =
-                if (homeTeamData.playoffCommitteeRanking != null && homeTeamData.playoffCommitteeRanking != 0) {
-                    homeTeamData.playoffCommitteeRanking
-                } else {
-                    homeTeamData.coachesPollRanking ?: 0
-                }
-
-            val awayTeamRank =
-                if (awayTeamData.playoffCommitteeRanking != null && awayTeamData.playoffCommitteeRanking != 0) {
-                    awayTeamData.playoffCommitteeRanking
-                } else {
-                    awayTeamData.coachesPollRanking ?: 0
-                }
+            val (season, currentWeek) = getCurrentSeasonAndWeek(startRequest, week)
+            val (homeTeamRank, awayTeamRank) = getTeamRanks(homeTeamData, awayTeamData)
 
             // Create and save the Game object and Stats object
             val newGame =
-                gameRepository.save(
-                    Game(
-                        homeTeam = homeTeam,
-                        awayTeam = awayTeam,
-                        homeCoaches = homeCoachUsernames,
-                        awayCoaches = awayCoachUsernames,
-                        homeCoachDiscordIds = homeCoachDiscordIds,
-                        awayCoachDiscordIds = awayCoachDiscordIds,
-                        homeOffensivePlaybook = homeOffensivePlaybook,
-                        awayOffensivePlaybook = awayOffensivePlaybook,
-                        homeDefensivePlaybook = homeDefensivePlaybook,
-                        awayDefensivePlaybook = awayDefensivePlaybook,
-                        homeScore = 0,
-                        awayScore = 0,
-                        possession = TeamSide.HOME,
-                        quarter = 1,
-                        clock = "7:00",
-                        ballLocation = 35,
-                        down = 1,
-                        yardsToGo = 10,
-                        tvChannel = startRequest.tvChannel,
-                        homeTeamRank = homeTeamRank,
-                        homeWins = homeTeamData.currentWins,
-                        homeLosses = homeTeamData.currentLosses,
-                        awayTeamRank = awayTeamRank,
-                        awayWins = awayTeamData.currentWins,
-                        awayLosses = awayTeamData.currentLosses,
-                        subdivision = subdivision,
-                        timestamp = LocalDateTime.now().toString(),
-                        winProbability = 0.0,
-                        season = season,
-                        week = currentWeek,
-                        waitingOn = TeamSide.AWAY,
-                        numPlays = 0,
-                        homeTimeouts = 3,
-                        awayTimeouts = 3,
-                        coinTossWinner = null,
-                        coinTossChoice = null,
-                        overtimeCoinTossWinner = null,
-                        overtimeCoinTossChoice = null,
-                        homePlatform = homePlatform,
-                        homePlatformId = null,
-                        awayPlatform = awayPlatform,
-                        awayPlatformId = null,
-                        lastMessageTimestamp = null,
-                        gameTimer = formattedDateTime,
-                        gameWarned = false,
-                        currentPlayType = PlayType.KICKOFF,
-                        currentPlayId = 0,
-                        clockStopped = true,
-                        requestMessageId = null,
-                        gameType = startRequest.gameType,
-                        gameStatus = GameStatus.PREGAME,
-                        gameMode = GameMode.NORMAL,
-                        overtimeHalf = 0,
-                        closeGame = false,
-                        closeGamePinged = false,
-                        upsetAlert = false,
-                        upsetAlertPinged = false,
-                    ),
-                )
+                withContext(Dispatchers.IO) {
+                    gameRepository.save(
+                        Game(
+                            homeTeam = homeTeam,
+                            awayTeam = awayTeam,
+                            homeCoaches = homeCoachUsernames,
+                            awayCoaches = awayCoachUsernames,
+                            homeCoachDiscordIds = homeCoachDiscordIds,
+                            awayCoachDiscordIds = awayCoachDiscordIds,
+                            homeOffensivePlaybook = homeOffensivePlaybook,
+                            awayOffensivePlaybook = awayOffensivePlaybook,
+                            homeDefensivePlaybook = homeDefensivePlaybook,
+                            awayDefensivePlaybook = awayDefensivePlaybook,
+                            homeScore = 0,
+                            awayScore = 0,
+                            possession = HOME,
+                            quarter = 1,
+                            clock = "7:00",
+                            ballLocation = 35,
+                            down = 1,
+                            yardsToGo = 10,
+                            tvChannel = startRequest.tvChannel,
+                            homeTeamRank = homeTeamRank,
+                            homeWins = homeTeamData.currentWins,
+                            homeLosses = homeTeamData.currentLosses,
+                            awayTeamRank = awayTeamRank,
+                            awayWins = awayTeamData.currentWins,
+                            awayLosses = awayTeamData.currentLosses,
+                            subdivision = subdivision,
+                            timestamp = LocalDateTime.now().toString(),
+                            winProbability = 0.0,
+                            season = season,
+                            week = currentWeek,
+                            waitingOn = AWAY,
+                            numPlays = 0,
+                            homeTimeouts = 3,
+                            awayTimeouts = 3,
+                            coinTossWinner = null,
+                            coinTossChoice = null,
+                            overtimeCoinTossWinner = null,
+                            overtimeCoinTossChoice = null,
+                            homePlatform = homePlatform,
+                            homePlatformId = null,
+                            awayPlatform = awayPlatform,
+                            awayPlatformId = null,
+                            lastMessageTimestamp = null,
+                            gameTimer = formattedDateTime,
+                            gameWarned = false,
+                            currentPlayType = KICKOFF,
+                            currentPlayId = 0,
+                            clockStopped = true,
+                            requestMessageId = null,
+                            gameType = startRequest.gameType,
+                            gameStatus = PREGAME,
+                            gameMode = NORMAL,
+                            overtimeHalf = 0,
+                            closeGame = false,
+                            closeGamePinged = false,
+                            upsetAlert = false,
+                            upsetAlertPinged = false,
+                        ),
+                    )
+                }
 
             // Create a new Discord thread
-            val discordData =
-                discordService.startGameThread(newGame)
-                    ?: run {
-                        deleteOngoingGame(
-                            newGame.homePlatformId?.toULong() ?: newGame.awayPlatformId?.toULong()
-                                ?: throw UnableToDeleteGameException(),
-                        )
-                        throw UnableToCreateGameThreadException()
-                    }
-
-            if (discordData[0] == "null") {
-                deleteOngoingGame(
-                    newGame.homePlatformId?.toULong() ?: newGame.awayPlatformId?.toULong()
-                        ?: throw UnableToDeleteGameException(),
-                )
-                throw UnableToCreateGameThreadException()
-            }
-
+            val discordData = createDiscordThread(newGame)
             newGame.homePlatformId = discordData[0]
             newGame.awayPlatformId = discordData[0]
             newGame.requestMessageId = listOf(discordData[1])
 
             // Save the updated entity and create game stats
-            gameRepository.save(newGame)
+            withContext(Dispatchers.IO) {
+                gameRepository.save(newGame)
+            }
             gameStatsService.createGameStats(newGame)
 
-            Logger.info("Game started: ${newGame.homeTeam} vs ${newGame.awayTeam}")
+            Logger.info("Game started.\n" +
+                    "Game ID: ${newGame.gameId}\n" +
+                    "Game Type: ${newGame.gameType}\n" +
+                    "Game Status: ${newGame.gameStatus}\n" +
+                    "Home team: ${newGame.homeTeam}\n" +
+                    "Away team: ${newGame.awayTeam}\n")
             return newGame
         } catch (e: Exception) {
-            Logger.error("Error starting ${startRequest.homeTeam} vs ${startRequest.awayTeam}: " + e.message!!)
+            Logger.error("Error starting game.\n" +
+                    "Error Message: ${e.message!!}\n" +
+                    "Game Type: ${startRequest.gameType}\n" +
+                    "Home team: ${startRequest.homeTeam}\n" +
+                    "Away team: ${startRequest.awayTeam}\n"
+            )
+            throw e
+        }
+    }
+
+    /**
+     * Start an overtime game
+     * @param startRequest
+     * @return
+     */
+    suspend fun startOvertimeGame(
+        startRequest: StartRequest
+    ): Game {
+        try {
+            val homeTeamData = teamService.getTeamByName(startRequest.homeTeam)
+            val awayTeamData = teamService.getTeamByName(startRequest.awayTeam)
+
+            val formattedDateTime = calculateDelayOfGameTimer()
+
+            // Validate request fields
+            val homeTeam = homeTeamData.name ?: throw TeamNotFoundException("Home team not found")
+            val awayTeam = awayTeamData.name ?: throw TeamNotFoundException("Away team not found")
+
+            val homeCoachUsernames = homeTeamData.coachUsernames ?: throw NoCoachesFoundException()
+            val awayCoachUsernames = awayTeamData.coachUsernames ?: throw NoCoachesFoundException()
+            val homeCoachDiscordIds = homeTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+            val awayCoachDiscordIds = awayTeamData.coachDiscordIds ?: throw NoCoachDiscordIdsFoundException()
+
+            if (homeCoachUsernames.isEmpty() || awayCoachUsernames.isEmpty()
+            ) {
+                throw NoCoachesFoundException()
+            }
+
+            if (homeCoachDiscordIds.isEmpty() || awayCoachDiscordIds.isEmpty()
+            ) {
+                throw NoCoachDiscordIdsFoundException()
+            }
+
+            val homeOffensivePlaybook = homeTeamData.offensivePlaybook
+            val awayOffensivePlaybook = awayTeamData.offensivePlaybook
+            val homeDefensivePlaybook = homeTeamData.defensivePlaybook
+            val awayDefensivePlaybook = awayTeamData.defensivePlaybook
+            val subdivision = startRequest.subdivision
+            val homePlatform = Platform.DISCORD
+            val awayPlatform = Platform.DISCORD
+
+            val (homeTeamRank, awayTeamRank) = getTeamRanks(homeTeamData, awayTeamData)
+
+            // Create and save the Game object and Stats object
+            val newGame =
+                withContext(Dispatchers.IO) {
+                    gameRepository.save(
+                        Game(
+                            homeTeam = homeTeam,
+                            awayTeam = awayTeam,
+                            homeCoaches = homeCoachUsernames,
+                            awayCoaches = awayCoachUsernames,
+                            homeCoachDiscordIds = homeCoachDiscordIds,
+                            awayCoachDiscordIds = awayCoachDiscordIds,
+                            homeOffensivePlaybook = homeOffensivePlaybook,
+                            awayOffensivePlaybook = awayOffensivePlaybook,
+                            homeDefensivePlaybook = homeDefensivePlaybook,
+                            awayDefensivePlaybook = awayDefensivePlaybook,
+                            homeScore = 0,
+                            awayScore = 0,
+                            possession = HOME,
+                            quarter = 5,
+                            clock = "0:00",
+                            ballLocation = 25,
+                            down = 1,
+                            yardsToGo = 10,
+                            tvChannel = startRequest.tvChannel,
+                            homeTeamRank = homeTeamRank,
+                            homeWins = homeTeamData.currentWins,
+                            homeLosses = homeTeamData.currentLosses,
+                            awayTeamRank = awayTeamRank,
+                            awayWins = awayTeamData.currentWins,
+                            awayLosses = awayTeamData.currentLosses,
+                            subdivision = subdivision,
+                            timestamp = LocalDateTime.now().toString(),
+                            winProbability = 0.0,
+                            season = null,
+                            week = null,
+                            waitingOn = AWAY,
+                            numPlays = 0,
+                            homeTimeouts = 1,
+                            awayTimeouts = 1,
+                            coinTossWinner = null,
+                            coinTossChoice = null,
+                            overtimeCoinTossWinner = null,
+                            overtimeCoinTossChoice = null,
+                            homePlatform = homePlatform,
+                            homePlatformId = null,
+                            awayPlatform = awayPlatform,
+                            awayPlatformId = null,
+                            lastMessageTimestamp = null,
+                            gameTimer = formattedDateTime,
+                            gameWarned = false,
+                            currentPlayType = PlayType.NORMAL,
+                            currentPlayId = 0,
+                            clockStopped = true,
+                            requestMessageId = null,
+                            gameType = SCRIMMAGE,
+                            gameStatus = END_OF_REGULATION,
+                            gameMode = NORMAL,
+                            overtimeHalf = 0,
+                            closeGame = false,
+                            closeGamePinged = false,
+                            upsetAlert = false,
+                            upsetAlertPinged = false,
+                        ),
+                    )
+                }
+
+            // Create a new Discord thread
+            val discordData = createDiscordThread(newGame)
+            newGame.homePlatformId = discordData[0]
+            newGame.awayPlatformId = discordData[0]
+            newGame.requestMessageId = listOf(discordData[1])
+
+            // Save the updated entity and create game stats
+            withContext(Dispatchers.IO) {
+                gameRepository.save(newGame)
+            }
+            gameStatsService.createGameStats(newGame)
+
+            Logger.info("Overtime game started.\n" +
+                "Game ID: ${newGame.gameId}\n" +
+                "Game Type: ${newGame.gameType}\n" +
+                "Game Status: ${newGame.gameStatus}\n" +
+                "Home team: ${newGame.homeTeam}\n" +
+                "Away team: ${newGame.awayTeam}\n")
+            return newGame
+        } catch (e: Exception) {
+            Logger.error("Error starting overtime game.\n" +
+                "Error Message: ${e.message!!}\n" +
+                "Game Type: ${startRequest.gameType}\n" +
+                "Home team: ${startRequest.homeTeam}\n" +
+                "Away team: ${startRequest.awayTeam}\n"
+            )
             throw e
         }
     }
@@ -494,7 +617,7 @@ class GameService(
                     Logger.info("Block of 25 games started, sleeping for 5 minutes")
                 }
                 val startedGame =
-                    startGame(
+                    startNormalGame(
                         StartRequest(
                             Platform.DISCORD,
                             Platform.DISCORD,
@@ -684,13 +807,13 @@ class GameService(
                     (result == 1 && coinTossCall == CoinTossCall.HEADS) ||
                     (result == 0 && coinTossCall == CoinTossCall.TAILS)
                 ) {
-                    TeamSide.AWAY
+                    AWAY
                 } else {
-                    TeamSide.HOME
+                    HOME
                 }
-            if (game.gameStatus == GameStatus.PREGAME) {
+            if (game.gameStatus == PREGAME) {
                 game.coinTossWinner = coinTossWinner
-            } else if (game.gameStatus == GameStatus.END_OF_REGULATION) {
+            } else if (game.gameStatus == END_OF_REGULATION) {
                 game.overtimeCoinTossWinner = coinTossWinner
             }
             game.gameTimer = calculateDelayOfGameTimer()
@@ -800,7 +923,7 @@ class GameService(
                 game.tvChannel,
                 game.gameType ?: GameType.SCRIMMAGE,
             )
-        return startGame(startRequest, game.week)
+        return startNormalGame(startRequest, game.week)
     }
 
     /**
@@ -1494,6 +1617,12 @@ class GameService(
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
             play.actualResult == ActualResult.KICK_SIX
 
+    /**
+     * Check if the game is mathematically over
+     * @param play
+     * @param homeScore
+     * @param awayScore
+     */
     private fun isGameMathmaticallyOver(
         play: Play,
         homeScore: Int,
@@ -1503,4 +1632,78 @@ class GameService(
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
             play.actualResult == ActualResult.KICK_SIX
     ) && (abs(homeScore - awayScore) <= 2 || abs(awayScore - homeScore) <= 2)
+
+    /**
+     * Create a Discord thread for the game and get the data from it
+     * @param game
+     * @return
+     */
+    private suspend fun createDiscordThread(
+        game: Game
+    ): List<String> {
+        val discordData =
+            discordService.createGameThread(game)
+                ?: run {
+                    deleteOngoingGame(
+                        game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
+                        ?: throw UnableToDeleteGameException(),
+                    )
+                    throw UnableToCreateGameThreadException()
+                }
+
+        if (discordData[0] == "null") {
+            deleteOngoingGame(
+                game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
+                ?: throw UnableToDeleteGameException(),
+            )
+            throw UnableToCreateGameThreadException()
+        }
+        return discordData
+    }
+
+    /**
+     * Get the current season and week
+     * @param startRequest
+     * @param week
+     */
+    private fun getCurrentSeasonAndWeek(
+        startRequest: StartRequest,
+        week: Int?,
+    ): Pair<Int?, Int?> {
+        var (season, currentWeek) = if (startRequest.gameType != SCRIMMAGE) {
+            seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
+        } else {
+            null to null
+        }
+
+        if (week != null) {
+            currentWeek = week
+        }
+        return season to currentWeek
+    }
+
+    /**
+     * Get the team ranks for a game
+     * @param homeTeamData
+     * @param awayTeamData
+     */
+    private fun getTeamRanks(
+        homeTeamData: Team,
+        awayTeamData: Team,
+    ): Pair<Int, Int> {
+        val homeTeamRank =
+            if (homeTeamData.playoffCommitteeRanking != null && homeTeamData.playoffCommitteeRanking != 0) {
+                homeTeamData.playoffCommitteeRanking ?: 0
+            } else {
+                homeTeamData.coachesPollRanking ?: 0
+            }
+
+        val awayTeamRank =
+            if (awayTeamData.playoffCommitteeRanking != null && awayTeamData.playoffCommitteeRanking != 0) {
+                awayTeamData.playoffCommitteeRanking ?: 0
+            } else {
+                awayTeamData.coachesPollRanking ?: 0
+            }
+        return Pair(homeTeamRank, awayTeamRank)
+    }
 }

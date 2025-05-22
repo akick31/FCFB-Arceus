@@ -35,7 +35,7 @@ class DiscordService(
      * @param game
      * @return List<String>?
      */
-    suspend fun startGameThread(game: Game): List<String>? {
+    suspend fun createGameThread(game: Game): List<String>? {
         val discordBotUrl = "$discordBotUrl/start_game"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
