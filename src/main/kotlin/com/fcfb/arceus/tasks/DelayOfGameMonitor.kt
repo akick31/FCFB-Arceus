@@ -12,7 +12,6 @@ import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.PlayService
 import com.fcfb.arceus.service.fcfb.ScorebugService
-import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.service.fcfb.UserService
 import com.fcfb.arceus.utils.Logger
 import org.springframework.scheduling.annotation.Scheduled
@@ -26,7 +25,6 @@ class DelayOfGameMonitor(
     private val discordService: DiscordService,
     private val scorebugService: ScorebugService,
     private val playRepository: PlayRepository,
-    private val teamService: TeamService,
 ) {
     /**
      * Checks for delay of game every minute
