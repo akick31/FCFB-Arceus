@@ -35,22 +35,24 @@ class DelayOfGameMonitor(
         warnedGamesFirstInstance.forEach { game ->
             discordService.notifyWarning(game, 1)
             gameService.updateGameAsWarned(game.gameId, 1)
-            Logger.info("Delay of game warning.\n" +
-                "Game ID: ${game.gameId}\n" +
-                "Home Team: ${game.homeTeam}\n" +
-                "Away Team: ${game.awayTeam}\n" +
-                "Instance: 1\n"
+            Logger.info(
+                "Delay of game warning.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Home Team: ${game.homeTeam}\n" +
+                    "Away Team: ${game.awayTeam}\n" +
+                    "Instance: 1\n",
             )
         }
         val warnedGamesSecondInstance = gameService.findGamesToWarnSecondInstance()
         warnedGamesSecondInstance.forEach { game ->
             discordService.notifyWarning(game, 2)
             gameService.updateGameAsWarned(game.gameId, 2)
-            Logger.info("Delay of game warning.\n" +
+            Logger.info(
+                "Delay of game warning.\n" +
                     "Game ID: ${game.gameId}\n" +
                     "Home Team: ${game.homeTeam}\n" +
                     "Away Team: ${game.awayTeam}\n" +
-                    "Instance: 2\n"
+                    "Instance: 2\n",
             )
         }
         val expiredGames = gameService.findExpiredTimers()

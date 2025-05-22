@@ -73,7 +73,7 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
 
     @Query(
         value =
-        "SELECT * FROM game " +
+            "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') " +
                 "BETWEEN CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 6 HOUR) " +

@@ -210,19 +210,22 @@ class GameService(
             }
             gameStatsService.createGameStats(newGame)
 
-            Logger.info("Game started.\n" +
+            Logger.info(
+                "Game started.\n" +
                     "Game ID: ${newGame.gameId}\n" +
                     "Game Type: ${newGame.gameType}\n" +
                     "Game Status: ${newGame.gameStatus}\n" +
                     "Home team: ${newGame.homeTeam}\n" +
-                    "Away team: ${newGame.awayTeam}\n")
+                    "Away team: ${newGame.awayTeam}\n",
+            )
             return newGame
         } catch (e: Exception) {
-            Logger.error("Error starting game.\n" +
+            Logger.error(
+                "Error starting game.\n" +
                     "Error Message: ${e.message!!}\n" +
                     "Game Type: ${startRequest.gameType}\n" +
                     "Home team: ${startRequest.homeTeam}\n" +
-                    "Away team: ${startRequest.awayTeam}\n"
+                    "Away team: ${startRequest.awayTeam}\n",
             )
             throw e
         }
@@ -233,9 +236,7 @@ class GameService(
      * @param startRequest
      * @return
      */
-    suspend fun startOvertimeGame(
-        startRequest: StartRequest
-    ): Game {
+    suspend fun startOvertimeGame(startRequest: StartRequest): Game {
         try {
             val homeTeamData = teamService.getTeamByName(startRequest.homeTeam)
             val awayTeamData = teamService.getTeamByName(startRequest.awayTeam)
@@ -349,19 +350,22 @@ class GameService(
             }
             gameStatsService.createGameStats(newGame)
 
-            Logger.info("Overtime game started.\n" +
-                "Game ID: ${newGame.gameId}\n" +
-                "Game Type: ${newGame.gameType}\n" +
-                "Game Status: ${newGame.gameStatus}\n" +
-                "Home team: ${newGame.homeTeam}\n" +
-                "Away team: ${newGame.awayTeam}\n")
+            Logger.info(
+                "Overtime game started.\n" +
+                    "Game ID: ${newGame.gameId}\n" +
+                    "Game Type: ${newGame.gameType}\n" +
+                    "Game Status: ${newGame.gameStatus}\n" +
+                    "Home team: ${newGame.homeTeam}\n" +
+                    "Away team: ${newGame.awayTeam}\n",
+            )
             return newGame
         } catch (e: Exception) {
-            Logger.error("Error starting overtime game.\n" +
-                "Error Message: ${e.message!!}\n" +
-                "Game Type: ${startRequest.gameType}\n" +
-                "Home team: ${startRequest.homeTeam}\n" +
-                "Away team: ${startRequest.awayTeam}\n"
+            Logger.error(
+                "Error starting overtime game.\n" +
+                    "Error Message: ${e.message!!}\n" +
+                    "Game Type: ${startRequest.gameType}\n" +
+                    "Home team: ${startRequest.homeTeam}\n" +
+                    "Away team: ${startRequest.awayTeam}\n",
             )
             throw e
         }
@@ -588,9 +592,11 @@ class GameService(
             gameStatsService.generateGameStats(game.gameId)
             saveGame(game)
         } catch (e: Exception) {
-            Logger.error("Error rolling back play.\n" +
+            Logger.error(
+                "Error rolling back play.\n" +
                     "Game ID: ${game.gameId}\n" +
-                    "Error Message: ${e.message!!}")
+                    "Error Message: ${e.message!!}",
+            )
             throw e
         }
     }
@@ -741,17 +747,20 @@ class GameService(
             awayStats.gameStatus = GameStatus.FINAL
             gameStatsService.saveGameStats(homeStats)
             gameStatsService.saveGameStats(awayStats)
-            Logger.info("Game ended.\n" +
+            Logger.info(
+                "Game ended.\n" +
                     "Game ID: ${game.gameId}\n" +
                     "Game Type: ${game.gameType}\n" +
                     "Home team: ${game.homeTeam}\n" +
-                    "Away team: ${game.awayTeam}\n"
+                    "Away team: ${game.awayTeam}\n",
             )
             return game
         } catch (e: Exception) {
-            Logger.error("Error ending game.\n" +
+            Logger.error(
+                "Error ending game.\n" +
                     "Game ID: ${game.gameId}\n" +
-                    "Error Message: ${e.message!!}")
+                    "Error Message: ${e.message!!}",
+            )
             throw e
         }
     }
@@ -760,9 +769,7 @@ class GameService(
      * End the overtime period and advance to the next one
      * @param game
      */
-    private fun endOvertimePeriod(
-        game: Game,
-    ) {
+    private fun endOvertimePeriod(game: Game) {
         game.overtimeHalf = 1
         game.possession =
             if (game.possession == HOME) {
@@ -1396,12 +1403,14 @@ class GameService(
      * Update a game as warned
      * @param gameId
      */
-    fun updateGameAsWarned(gameId: Int, instance: Int) =
-        if (instance == 1) {
-            gameRepository.updateGameAsFirstWarning(gameId)
-        } else {
-            gameRepository.updateGameAsSecondWarning(gameId)
-        }
+    fun updateGameAsWarned(
+        gameId: Int,
+        instance: Int,
+    ) = if (instance == 1) {
+        gameRepository.updateGameAsFirstWarning(gameId)
+    } else {
+        gameRepository.updateGameAsSecondWarning(gameId)
+    }
 
     /**
      * Mark a game as close game pinged
@@ -1660,15 +1669,13 @@ class GameService(
      * @param game
      * @return
      */
-    private suspend fun createDiscordThread(
-        game: Game
-    ): List<String> {
+    private suspend fun createDiscordThread(game: Game): List<String> {
         val discordData =
             discordService.createGameThread(game)
                 ?: run {
                     deleteOngoingGame(
                         game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
-                        ?: throw UnableToDeleteGameException(),
+                            ?: throw UnableToDeleteGameException(),
                     )
                     throw UnableToCreateGameThreadException()
                 }
@@ -1676,7 +1683,7 @@ class GameService(
         if (discordData[0] == "null") {
             deleteOngoingGame(
                 game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
-                ?: throw UnableToDeleteGameException(),
+                    ?: throw UnableToDeleteGameException(),
             )
             throw UnableToCreateGameThreadException()
         }
@@ -1692,11 +1699,12 @@ class GameService(
         startRequest: StartRequest,
         week: Int?,
     ): Pair<Int?, Int?> {
-        var (season, currentWeek) = if (startRequest.gameType != SCRIMMAGE) {
-            seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
-        } else {
-            null to null
-        }
+        var (season, currentWeek) =
+            if (startRequest.gameType != SCRIMMAGE) {
+                seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
+            } else {
+                null to null
+            }
 
         if (week != null) {
             currentWeek = week
