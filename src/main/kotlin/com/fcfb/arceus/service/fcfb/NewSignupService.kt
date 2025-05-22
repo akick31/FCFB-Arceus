@@ -91,6 +91,7 @@ class NewSignupService(
                     offensivePlaybook = newSignup.offensivePlaybook,
                     defensivePlaybook = newSignup.defensivePlaybook,
                     averageResponseTime = 0.0,
+                    delayOfGameWarningOptOut = false,
                     resetToken = null,
                     resetTokenExpiration = null,
                 ),

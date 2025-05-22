@@ -131,6 +131,10 @@ class User {
     lateinit var defensivePlaybook: DefensivePlaybook
 
     @Basic
+    @Column(name = "delay_of_game_warning_opt_out")
+    var delayOfGameWarningOptOut: Boolean = false
+
+    @Basic
     @Column(name = "average_response_time")
     var averageResponseTime: Double = 0.0
 
@@ -171,6 +175,7 @@ class User {
         offensivePlaybook: OffensivePlaybook,
         defensivePlaybook: DefensivePlaybook,
         averageResponseTime: Double,
+        delayOfGameWarningOptOut: Boolean,
         resetToken: String?,
         resetTokenExpiration: String?,
     ) {
@@ -202,6 +207,7 @@ class User {
         this.offensivePlaybook = offensivePlaybook
         this.defensivePlaybook = defensivePlaybook
         this.averageResponseTime = averageResponseTime
+        this.delayOfGameWarningOptOut = delayOfGameWarningOptOut
         this.resetToken = resetToken
         this.resetTokenExpiration = resetTokenExpiration
     }
