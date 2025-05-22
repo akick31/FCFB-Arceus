@@ -78,8 +78,8 @@ class DiscordService(
      * @param game
      * @return Boolean
      */
-    fun notifyWarning(game: Game) {
-        val discordBotUrl = "$discordBotUrl/delay_of_game_warning"
+    fun notifyWarning(game: Game, instance: Int) {
+        val discordBotUrl = "$discordBotUrl/delay_of_game_warning?instance=$instance"
         val headers = HttpHeaders()
         headers.contentType = MediaType.APPLICATION_JSON
         val requestEntity = HttpEntity(game, headers)

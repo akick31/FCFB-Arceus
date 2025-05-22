@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.Game.ActualResult
 import com.fcfb.arceus.domain.Game.GameType
 import com.fcfb.arceus.domain.Game.Scenario
 import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.Game.Warning.NONE
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
@@ -30,11 +31,27 @@ class DelayOfGameMonitor(
      */
     @Scheduled(fixedRate = 60000)
     fun checkForDelayOfGame() {
-        val warnedGames = gameService.findGamesToWarn()
-        warnedGames.forEach { game ->
-            discordService.notifyWarning(game)
-            gameService.updateGameAsWarned(game.gameId)
-            Logger.info("A delay of game warning for game ${game.gameId} has been processed")
+        val warnedGamesFirstInstance = gameService.findGamesToWarnFirstInstance()
+        warnedGamesFirstInstance.forEach { game ->
+            discordService.notifyWarning(game, 1)
+            gameService.updateGameAsWarned(game.gameId, 1)
+            Logger.info("Delay of game warning.\n" +
+                "Game ID: ${game.gameId}\n" +
+                "Home Team: ${game.homeTeam}\n" +
+                "Away Team: ${game.awayTeam}\n" +
+                "Instance: 1\n"
+            )
+        }
+        val warnedGamesSecondInstance = gameService.findGamesToWarnSecondInstance()
+        warnedGamesSecondInstance.forEach { game ->
+            discordService.notifyWarning(game, 2)
+            gameService.updateGameAsWarned(game.gameId, 2)
+            Logger.info("Delay of game warning.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Home Team: ${game.homeTeam}\n" +
+                    "Away Team: ${game.awayTeam}\n" +
+                    "Instance: 2\n"
+            )
         }
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
@@ -151,7 +168,7 @@ class DelayOfGameMonitor(
             }
 
         game.currentPlayId = savedPlay.playId
-        game.gameWarned = false
+        game.gameWarning = NONE
         game.clockStopped = true
         gameService.saveGame(game)
         scorebugService.generateScorebug(game)

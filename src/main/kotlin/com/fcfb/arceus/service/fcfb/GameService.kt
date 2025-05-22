@@ -21,6 +21,7 @@ import com.fcfb.arceus.domain.Game.Subdivision
 import com.fcfb.arceus.domain.Game.TeamSide
 import com.fcfb.arceus.domain.Game.TeamSide.AWAY
 import com.fcfb.arceus.domain.Game.TeamSide.HOME
+import com.fcfb.arceus.domain.Game.Warning.NONE
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.User
@@ -180,7 +181,7 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarned = false,
+                            gameWarning = NONE,
                             currentPlayType = KICKOFF,
                             currentPlayId = 0,
                             clockStopped = true,
@@ -319,7 +320,7 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarned = false,
+                            gameWarning = NONE,
                             currentPlayType = PlayType.NORMAL,
                             currentPlayId = 0,
                             clockStopped = true,
@@ -427,7 +428,7 @@ class GameService(
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
         game.gameTimer = calculateDelayOfGameTimer()
-        game.gameWarned = false
+        game.gameWarning = NONE
 
         gameRepository.save(game)
 
@@ -466,7 +467,7 @@ class GameService(
     ) {
         try {
             if (gamePlay.actualResult == ActualResult.DELAY_OF_GAME) {
-                if (game.waitingOn == TeamSide.HOME) {
+                if (game.waitingOn == HOME) {
                     game.awayScore -= 8
                     if (game.gameType != Game.GameType.SCRIMMAGE) {
                         val user = userService.getUserByDiscordId(game.homeCoachDiscordIds?.get(0) ?: "")
@@ -494,7 +495,7 @@ class GameService(
                 }
             }
             if (isOffensiveTouchdownPlay(gamePlay.actualResult)) {
-                if (gamePlay.possession == TeamSide.HOME) {
+                if (gamePlay.possession == HOME) {
                     game.homeScore -= 6
                 } else {
                     game.awayScore -= 6
@@ -502,7 +503,7 @@ class GameService(
                 game.currentPlayType = PlayType.NORMAL
             }
             if (isDefensiveTouchdownPlay(gamePlay.actualResult)) {
-                if (gamePlay.possession == TeamSide.AWAY) {
+                if (gamePlay.possession == AWAY) {
                     game.homeScore -= 6
                 } else {
                     game.awayScore -= 6
@@ -511,14 +512,14 @@ class GameService(
             }
             if (gamePlay.actualResult == ActualResult.GOOD) {
                 if (gamePlay.playCall == PlayCall.PAT) {
-                    if (gamePlay.possession == TeamSide.HOME) {
+                    if (gamePlay.possession == HOME) {
                         game.homeScore -= 1
                     } else {
                         game.awayScore -= 1
                     }
                     game.currentPlayType = PlayType.PAT
                 } else if (gamePlay.playCall == PlayCall.FIELD_GOAL) {
-                    if (gamePlay.possession == TeamSide.HOME) {
+                    if (gamePlay.possession == HOME) {
                         game.homeScore -= 3
                     } else {
                         game.awayScore -= 3
@@ -527,7 +528,7 @@ class GameService(
                 }
             }
             if (gamePlay.actualResult == ActualResult.SUCCESS) {
-                if (gamePlay.possession == TeamSide.HOME) {
+                if (gamePlay.possession == HOME) {
                     game.homeScore -= 2
                 } else {
                     game.awayScore -= 2
@@ -535,7 +536,7 @@ class GameService(
                 game.currentPlayType = PlayType.PAT
             }
             if (gamePlay.actualResult == ActualResult.DEFENSE_TWO_POINT) {
-                if (gamePlay.possession == TeamSide.HOME) {
+                if (gamePlay.possession == HOME) {
                     game.awayScore -= 2
                 } else {
                     game.homeScore -= 2
@@ -543,7 +544,7 @@ class GameService(
                 game.currentPlayType = PlayType.PAT
             }
             if (gamePlay.actualResult == ActualResult.SAFETY) {
-                if (gamePlay.possession == TeamSide.HOME) {
+                if (gamePlay.possession == HOME) {
                     game.awayScore -= 2
                 } else {
                     game.homeScore -= 2
@@ -557,7 +558,7 @@ class GameService(
                 game.currentPlayType = PlayType.KICKOFF
             }
             if (gamePlay.offensiveTimeoutCalled) {
-                if (gamePlay.possession == TeamSide.HOME) {
+                if (gamePlay.possession == HOME) {
                     game.homeTimeouts--
                 } else {
                     game.awayTimeouts--
@@ -582,12 +583,14 @@ class GameService(
             game.ballLocation = previousPlay.ballLocation
             game.down = previousPlay.down
             game.yardsToGo = previousPlay.yardsToGo
-            game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+            game.waitingOn = if (previousPlay.possession == HOME) AWAY else HOME
             game.gameTimer = calculateDelayOfGameTimer()
             gameStatsService.generateGameStats(game.gameId)
             saveGame(game)
         } catch (e: Exception) {
-            Logger.error("There was an error rolling back the play for game ${game.gameId}: " + e.message)
+            Logger.error("Error rolling back play.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Error Message: ${e.message!!}")
             throw e
         }
     }
@@ -612,7 +615,9 @@ class GameService(
         for (game in gamesToStart) {
             try {
                 if (count >= 25) {
-                    sleep(300000)
+                    withContext(Dispatchers.IO) {
+                        sleep(300000)
+                    }
                     count = 0
                     Logger.info("Block of 25 games started, sleeping for 5 minutes")
                 }
@@ -736,10 +741,17 @@ class GameService(
             awayStats.gameStatus = GameStatus.FINAL
             gameStatsService.saveGameStats(homeStats)
             gameStatsService.saveGameStats(awayStats)
-            Logger.info("Game ${game.gameId} ended")
+            Logger.info("Game ended.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Game Type: ${game.gameType}\n" +
+                    "Home team: ${game.homeTeam}\n" +
+                    "Away team: ${game.awayTeam}\n"
+            )
             return game
         } catch (e: Exception) {
-            Logger.error("Error in ${game.gameId}: " + e.message!!)
+            Logger.error("Error ending game.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Error Message: ${e.message!!}")
             throw e
         }
     }
@@ -747,18 +759,16 @@ class GameService(
     /**
      * End the overtime period and advance to the next one
      * @param game
-     * @param possession
      */
     private fun endOvertimePeriod(
         game: Game,
-        possession: TeamSide,
     ) {
         game.overtimeHalf = 1
         game.possession =
-            if (game.possession == TeamSide.HOME) {
-                TeamSide.HOME
+            if (game.possession == HOME) {
+                HOME
             } else {
-                TeamSide.AWAY
+                AWAY
             }
         game.ballLocation = 75
         game.down = 1
@@ -766,7 +776,7 @@ class GameService(
         game.quarter += 1
         game.homeTimeouts = 1
         game.awayTimeouts = 1
-        game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+        game.waitingOn = if (game.possession == HOME) AWAY else HOME
     }
 
     /**
@@ -840,18 +850,18 @@ class GameService(
 
         try {
             game.coinTossChoice = coinTossChoice
-            if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = TeamSide.AWAY
-                game.waitingOn = TeamSide.HOME
-            } else if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.DEFER) {
-                game.possession = TeamSide.HOME
-                game.waitingOn = TeamSide.AWAY
-            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = TeamSide.HOME
-                game.waitingOn = TeamSide.AWAY
-            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
-                game.possession = TeamSide.AWAY
-                game.waitingOn = TeamSide.HOME
+            if (game.coinTossWinner == HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = AWAY
+                game.waitingOn = HOME
+            } else if (game.coinTossWinner == HOME && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = HOME
+                game.waitingOn = AWAY
+            } else if (game.coinTossWinner == AWAY && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = HOME
+                game.waitingOn = AWAY
+            } else if (game.coinTossWinner == AWAY && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = AWAY
+                game.waitingOn = HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
             game.gameTimer = calculateDelayOfGameTimer()
@@ -880,18 +890,18 @@ class GameService(
 
         try {
             game.overtimeCoinTossChoice = coinTossChoice
-            if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
-                game.possession = TeamSide.AWAY
-                game.waitingOn = TeamSide.HOME
-            } else if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
-                game.possession = TeamSide.HOME
-                game.waitingOn = TeamSide.AWAY
-            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
-                game.possession = TeamSide.HOME
-                game.waitingOn = TeamSide.AWAY
-            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
-                game.possession = TeamSide.AWAY
-                game.waitingOn = TeamSide.HOME
+            if (game.coinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = AWAY
+                game.waitingOn = HOME
+            } else if (game.coinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = HOME
+                game.waitingOn = AWAY
+            } else if (game.coinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = HOME
+                game.waitingOn = AWAY
+            } else if (game.coinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = AWAY
+                game.waitingOn = HOME
             }
             game.gameStatus = GameStatus.OVERTIME
             Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
@@ -1010,10 +1020,10 @@ class GameService(
      * Update the team the game is waiting on
      */
     private fun updateWaitingOn(possession: TeamSide): TeamSide {
-        return if (possession == TeamSide.HOME) {
-            TeamSide.AWAY
+        return if (possession == HOME) {
+            AWAY
         } else {
-            TeamSide.HOME
+            HOME
         }
     }
 
@@ -1230,15 +1240,15 @@ class GameService(
                 } else {
                     game.overtimeHalf = 2
                     game.possession =
-                        if (game.possession == TeamSide.HOME) {
-                            TeamSide.AWAY
+                        if (game.possession == HOME) {
+                            AWAY
                         } else {
-                            TeamSide.HOME
+                            HOME
                         }
                     game.ballLocation = 75
                     game.down = 1
                     game.yardsToGo = 10
-                    game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
+                    game.waitingOn = if (game.possession == HOME) AWAY else HOME
                 }
             } else {
                 if (homeScore != awayScore || game.currentPlayType == PlayType.PAT) {
@@ -1254,7 +1264,7 @@ class GameService(
                         game.gameStatus = GameStatus.FINAL
                     }
                 } else {
-                    endOvertimePeriod(game, possession)
+                    endOvertimePeriod(game)
                 }
             }
         } else {
@@ -1367,11 +1377,18 @@ class GameService(
         }
 
     /**
-     * Find games to warn
+     * Find games to warn first instance
      */
-    fun findGamesToWarn() =
-        gameRepository.findGamesToWarn().ifEmpty {
-            Logger.info("No games found to warn")
+    fun findGamesToWarnFirstInstance() =
+        gameRepository.findGamesToWarnFirstInstance().ifEmpty {
+            emptyList()
+        }
+
+    /**
+     * Find games to warn second instance
+     */
+    fun findGamesToWarnSecondInstance() =
+        gameRepository.findGamesToWarnSecondInstance().ifEmpty {
             emptyList()
         }
 
@@ -1379,7 +1396,12 @@ class GameService(
      * Update a game as warned
      * @param gameId
      */
-    fun updateGameAsWarned(gameId: Int) = gameRepository.updateGameAsWarned(gameId)
+    fun updateGameAsWarned(gameId: Int, instance: Int) =
+        if (instance == 1) {
+            gameRepository.updateGameAsFirstWarning(gameId)
+        } else {
+            gameRepository.updateGameAsSecondWarning(gameId)
+        }
 
     /**
      * Mark a game as close game pinged
@@ -1438,14 +1460,14 @@ class GameService(
      * @return
      */
     fun handleHalfTimePossessionChange(game: Game): TeamSide {
-        return if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
-            TeamSide.AWAY
-        } else if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            TeamSide.HOME
-        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
-            TeamSide.HOME
-        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            TeamSide.AWAY
+        return if (game.coinTossWinner == HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
+            AWAY
+        } else if (game.coinTossWinner == HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            HOME
+        } else if (game.coinTossWinner == AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
+            HOME
+        } else if (game.coinTossWinner == AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            AWAY
         } else {
             throw InvalidHalfTimePossessionChangeException()
         }
