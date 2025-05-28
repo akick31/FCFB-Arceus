@@ -130,7 +130,7 @@ class GameService(
             val awayPlatform = Platform.DISCORD
 
             val (season, currentWeek) = getCurrentSeasonAndWeek(startRequest, week)
-            val (homeTeamRank, awayTeamRank) = getTeamRanks(homeTeamData, awayTeamData)
+            val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
 
             // Create and save the Game object and Stats object
             val newGame =
@@ -270,7 +270,7 @@ class GameService(
             val homePlatform = Platform.DISCORD
             val awayPlatform = Platform.DISCORD
 
-            val (homeTeamRank, awayTeamRank) = getTeamRanks(homeTeamData, awayTeamData)
+            val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
 
             // Create and save the Game object and Stats object
             val newGame =
@@ -1546,13 +1546,8 @@ class GameService(
         game: Game,
         play: Play,
     ) {
-        val homeTeam = teamService.getTeamByName(game.homeTeam)
-        val awayTeam = teamService.getTeamByName(game.awayTeam)
-        var homeTeamRanking = if (homeTeam.playoffCommitteeRanking == 0) homeTeam.coachesPollRanking else homeTeam.playoffCommitteeRanking
-        var awayTeamRanking = if (awayTeam.playoffCommitteeRanking == 0) awayTeam.coachesPollRanking else awayTeam.playoffCommitteeRanking
-
-        homeTeamRanking = if (homeTeamRanking == 0 || homeTeamRanking == null) 100 else homeTeamRanking
-        awayTeamRanking = if (awayTeamRanking == 0 || awayTeamRanking == null) 100 else awayTeamRanking
+        val homeTeamRanking = game.homeTeamRank ?: 100
+        val awayTeamRanking = game.awayTeamRank ?: 100
 
         if ((
                 (game.homeScore <= game.awayScore && homeTeamRanking < awayTeamRanking) ||
@@ -1754,30 +1749,5 @@ class GameService(
             currentWeek = week
         }
         return season to currentWeek
-    }
-
-    /**
-     * Get the team ranks for a game
-     * @param homeTeamData
-     * @param awayTeamData
-     */
-    private fun getTeamRanks(
-        homeTeamData: Team,
-        awayTeamData: Team,
-    ): Pair<Int, Int> {
-        val homeTeamRank =
-            if (homeTeamData.playoffCommitteeRanking != null && homeTeamData.playoffCommitteeRanking != 0) {
-                homeTeamData.playoffCommitteeRanking ?: 0
-            } else {
-                homeTeamData.coachesPollRanking ?: 0
-            }
-
-        val awayTeamRank =
-            if (awayTeamData.playoffCommitteeRanking != null && awayTeamData.playoffCommitteeRanking != 0) {
-                awayTeamData.playoffCommitteeRanking ?: 0
-            } else {
-                awayTeamData.coachesPollRanking ?: 0
-            }
-        return Pair(homeTeamRank, awayTeamRank)
     }
 }
