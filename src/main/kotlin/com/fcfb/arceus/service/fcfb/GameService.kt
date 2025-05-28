@@ -216,7 +216,7 @@ class GameService(
                     "Game Type: ${newGame.gameType}\n" +
                     "Game Status: ${newGame.gameStatus}\n" +
                     "Home team: ${newGame.homeTeam}\n" +
-                    "Away team: ${newGame.awayTeam}\n",
+                    "Away team: ${newGame.awayTeam}",
             )
             return newGame
         } catch (e: Exception) {
@@ -225,7 +225,7 @@ class GameService(
                     "Error Message: ${e.message!!}\n" +
                     "Game Type: ${startRequest.gameType}\n" +
                     "Home team: ${startRequest.homeTeam}\n" +
-                    "Away team: ${startRequest.awayTeam}\n",
+                    "Away team: ${startRequest.awayTeam}",
             )
             throw e
         }
@@ -356,7 +356,7 @@ class GameService(
                     "Game Type: ${newGame.gameType}\n" +
                     "Game Status: ${newGame.gameStatus}\n" +
                     "Home team: ${newGame.homeTeam}\n" +
-                    "Away team: ${newGame.awayTeam}\n",
+                    "Away team: ${newGame.awayTeam}",
             )
             return newGame
         } catch (e: Exception) {
@@ -365,7 +365,7 @@ class GameService(
                     "Error Message: ${e.message!!}\n" +
                     "Game Type: ${startRequest.gameType}\n" +
                     "Home team: ${startRequest.homeTeam}\n" +
-                    "Away team: ${startRequest.awayTeam}\n",
+                    "Away team: ${startRequest.awayTeam}",
             )
             throw e
         }
@@ -644,7 +644,12 @@ class GameService(
                 scheduleService.markGameAsStarted(game)
                 count += 1
             } catch (e: Exception) {
-                Logger.error("Error starting ${game.homeTeam} vs ${game.awayTeam}: " + e.message!!)
+                Logger.error(
+                    "Error starting game in start week command.\n" +
+                        "Home Team: ${game.homeTeam}\n" +
+                        "Away Team: ${game.awayTeam}\n" +
+                        "Error Message: ${e.message!!}",
+                )
                 continue
             }
         }
@@ -701,7 +706,7 @@ class GameService(
     private fun endGame(game: Game): Game {
         try {
             game.gameStatus = GameStatus.FINAL
-            if (game.gameType != GameType.SCRIMMAGE) {
+            if (game.gameType != SCRIMMAGE) {
                 teamService.updateTeamWinsAndLosses(game)
                 userService.updateUserWinsAndLosses(game)
 
@@ -752,7 +757,7 @@ class GameService(
                     "Game ID: ${game.gameId}\n" +
                     "Game Type: ${game.gameType}\n" +
                     "Home team: ${game.homeTeam}\n" +
-                    "Away team: ${game.awayTeam}\n",
+                    "Away team: ${game.awayTeam}",
             )
             return game
         } catch (e: Exception) {
@@ -797,7 +802,14 @@ class GameService(
         try {
             game.gameMode = GameMode.CHEW
             saveGame(game)
-            Logger.info("Game ${game.gameId} is being chewed")
+            Logger.info(
+                "Game set to chew mode.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Game Type: ${game.gameType}\n" +
+                    "Game Status: ${game.gameStatus}\n" +
+                    "Home team: ${game.homeTeam}\n" +
+                    "Away team: ${game.awayTeam}\n",
+            )
             return game
         } catch (e: Exception) {
             Logger.error("Error in ${game.gameId}: " + e.message!!)
@@ -834,11 +846,19 @@ class GameService(
                 game.overtimeCoinTossWinner = coinTossWinner
             }
             game.gameTimer = calculateDelayOfGameTimer()
-            Logger.info("Coin toss finished, the winner was $coinTossWinner")
+            Logger.info(
+                "Coin toss finished.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Coin Toss Winner: $coinTossWinner",
+            )
             saveGame(game)
             return game
         } catch (e: Exception) {
-            Logger.error("Error in ${game.gameId}: " + e.message!!)
+            Logger.error(
+                "Coin toss error.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Error Message: ${e.message!!}",
+            )
             throw e
         }
     }
@@ -872,7 +892,12 @@ class GameService(
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
             game.gameTimer = calculateDelayOfGameTimer()
-            Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
+            Logger.info(
+                "Coin toss choice made.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Coin Toss Winner: ${game.coinTossWinner}\n" +
+                    "Coin Toss Choice: $coinTossChoice",
+            )
             return saveGame(game)
         } catch (e: Exception) {
             Logger.error("Error in ${game.gameId}: " + e.message!!)
@@ -897,24 +922,33 @@ class GameService(
 
         try {
             game.overtimeCoinTossChoice = coinTossChoice
-            if (game.coinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+            if (game.overtimeCoinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
                 game.possession = AWAY
                 game.waitingOn = HOME
-            } else if (game.coinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+            } else if (game.overtimeCoinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
                 game.possession = HOME
                 game.waitingOn = AWAY
-            } else if (game.coinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+            } else if (game.overtimeCoinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
                 game.possession = HOME
                 game.waitingOn = AWAY
-            } else if (game.coinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+            } else if (game.overtimeCoinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
                 game.possession = AWAY
                 game.waitingOn = HOME
             }
             game.gameStatus = GameStatus.OVERTIME
-            Logger.info("Coin toss choice made for ${game.gameId}: $coinTossChoice")
+            Logger.info(
+                "Overtime coin toss choice made.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Coin Toss Winner: ${game.overtimeCoinTossWinner}\n" +
+                    "Overtime Coin Toss Choice: $coinTossChoice",
+            )
             return saveGame(game)
         } catch (e: Exception) {
-            Logger.error("Error in ${game.gameId}: " + e.message!!)
+            Logger.error(
+                "Overtime coin toss choice error.\n" +
+                    "Game ID: ${game.gameId}\n" +
+                    "Error Message: ${e.message!!}",
+            )
             if (e is IllegalArgumentException) {
                 throw InvalidCoinTossChoiceException("Invalid coin toss choice $coinTossChoice")
             }
@@ -938,7 +972,7 @@ class GameService(
                 game.homeTeam,
                 game.awayTeam,
                 game.tvChannel,
-                game.gameType ?: GameType.SCRIMMAGE,
+                game.gameType ?: SCRIMMAGE,
             )
         return startNormalGame(startRequest, game.week)
     }
@@ -954,7 +988,11 @@ class GameService(
         gameRepository.deleteById(id)
         gameStatsService.deleteByGameId(id)
         playRepository.deleteAllPlaysByGameId(id)
-        Logger.info("Game $id deleted")
+        Logger.info(
+            "Game deleted.\n" +
+                "Game ID: $id\n" +
+                "Channel ID: $channelId",
+        )
         return true
     }
 
@@ -1198,7 +1236,7 @@ class GameService(
     ) {
         game.clock = "0:00"
         game.quarter = quarter
-        game.gameStatus = GameStatus.END_OF_REGULATION
+        game.gameStatus = END_OF_REGULATION
         game.currentPlayType = PlayType.NORMAL
         game.ballLocation = 75
         game.down = 1
@@ -1235,15 +1273,17 @@ class GameService(
         if (isEndOfOvertimeHalf(play)) {
             // Handle the end of each half of overtime
             if (game.overtimeHalf == 1) {
-                if (play.actualResult == ActualResult.TOUCHDOWN ||
-                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-                    play.actualResult == ActualResult.KICK_SIX
-                ) {
+                if (play.actualResult == ActualResult.TOUCHDOWN) {
                     game.possession = possession
                     game.waitingOn = waitingOn
                     game.ballLocation = ballLocation
                     game.down = down
                     game.yardsToGo = yardsToGo
+                } else if (
+                    play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
+                    play.actualResult == ActualResult.KICK_SIX
+                ) {
+                    game.gameStatus = GameStatus.FINAL
                 } else {
                     game.overtimeHalf = 2
                     game.possession =
@@ -1646,7 +1686,11 @@ class GameService(
             play.actualResult == ActualResult.TURNOVER ||
             play.actualResult == ActualResult.TOUCHDOWN ||
             play.actualResult == ActualResult.TURNOVER_TOUCHDOWN ||
-            play.actualResult == ActualResult.KICK_SIX
+            play.actualResult == ActualResult.KICK_SIX ||
+            play.actualResult == ActualResult.PUNT ||
+            play.actualResult == ActualResult.PUNT_RETURN_TOUCHDOWN ||
+            play.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN ||
+            play.actualResult == ActualResult.MUFFED_PUNT
 
     /**
      * Check if the game is mathematically over
