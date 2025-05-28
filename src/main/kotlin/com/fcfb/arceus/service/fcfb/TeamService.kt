@@ -458,6 +458,52 @@ class TeamService(
     fun getTeamsInConference(conference: String) = teamRepository.getTeamsInConference(conference)
 
     /**
+     * Get team ranks for a game
+     */
+    fun getTeamRanks(
+        homeTeamId: Int,
+        awayTeamId: Int,
+    ): Pair<Int?, Int?> {
+        val usePlayoff = usePlayoffRanking()
+
+        val homeRank =
+            if (usePlayoff) {
+                getPlayoffRankingById(homeTeamId)
+            } else {
+                getCoachesPollRankingById(homeTeamId)
+            }
+
+        val awayRank =
+            if (usePlayoff) {
+                getPlayoffRankingById(awayTeamId)
+            } else {
+                getCoachesPollRankingById(awayTeamId)
+            }
+
+        return Pair(homeRank, awayRank)
+    }
+
+    /**
+     * Check if playoff ranking is used
+     * @return
+     */
+    private fun usePlayoffRanking() = teamRepository.usePlayoffRanking() == 1
+
+    /**
+     * Get playoff ranking by team ID
+     * @param id
+     * @return
+     */
+    private fun getPlayoffRankingById(id: Int) = teamRepository.getPlayoffRankingById(id)
+
+    /**
+     * Get coaches poll ranking by team ID
+     * @param id
+     * @return
+     */
+    private fun getCoachesPollRankingById(id: Int) = teamRepository.getCoachesPollRankingById(id)
+
+    /**
      * Save a team
      * @param team
      */
