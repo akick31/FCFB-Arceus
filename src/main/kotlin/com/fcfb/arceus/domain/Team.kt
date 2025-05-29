@@ -24,7 +24,7 @@ class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id
     @Column(name = "id")
-    var id: Int? = 0
+    var id: Int = 0
 
     @Basic
     @Column(name = "name")
@@ -249,6 +249,7 @@ class Team {
         BIG_12("Big 12"),
         BIG_TEN("Big Ten"),
         CUSA("C-USA"),
+        FAKE_TEAM("Fake Team"),
         FBS_INDEPENDENT("FBS Independent"),
         MAC("MAC"),
         MOUNTAIN_WEST("Mountain West"),

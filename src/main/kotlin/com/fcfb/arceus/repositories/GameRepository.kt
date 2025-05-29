@@ -54,7 +54,7 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
             "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') <= CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND game_status != 'FINAL' " +
-                "AND game_warned = True",
+                "AND (game_warning = 'FIRST_WARNING' OR game_warning = 'SECOND_WARNING')",
         nativeQuery = true,
     )
     fun findExpiredTimers(): List<Game>
@@ -63,18 +63,35 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
         value =
             "SELECT * FROM game " +
                 "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') " +
+                "BETWEEN DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 6 HOUR) " +
+                "AND DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 12 HOUR) " +
+                "AND game_status != 'FINAL' " +
+                "AND game_warning = 'NONE'",
+        nativeQuery = true,
+    )
+    fun findGamesToWarnFirstInstance(): List<Game>
+
+    @Query(
+        value =
+            "SELECT * FROM game " +
+                "WHERE STR_TO_DATE(game_timer, '%m/%d/%Y %H:%i:%s') " +
                 "BETWEEN CONVERT_TZ(NOW(), 'UTC', 'America/New_York') " +
                 "AND DATE_ADD(CONVERT_TZ(NOW(), 'UTC', 'America/New_York'), INTERVAL 6 HOUR) " +
                 "AND game_status != 'FINAL' " +
-                "AND game_warned = False",
+                "AND game_warning = 'FIRST_WARNING'",
         nativeQuery = true,
     )
-    fun findGamesToWarn(): List<Game>
+    fun findGamesToWarnSecondInstance(): List<Game>
 
     @Transactional
     @Modifying
-    @Query(value = "UPDATE game SET game_warned = True WHERE game_id = ?", nativeQuery = true)
-    fun updateGameAsWarned(gameId: Int)
+    @Query(value = "UPDATE game SET game_warning = 'FIRST_WARNING' WHERE game_id = ?", nativeQuery = true)
+    fun updateGameAsFirstWarning(gameId: Int)
+
+    @Transactional
+    @Modifying
+    @Query(value = "UPDATE game SET game_warning = 'SECOND_WARNING' WHERE game_id = ?", nativeQuery = true)
+    fun updateGameAsSecondWarning(gameId: Int)
 
     @Transactional
     @Modifying

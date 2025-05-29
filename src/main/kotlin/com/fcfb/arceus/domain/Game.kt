@@ -255,10 +255,11 @@ class Game {
     @JsonProperty("game_timer")
     var gameTimer: String? = null
 
+    @Enumerated(EnumType.STRING)
     @Basic
-    @Column(name = "game_warned")
-    @JsonProperty("game_warned")
-    var gameWarned: Boolean? = false
+    @Column(name = "game_warning")
+    @JsonProperty("game_warning")
+    var gameWarning: Warning? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -369,7 +370,7 @@ class Game {
         awayPlatformId: String?,
         lastMessageTimestamp: String?,
         gameTimer: String?,
-        gameWarned: Boolean?,
+        gameWarning: Warning?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         clockStopped: Boolean,
@@ -427,7 +428,7 @@ class Game {
         this.awayPlatformId = awayPlatformId
         this.lastMessageTimestamp = lastMessageTimestamp
         this.gameTimer = gameTimer
-        this.gameWarned = gameWarned
+        this.gameWarning = gameWarning
         this.currentPlayType = currentPlayType
         this.currentPlayId = currentPlayId
         this.clockStopped = clockStopped
@@ -458,6 +459,7 @@ class Game {
         FCFB("FCFB"),
         FBS("FBS"),
         FCS("FCS"),
+        FAKE("FAKE"),
         ;
 
         companion object {
@@ -692,7 +694,8 @@ class Game {
         SIXTY_YARD_PUNT("60 YARD PUNT"),
         SIXTY_FIVE_YARD_PUNT("65 YARD PUNT"),
         SEVENTY_YARD_PUNT("70 YARD PUNT"),
-        DELAY_OF_GAME_WARNING("DELAY OF GAME WARNING"),
+        FIRST_DELAY_OF_GAME_WARNING("FIRST DELAY OF GAME WARNING"),
+        SECOND_DELAY_OF_GAME_WARNING("SECOND DELAY OF GAME WARNING"),
         DELAY_OF_GAME_NOTIFICATION("DELAY OF GAME NOTIFICATION"),
         PREGAME_DELAY_OF_GAME_NOTIFICATION("PREGAME DELAY OF GAME NOTIFICATION"),
         DELAY_OF_GAME_HOME("DELAY OF GAME ON HOME TEAM"),
@@ -764,6 +767,20 @@ class Game {
             fun fromDescription(description: String): GameMode =
                 entries.find { it.description.equals(description, ignoreCase = true) }
                     ?: throw IllegalArgumentException("Unknown game mode: $description")
+        }
+    }
+
+    enum class Warning(val description: String) {
+        NONE("NONE"),
+        FIRST_WARNING("FIRST_WARNING"),
+        SECOND_WARNING("SECOND_WARNING"),
+        ;
+
+        companion object {
+            @JsonCreator
+            fun fromDescription(description: String): Warning =
+                entries.find { it.description.equals(description, ignoreCase = true) }
+                    ?: throw IllegalArgumentException("Unknown warning: $description")
         }
     }
 }

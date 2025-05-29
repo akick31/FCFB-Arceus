@@ -31,4 +31,5 @@ data class UserDTO(
     var offensivePlaybook: OffensivePlaybook,
     var defensivePlaybook: DefensivePlaybook,
     var averageResponseTime: Double,
+    var delayOfGameWarningOptOut: Boolean,
 )

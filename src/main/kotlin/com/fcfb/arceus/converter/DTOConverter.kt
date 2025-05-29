@@ -35,6 +35,7 @@ class DTOConverter {
             offensivePlaybook = user.offensivePlaybook,
             defensivePlaybook = user.defensivePlaybook,
             averageResponseTime = user.averageResponseTime,
+            delayOfGameWarningOptOut = user.delayOfGameWarningOptOut,
         )
     }
 

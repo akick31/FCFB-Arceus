@@ -70,6 +70,16 @@ class GameController(
     ) = gameService.startSingleGame(startRequest, null)
 
     /**
+     * Start a game in overtime
+     * @param startRequest
+     * @return
+     */
+    @PostMapping("/start_overtime")
+    suspend fun startOvertimeGame(
+        @RequestBody startRequest: StartRequest,
+    ) = gameService.startOvertimeGame(startRequest)
+
+    /**
      * Start all games for a week
      * @param season
      * @param week
