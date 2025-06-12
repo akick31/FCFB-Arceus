@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/health")
+@RequestMapping("${ApiConstants.FULL_PATH}/health")
 class HealthController {
     @Autowired
     private val healthEndpoint: HealthEndpoint? = null

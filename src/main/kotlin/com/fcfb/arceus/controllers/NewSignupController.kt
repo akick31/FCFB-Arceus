@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/new_signups")
+@RequestMapping("${ApiConstants.FULL_PATH}/new_signups")
 class NewSignupController(
     private var newSignupService: NewSignupService,
 ) {

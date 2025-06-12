@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/team")
+@RequestMapping("${ApiConstants.FULL_PATH}/team")
 class TeamController(
     private var teamService: TeamService,
 ) {

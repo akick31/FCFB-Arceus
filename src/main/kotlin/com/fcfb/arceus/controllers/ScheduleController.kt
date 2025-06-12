@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/schedule")
+@RequestMapping("${ApiConstants.FULL_PATH}/schedule")
 class ScheduleController(
     private var scheduleService: ScheduleService,
 ) {

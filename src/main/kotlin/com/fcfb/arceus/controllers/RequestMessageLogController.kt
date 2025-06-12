@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/request_message_log")
+@RequestMapping("${ApiConstants.FULL_PATH}request_message_log")
 class RequestMessageLogController(
     private val requestMessageLogService: RequestMessageLogService,
 ) {

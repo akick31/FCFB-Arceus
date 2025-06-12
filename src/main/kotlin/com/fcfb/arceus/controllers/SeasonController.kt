@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/season")
+@RequestMapping("${ApiConstants.FULL_PATH}/season")
 class SeasonController(
     private var seasonService: SeasonService,
 ) {

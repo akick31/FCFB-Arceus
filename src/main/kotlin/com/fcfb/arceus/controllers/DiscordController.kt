@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/discord")
+@RequestMapping("${ApiConstants.FULL_PATH}/discord")
 class DiscordController(
     private var discordService: DiscordService,
 )

@@ -30,7 +30,7 @@ class DiscordOAuthController {
 
     private val objectMapper = jacksonObjectMapper()
 
-    @GetMapping("/discord/redirect")
+    @GetMapping("${ApiConstants.FULL_PATH}/discord/redirect")
     fun handleDiscordRedirect(
         @RequestParam("code") code: String,
     ): ResponseEntity<String> {

@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/game")
+@RequestMapping("${ApiConstants.FULL_PATH}/game")
 class GameController(
     private var gameService: GameService,
 ) {
