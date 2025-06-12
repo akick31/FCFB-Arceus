@@ -17,7 +17,7 @@ class SeasonService(
     /**
      * Start the current season
      */
-    fun startSeason() {
+    fun startSeason(): Season {
         val previousSeason = seasonRepository.getPreviousSeason()
         val season =
             Season(
@@ -32,6 +32,7 @@ class SeasonService(
                 currentSeason = true,
             )
         seasonRepository.save(season)
+        return season
     }
 
     /**

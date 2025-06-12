@@ -1022,7 +1022,7 @@ class GameService(
     fun updateRequestMessageId(
         gameId: Int,
         requestMessageId: String,
-    ) {
+    ): Game {
         val game = getGameById(gameId)
 
         val requestMessageIdList =
@@ -1033,17 +1033,19 @@ class GameService(
             }
         game.requestMessageId = requestMessageIdList
         saveGame(game)
+        return game
     }
 
     /**
      * Update the last message timestamp
      * @param gameId
      */
-    fun updateLastMessageTimestamp(gameId: Int) {
+    fun updateLastMessageTimestamp(gameId: Int): Game {
         val game = getGameById(gameId)
         val timestamp = Timestamp.from(Instant.now()).toString()
         game.lastMessageTimestamp = timestamp
         saveGame(game)
+        return game
     }
 
     /**

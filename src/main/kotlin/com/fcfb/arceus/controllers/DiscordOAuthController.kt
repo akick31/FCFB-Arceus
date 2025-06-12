@@ -2,6 +2,7 @@ package com.fcfb.arceus.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -15,7 +16,10 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
 @RestController
-class DiscordOAuthController {
+class DiscordOAuthController(
+    @Autowired
+    private val restTemplate: RestTemplate,
+) {
     @Value("\${discord.client.id}")
     private lateinit var clientId: String
 
@@ -48,7 +52,6 @@ class DiscordOAuthController {
                 add("scope", "identify")
             }
 
-        val restTemplate = RestTemplate()
         val headers =
             HttpHeaders().apply {
                 set("Content-Type", "application/x-www-form-urlencoded")
