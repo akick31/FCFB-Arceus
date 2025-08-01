@@ -1,10 +1,13 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Season
+import com.fcfb.arceus.repositories.SeasonRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
+import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
@@ -20,11 +23,14 @@ import java.time.format.DateTimeFormatter
 
 class SeasonControllerTest {
     private lateinit var mockMvc: MockMvc
-    private val seasonService: SeasonService = mockk()
+    private val seasonRepository: SeasonRepository = mockk()
+    private val teamService: TeamService = mockk()
+    private lateinit var seasonService: SeasonService
     private lateinit var seasonController: SeasonController
 
     @BeforeEach
     fun setup() {
+        seasonService = SeasonService(seasonRepository, teamService)
         seasonController = SeasonController(seasonService)
         mockMvc =
             MockMvcBuilders.standaloneSetup(seasonController)
@@ -60,7 +66,10 @@ class SeasonControllerTest {
                 currentSeason = true,
             )
 
-        every { seasonService.startSeason() } returns newSeason
+        // Mock the repository and team service methods
+        every { seasonRepository.getPreviousSeason() } returns previousSeason
+        every { teamService.resetWinsAndLosses() } returns Unit
+        every { seasonRepository.save(any()) } returns newSeason
 
         mockMvc.perform(post("/seasons").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -73,6 +82,10 @@ class SeasonControllerTest {
             .andExpect(jsonPath("$.nationalChampionshipLosingCoach").isEmpty)
             .andExpect(jsonPath("$.currentWeek").value(newSeason.currentWeek))
             .andExpect(jsonPath("$.currentSeason").value(newSeason.currentSeason))
+
+        // Verify that team wins and losses were reset
+        verify { teamService.resetWinsAndLosses() }
+        verify { seasonRepository.save(any()) }
     }
 
     @Test
@@ -89,7 +102,7 @@ class SeasonControllerTest {
                 currentWeek = 1,
                 currentSeason = true,
             )
-        every { seasonService.getCurrentSeason() } returns season
+        every { seasonRepository.getCurrentSeason() } returns season
 
         mockMvc.perform(get("/seasons/current").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -107,7 +120,19 @@ class SeasonControllerTest {
     @Test
     fun `should get current week successfully`() {
         val currentWeek = 5
-        every { seasonService.getCurrentWeek() } returns currentWeek
+        val season =
+            Season(
+                seasonNumber = 1,
+                startDate = "01/01/2023 00:00:00",
+                endDate = null,
+                nationalChampionshipWinningTeam = null,
+                nationalChampionshipLosingTeam = null,
+                nationalChampionshipWinningCoach = null,
+                nationalChampionshipLosingCoach = null,
+                currentWeek = currentWeek,
+                currentSeason = true,
+            )
+        every { seasonRepository.getCurrentSeason() } returns season
 
         mockMvc.perform(get("/seasons/current/week").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
@@ -116,7 +141,7 @@ class SeasonControllerTest {
 
     @Test
     fun `should handle error when starting season`() {
-        every { seasonService.startSeason() } throws RuntimeException("Failed to start season")
+        every { seasonRepository.getPreviousSeason() } throws RuntimeException("Failed to start season")
 
         mockMvc.perform(post("/seasons").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
@@ -125,7 +150,7 @@ class SeasonControllerTest {
 
     @Test
     fun `should handle error when getting current season`() {
-        every { seasonService.getCurrentSeason() } throws RuntimeException("Current season not found")
+        every { seasonRepository.getCurrentSeason() } returns null
 
         mockMvc.perform(get("/seasons/current").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
@@ -134,7 +159,7 @@ class SeasonControllerTest {
 
     @Test
     fun `should handle error when getting current week`() {
-        every { seasonService.getCurrentWeek() } throws RuntimeException("Current week not found")
+        every { seasonRepository.getCurrentSeason() } returns null
 
         mockMvc.perform(get("/seasons/current/week").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
