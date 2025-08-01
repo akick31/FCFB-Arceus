@@ -15,5 +15,8 @@ class CoachTransactionLogController(
     private val coachTransactionLogService: CoachTransactionLogService,
 ) {
     @GetMapping
-    fun getEntireCoachTransactionLog(): ResponseEntity<List<CoachTransactionLog>> = ResponseEntity.ok(coachTransactionLogService.getEntireCoachTransactionLog())
+    fun getEntireCoachTransactionLog(): ResponseEntity<List<CoachTransactionLog>> =
+        ResponseEntity.ok(
+            coachTransactionLogService.getEntireCoachTransactionLog(),
+        )
 }

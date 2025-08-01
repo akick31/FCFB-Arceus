@@ -13,6 +13,7 @@ import java.time.format.DateTimeFormatter
 @Component
 class SeasonService(
     private val seasonRepository: SeasonRepository,
+    private val teamService: TeamService,
 ) {
     /**
      * Start the current season
@@ -31,6 +32,7 @@ class SeasonService(
                 currentWeek = 1,
                 currentSeason = true,
             )
+        teamService.resetWinsAndLosses()
         seasonRepository.save(season)
         return season
     }

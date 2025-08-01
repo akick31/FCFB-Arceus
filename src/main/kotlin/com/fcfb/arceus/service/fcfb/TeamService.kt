@@ -483,6 +483,8 @@ class TeamService(
         return Pair(homeRank, awayRank)
     }
 
+    fun resetWinsAndLosses() = teamRepository.resetWinsAndLosses()
+
     /**
      * Check if playoff ranking is used
      * @return

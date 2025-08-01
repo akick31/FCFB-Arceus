@@ -16,7 +16,13 @@ import com.fcfb.arceus.domain.Game.Warning.NONE
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
-import io.mockk.*
+import io.mockk.Runs
+import io.mockk.coEvery
+import io.mockk.coVerify
+import io.mockk.every
+import io.mockk.just
+import io.mockk.mockk
+import io.mockk.verify
 import kotlinx.coroutines.runBlocking
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.BeforeEach
@@ -26,7 +32,6 @@ import org.springframework.data.domain.Pageable
 import org.springframework.http.ResponseEntity
 
 class GameControllerTest {
-
     private lateinit var gameService: GameService
     private lateinit var gameController: GameController
 
@@ -54,56 +59,60 @@ class GameControllerTest {
         val mockPage = PageImpl(listOf(mockk<Game>()))
         every { gameService.getFilteredGames(any(), any(), any(), any(), any(), any(), pageable) } returns mockPage
 
-        val response = gameController.getFilteredGames(
-            null,
-            null,
-            GameSort.CLOSEST_TO_END,
-            "Big 12",
-            1,
-            1,
-            pageable
-        )
+        val response =
+            gameController.getFilteredGames(
+                null,
+                null,
+                GameSort.CLOSEST_TO_END,
+                "Big 12",
+                1,
+                1,
+                pageable,
+            )
 
         assertEquals(ResponseEntity.ok(mockPage), response)
         verify { gameService.getFilteredGames(any(), any(), any(), any(), any(), any(), pageable) }
     }
 
     @Test
-    fun `startGame should return created game`() = runBlocking {
-        val startRequest = mockk<StartRequest>()
-        val mockGame = mockk<Game>()
-        coEvery { gameService.startSingleGame(startRequest, null) } returns mockGame
+    fun `startGame should return created game`() =
+        runBlocking {
+            val startRequest = mockk<StartRequest>()
+            val mockGame = mockk<Game>()
+            coEvery { gameService.startSingleGame(startRequest, null) } returns mockGame
 
-        val response = gameController.startGame(startRequest)
+            val response = gameController.startGame(startRequest)
 
-        assertEquals(ResponseEntity.status(201).body(mockGame), response)
-        coVerify { gameService.startSingleGame(startRequest, null) }
-    }
-
-    @Test
-    fun `startOvertimeGame should return created game`() = runBlocking {
-        val startRequest = mockk<StartRequest>()
-        val mockGame = mockk<Game>()
-        coEvery { gameService.startOvertimeGame(startRequest) } returns mockGame
-
-        val response = gameController.startOvertimeGame(startRequest)
-
-        assertEquals(ResponseEntity.status(201).body(mockGame), response)
-        coVerify { gameService.startOvertimeGame(startRequest) }
-    }
+            assertEquals(ResponseEntity.status(201).body(mockGame), response)
+            coVerify { gameService.startSingleGame(startRequest, null) }
+        }
 
     @Test
-    fun `startWeek should return list of games`() = runBlocking {
-        val season = 2023
-        val week = 1
-        val mockGames = listOf(mockk<Game>())
-        coEvery { gameService.startWeek(season, week) } returns mockGames
+    fun `startOvertimeGame should return created game`() =
+        runBlocking {
+            val startRequest = mockk<StartRequest>()
+            val mockGame = mockk<Game>()
+            coEvery { gameService.startOvertimeGame(startRequest) } returns mockGame
 
-        val response = gameController.startWeek(season, week)
+            val response = gameController.startOvertimeGame(startRequest)
 
-        assertEquals(ResponseEntity.status(201).body(mockGames), response)
-        coVerify { gameService.startWeek(season, week) }
-    }
+            assertEquals(ResponseEntity.status(201).body(mockGame), response)
+            coVerify { gameService.startOvertimeGame(startRequest) }
+        }
+
+    @Test
+    fun `startWeek should return list of games`() =
+        runBlocking {
+            val season = 2023
+            val week = 1
+            val mockGames = listOf(mockk<Game>())
+            coEvery { gameService.startWeek(season, week) } returns mockGames
+
+            val response = gameController.startWeek(season, week)
+
+            assertEquals(ResponseEntity.status(201).body(mockGames), response)
+            coVerify { gameService.startWeek(season, week) }
+        }
 
     @Test
     fun `endGame should return ended game`() {
@@ -208,65 +217,66 @@ class GameControllerTest {
     fun `getGameByRequestMessageId should return game`() {
         val gameService = mockk<GameService>()
 
-        val mockGame = Game(
-            homeTeam = "Team A",
-            awayTeam = "Team B",
-            homeCoaches = listOf("Coach A1", "Coach A2"),
-            awayCoaches = listOf("Coach B1", "Coach B2"),
-            homeCoachDiscordIds = listOf("123456789", "987654321"),
-            awayCoachDiscordIds = listOf("112233445", "556677889"),
-            homeOffensivePlaybook = AIR_RAID,
-            awayOffensivePlaybook = AIR_RAID,
-            homeDefensivePlaybook = FOUR_THREE,
-            awayDefensivePlaybook = FOUR_THREE,
-            homeScore = 21,
-            awayScore = 14,
-            possession = HOME,
-            quarter = 2,
-            clock = "5:30",
-            ballLocation = 50,
-            down = 2,
-            yardsToGo = 8,
-            tvChannel = ESPN,
-            homeTeamRank = 5,
-            homeWins = 10,
-            homeLosses = 2,
-            awayTeamRank = 8,
-            awayWins = 8,
-            awayLosses = 4,
-            subdivision = FCFB,
-            timestamp = "2023-10-01T12:00:00",
-            winProbability = 0.75,
-            season = 2023,
-            week = 5,
-            waitingOn = AWAY,
-            numPlays = 45,
-            homeTimeouts = 2,
-            awayTimeouts = 3,
-            coinTossWinner = HOME,
-            coinTossChoice = RECEIVE,
-            overtimeCoinTossWinner = null,
-            overtimeCoinTossChoice = null,
-            homePlatform = DISCORD,
-            homePlatformId = "homePlatform123",
-            awayPlatform = DISCORD,
-            awayPlatformId = "awayPlatform456",
-            lastMessageTimestamp = "2023-10-01T12:30:00",
-            gameTimer = "10/02/2023 06:00:00",
-            gameWarning = NONE,
-            currentPlayType = NORMAL,
-            currentPlayId = 101,
-            clockStopped = false,
-            requestMessageId = listOf("request123", "request456"),
-            gameStatus = PREGAME,
-            gameType = SCRIMMAGE,
-            gameMode = GameMode.NORMAL,
-            overtimeHalf = null,
-            closeGame = false,
-            closeGamePinged = false,
-            upsetAlert = false,
-            upsetAlertPinged = false
-        )
+        val mockGame =
+            Game(
+                homeTeam = "Team A",
+                awayTeam = "Team B",
+                homeCoaches = listOf("Coach A1", "Coach A2"),
+                awayCoaches = listOf("Coach B1", "Coach B2"),
+                homeCoachDiscordIds = listOf("123456789", "987654321"),
+                awayCoachDiscordIds = listOf("112233445", "556677889"),
+                homeOffensivePlaybook = AIR_RAID,
+                awayOffensivePlaybook = AIR_RAID,
+                homeDefensivePlaybook = FOUR_THREE,
+                awayDefensivePlaybook = FOUR_THREE,
+                homeScore = 21,
+                awayScore = 14,
+                possession = HOME,
+                quarter = 2,
+                clock = "5:30",
+                ballLocation = 50,
+                down = 2,
+                yardsToGo = 8,
+                tvChannel = ESPN,
+                homeTeamRank = 5,
+                homeWins = 10,
+                homeLosses = 2,
+                awayTeamRank = 8,
+                awayWins = 8,
+                awayLosses = 4,
+                subdivision = FCFB,
+                timestamp = "2023-10-01T12:00:00",
+                winProbability = 0.75,
+                season = 2023,
+                week = 5,
+                waitingOn = AWAY,
+                numPlays = 45,
+                homeTimeouts = 2,
+                awayTimeouts = 3,
+                coinTossWinner = HOME,
+                coinTossChoice = RECEIVE,
+                overtimeCoinTossWinner = null,
+                overtimeCoinTossChoice = null,
+                homePlatform = DISCORD,
+                homePlatformId = "homePlatform123",
+                awayPlatform = DISCORD,
+                awayPlatformId = "awayPlatform456",
+                lastMessageTimestamp = "2023-10-01T12:30:00",
+                gameTimer = "10/02/2023 06:00:00",
+                gameWarning = NONE,
+                currentPlayType = NORMAL,
+                currentPlayId = 101,
+                clockStopped = false,
+                requestMessageId = listOf("request123", "request456"),
+                gameStatus = PREGAME,
+                gameType = SCRIMMAGE,
+                gameMode = GameMode.NORMAL,
+                overtimeHalf = null,
+                closeGame = false,
+                closeGamePinged = false,
+                upsetAlert = false,
+                upsetAlertPinged = false,
+            )
         every { gameService.getGameByRequestMessageId(eq("12345")) } returns mockGame
 
         val response = gameService.getGameByRequestMessageId("12345")
@@ -301,16 +311,17 @@ class GameControllerTest {
     }
 
     @Test
-    fun `restartGame should return restarted game`() = runBlocking {
-        val channelId = 1234UL
-        val mockGame = mockk<Game>()
-        coEvery { gameService.restartGame(channelId) } returns mockGame
+    fun `restartGame should return restarted game`() =
+        runBlocking {
+            val channelId = 1234UL
+            val mockGame = mockk<Game>()
+            coEvery { gameService.restartGame(channelId) } returns mockGame
 
-        val response = gameController.restartGame(channelId)
+            val response = gameController.restartGame(channelId)
 
-        assertEquals(ResponseEntity.ok(mockGame), response)
-        coVerify { gameService.restartGame(channelId) }
-    }
+            assertEquals(ResponseEntity.ok(mockGame), response)
+            coVerify { gameService.restartGame(channelId) }
+        }
 
     @Test
     fun `markCloseGamePinged should return no content`() {

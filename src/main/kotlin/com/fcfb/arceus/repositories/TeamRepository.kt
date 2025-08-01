@@ -1,9 +1,11 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Team
+import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
+import org.springframework.transaction.annotation.Transactional
 
 @Repository
 interface TeamRepository : CrudRepository<Team?, Int?> {
@@ -90,4 +92,18 @@ interface TeamRepository : CrudRepository<Team?, Int?> {
         nativeQuery = true,
     )
     fun getAllTeams(): Team?
+
+    @Modifying
+    @Transactional
+    @Query(
+        value = """
+            UPDATE team 
+            SET current_wins = 0, 
+                current_losses = 0, 
+                current_conference_wins = 0, 
+                current_conference_losses = 0
+        """,
+        nativeQuery = true,
+    )
+    fun resetWinsAndLosses()
 }

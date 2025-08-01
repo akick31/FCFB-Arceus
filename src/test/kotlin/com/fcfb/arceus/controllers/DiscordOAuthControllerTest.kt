@@ -6,24 +6,27 @@ import io.mockk.mockk
 import io.mockk.mockkStatic
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test
-import java.lang.reflect.Field
 import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
+import java.lang.reflect.Field
 
 class DiscordOAuthControllerTest {
-
     private val restTemplate: RestTemplate = mockk()
 
-    private val controller = DiscordOAuthController(restTemplate).apply {
-        setPrivateField("clientId", "test-client-id")
-        setPrivateField("clientSecret", "test-client-secret")
-        setPrivateField("redirectUri", "http://localhost/redirect")
-        setPrivateField("websiteUrl", "http://localhost")
-    }
+    private val controller =
+        DiscordOAuthController(restTemplate).apply {
+            setPrivateField("clientId", "test-client-id")
+            setPrivateField("clientSecret", "test-client-secret")
+            setPrivateField("redirectUri", "http://localhost/redirect")
+            setPrivateField("websiteUrl", "http://localhost")
+        }
 
-    private fun DiscordOAuthController.setPrivateField(fieldName: String, value: String) {
+    private fun DiscordOAuthController.setPrivateField(
+        fieldName: String,
+        value: String,
+    ) {
         val field: Field = this::class.java.getDeclaredField(fieldName)
         field.isAccessible = true
         field.set(this, value)
@@ -46,7 +49,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/oauth2/token",
                 HttpMethod.POST,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity(tokenResponseBody, HttpStatus.OK)
 
@@ -55,7 +58,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/users/@me",
                 HttpMethod.GET,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity(userResponseBody, HttpStatus.OK)
 
@@ -67,7 +70,7 @@ class DiscordOAuthControllerTest {
         assertEquals(HttpStatus.FOUND, response.statusCode)
         assertEquals(
             "http://localhost/finish-registration?discordId=$discordId&discordTag=$discordTag",
-            response.headers["Location"]?.first()
+            response.headers["Location"]?.first(),
         )
     }
 
@@ -81,7 +84,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/oauth2/token",
                 HttpMethod.POST,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity(tokenResponseBody, HttpStatus.OK)
 
@@ -103,7 +106,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/oauth2/token",
                 HttpMethod.POST,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity("Error exchanging token", HttpStatus.BAD_REQUEST)
 
@@ -127,7 +130,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/oauth2/token",
                 HttpMethod.POST,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity(tokenResponseBody, HttpStatus.OK)
 
@@ -136,7 +139,7 @@ class DiscordOAuthControllerTest {
                 "https://discord.com/api/users/@me",
                 HttpMethod.GET,
                 any(),
-                String::class.java
+                String::class.java,
             )
         } returns ResponseEntity("Error fetching user info", HttpStatus.BAD_REQUEST)
 
