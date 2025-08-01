@@ -5,6 +5,7 @@ target/
 !**/src/main/**/target/
 !**/src/test/**/target/
 .gradle/
+.kotlin/
 lib/
 
 ### Keystore ###
