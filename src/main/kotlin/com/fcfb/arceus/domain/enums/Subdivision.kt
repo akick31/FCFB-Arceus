@@ -12,4 +12,4 @@ enum class Subdivision(val description: String) {
             return entries.find { it.description == description }
         }
     }
-} 
+}

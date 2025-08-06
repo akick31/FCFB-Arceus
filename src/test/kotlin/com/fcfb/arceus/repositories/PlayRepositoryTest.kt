@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.enums.ActualResult
 import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.enums.ActualResult
 import com.fcfb.arceus.domain.enums.PlayCall
 import com.fcfb.arceus.domain.enums.TeamSide
 import io.mockk.every
@@ -26,15 +26,16 @@ class PlayRepositoryTest {
     @Test
     fun `test save and findById`() {
         // Given
-        val play = createTestPlay(
-            playId = 1,
-            gameId = 123,
-            offensiveSubmitter = "offensive_coach#1234",
-            defensiveSubmitter = "defensive_coach#5678",
-            playCall = PlayCall.RUN,
-            actualResult = ActualResult.GAIN,
-            playFinished = true,
-        )
+        val play =
+            createTestPlay(
+                playId = 1,
+                gameId = 123,
+                offensiveSubmitter = "offensive_coach#1234",
+                defensiveSubmitter = "defensive_coach#5678",
+                playCall = PlayCall.RUN,
+                actualResult = ActualResult.GAIN,
+                playFinished = true,
+            )
 
         every { playRepository.save(any()) } returns play
         every { playRepository.findById(1) } returns java.util.Optional.of(play)
@@ -57,12 +58,13 @@ class PlayRepositoryTest {
     @Test
     fun `test getPlayById`() {
         // Given
-        val play = createTestPlay(
-            playId = 2,
-            gameId = 456,
-            offensiveSubmitter = "test_offensive#1234",
-            defensiveSubmitter = "test_defensive#5678",
-        )
+        val play =
+            createTestPlay(
+                playId = 2,
+                gameId = 456,
+                offensiveSubmitter = "test_offensive#1234",
+                defensiveSubmitter = "test_defensive#5678",
+            )
 
         every { playRepository.getPlayById(2) } returns play
 
@@ -92,18 +94,20 @@ class PlayRepositoryTest {
     @Test
     fun `test getAllPlaysByGameId`() {
         // Given
-        val play1 = createTestPlay(
-            playId = 1,
-            gameId = 100,
-            offensiveSubmitter = "coach1#1234",
-            defensiveSubmitter = "coach2#5678",
-        )
-        val play2 = createTestPlay(
-            playId = 2,
-            gameId = 100,
-            offensiveSubmitter = "coach3#1234",
-            defensiveSubmitter = "coach4#5678",
-        )
+        val play1 =
+            createTestPlay(
+                playId = 1,
+                gameId = 100,
+                offensiveSubmitter = "coach1#1234",
+                defensiveSubmitter = "coach2#5678",
+            )
+        val play2 =
+            createTestPlay(
+                playId = 2,
+                gameId = 100,
+                offensiveSubmitter = "coach3#1234",
+                defensiveSubmitter = "coach4#5678",
+            )
         val plays = listOf(play1, play2)
 
         every { playRepository.getAllPlaysByGameId(100) } returns plays
@@ -120,11 +124,12 @@ class PlayRepositoryTest {
     @Test
     fun `test getCurrentPlay`() {
         // Given
-        val play = createTestPlay(
-            playId = 1,
-            gameId = 100,
-            playFinished = false,
-        )
+        val play =
+            createTestPlay(
+                playId = 1,
+                gameId = 100,
+                playFinished = false,
+            )
 
         every { playRepository.getCurrentPlay(100) } returns play
 
@@ -152,11 +157,12 @@ class PlayRepositoryTest {
     @Test
     fun `test getPreviousPlay`() {
         // Given
-        val play = createTestPlay(
-            playId = 1,
-            gameId = 100,
-            playFinished = true,
-        )
+        val play =
+            createTestPlay(
+                playId = 1,
+                gameId = 100,
+                playFinished = true,
+            )
 
         every { playRepository.getPreviousPlay(100) } returns play
 

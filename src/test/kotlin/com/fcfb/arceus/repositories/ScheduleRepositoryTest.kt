@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.Schedule
+import com.fcfb.arceus.domain.enums.GameType
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -24,16 +24,17 @@ class ScheduleRepositoryTest {
     @Test
     fun `test save and findById`() {
         // Given
-        val schedule = createTestSchedule(
-            id = 1,
-            homeTeam = "Alabama",
-            awayTeam = "Auburn",
-            season = 2024,
-            week = 8,
-            gameType = GameType.CONFERENCE_GAME,
-            started = false,
-            finished = false,
-        )
+        val schedule =
+            createTestSchedule(
+                id = 1,
+                homeTeam = "Alabama",
+                awayTeam = "Auburn",
+                season = 2024,
+                week = 8,
+                gameType = GameType.CONFERENCE_GAME,
+                started = false,
+                finished = false,
+            )
 
         every { scheduleRepository.save(any()) } returns schedule
         every { scheduleRepository.findById(1) } returns java.util.Optional.of(schedule)
@@ -57,22 +58,24 @@ class ScheduleRepositoryTest {
     @Test
     fun `test getGamesToStartBySeasonAndWeek`() {
         // Given
-        val unstartedGame1 = createTestSchedule(
-            id = 1,
-            homeTeam = "Alabama",
-            awayTeam = "Auburn",
-            season = 2024,
-            week = 8,
-            started = false,
-        )
-        val unstartedGame2 = createTestSchedule(
-            id = 2,
-            homeTeam = "Georgia",
-            awayTeam = "Florida",
-            season = 2024,
-            week = 8,
-            started = false,
-        )
+        val unstartedGame1 =
+            createTestSchedule(
+                id = 1,
+                homeTeam = "Alabama",
+                awayTeam = "Auburn",
+                season = 2024,
+                week = 8,
+                started = false,
+            )
+        val unstartedGame2 =
+            createTestSchedule(
+                id = 2,
+                homeTeam = "Georgia",
+                awayTeam = "Florida",
+                season = 2024,
+                week = 8,
+                started = false,
+            )
         val unstartedGames = listOf(unstartedGame1, unstartedGame2)
 
         every { scheduleRepository.getGamesToStartBySeasonAndWeek(2024, 8) } returns unstartedGames
@@ -126,20 +129,22 @@ class ScheduleRepositoryTest {
     @Test
     fun `test getScheduleBySeasonAndTeam`() {
         // Given
-        val schedule1 = createTestSchedule(
-            id = 1,
-            homeTeam = "Alabama",
-            awayTeam = "Auburn",
-            season = 2024,
-            week = 8,
-        )
-        val schedule2 = createTestSchedule(
-            id = 2,
-            homeTeam = "Georgia",
-            awayTeam = "Alabama",
-            season = 2024,
-            week = 9,
-        )
+        val schedule1 =
+            createTestSchedule(
+                id = 1,
+                homeTeam = "Alabama",
+                awayTeam = "Auburn",
+                season = 2024,
+                week = 8,
+            )
+        val schedule2 =
+            createTestSchedule(
+                id = 2,
+                homeTeam = "Georgia",
+                awayTeam = "Alabama",
+                season = 2024,
+                week = 9,
+            )
         val schedules = listOf(schedule1, schedule2)
 
         every { scheduleRepository.getScheduleBySeasonAndTeam(2024, "Alabama") } returns schedules
@@ -157,13 +162,14 @@ class ScheduleRepositoryTest {
     @Test
     fun `test findGameInSchedule`() {
         // Given
-        val schedule = createTestSchedule(
-            id = 1,
-            homeTeam = "Alabama",
-            awayTeam = "Auburn",
-            season = 2024,
-            week = 8,
-        )
+        val schedule =
+            createTestSchedule(
+                id = 1,
+                homeTeam = "Alabama",
+                awayTeam = "Auburn",
+                season = 2024,
+                week = 8,
+            )
 
         every { scheduleRepository.findGameInSchedule("Alabama", "Auburn", 2024, 8) } returns schedule
 

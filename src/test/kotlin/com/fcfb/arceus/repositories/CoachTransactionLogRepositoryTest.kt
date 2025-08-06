@@ -8,10 +8,9 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
-import kotlin.test.assertNull
-import kotlin.test.assertTrue
 import kotlin.test.assertFalse
+import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class CoachTransactionLogRepositoryTest {
     private lateinit var coachTransactionLogRepository: CoachTransactionLogRepository
@@ -162,7 +161,7 @@ class CoachTransactionLogRepositoryTest {
         every { coachTransactionLogRepository.count() } returns 10L
 
         val count = coachTransactionLogRepository.count()
-        
+
         assertEquals(10L, count)
     }
 
@@ -203,7 +202,7 @@ class CoachTransactionLogRepositoryTest {
         every { coachTransactionLogRepository.saveAll(coachTransactionLogs) } returns coachTransactionLogs
 
         val savedCoachTransactionLogs = coachTransactionLogRepository.saveAll(coachTransactionLogs)
-        
+
         assertEquals(2, savedCoachTransactionLogs.count())
         assertTrue(savedCoachTransactionLogs.any { it.team == "Alabama" })
         assertTrue(savedCoachTransactionLogs.any { it.team == "Auburn" })
@@ -216,7 +215,7 @@ class CoachTransactionLogRepositoryTest {
         coach: MutableList<String> = mutableListOf("Coach1"),
         transaction: CoachTransactionLog.TransactionType = CoachTransactionLog.TransactionType.HIRED,
         transactionDate: String = "2024-01-01",
-        processedBy: String = "Admin"
+        processedBy: String = "Admin",
     ): CoachTransactionLog {
         return CoachTransactionLog(
             team = team,
@@ -224,7 +223,7 @@ class CoachTransactionLogRepositoryTest {
             coach = coach,
             transaction = transaction,
             transactionDate = transactionDate,
-            processedBy = processedBy
+            processedBy = processedBy,
         )
     }
 }

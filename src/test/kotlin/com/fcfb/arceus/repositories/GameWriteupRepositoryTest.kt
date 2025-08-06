@@ -3,7 +3,6 @@ package com.fcfb.arceus.repositories
 import com.fcfb.arceus.domain.GameWriteup
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -21,12 +20,13 @@ class GameWriteupRepositoryTest {
     @Test
     fun `test save and findById`() {
         // Given
-        val gameWriteup = createTestGameWriteup(
-            id = 1,
-            scenario = "GAIN_OF_1_YARD",
-            playCall = "Run",
-            message = "The running back takes the handoff and finds a hole in the defense.",
-        )
+        val gameWriteup =
+            createTestGameWriteup(
+                id = 1,
+                scenario = "GAIN_OF_1_YARD",
+                playCall = "Run",
+                message = "The running back takes the handoff and finds a hole in the defense.",
+            )
 
         every { gameWriteupRepository.save(any()) } returns gameWriteup
         every { gameWriteupRepository.findById(1) } returns java.util.Optional.of(gameWriteup)
@@ -44,24 +44,27 @@ class GameWriteupRepositoryTest {
     @Test
     fun `test findByScenario`() {
         // Given
-        val gameWriteup1 = createTestGameWriteup(
-            id = 1,
-            scenario = "GAIN_OF_10_YARDS",
-            playCall = "Run",
-            message = "Run play writeup",
-        )
-        val gameWriteup2 = createTestGameWriteup(
-            id = 2,
-            scenario = "GAIN_OF_3_YARDS",
-            playCall = "Run",
-            message = "Run play writeup",
-        )
-        val gameWriteup3 = createTestGameWriteup(
-            id = 3,
-            scenario = "GAIN_OF_3_YARDS",
-            playCall = "Pass",
-            message = "Pass play writeup",
-        )
+        val gameWriteup1 =
+            createTestGameWriteup(
+                id = 1,
+                scenario = "GAIN_OF_10_YARDS",
+                playCall = "Run",
+                message = "Run play writeup",
+            )
+        val gameWriteup2 =
+            createTestGameWriteup(
+                id = 2,
+                scenario = "GAIN_OF_3_YARDS",
+                playCall = "Run",
+                message = "Run play writeup",
+            )
+        val gameWriteup3 =
+            createTestGameWriteup(
+                id = 3,
+                scenario = "GAIN_OF_3_YARDS",
+                playCall = "Pass",
+                message = "Pass play writeup",
+            )
 
         every { gameWriteupRepository.findByScenario("GAIN_OF_3_YARDS", "Run") } returns listOf(gameWriteup2)
 
@@ -89,12 +92,13 @@ class GameWriteupRepositoryTest {
     @Test
     fun `test findByScenario with null playCall`() {
         // Given
-        val gameWriteup1 = createTestGameWriteup(
-            id = 1,
-            scenario = "RETURN_TO_THE_TWENTY",
-            playCall = null,
-            message = "Null play call writeup",
-        )
+        val gameWriteup1 =
+            createTestGameWriteup(
+                id = 1,
+                scenario = "RETURN_TO_THE_TWENTY",
+                playCall = null,
+                message = "Null play call writeup",
+            )
 
         every { gameWriteupRepository.findByScenario("RETURN_TO_THE_TWENTY", null) } returns listOf(gameWriteup1)
 

@@ -12,4 +12,4 @@ enum class PlayCall(val description: String) {
     KICKOFF_ONSIDE("KICKOFF_ONSIDE"),
     KICKOFF_SQUIB("KICKOFF_SQUIB"),
     PUNT("PUNT"),
-} 
+}

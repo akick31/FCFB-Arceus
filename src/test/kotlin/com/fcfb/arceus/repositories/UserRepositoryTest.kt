@@ -1,8 +1,8 @@
 package com.fcfb.arceus.repositories
 
+import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.User
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

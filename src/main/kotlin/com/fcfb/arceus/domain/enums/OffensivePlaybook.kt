@@ -13,4 +13,4 @@ enum class OffensivePlaybook(val description: String) {
             return entries.find { it.description == description }
         }
     }
-} 
+}

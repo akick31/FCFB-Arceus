@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.enums.Subdivision
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

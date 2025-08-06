@@ -1,6 +1,9 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.enums.ActualResult
 import com.fcfb.arceus.domain.enums.CoinTossCall
 import com.fcfb.arceus.domain.enums.CoinTossChoice
@@ -14,9 +17,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Scenario
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.enums.Warning
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository

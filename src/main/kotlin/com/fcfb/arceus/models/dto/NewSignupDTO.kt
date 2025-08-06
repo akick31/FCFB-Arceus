@@ -1,8 +1,8 @@
 package com.fcfb.arceus.models.dto
 
+import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.User.CoachPosition
 
 data class NewSignupDTO(
     val id: Long,

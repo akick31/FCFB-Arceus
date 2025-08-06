@@ -1,12 +1,12 @@
 package com.fcfb.arceus.repositories
 
+import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
-import com.fcfb.arceus.domain.GameStats
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -28,21 +28,22 @@ class GameStatsRepositoryTest {
     @Test
     fun `test save and findById`() {
         // Given
-        val gameStats = createTestGameStats(
-            id = 1,
-            gameId = 123,
-            team = "Alabama",
-            tvChannel = TVChannel.CBS,
-            coaches = listOf("coach1", "coach2"),
-            offensivePlaybook = OffensivePlaybook.AIR_RAID,
-            defensivePlaybook = DefensivePlaybook.FOUR_THREE,
-            season = 2024,
-            week = 8,
-            subdivision = Subdivision.FBS,
-            score = 28,
-            gameType = GameType.CONFERENCE_GAME,
-            gameStatus = GameStatus.FINAL,
-        )
+        val gameStats =
+            createTestGameStats(
+                id = 1,
+                gameId = 123,
+                team = "Alabama",
+                tvChannel = TVChannel.CBS,
+                coaches = listOf("coach1", "coach2"),
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
+                season = 2024,
+                week = 8,
+                subdivision = Subdivision.FBS,
+                score = 28,
+                gameType = GameType.CONFERENCE_GAME,
+                gameStatus = GameStatus.FINAL,
+            )
 
         every { gameStatsRepository.save(any()) } returns gameStats
         every { gameStatsRepository.findById(1) } returns java.util.Optional.of(gameStats)
@@ -71,12 +72,13 @@ class GameStatsRepositoryTest {
     @Test
     fun `test getGameStatsByIdAndTeam`() {
         // Given
-        val gameStats = createTestGameStats(
-            id = 1,
-            gameId = 456,
-            team = "Auburn",
-            score = 21,
-        )
+        val gameStats =
+            createTestGameStats(
+                id = 1,
+                gameId = 456,
+                team = "Auburn",
+                score = 21,
+            )
 
         every { gameStatsRepository.getGameStatsByIdAndTeam(456, "Auburn") } returns gameStats
 

@@ -2,8 +2,8 @@ package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.converter.DTOConverter
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.models.requests.UserValidationRequest
 import com.fcfb.arceus.models.response.UserValidationResponse

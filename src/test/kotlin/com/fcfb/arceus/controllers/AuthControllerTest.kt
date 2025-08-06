@@ -1,10 +1,10 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.models.website.LoginResponse
 import com.fcfb.arceus.service.auth.AuthService

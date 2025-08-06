@@ -119,4 +119,4 @@ enum class Scenario(val description: String) {
             return Scenario.entries.find { it.description == description }
         }
     }
-} 
+}

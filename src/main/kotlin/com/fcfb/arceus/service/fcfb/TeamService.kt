@@ -3,11 +3,11 @@ package com.fcfb.arceus.service.fcfb
 import com.fcfb.arceus.domain.CoachTransactionLog
 import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Team
+import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User.CoachPosition
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.log.CoachTransactionLogService
 import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException

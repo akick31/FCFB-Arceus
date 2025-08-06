@@ -1,12 +1,12 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
+import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.domain.enums.DefensivePlaybook.FOUR_THREE
 import com.fcfb.arceus.domain.enums.DefensivePlaybook.THREE_FOUR
 import com.fcfb.arceus.domain.enums.OffensivePlaybook.AIR_RAID
 import com.fcfb.arceus.domain.enums.OffensivePlaybook.PRO
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
-import com.fcfb.arceus.domain.User.Role.USER
 import com.fcfb.arceus.models.dto.UserDTO
 import com.fcfb.arceus.models.requests.UserValidationRequest
 import com.fcfb.arceus.models.response.UserValidationResponse

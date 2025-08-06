@@ -1,31 +1,30 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.enums.CoinTossChoice
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Platform
-import com.fcfb.arceus.domain.enums.CoinTossChoice
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
-import com.fcfb.arceus.domain.enums.Warning
+import com.fcfb.arceus.domain.enums.Platform
 import com.fcfb.arceus.domain.enums.PlayType
-import com.fcfb.arceus.domain.enums.GameMode
-import com.fcfb.arceus.domain.enums.TVChannel
 import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
+import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.domain.enums.Warning
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
-import kotlin.test.assertFalse
 
 class GameRepositoryTest {
-
     private lateinit var gameRepository: GameRepository
 
     @BeforeEach
@@ -246,7 +245,7 @@ class GameRepositoryTest {
         every { gameRepository.count() } returns 10L
 
         val count = gameRepository.count()
-        
+
         assertEquals(10L, count)
     }
 
@@ -359,7 +358,7 @@ class GameRepositoryTest {
         closeGame: Boolean = false,
         closeGamePinged: Boolean = false,
         upsetAlert: Boolean = false,
-        upsetAlertPinged: Boolean = false
+        upsetAlertPinged: Boolean = false,
     ): Game {
         return Game().apply {
             this.gameId = gameId

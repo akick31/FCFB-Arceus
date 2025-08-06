@@ -18,4 +18,4 @@ enum class GameType(val description: String) {
             entries.find { it.description.equals(description, ignoreCase = true) }
                 ?: throw IllegalArgumentException("Unknown game type: $description")
     }
-} 
+}

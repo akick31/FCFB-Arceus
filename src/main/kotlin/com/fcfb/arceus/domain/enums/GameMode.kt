@@ -13,4 +13,4 @@ enum class GameMode(val description: String) {
             entries.find { it.description.equals(description, ignoreCase = true) }
                 ?: throw IllegalArgumentException("Unknown game mode: $description")
     }
-} 
+}

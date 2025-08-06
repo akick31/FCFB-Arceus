@@ -8,7 +8,6 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
-import kotlin.test.assertNull
 
 class RequestMessageLogRepositoryTest {
     private lateinit var requestMessageLogRepository: RequestMessageLogRepository
@@ -44,19 +43,25 @@ class RequestMessageLogRepositoryTest {
     @Test
     fun `test find by message type`() {
         // Given
-        val gameThreadLog = createTestRequestMessageLog(
-            id = 1,
-            messageType = RequestMessageLog.MessageType.GAME_THREAD,
-            messageLocation = "game-channel",
-        )
-        val privateMessageLog = createTestRequestMessageLog(
-            id = 2,
-            messageType = RequestMessageLog.MessageType.PRIVATE_MESSAGE,
-            messageLocation = "private-channel",
-        )
+        val gameThreadLog =
+            createTestRequestMessageLog(
+                id = 1,
+                messageType = RequestMessageLog.MessageType.GAME_THREAD,
+                messageLocation = "game-channel",
+            )
+        val privateMessageLog =
+            createTestRequestMessageLog(
+                id = 2,
+                messageType = RequestMessageLog.MessageType.PRIVATE_MESSAGE,
+                messageLocation = "private-channel",
+            )
 
-        every { requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.GAME_THREAD) } returns listOf(gameThreadLog)
-        every { requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.PRIVATE_MESSAGE) } returns listOf(privateMessageLog)
+        every {
+            requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.GAME_THREAD)
+        } returns listOf(gameThreadLog)
+        every {
+            requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.PRIVATE_MESSAGE)
+        } returns listOf(privateMessageLog)
 
         // When
         val gameThreadLogs = requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.GAME_THREAD)
@@ -135,7 +140,9 @@ class RequestMessageLogRepositoryTest {
         // Given
         val requestMessageLog = createTestRequestMessageLog()
 
-        every { requestMessageLogRepository.findByGameIdAndMessageType(123, RequestMessageLog.MessageType.GAME_THREAD) } returns listOf(requestMessageLog)
+        every {
+            requestMessageLogRepository.findByGameIdAndMessageType(123, RequestMessageLog.MessageType.GAME_THREAD)
+        } returns listOf(requestMessageLog)
 
         // When
         val found = requestMessageLogRepository.findByGameIdAndMessageType(123, RequestMessageLog.MessageType.GAME_THREAD)
@@ -167,7 +174,9 @@ class RequestMessageLogRepositoryTest {
         // Given
         val requestMessageLog = createTestRequestMessageLog()
 
-        every { requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, RequestMessageLog.MessageType.GAME_THREAD, 456) } returns listOf(requestMessageLog)
+        every {
+            requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, RequestMessageLog.MessageType.GAME_THREAD, 456)
+        } returns listOf(requestMessageLog)
 
         // When
         val found = requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, RequestMessageLog.MessageType.GAME_THREAD, 456)

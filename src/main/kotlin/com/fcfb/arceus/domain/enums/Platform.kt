@@ -12,4 +12,4 @@ enum class Platform(val description: String) {
             Platform.entries.find { it.description.equals(description, ignoreCase = true) }
                 ?: throw IllegalArgumentException("Unknown platform: $description")
     }
-} 
+}

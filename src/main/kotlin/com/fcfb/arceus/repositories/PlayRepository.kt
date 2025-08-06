@@ -1,8 +1,8 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.enums.PlayCall
 import com.fcfb.arceus.domain.enums.ActualResult
+import com.fcfb.arceus.domain.enums.PlayCall
 import com.fcfb.arceus.domain.enums.Scenario
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

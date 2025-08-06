@@ -179,13 +179,13 @@ class SessionRepositoryTest {
         id: Long = 1L,
         token: String = "test_token",
         userId: Long = 123L,
-        expirationDate: LocalDateTime = LocalDateTime.now().plusDays(1)
+        expirationDate: LocalDateTime = LocalDateTime.now().plusDays(1),
     ): Session {
         return Session(
             id = id,
             userId = userId,
             token = token,
-            expirationDate = expirationDate
+            expirationDate = expirationDate,
         )
     }
 }

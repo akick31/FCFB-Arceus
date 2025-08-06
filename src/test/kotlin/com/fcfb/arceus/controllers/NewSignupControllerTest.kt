@@ -1,8 +1,8 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.models.dto.NewSignupDTO
 import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.utils.GlobalExceptionHandler

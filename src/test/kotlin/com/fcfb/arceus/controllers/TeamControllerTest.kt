@@ -1,12 +1,12 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.Team.Conference.ACC
 import com.fcfb.arceus.domain.Team.Conference.SEC
 import com.fcfb.arceus.domain.Team.Conference.SWAC
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.service.fcfb.TeamService
 import com.fcfb.arceus.utils.GlobalExceptionHandler
 import io.mockk.coEvery

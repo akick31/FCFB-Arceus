@@ -14,4 +14,4 @@ enum class DefensivePlaybook(val description: String) {
                 ?: throw IllegalArgumentException("Unknown DefensivePlaybook: $description")
         }
     }
-} 
+}

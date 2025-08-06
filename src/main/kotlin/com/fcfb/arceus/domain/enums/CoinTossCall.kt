@@ -10,4 +10,4 @@ enum class CoinTossCall(val description: String) {
             return entries.find { it.description == description }
         }
     }
-} 
+}

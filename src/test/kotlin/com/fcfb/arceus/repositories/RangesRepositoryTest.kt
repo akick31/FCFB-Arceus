@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.enums.Scenario
 import com.fcfb.arceus.domain.Ranges
+import com.fcfb.arceus.domain.enums.Scenario
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -22,16 +22,17 @@ class RangesRepositoryTest {
     @Test
     fun `test save and findById`() {
         // Given
-        val ranges = createTestRanges(
-            id = 1,
-            playType = "RUN",
-            offensivePlaybook = "AIR_RAID",
-            defensivePlaybook = "FOUR_THREE",
-            lowerRange = 1,
-            upperRange = 10,
-            result = Scenario.GAIN_OF_5_YARDS,
-            playTime = 5,
-        )
+        val ranges =
+            createTestRanges(
+                id = 1,
+                playType = "RUN",
+                offensivePlaybook = "AIR_RAID",
+                defensivePlaybook = "FOUR_THREE",
+                lowerRange = 1,
+                upperRange = 10,
+                result = Scenario.GAIN_OF_5_YARDS,
+                playTime = 5,
+            )
 
         every { rangesRepository.save(any()) } returns ranges
         every { rangesRepository.findById(1) } returns java.util.Optional.of(ranges)
@@ -54,15 +55,16 @@ class RangesRepositoryTest {
     @Test
     fun `test getNormalResult`() {
         // Given
-        val ranges = createTestRanges(
-            id = 1,
-            playType = "PASS",
-            offensivePlaybook = "SPREAD",
-            defensivePlaybook = "THREE_FOUR",
-            lowerRange = 5,
-            upperRange = 15,
-            result = Scenario.GAIN_OF_11_YARDS,
-        )
+        val ranges =
+            createTestRanges(
+                id = 1,
+                playType = "PASS",
+                offensivePlaybook = "SPREAD",
+                defensivePlaybook = "THREE_FOUR",
+                lowerRange = 5,
+                upperRange = 15,
+                result = Scenario.GAIN_OF_11_YARDS,
+            )
 
         every { rangesRepository.getNormalResult("PASS", "SPREAD", "THREE_FOUR", "10") } returns ranges
 
@@ -92,13 +94,14 @@ class RangesRepositoryTest {
     @Test
     fun `test getNonNormalResult`() {
         // Given
-        val ranges = createTestRanges(
-            id = 1,
-            playType = "PASS",
-            lowerRange = 1,
-            upperRange = 10,
-            result = Scenario.FUMBLE,
-        )
+        val ranges =
+            createTestRanges(
+                id = 1,
+                playType = "PASS",
+                lowerRange = 1,
+                upperRange = 10,
+                result = Scenario.FUMBLE,
+            )
 
         every { rangesRepository.getNonNormalResult("PASS", "5") } returns ranges
 
@@ -127,13 +130,14 @@ class RangesRepositoryTest {
     @Test
     fun `test getPuntResult`() {
         // Given
-        val ranges = createTestRanges(
-            id = 1,
-            playType = "PUNT",
-            lowerRange = 1,
-            upperRange = 10,
-            result = Scenario.FORTY_YARD_PUNT,
-        )
+        val ranges =
+            createTestRanges(
+                id = 1,
+                playType = "PUNT",
+                lowerRange = 1,
+                upperRange = 10,
+                result = Scenario.FORTY_YARD_PUNT,
+            )
 
         every { rangesRepository.getPuntResult("PUNT", "20", "5") } returns ranges
 
@@ -162,13 +166,14 @@ class RangesRepositoryTest {
     @Test
     fun `test getFieldGoalResult`() {
         // Given
-        val ranges = createTestRanges(
-            id = 1,
-            playType = "FIELD_GOAL",
-            lowerRange = 1,
-            upperRange = 10,
-            result = Scenario.GOOD,
-        )
+        val ranges =
+            createTestRanges(
+                id = 1,
+                playType = "FIELD_GOAL",
+                lowerRange = 1,
+                upperRange = 10,
+                result = Scenario.GOOD,
+            )
 
         every { rangesRepository.getFieldGoalResult("FIELD_GOAL", "30", "5") } returns ranges
 

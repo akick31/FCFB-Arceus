@@ -1,11 +1,11 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.enums.ActualResult
 import com.fcfb.arceus.domain.enums.PlayCall
 import com.fcfb.arceus.domain.enums.RunoffType
 import com.fcfb.arceus.domain.enums.Scenario
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.service.fcfb.PlayService
 import com.fcfb.arceus.utils.GlobalExceptionHandler
 import io.mockk.every

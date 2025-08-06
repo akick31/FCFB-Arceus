@@ -1,6 +1,8 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.domain.enums.ActualResult
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameMode
@@ -11,8 +13,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.RunoffType
 import com.fcfb.arceus.domain.enums.Scenario
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.utils.DefensiveNumberNotFound
 import com.fcfb.arceus.utils.EncryptionUtils

@@ -2,9 +2,9 @@ package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
 import org.hibernate.annotations.Type

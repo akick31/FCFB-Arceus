@@ -14,4 +14,4 @@ enum class Warning(val description: String) {
             entries.find { it.description.equals(description, ignoreCase = true) }
                 ?: throw IllegalArgumentException("Unknown warning: $description")
     }
-} 
+}
