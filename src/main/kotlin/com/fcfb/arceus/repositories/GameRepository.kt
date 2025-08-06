@@ -3,7 +3,7 @@ package com.fcfb.arceus.repositories
 import com.fcfb.arceus.domain.Game
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.Warning
+import com.fcfb.arceus.domain.enums.GameWarning
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -114,7 +114,7 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
 
     fun findByGameType(gameType: GameType): List<Game>
 
-    fun findByGameWarning(gameWarning: Warning): List<Game>
+    fun findByGameWarning(gameWarning: GameWarning): List<Game>
 
     fun findByCloseGamePinged(closeGamePinged: Boolean): List<Game>
 

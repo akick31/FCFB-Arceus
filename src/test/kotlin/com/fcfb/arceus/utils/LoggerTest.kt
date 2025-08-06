@@ -70,7 +70,7 @@ class LoggerTest {
 
     @Test
     fun `test warn logging`() {
-        val message = "Warning test message"
+        val message = "GameWarning test message"
         Logger.warn(message)
 
         // Method should not throw exceptions
@@ -78,7 +78,7 @@ class LoggerTest {
 
     @Test
     fun `test warn logging with arguments`() {
-        val message = "Warning test with args: {} and {}"
+        val message = "GameWarning test with args: {} and {}"
         val arg1 = "value1"
         val arg2 = 42
 

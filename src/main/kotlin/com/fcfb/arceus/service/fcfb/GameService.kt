@@ -10,6 +10,7 @@ import com.fcfb.arceus.domain.enums.CoinTossChoice
 import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.GameWarning
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.enums.Platform
 import com.fcfb.arceus.domain.enums.PlayCall
@@ -17,7 +18,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Scenario
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Warning
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
@@ -174,7 +174,7 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarning = Warning.NONE,
+                            gameWarning = GameWarning.NONE,
                             currentPlayType = PlayType.KICKOFF,
                             currentPlayId = 0,
                             clockStopped = true,
@@ -314,7 +314,7 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarning = Warning.NONE,
+                            gameWarning = GameWarning.NONE,
                             currentPlayType = PlayType.NORMAL,
                             currentPlayId = 0,
                             clockStopped = true,
@@ -425,7 +425,7 @@ class GameService(
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
         game.gameTimer = calculateDelayOfGameTimer()
-        game.gameWarning = Warning.NONE
+        game.gameWarning = GameWarning.NONE
 
         gameRepository.save(game)
 

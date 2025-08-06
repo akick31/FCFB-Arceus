@@ -6,6 +6,7 @@ import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.GameWarning
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.enums.Platform
@@ -13,7 +14,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Warning
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
@@ -264,7 +264,7 @@ class GameControllerTest {
                 awayPlatformId = "awayPlatform456",
                 lastMessageTimestamp = "2023-10-01T12:30:00",
                 gameTimer = "10/02/2023 06:00:00",
-                gameWarning = Warning.NONE,
+                gameWarning = GameWarning.NONE,
                 currentPlayType = PlayType.NORMAL,
                 currentPlayId = 101,
                 clockStopped = false,

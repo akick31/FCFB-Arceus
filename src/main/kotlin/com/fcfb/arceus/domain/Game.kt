@@ -6,6 +6,7 @@ import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.GameWarning
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.enums.Platform
@@ -13,7 +14,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Warning
 import com.vladmihalcea.hibernate.type.json.JsonStringType
 import org.hibernate.annotations.Type
 import org.hibernate.annotations.TypeDef
@@ -271,7 +271,7 @@ class Game {
     @Basic
     @Column(name = "game_warning")
     @JsonProperty("game_warning")
-    var gameWarning: Warning? = null
+    var gameWarning: GameWarning? = null
 
     @Enumerated(EnumType.STRING)
     @Basic
@@ -382,7 +382,7 @@ class Game {
         awayPlatformId: String?,
         lastMessageTimestamp: String?,
         gameTimer: String?,
-        gameWarning: Warning?,
+        gameWarning: GameWarning?,
         currentPlayType: PlayType?,
         currentPlayId: Int?,
         clockStopped: Boolean,

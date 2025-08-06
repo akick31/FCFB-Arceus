@@ -6,6 +6,7 @@ import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.GameWarning
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.enums.Platform
@@ -13,7 +14,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Warning
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -168,7 +168,7 @@ class GameRepositoryTest {
     @Test
     fun `test findExpiredTimers`() {
         // Given
-        val game = createTestGame(gameWarning = Warning.FIRST_WARNING)
+        val game = createTestGame(gameWarning = GameWarning.FIRST_WARNING)
         val games = listOf(game)
 
         every { gameRepository.findExpiredTimers() } returns games
@@ -178,13 +178,13 @@ class GameRepositoryTest {
 
         // Then
         assertEquals(1, found.size)
-        assertEquals(Warning.FIRST_WARNING, found.first().gameWarning)
+        assertEquals(GameWarning.FIRST_WARNING, found.first().gameWarning)
     }
 
     @Test
     fun `test findGamesToWarnFirstInstance`() {
         // Given
-        val game = createTestGame(gameWarning = Warning.NONE)
+        val game = createTestGame(gameWarning = GameWarning.NONE)
         val games = listOf(game)
 
         every { gameRepository.findGamesToWarnFirstInstance() } returns games
@@ -194,13 +194,13 @@ class GameRepositoryTest {
 
         // Then
         assertEquals(1, found.size)
-        assertEquals(Warning.NONE, found.first().gameWarning)
+        assertEquals(GameWarning.NONE, found.first().gameWarning)
     }
 
     @Test
     fun `test findGamesToWarnSecondInstance`() {
         // Given
-        val game = createTestGame(gameWarning = Warning.FIRST_WARNING)
+        val game = createTestGame(gameWarning = GameWarning.FIRST_WARNING)
         val games = listOf(game)
 
         every { gameRepository.findGamesToWarnSecondInstance() } returns games
@@ -210,7 +210,7 @@ class GameRepositoryTest {
 
         // Then
         assertEquals(1, found.size)
-        assertEquals(Warning.FIRST_WARNING, found.first().gameWarning)
+        assertEquals(GameWarning.FIRST_WARNING, found.first().gameWarning)
     }
 
     @Test
@@ -346,7 +346,7 @@ class GameRepositoryTest {
         awayPlatformId: String? = null,
         lastMessageTimestamp: String? = null,
         gameTimer: String? = null,
-        gameWarning: Warning? = null,
+        gameWarning: GameWarning? = null,
         currentPlayType: PlayType? = null,
         currentPlayId: Int? = null,
         clockStopped: Boolean = false,

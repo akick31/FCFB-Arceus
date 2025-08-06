@@ -5,6 +5,7 @@ import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.enums.GameMode
 import com.fcfb.arceus.domain.enums.GameStatus
 import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.GameWarning
 import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.domain.enums.Platform
@@ -12,7 +13,6 @@ import com.fcfb.arceus.domain.enums.PlayType
 import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.enums.TVChannel
 import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.domain.enums.Warning
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
@@ -176,7 +176,7 @@ class GameTest {
                 awayPlatformId = "away_platform_id",
                 lastMessageTimestamp = "2024-10-15T18:35:00Z",
                 gameTimer = "00:05:00",
-                gameWarning = Warning.NONE,
+                gameWarning = GameWarning.NONE,
                 currentPlayType = PlayType.NORMAL,
                 currentPlayId = 123,
                 clockStopped = true,
@@ -235,7 +235,7 @@ class GameTest {
         assertEquals("away_platform_id", game.awayPlatformId)
         assertEquals("2024-10-15T18:35:00Z", game.lastMessageTimestamp)
         assertEquals("00:05:00", game.gameTimer)
-        assertEquals(Warning.NONE, game.gameWarning)
+        assertEquals(GameWarning.NONE, game.gameWarning)
         assertEquals(PlayType.NORMAL, game.currentPlayType)
         assertEquals(123, game.currentPlayId)
         assertTrue(game.clockStopped)
@@ -302,7 +302,7 @@ class GameTest {
         game.awayPlatformId = "away_platform_id"
         game.lastMessageTimestamp = "2024-10-15T18:35:00Z"
         game.gameTimer = "00:05:00"
-        game.gameWarning = Warning.NONE
+        game.gameWarning = GameWarning.NONE
         game.currentPlayType = PlayType.NORMAL
         game.currentPlayId = 123
         game.clockStopped = true
@@ -361,7 +361,7 @@ class GameTest {
         assertEquals("away_platform_id", game.awayPlatformId)
         assertEquals("2024-10-15T18:35:00Z", game.lastMessageTimestamp)
         assertEquals("00:05:00", game.gameTimer)
-        assertEquals(Warning.NONE, game.gameWarning)
+        assertEquals(GameWarning.NONE, game.gameWarning)
         assertEquals(PlayType.NORMAL, game.currentPlayType)
         assertEquals(123, game.currentPlayId)
         assertTrue(game.clockStopped)
@@ -543,8 +543,8 @@ class GameTest {
             assertEquals(gameMode, game.gameMode)
         }
 
-        // Test all Warning values
-        Warning.entries.forEach { warning ->
+        // Test all GameWarning values
+        GameWarning.entries.forEach { warning ->
             game.gameWarning = warning
             assertEquals(warning, game.gameWarning)
         }
@@ -808,7 +808,7 @@ class GameTest {
         game.awayPlatformId = "auburn_discord"
         game.lastMessageTimestamp = "2024-11-23T19:45:00Z"
         game.gameTimer = "00:15:30"
-        game.gameWarning = Warning.NONE
+        game.gameWarning = GameWarning.NONE
         game.currentPlayType = PlayType.NORMAL
         game.currentPlayId = 234
         game.clockStopped = true
@@ -868,7 +868,7 @@ class GameTest {
         assertEquals("auburn_discord", game.awayPlatformId)
         assertEquals("2024-11-23T19:45:00Z", game.lastMessageTimestamp)
         assertEquals("00:15:30", game.gameTimer)
-        assertEquals(Warning.NONE, game.gameWarning)
+        assertEquals(GameWarning.NONE, game.gameWarning)
         assertEquals(PlayType.NORMAL, game.currentPlayType)
         assertEquals(234, game.currentPlayId)
         assertTrue(game.clockStopped)
