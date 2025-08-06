@@ -71,7 +71,7 @@ class SeasonControllerTest {
         every { teamService.resetWinsAndLosses() } returns Unit
         every { seasonRepository.save(any()) } returns newSeason
 
-        mockMvc.perform(post("/seasons").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/season").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.seasonNumber").value(newSeason.seasonNumber))
             .andExpect(jsonPath("$.startDate").value(newSeason.startDate))
@@ -104,7 +104,7 @@ class SeasonControllerTest {
             )
         every { seasonRepository.getCurrentSeason() } returns season
 
-        mockMvc.perform(get("/seasons/current").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/season/current").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.seasonNumber").value(season.seasonNumber))
             .andExpect(jsonPath("$.startDate").value(season.startDate))
@@ -134,7 +134,7 @@ class SeasonControllerTest {
             )
         every { seasonRepository.getCurrentSeason() } returns season
 
-        mockMvc.perform(get("/seasons/current/week").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/season/current/week").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$").value(currentWeek))
     }
@@ -143,7 +143,7 @@ class SeasonControllerTest {
     fun `should handle error when starting season`() {
         every { seasonRepository.getPreviousSeason() } throws RuntimeException("Failed to start season")
 
-        mockMvc.perform(post("/seasons").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(post("/season").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Failed to start season"))
     }
@@ -152,7 +152,7 @@ class SeasonControllerTest {
     fun `should handle error when getting current season`() {
         every { seasonRepository.getCurrentSeason() } returns null
 
-        mockMvc.perform(get("/seasons/current").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/season/current").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Current season not found"))
     }
@@ -161,7 +161,7 @@ class SeasonControllerTest {
     fun `should handle error when getting current week`() {
         every { seasonRepository.getCurrentSeason() } returns null
 
-        mockMvc.perform(get("/seasons/current/week").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/season/current/week").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Current week not found"))
     }
