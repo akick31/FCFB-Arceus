@@ -1,8 +1,8 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.Game.TVChannel
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity

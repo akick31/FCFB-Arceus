@@ -2,14 +2,10 @@ package com.fcfb.arceus.models.website
 
 import com.fcfb.arceus.domain.User
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class LoginResponseTest {
     @Test
     fun `LoginResponse should be a data class`() {

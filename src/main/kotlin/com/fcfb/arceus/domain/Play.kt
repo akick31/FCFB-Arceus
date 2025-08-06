@@ -1,9 +1,9 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.enums.ActualResult
+import com.fcfb.arceus.domain.enums.PlayCall
+import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.domain.enums.TeamSide
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity

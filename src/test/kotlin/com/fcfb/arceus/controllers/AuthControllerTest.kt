@@ -1,7 +1,7 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook.FOUR_THREE
-import com.fcfb.arceus.domain.Game.OffensivePlaybook.AIR_RAID
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
 import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.domain.User
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
@@ -68,8 +68,8 @@ class AuthControllerTest {
                 teamChoiceOne = "team1",
                 teamChoiceTwo = "team2",
                 teamChoiceThree = "team3",
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 approved = false,
                 verificationToken = UUID.randomUUID().toString(),
             )
@@ -103,8 +103,8 @@ class AuthControllerTest {
                 teamChoiceOne = "team1",
                 teamChoiceTwo = "team2",
                 teamChoiceThree = "team3",
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 approved = false,
                 verificationToken = "verificationToken",
             )
@@ -156,8 +156,8 @@ class AuthControllerTest {
                 playoffLosses = 0,
                 nationalChampionshipWins = 0,
                 nationalChampionshipLosses = 0,
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 averageResponseTime = 0.0,
                 delayOfGameWarningOptOut = false,
                 resetToken = null,
@@ -206,8 +206,8 @@ class AuthControllerTest {
                 playoffLosses = 0,
                 nationalChampionshipWins = 0,
                 nationalChampionshipLosses = 0,
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 averageResponseTime = 0.0,
                 delayOfGameWarningOptOut = false,
                 resetToken = null,
@@ -279,8 +279,8 @@ class AuthControllerTest {
                 playoffLosses = 0,
                 nationalChampionshipWins = 0,
                 nationalChampionshipLosses = 0,
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 averageResponseTime = 0.0,
                 delayOfGameWarningOptOut = false,
                 resetToken = "resettoken",

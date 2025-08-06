@@ -2,14 +2,10 @@ package com.fcfb.arceus.config
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class SecurityConfigTest {
     private lateinit var securityConfig: SecurityConfig
 

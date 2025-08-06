@@ -1,18 +1,19 @@
 import com.fcfb.arceus.controllers.GameController
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.CoinTossChoice.RECEIVE
-import com.fcfb.arceus.domain.Game.DefensivePlaybook.FOUR_THREE
-import com.fcfb.arceus.domain.Game.GameMode
-import com.fcfb.arceus.domain.Game.GameStatus.PREGAME
-import com.fcfb.arceus.domain.Game.GameType.SCRIMMAGE
-import com.fcfb.arceus.domain.Game.OffensivePlaybook.AIR_RAID
-import com.fcfb.arceus.domain.Game.Platform.DISCORD
-import com.fcfb.arceus.domain.Game.PlayType.NORMAL
-import com.fcfb.arceus.domain.Game.Subdivision.FCFB
-import com.fcfb.arceus.domain.Game.TVChannel.ESPN
-import com.fcfb.arceus.domain.Game.TeamSide.AWAY
-import com.fcfb.arceus.domain.Game.TeamSide.HOME
-import com.fcfb.arceus.domain.Game.Warning.NONE
+import com.fcfb.arceus.domain.enums.CoinTossCall
+import com.fcfb.arceus.domain.enums.CoinTossChoice
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameMode
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
+import com.fcfb.arceus.domain.enums.Platform
+import com.fcfb.arceus.domain.enums.PlayType
+import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
+import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.domain.enums.Warning
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
@@ -152,7 +153,7 @@ class GameControllerTest {
     @Test
     fun `runCoinToss should return updated game`() {
         val gameId = "1"
-        val coinTossCall = Game.CoinTossCall.HEADS
+        val coinTossCall = CoinTossCall.HEADS
         val mockGame = mockk<Game>()
         every { gameService.runCoinToss(gameId, coinTossCall) } returns mockGame
 
@@ -165,7 +166,7 @@ class GameControllerTest {
     @Test
     fun `makeCoinTossChoice should return updated game`() {
         val gameId = "1"
-        val coinTossChoice = Game.CoinTossChoice.RECEIVE
+        val coinTossChoice = CoinTossChoice.RECEIVE
         val mockGame = mockk<Game>()
         every { gameService.makeCoinTossChoice(gameId, coinTossChoice) } returns mockGame
 
@@ -178,7 +179,7 @@ class GameControllerTest {
     @Test
     fun `makeOvertimeCoinTossChoice should return updated game`() {
         val gameId = "1"
-        val coinTossChoice = Game.OvertimeCoinTossChoice.DEFENSE
+        val coinTossChoice = OvertimeCoinTossChoice.DEFENSE
         val mockGame = mockk<Game>()
         every { gameService.makeOvertimeCoinTossChoice(gameId, coinTossChoice) } returns mockGame
 
@@ -225,51 +226,51 @@ class GameControllerTest {
                 awayCoaches = listOf("Coach B1", "Coach B2"),
                 homeCoachDiscordIds = listOf("123456789", "987654321"),
                 awayCoachDiscordIds = listOf("112233445", "556677889"),
-                homeOffensivePlaybook = AIR_RAID,
-                awayOffensivePlaybook = AIR_RAID,
-                homeDefensivePlaybook = FOUR_THREE,
-                awayDefensivePlaybook = FOUR_THREE,
+                homeOffensivePlaybook = OffensivePlaybook.AIR_RAID,
+                awayOffensivePlaybook = OffensivePlaybook.AIR_RAID,
+                homeDefensivePlaybook = DefensivePlaybook.FOUR_THREE,
+                awayDefensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 homeScore = 21,
                 awayScore = 14,
-                possession = HOME,
+                possession = TeamSide.HOME,
                 quarter = 2,
                 clock = "5:30",
                 ballLocation = 50,
                 down = 2,
                 yardsToGo = 8,
-                tvChannel = ESPN,
+                tvChannel = TVChannel.ESPN,
                 homeTeamRank = 5,
                 homeWins = 10,
                 homeLosses = 2,
                 awayTeamRank = 8,
                 awayWins = 8,
                 awayLosses = 4,
-                subdivision = FCFB,
+                subdivision = Subdivision.FCFB,
                 timestamp = "2023-10-01T12:00:00",
                 winProbability = 0.75,
                 season = 2023,
                 week = 5,
-                waitingOn = AWAY,
+                waitingOn = TeamSide.AWAY,
                 numPlays = 45,
                 homeTimeouts = 2,
                 awayTimeouts = 3,
-                coinTossWinner = HOME,
-                coinTossChoice = RECEIVE,
+                coinTossWinner = TeamSide.HOME,
+                coinTossChoice = CoinTossChoice.RECEIVE,
                 overtimeCoinTossWinner = null,
                 overtimeCoinTossChoice = null,
-                homePlatform = DISCORD,
+                homePlatform = Platform.DISCORD,
                 homePlatformId = "homePlatform123",
-                awayPlatform = DISCORD,
+                awayPlatform = Platform.DISCORD,
                 awayPlatformId = "awayPlatform456",
                 lastMessageTimestamp = "2023-10-01T12:30:00",
                 gameTimer = "10/02/2023 06:00:00",
-                gameWarning = NONE,
-                currentPlayType = NORMAL,
+                gameWarning = Warning.NONE,
+                currentPlayType = PlayType.NORMAL,
                 currentPlayId = 101,
                 clockStopped = false,
                 requestMessageId = listOf("request123", "request456"),
-                gameStatus = PREGAME,
-                gameType = SCRIMMAGE,
+                gameStatus = GameStatus.PREGAME,
+                gameType = GameType.SCRIMMAGE,
                 gameMode = GameMode.NORMAL,
                 overtimeHalf = null,
                 closeGame = false,

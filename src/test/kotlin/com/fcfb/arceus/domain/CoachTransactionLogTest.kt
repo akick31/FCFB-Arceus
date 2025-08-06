@@ -2,15 +2,11 @@ package com.fcfb.arceus.domain
 
 import com.fcfb.arceus.domain.User.CoachPosition
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class CoachTransactionLogTest {
     @Test
     fun `CoachTransactionLog should be properly annotated`() {

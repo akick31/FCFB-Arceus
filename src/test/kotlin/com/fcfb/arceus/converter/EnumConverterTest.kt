@@ -1,22 +1,17 @@
 package com.fcfb.arceus.converter
 
-import com.fcfb.arceus.domain.Game.CoinTossCall
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.GameMode
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.Subdivision
+import com.fcfb.arceus.domain.enums.CoinTossCall
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameMode
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.domain.enums.Subdivision
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
-import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class EnumConverterTest {
     private lateinit var offensivePlaybookConverter: OffensivePlaybookConverter
     private lateinit var defensivePlaybookConverter: DefensivePlaybookConverter
@@ -265,17 +260,6 @@ class EnumConverterTest {
     fun `GameModeConverter should handle null database column`() {
         val result = gameModeConverter.convertToEntityAttribute(null)
         assertNull(result)
-    }
-
-    // Integration Tests
-    @Test
-    fun `all converters should implement AttributeConverter interface`() {
-        assertTrue(offensivePlaybookConverter is javax.persistence.AttributeConverter<*, *>)
-        assertTrue(defensivePlaybookConverter is javax.persistence.AttributeConverter<*, *>)
-        assertTrue(subdivisionConverter is javax.persistence.AttributeConverter<*, *>)
-        assertTrue(resultConverter is javax.persistence.AttributeConverter<*, *>)
-        assertTrue(coinTossCallConverter is javax.persistence.AttributeConverter<*, *>)
-        assertTrue(gameModeConverter is javax.persistence.AttributeConverter<*, *>)
     }
 
     @Test

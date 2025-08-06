@@ -85,7 +85,7 @@ class AuthService(
      */
     fun verifyEmail(token: String): Boolean {
         val newSignup = newSignupService.getByVerificationToken(token)
-        return newSignupService.approveNewSignup(newSignup)
+        return newSignup?.let { newSignupService.approveNewSignup(it) } ?: false
     }
 
     /**
@@ -94,7 +94,9 @@ class AuthService(
      * @return
      */
     fun resetVerificationToken(id: Long): NewSignup {
-        val newSignup = newSignupService.getNewSignupById(id)
+        val newSignup =
+            newSignupService.getNewSignupById(id)
+                ?: throw IllegalArgumentException("NewSignup with id $id not found")
         val verificationToken = UUID.randomUUID().toString()
         newSignup.verificationToken = verificationToken
         newSignupService.saveNewSignup(newSignup)

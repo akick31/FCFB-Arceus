@@ -1,16 +1,12 @@
 package com.fcfb.arceus.domain
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class SeasonTest {
     @Test
     fun `Season should be properly annotated`() {

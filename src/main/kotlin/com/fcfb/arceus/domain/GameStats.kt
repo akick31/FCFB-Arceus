@@ -1,11 +1,12 @@
 package com.fcfb.arceus.domain
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.Game.TVChannel
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
 import org.hibernate.annotations.Type
 import javax.persistence.Basic
 import javax.persistence.Column
@@ -267,7 +268,7 @@ class GameStats(
     @Enumerated(EnumType.STRING)
     @Basic
     @Column(name = "game_status")
-    var gameStatus: Game.GameStatus? = null,
+    var gameStatus: GameStatus? = null,
     @Basic
     @Column(name = "red_zone_attempts")
     var redZoneAttempts: Int = 0,

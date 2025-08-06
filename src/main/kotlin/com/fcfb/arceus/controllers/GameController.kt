@@ -1,9 +1,9 @@
 package com.fcfb.arceus.controllers
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.CoinTossCall
-import com.fcfb.arceus.domain.Game.CoinTossChoice
-import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
+import com.fcfb.arceus.domain.enums.CoinTossCall
+import com.fcfb.arceus.domain.enums.CoinTossChoice
+import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
 import com.fcfb.arceus.models.requests.StartRequest
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory

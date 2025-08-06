@@ -1,6 +1,9 @@
 package com.fcfb.arceus.repositories
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.Warning
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
@@ -102,4 +105,18 @@ interface GameRepository : CrudRepository<Game, Int>, JpaSpecificationExecutor<G
     @Modifying
     @Query(value = "UPDATE game SET upset_alert_pinged = true WHERE game_id = ?", nativeQuery = true)
     fun markUpsetAlertPinged(gameId: Int)
+
+    fun findByHomeTeam(homeTeam: String): List<Game>
+
+    fun findByAwayTeam(awayTeam: String): List<Game>
+
+    fun findByGameStatus(gameStatus: GameStatus): List<Game>
+
+    fun findByGameType(gameType: GameType): List<Game>
+
+    fun findByGameWarning(gameWarning: Warning): List<Game>
+
+    fun findByCloseGamePinged(closeGamePinged: Boolean): List<Game>
+
+    fun findByUpsetAlertPinged(upsetAlertPinged: Boolean): List<Game>
 }

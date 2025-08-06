@@ -1,18 +1,14 @@
 package com.fcfb.arceus.models.dto
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.User.CoachPosition
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class NewSignupDTOTest {
     @Test
     fun `NewSignupDTO should be a data class`() {

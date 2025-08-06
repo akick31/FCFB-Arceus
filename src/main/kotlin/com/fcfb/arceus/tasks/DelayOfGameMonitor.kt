@@ -1,11 +1,13 @@
 package com.fcfb.arceus.tasks
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.Game.Warning.NONE
+import com.fcfb.arceus.domain.enums.ActualResult
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.PlayType
+import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.domain.enums.Warning.NONE
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
@@ -58,7 +60,7 @@ class DelayOfGameMonitor(
         val expiredGames = gameService.findExpiredTimers()
         expiredGames.forEach { game ->
             val updatedGame =
-                if (game.gameStatus == Game.GameStatus.PREGAME) {
+                if (game.gameStatus == GameStatus.PREGAME) {
                     applyPregameDelayOfGame(game)
                 } else {
                     applyDelayOfGame(game)
@@ -130,7 +132,7 @@ class DelayOfGameMonitor(
     private fun applyDelayOfGame(game: Game): Game {
         game.gameTimer = gameService.calculateDelayOfGameTimer()
         if (game.waitingOn == TeamSide.HOME) {
-            game.currentPlayType = Game.PlayType.KICKOFF
+            game.currentPlayType = PlayType.KICKOFF
             game.possession = TeamSide.AWAY
             game.awayScore += 8
 
@@ -142,7 +144,7 @@ class DelayOfGameMonitor(
                 }
             }
         } else {
-            game.currentPlayType = Game.PlayType.KICKOFF
+            game.currentPlayType = PlayType.KICKOFF
             game.possession = TeamSide.HOME
             game.homeScore += 8
 

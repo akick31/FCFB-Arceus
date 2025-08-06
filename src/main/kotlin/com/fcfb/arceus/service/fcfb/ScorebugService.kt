@@ -1,9 +1,9 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.GameStatus
-import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.PlayType
+import com.fcfb.arceus.domain.enums.TeamSide
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.Team.Conference
 import com.fcfb.arceus.models.response.ScorebugResponse

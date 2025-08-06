@@ -1,6 +1,6 @@
 package com.fcfb.arceus.domain
 
-import com.fcfb.arceus.domain.Game.Scenario
+import com.fcfb.arceus.domain.enums.Scenario
 import java.util.Objects
 import javax.persistence.Basic
 import javax.persistence.Column

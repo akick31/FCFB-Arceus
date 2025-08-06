@@ -1,14 +1,16 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.RunoffType
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.enums.ActualResult
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.GameMode
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.PlayCall
+import com.fcfb.arceus.domain.enums.PlayType
+import com.fcfb.arceus.domain.enums.RunoffType
+import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.domain.enums.TeamSide
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.domain.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
@@ -52,7 +54,7 @@ class PlayService(
         try {
             val game = gameService.getGameById(gameId)
             val responseSpeed =
-                if (game.gameStatus != Game.GameStatus.PREGAME) {
+                if (game.gameStatus != GameStatus.PREGAME) {
                     getResponseSpeed(game)
                 } else {
                     null
@@ -1145,7 +1147,7 @@ class PlayService(
                         OffensivePlaybook.WEST_COAST -> 17
                     }
                 runoffType == RunoffType.CHEW -> 30
-                game.gameMode == Game.GameMode.CHEW -> 30
+                game.gameMode == GameMode.CHEW -> 30
                 offensivePlaybook == OffensivePlaybook.PRO -> 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> 20

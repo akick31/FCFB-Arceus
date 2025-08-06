@@ -1,24 +1,9 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.enums.GameStatus
+import com.fcfb.arceus.domain.enums.GameType
 import com.fcfb.arceus.repositories.GameRepository
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory.ONGOING
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory.PAST
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory.PAST_SCRIMMAGE
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory.SCRIMMAGE
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.BOWL
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.CONFERENCE_CHAMPIONSHIP
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.CONFERENCE_GAME
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.IN_PROGRESS
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.NATIONAL_CHAMPIONSHIP
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.OPENING_KICKOFF
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.OUT_OF_CONFERENCE
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.OVERTIME
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.PLAYOFFS
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.PREGAME
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter.RANKED_GAME
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort.CLOSEST_TO_END
-import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort.MOST_TIME_REMAINING
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service
 import javax.persistence.criteria.CriteriaBuilder
@@ -77,21 +62,21 @@ class GameSpecificationService(
             // Handle category filter
             category?.let {
                 when (it) {
-                    ONGOING -> {
-                        predicates.add(cb.notEqual(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.FINAL))
-                        predicates.add(cb.notEqual(root.get<Game.GameType>("gameType"), Game.GameType.SCRIMMAGE))
+                    GameCategory.ONGOING -> {
+                        predicates.add(cb.notEqual(root.get<GameStatus>("gameStatus"), GameStatus.FINAL))
+                        predicates.add(cb.notEqual(root.get<GameType>("gameType"), GameType.SCRIMMAGE))
                     }
-                    PAST -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.FINAL))
-                        predicates.add(cb.notEqual(root.get<Game.GameType>("gameType"), Game.GameType.SCRIMMAGE))
+                    GameCategory.PAST -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.FINAL))
+                        predicates.add(cb.notEqual(root.get<GameType>("gameType"), GameType.SCRIMMAGE))
                     }
-                    SCRIMMAGE -> {
-                        predicates.add(cb.notEqual(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.FINAL))
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.SCRIMMAGE))
+                    GameCategory.SCRIMMAGE -> {
+                        predicates.add(cb.notEqual(root.get<GameStatus>("gameStatus"), GameStatus.FINAL))
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.SCRIMMAGE))
                     }
-                    PAST_SCRIMMAGE -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.FINAL))
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.SCRIMMAGE))
+                    GameCategory.PAST_SCRIMMAGE -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.FINAL))
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.SCRIMMAGE))
                     }
                 }
             }
@@ -99,41 +84,41 @@ class GameSpecificationService(
             // Handle other filters
             filters.forEach { filter ->
                 when (filter) {
-                    RANKED_GAME -> {
+                    GameFilter.RANKED_GAME -> {
                         val rankedGames = gameRepository.getRankedGames().map { game -> game.gameId }
                         if (rankedGames.isNotEmpty()) {
                             predicates.add(root.get<Int>("gameId").`in`(rankedGames))
                         }
                     }
-                    CONFERENCE_GAME -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.CONFERENCE_GAME))
+                    GameFilter.CONFERENCE_GAME -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.CONFERENCE_GAME))
                     }
-                    OUT_OF_CONFERENCE -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.OUT_OF_CONFERENCE))
+                    GameFilter.OUT_OF_CONFERENCE -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.OUT_OF_CONFERENCE))
                     }
-                    CONFERENCE_CHAMPIONSHIP -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.CONFERENCE_CHAMPIONSHIP))
+                    GameFilter.CONFERENCE_CHAMPIONSHIP -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.CONFERENCE_CHAMPIONSHIP))
                     }
-                    BOWL -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.BOWL))
+                    GameFilter.BOWL -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.BOWL))
                     }
-                    PLAYOFFS -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.PLAYOFFS))
+                    GameFilter.PLAYOFFS -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.PLAYOFFS))
                     }
-                    NATIONAL_CHAMPIONSHIP -> {
-                        predicates.add(cb.equal(root.get<Game.GameType>("gameType"), Game.GameType.NATIONAL_CHAMPIONSHIP))
+                    GameFilter.NATIONAL_CHAMPIONSHIP -> {
+                        predicates.add(cb.equal(root.get<GameType>("gameType"), GameType.NATIONAL_CHAMPIONSHIP))
                     }
-                    PREGAME -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.PREGAME))
+                    GameFilter.PREGAME -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.PREGAME))
                     }
-                    OPENING_KICKOFF -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.OPENING_KICKOFF))
+                    GameFilter.OPENING_KICKOFF -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.OPENING_KICKOFF))
                     }
-                    IN_PROGRESS -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.IN_PROGRESS))
+                    GameFilter.IN_PROGRESS -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.IN_PROGRESS))
                     }
-                    OVERTIME -> {
-                        predicates.add(cb.equal(root.get<Game.GameStatus>("gameStatus"), Game.GameStatus.OVERTIME))
+                    GameFilter.OVERTIME -> {
+                        predicates.add(cb.equal(root.get<GameStatus>("gameStatus"), GameStatus.OVERTIME))
                     }
                 }
             }
@@ -163,12 +148,12 @@ class GameSpecificationService(
      */
     fun createSort(sort: GameSort): List<org.springframework.data.domain.Sort.Order> {
         return when (sort) {
-            CLOSEST_TO_END ->
+            GameSort.CLOSEST_TO_END ->
                 listOf(
                     org.springframework.data.domain.Sort.Order.desc("quarter"),
                     org.springframework.data.domain.Sort.Order.asc("clock"),
                 )
-            MOST_TIME_REMAINING ->
+            GameSort.MOST_TIME_REMAINING ->
                 listOf(
                     org.springframework.data.domain.Sort.Order.asc("quarter"),
                     org.springframework.data.domain.Sort.Order.desc("clock"),

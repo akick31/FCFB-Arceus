@@ -1,10 +1,10 @@
 package com.fcfb.arceus.models.requests
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.Platform
-import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.Game.TVChannel
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.Platform
+import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
 
 data class StartRequest(
     @JsonProperty("homePlatform") val homePlatform: Platform,

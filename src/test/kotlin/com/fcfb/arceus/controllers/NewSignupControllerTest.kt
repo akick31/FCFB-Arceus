@@ -1,7 +1,7 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook.FOUR_THREE
-import com.fcfb.arceus.domain.Game.OffensivePlaybook.AIR_RAID
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
 import com.fcfb.arceus.models.dto.NewSignupDTO
 import com.fcfb.arceus.service.fcfb.NewSignupService
@@ -45,8 +45,8 @@ class NewSignupControllerTest {
                     teamChoiceOne = "team1",
                     teamChoiceTwo = "team2",
                     teamChoiceThree = "team3",
-                    offensivePlaybook = AIR_RAID,
-                    defensivePlaybook = FOUR_THREE,
+                    offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                    defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                     approved = false,
                 ),
                 NewSignupDTO(
@@ -59,8 +59,8 @@ class NewSignupControllerTest {
                     teamChoiceOne = "team1",
                     teamChoiceTwo = "team2",
                     teamChoiceThree = "team3",
-                    offensivePlaybook = AIR_RAID,
-                    defensivePlaybook = FOUR_THREE,
+                    offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                    defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                     approved = false,
                 ),
             )

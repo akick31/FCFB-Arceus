@@ -1,15 +1,11 @@
 package com.fcfb.arceus.models.response
 
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class UserValidationResponseTest {
     @Test
     fun `UserValidationResponse should be a data class`() {

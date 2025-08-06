@@ -3,9 +3,9 @@ package com.fcfb.arceus.domain
 import com.fcfb.arceus.converter.DefensivePlaybookConverter
 import com.fcfb.arceus.converter.OffensivePlaybookConverter
 import com.fcfb.arceus.converter.SubdivisionConverter
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.Subdivision
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.Subdivision
 import org.hibernate.annotations.Type
 import javax.persistence.Basic
 import javax.persistence.Column

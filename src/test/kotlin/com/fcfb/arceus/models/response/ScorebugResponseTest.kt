@@ -1,17 +1,13 @@
 package com.fcfb.arceus.models.response
 
-import com.fcfb.arceus.domain.Game
+import com.fcfb.arceus.domain.enums.GameStatus
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertContentEquals
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class ScorebugResponseTest {
     @Test
     fun `ScorebugResponse should be a data class`() {
@@ -31,14 +27,14 @@ class ScorebugResponseTest {
                 scorebug = scorebugData,
                 homeTeam = "Alabama",
                 awayTeam = "Georgia",
-                status = Game.GameStatus.IN_PROGRESS,
+                status = GameStatus.IN_PROGRESS,
             )
 
         assertEquals(123, response.gameId)
         assertContentEquals(scorebugData, response.scorebug)
         assertEquals("Alabama", response.homeTeam)
         assertEquals("Georgia", response.awayTeam)
-        assertEquals(Game.GameStatus.IN_PROGRESS, response.status)
+        assertEquals(GameStatus.IN_PROGRESS, response.status)
     }
 
     @Test
@@ -63,11 +59,11 @@ class ScorebugResponseTest {
     fun `ScorebugResponse should handle different GameStatus enum values`() {
         val gameStatuses =
             listOf(
-                Game.GameStatus.PREGAME,
-                Game.GameStatus.IN_PROGRESS,
-                Game.GameStatus.HALFTIME,
-                Game.GameStatus.FINAL,
-                Game.GameStatus.OVERTIME,
+                GameStatus.PREGAME,
+                GameStatus.IN_PROGRESS,
+                GameStatus.HALFTIME,
+                GameStatus.FINAL,
+                GameStatus.OVERTIME,
             )
 
         gameStatuses.forEach { status ->
@@ -100,7 +96,7 @@ class ScorebugResponseTest {
                 scorebug = byteArrayOf(1, 2, 3),
                 homeTeam = "Texas A&M",
                 awayTeam = "Ole Miss",
-                status = Game.GameStatus.FINAL,
+                status = GameStatus.FINAL,
             )
 
         assertEquals("Texas A&M", response.homeTeam)
@@ -116,7 +112,7 @@ class ScorebugResponseTest {
                 scorebug = byteArrayOf(),
                 homeTeam = longTeamName,
                 awayTeam = longTeamName,
-                status = Game.GameStatus.PREGAME,
+                status = GameStatus.PREGAME,
             )
 
         assertEquals(longTeamName, response.homeTeam)
@@ -163,12 +159,12 @@ class ScorebugResponseTest {
             original.copy(
                 gameId = 999,
                 scorebug = newScorebugData,
-                status = Game.GameStatus.FINAL,
+                status = GameStatus.FINAL,
             )
 
         assertEquals(999, copied.gameId)
         assertContentEquals(newScorebugData, copied.scorebug)
-        assertEquals(Game.GameStatus.FINAL, copied.status)
+        assertEquals(GameStatus.FINAL, copied.status)
         assertEquals(original.homeTeam, copied.homeTeam)
         assertEquals(original.awayTeam, copied.awayTeam)
     }
@@ -181,7 +177,7 @@ class ScorebugResponseTest {
                 scorebug = byteArrayOf(1, 2, 3),
                 homeTeam = "Miami (FL)",
                 awayTeam = "Virginia Tech",
-                status = Game.GameStatus.IN_PROGRESS,
+                status = GameStatus.IN_PROGRESS,
             )
 
         assertEquals("Miami (FL)", response.homeTeam)
@@ -205,15 +201,15 @@ class ScorebugResponseTest {
         val baseResponse = createTestScorebugResponse()
 
         // Game progression
-        val pregame = baseResponse.copy(status = Game.GameStatus.PREGAME)
-        val inProgress = baseResponse.copy(status = Game.GameStatus.IN_PROGRESS)
-        val halftime = baseResponse.copy(status = Game.GameStatus.HALFTIME)
-        val final = baseResponse.copy(status = Game.GameStatus.FINAL)
+        val pregame = baseResponse.copy(status = GameStatus.PREGAME)
+        val inProgress = baseResponse.copy(status = GameStatus.IN_PROGRESS)
+        val halftime = baseResponse.copy(status = GameStatus.HALFTIME)
+        val final = baseResponse.copy(status = GameStatus.FINAL)
 
-        assertEquals(Game.GameStatus.PREGAME, pregame.status)
-        assertEquals(Game.GameStatus.IN_PROGRESS, inProgress.status)
-        assertEquals(Game.GameStatus.HALFTIME, halftime.status)
-        assertEquals(Game.GameStatus.FINAL, final.status)
+        assertEquals(GameStatus.PREGAME, pregame.status)
+        assertEquals(GameStatus.IN_PROGRESS, inProgress.status)
+        assertEquals(GameStatus.HALFTIME, halftime.status)
+        assertEquals(GameStatus.FINAL, final.status)
     }
 
     @Test
@@ -240,7 +236,7 @@ class ScorebugResponseTest {
                 scorebug = byteArrayOf(1, 2, 3),
                 homeTeam = "",
                 awayTeam = "",
-                status = Game.GameStatus.PREGAME,
+                status = GameStatus.PREGAME,
             )
 
         assertEquals("", response.homeTeam)
@@ -269,7 +265,7 @@ class ScorebugResponseTest {
             scorebug = byteArrayOf(1, 2, 3, 4, 5),
             homeTeam = "Alabama",
             awayTeam = "Georgia",
-            status = Game.GameStatus.IN_PROGRESS,
+            status = GameStatus.IN_PROGRESS,
         )
     }
 }

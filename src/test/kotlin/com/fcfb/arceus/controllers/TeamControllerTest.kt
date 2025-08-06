@@ -1,8 +1,8 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.Subdivision
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.Subdivision
 import com.fcfb.arceus.domain.Team
 import com.fcfb.arceus.domain.Team.Conference.ACC
 import com.fcfb.arceus.domain.Team.Conference.SEC

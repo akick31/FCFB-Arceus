@@ -2,14 +2,10 @@ package com.fcfb.arceus.config
 
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class WebConfigTest {
     private lateinit var webConfig: WebConfig
 

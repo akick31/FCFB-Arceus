@@ -1,7 +1,7 @@
 package com.fcfb.arceus.models.dto
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.User.CoachPosition
 
 data class NewSignupDTO(

@@ -1,10 +1,10 @@
 package com.fcfb.arceus.service.fcfb
 
 import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.TeamSide
+import com.fcfb.arceus.domain.enums.ActualResult
+import com.fcfb.arceus.domain.enums.PlayCall
+import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.domain.enums.TeamSide
 import com.fcfb.arceus.domain.GameStats
 import com.fcfb.arceus.domain.Play
 import com.fcfb.arceus.repositories.GameRepository

@@ -1,20 +1,16 @@
 package com.fcfb.arceus.models.requests
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.Platform
-import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.Game.TVChannel
+import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.domain.enums.Platform
+import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.domain.enums.TVChannel
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-@SpringBootTest
-@SpringJUnitConfig
 class StartRequestTest {
     @Test
     fun `StartRequest should be a data class`() {

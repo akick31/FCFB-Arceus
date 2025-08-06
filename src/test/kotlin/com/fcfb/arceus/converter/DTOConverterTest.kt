@@ -1,18 +1,14 @@
 package com.fcfb.arceus.converter
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
+import com.fcfb.arceus.domain.enums.DefensivePlaybook
+import com.fcfb.arceus.domain.enums.OffensivePlaybook
 import com.fcfb.arceus.domain.NewSignup
 import com.fcfb.arceus.domain.User
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.springframework.boot.test.context.SpringBootTest
-import org.springframework.test.context.junit.jupiter.SpringJUnitConfig
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-@SpringBootTest
-@SpringJUnitConfig
 class DTOConverterTest {
     private lateinit var dtoConverter: DTOConverter
 

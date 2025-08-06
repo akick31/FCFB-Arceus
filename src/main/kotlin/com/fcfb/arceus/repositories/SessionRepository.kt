@@ -22,4 +22,10 @@ interface SessionRepository : JpaRepository<Session, Long> {
 
     @Query("DELETE FROM session WHERE expiration_date < NOW()", nativeQuery = true)
     fun clearExpiredTokens()
+
+    fun findByToken(token: String): Session?
+
+    fun findByUserId(userId: Long): List<Session>
+
+    fun findByExpirationDate(expirationDate: java.time.LocalDateTime): List<Session>
 }
