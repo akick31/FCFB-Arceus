@@ -26,10 +26,11 @@ class PlayController(
     @PostMapping("/submit_defense")
     fun defensiveNumberSubmitted(
         @RequestParam("gameId") gameId: Int,
+        @RequestParam("driveId") driveId: Int,
         @RequestParam("defensiveSubmitter") defensiveSubmitter: String,
         @RequestParam("defensiveNumber") defensiveNumber: Int,
         @RequestParam("timeoutCalled") timeoutCalled: Boolean = false,
-    ) = playService.defensiveNumberSubmitted(gameId, defensiveSubmitter, defensiveNumber, timeoutCalled)
+    ) = playService.defensiveNumberSubmitted(gameId, driveId, defensiveSubmitter, defensiveNumber, timeoutCalled)
 
     /**
      * The offensive number was submitted, run the play
