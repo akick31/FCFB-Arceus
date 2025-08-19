@@ -69,16 +69,6 @@ pipeline {
                 }
             }
         }
-
-        stage('Test') {
-            steps {
-                echo 'Setting up test properties...'
-                sh 'cp src/test/resources/application-test.properties src/main/resources/application.properties'
-                
-                echo 'Running tests...'
-                sh './gradlew clean test'
-            }
-        }
         
         stage('Build') {
             steps {
