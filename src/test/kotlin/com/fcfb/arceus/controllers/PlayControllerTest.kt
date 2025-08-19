@@ -80,7 +80,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.getPlayById(1) } returns play
 
-        mockMvc.perform(get("/play").param("playId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play").param("playId", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.gameId").value(1))
     }
@@ -90,7 +90,7 @@ class PlayControllerTest {
         val plays = listOf(createSamplePlay(1, 1), createSamplePlay(1, 2))
         every { playService.getAllPlaysByGameId(1) } returns plays
 
-        mockMvc.perform(get("/play/all").param("gameId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play/all").param("gameId", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].playNumber").value(1))
             .andExpect(jsonPath("$[1].playNumber").value(2))
@@ -101,7 +101,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.getPreviousPlay(1) } returns play
 
-        mockMvc.perform(get("/play/previous").param("gameId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play/previous").param("gameId", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.playNumber").value(1))
     }
@@ -111,7 +111,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.getCurrentPlay(1) } returns play
 
-        mockMvc.perform(get("/play/current").param("gameId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play/current").param("gameId", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.playNumber").value(1))
     }
@@ -121,7 +121,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.getAllPlaysByDiscordTag("coachA#1234") } returns listOf(play)
 
-        mockMvc.perform(get("/play/all/user").param("discordTag", "coachA#1234"))
+        mockMvc.perform(get("/api/v1/arceus/play/all/user").param("discordTag", "coachA#1234"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].offensiveSubmitter").value("coachA"))
     }
@@ -131,7 +131,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.rollbackPlay(1) } returns play
 
-        mockMvc.perform(put("/play/rollback").param("gameId", "1"))
+        mockMvc.perform(put("/api/v1/arceus/play/rollback").param("gameId", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.playCall").value("RUN"))
     }
@@ -142,7 +142,7 @@ class PlayControllerTest {
         every { playService.defensiveNumberSubmitted(1, "coachB", 22, false) } returns play
 
         mockMvc.perform(
-            post("/play/submit_defense")
+            post("/api/v1/arceus/play/submit_defense")
                 .param("gameId", "1")
                 .param("defensiveSubmitter", "coachB")
                 .param("defensiveNumber", "22")
@@ -167,7 +167,7 @@ class PlayControllerTest {
         } returns play
 
         mockMvc.perform(
-            put("/play/submit_offense")
+            put("/api/v1/arceus/play/submit_offense")
                 .param("gameId", "1")
                 .param("offensiveSubmitter", "coachA")
                 .param("offensiveNumber", "10")
@@ -183,7 +183,7 @@ class PlayControllerTest {
     fun `should return error when play not found`() {
         every { playService.getPlayById(1) } throws RuntimeException("Play not found")
 
-        mockMvc.perform(get("/play").param("playId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play").param("playId", "1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Play not found"))
     }

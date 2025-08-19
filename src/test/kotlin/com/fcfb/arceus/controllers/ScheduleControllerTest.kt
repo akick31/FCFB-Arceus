@@ -37,7 +37,7 @@ class ScheduleControllerTest {
         every { scheduleService.getTeamOpponent(team) } returns mockOpponent
 
         mockMvc.perform(
-            get("/schedule/opponent")
+            get("/api/v1/arceus/schedule/opponent")
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -50,7 +50,7 @@ class ScheduleControllerTest {
     @Test
     fun `getTeamOpponent should return 500 when team parameter is missing`() {
         mockMvc.perform(
-            get("/schedule/opponent")
+            get("/api/v1/arceus/schedule/opponent")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -59,7 +59,7 @@ class ScheduleControllerTest {
     @Test
     fun `getTeamOpponent should return 500 when team parameter is empty`() {
         mockMvc.perform(
-            get("/schedule/opponent")
+            get("/api/v1/arceus/schedule/opponent")
                 .param("team", "")
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -72,7 +72,7 @@ class ScheduleControllerTest {
         every { scheduleService.getTeamOpponent(team) } throws RuntimeException("Service error")
 
         mockMvc.perform(
-            get("/schedule/opponent")
+            get("/api/v1/arceus/schedule/opponent")
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -87,7 +87,7 @@ class ScheduleControllerTest {
         every { scheduleService.getScheduleBySeasonAndTeam(season, team) } returns mockSchedule
 
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", season.toString())
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
@@ -101,7 +101,7 @@ class ScheduleControllerTest {
     fun `getScheduleBySeasonAndTeam should return 500 when season parameter is missing`() {
         val team = "Texas"
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -112,7 +112,7 @@ class ScheduleControllerTest {
     fun `getScheduleBySeasonAndTeam should return 500 when team parameter is missing`() {
         val season = 2024
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", season.toString())
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -122,7 +122,7 @@ class ScheduleControllerTest {
     @Test
     fun `getScheduleBySeasonAndTeam should return 500 when both parameters are missing`() {
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -132,7 +132,7 @@ class ScheduleControllerTest {
     fun `getScheduleBySeasonAndTeam should return 500 when season parameter is not a number`() {
         val team = "Texas"
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", "invalid")
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
@@ -147,7 +147,7 @@ class ScheduleControllerTest {
         every { scheduleService.getScheduleBySeasonAndTeam(season, team) } throws RuntimeException("Service error")
 
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", season.toString())
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
@@ -163,7 +163,7 @@ class ScheduleControllerTest {
         every { scheduleService.getScheduleBySeasonAndTeam(season, team) } returns mockSchedule
 
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", season.toString())
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
@@ -181,7 +181,7 @@ class ScheduleControllerTest {
         every { scheduleService.getScheduleBySeasonAndTeam(season, team) } returns mockSchedule
 
         mockMvc.perform(
-            get("/schedule/season")
+            get("/api/v1/arceus/schedule/season")
                 .param("season", season.toString())
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
@@ -198,7 +198,7 @@ class ScheduleControllerTest {
         every { scheduleService.getTeamOpponent(team) } returns mockOpponent
 
         mockMvc.perform(
-            get("/schedule/opponent")
+            get("/api/v1/arceus/schedule/opponent")
                 .param("team", team)
                 .contentType(MediaType.APPLICATION_JSON),
         )

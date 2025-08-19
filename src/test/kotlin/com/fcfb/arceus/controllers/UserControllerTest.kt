@@ -108,7 +108,7 @@ class UserControllerTest {
 
         every { userService.getUserById(1L) } returns fullUser
 
-        mockMvc.perform(get("/user/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/user/id").param("id", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(fullUser.id))
             .andExpect(jsonPath("$.username").value(fullUser.username))
@@ -119,7 +119,7 @@ class UserControllerTest {
     fun `getUserByDiscordId returns user`() {
         every { userService.getUserDTOByDiscordId("123456789") } returns sampleUser
 
-        mockMvc.perform(get("/user/discord").param("id", "123456789"))
+        mockMvc.perform(get("/api/v1/arceus/user/discord").param("id", "123456789"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.discordId").value("123456789"))
     }
@@ -128,7 +128,7 @@ class UserControllerTest {
     fun `getUserByTeam returns user`() {
         every { userService.getUserByTeam("Test Team") } returns sampleUser
 
-        mockMvc.perform(get("/user/team").param("team", "Test Team"))
+        mockMvc.perform(get("/api/v1/arceus/user/team").param("team", "Test Team"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.team").value("Test Team"))
     }
@@ -148,7 +148,7 @@ class UserControllerTest {
             )
         every { userService.getAllUsers() } returns users
 
-        mockMvc.perform(get("/user"))
+        mockMvc.perform(get("/api/v1/arceus/user"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.length()").value(2))
             .andExpect(jsonPath("$[1].id").value(2))
@@ -160,7 +160,7 @@ class UserControllerTest {
         val freeAgents = listOf(sampleUser)
         every { userService.getFreeAgents() } returns freeAgents
 
-        mockMvc.perform(get("/user/free_agents"))
+        mockMvc.perform(get("/api/v1/arceus/user/free_agents"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].id").value(sampleUser.id))
     }
@@ -169,7 +169,7 @@ class UserControllerTest {
     fun `getUserDTOByName returns user`() {
         every { userService.getUserDTOByName("testuser") } returns sampleUser
 
-        mockMvc.perform(get("/user/name").param("name", "testuser"))
+        mockMvc.perform(get("/api/v1/arceus/user/name").param("name", "testuser"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.username").value("testuser"))
     }
@@ -179,7 +179,7 @@ class UserControllerTest {
         every { userService.updateEmail(1L, "newemail@example.com") } returns sampleUser
 
         mockMvc.perform(
-            put("/user/update/email")
+            put("/api/v1/arceus/user/update/email")
                 .param("id", "1")
                 .param("newEmail", "newemail@example.com"),
         )
@@ -224,7 +224,7 @@ class UserControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            put("/user/update")
+            put("/api/v1/arceus/user/update")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody),
         )
@@ -237,7 +237,7 @@ class UserControllerTest {
     fun `encryptEmails returns success`() {
         every { userService.hashEmails() } returns Unit
 
-        mockMvc.perform(post("/user/hash_emails"))
+        mockMvc.perform(post("/api/v1/arceus/user/hash_emails"))
             .andExpect(status().isOk)
     }
 
@@ -269,7 +269,7 @@ class UserControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            post("/user/validate")
+            post("/api/v1/arceus/user/validate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonBody),
         )
@@ -280,7 +280,7 @@ class UserControllerTest {
     fun `deleteTeam deletes user`() {
         every { userService.deleteUser(1L) } returns OK
 
-        mockMvc.perform(delete("/user").param("id", "1"))
+        mockMvc.perform(delete("/api/v1/arceus/user").param("id", "1"))
             .andExpect(status().isOk)
     }
 
@@ -288,7 +288,7 @@ class UserControllerTest {
     fun `getUserById handles error`() {
         every { userService.getUserById(1L) } throws RuntimeException("User not found")
 
-        mockMvc.perform(get("/user/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/user/id").param("id", "1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("User not found"))
     }

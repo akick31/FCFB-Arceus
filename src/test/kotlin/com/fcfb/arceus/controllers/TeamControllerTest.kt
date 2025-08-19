@@ -91,7 +91,7 @@ class TeamControllerTest {
         val team = sampleTeam()
         every { teamService.getTeamById(1) } returns Optional.ofNullable(team) as Optional<Team?>
 
-        mockMvc.perform(get("/team/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/team/id").param("id", "1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Team1"))
             .andExpect(jsonPath("$.conference").value("SWAC"))
@@ -117,7 +117,7 @@ class TeamControllerTest {
             )
         every { teamService.getAllTeams() } returns listOf(t1, t2)
 
-        mockMvc.perform(get("/team"))
+        mockMvc.perform(get("/api/v1/arceus/team"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].name").value("Team1"))
             .andExpect(jsonPath("$[1].name").value("Team2"))
@@ -128,7 +128,7 @@ class TeamControllerTest {
         val team = sampleTeam()
         every { teamService.getTeamByName("Team1") } returns team
 
-        mockMvc.perform(get("/team/name").param("name", "Team1"))
+        mockMvc.perform(get("/api/v1/arceus/team/name").param("name", "Team1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.abbreviation").value("T1"))
     }
@@ -161,7 +161,7 @@ class TeamControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            post("/team")
+            post("/api/v1/arceus/team")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body),
         )
@@ -194,7 +194,7 @@ class TeamControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            put("/team")
+            put("/api/v1/arceus/team")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(body),
         )
@@ -209,7 +209,7 @@ class TeamControllerTest {
         } returns sampleTeam()
 
         mockMvc.perform(
-            post("/team/hire")
+            post("/api/v1/arceus/team/hire")
                 .param("team", "Team1")
                 .param("discordId", "id1")
                 .param("coachPosition", "HEAD_COACH")
@@ -225,7 +225,7 @@ class TeamControllerTest {
         } returns sampleTeam()
 
         mockMvc.perform(
-            post("/team/hire/interim")
+            post("/api/v1/arceus/team/hire/interim")
                 .param("team", "Team1")
                 .param("discordId", "id1")
                 .param("processedBy", "admin"),
@@ -241,7 +241,7 @@ class TeamControllerTest {
             } returns sampleTeam()
 
             mockMvc.perform(
-                post("/team/fire")
+                post("/api/v1/arceus/team/fire")
                     .param("team", "Team1")
                     .param("processedBy", "admin"),
             )
@@ -254,7 +254,7 @@ class TeamControllerTest {
         val openList = listOf("A", "B", "C")
         every { teamService.getOpenTeams() } returns openList
 
-        mockMvc.perform(get("/team/open"))
+        mockMvc.perform(get("/api/v1/arceus/team/open"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0]").value("A"))
             .andExpect(jsonPath("$[2]").value("C"))
@@ -264,7 +264,7 @@ class TeamControllerTest {
     fun `should delete team`() {
         every { teamService.deleteTeam(1) } returns OK
 
-        mockMvc.perform(delete("/team").param("id", "1"))
+        mockMvc.perform(delete("/api/v1/arceus/team").param("id", "1"))
             .andExpect(status().isOk)
     }
 
@@ -272,7 +272,7 @@ class TeamControllerTest {
     fun `should error when get team by id missing`() {
         every { teamService.getTeamById(1) } throws RuntimeException("Team not found")
 
-        mockMvc.perform(get("/team/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/team/id").param("id", "1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Team not found"))
     }

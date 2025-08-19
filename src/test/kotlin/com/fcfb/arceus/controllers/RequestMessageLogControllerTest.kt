@@ -51,7 +51,7 @@ class RequestMessageLogControllerTest {
         val requestJson = objectMapper.writeValueAsString(requestMessageLog)
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -78,7 +78,7 @@ class RequestMessageLogControllerTest {
         val requestJson = objectMapper.writeValueAsString(requestMessageLog)
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -92,7 +92,7 @@ class RequestMessageLogControllerTest {
         val invalidJson = "{ invalid json }"
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(invalidJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -110,7 +110,7 @@ class RequestMessageLogControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(incompleteJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -135,7 +135,7 @@ class RequestMessageLogControllerTest {
         val requestJson = objectMapper.writeValueAsString(requestMessageLog)
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -161,7 +161,7 @@ class RequestMessageLogControllerTest {
         val requestJson = objectMapper.writeValueAsString(requestMessageLog)
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(requestJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -171,7 +171,7 @@ class RequestMessageLogControllerTest {
     @Test
     fun `logRequestMessage should handle empty request body`() {
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content("")
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -193,7 +193,7 @@ class RequestMessageLogControllerTest {
             """.trimIndent()
 
         mockMvc.perform(
-            post("/request_message_log")
+            post("/api/v1/arceus/request_message_log")
                 .content(malformedJson)
                 .contentType(MediaType.APPLICATION_JSON),
         )
