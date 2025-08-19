@@ -1,9 +1,9 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.NewSignup
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.model.NewSignup
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -42,7 +42,7 @@ class NewSignupRepositoryTest {
         assertEquals("test@example.com", found.email)
         assertEquals("hashedemail123", found.hashedEmail)
         assertEquals("password123", found.password)
-        assertEquals(User.CoachPosition.HEAD_COACH, found.position)
+        assertEquals(CoachPosition.HEAD_COACH, found.position)
         assertEquals("salt123", found.salt)
         assertEquals("Alabama", found.teamChoiceOne)
         assertEquals("Auburn", found.teamChoiceTwo)
@@ -151,7 +151,7 @@ class NewSignupRepositoryTest {
         email: String = "test@example.com",
         hashedEmail: String = "hashedemail123",
         password: String = "password123",
-        position: User.CoachPosition = User.CoachPosition.HEAD_COACH,
+        position: CoachPosition = CoachPosition.HEAD_COACH,
         salt: String = "salt123",
         teamChoiceOne: String = "Alabama",
         teamChoiceTwo: String = "Auburn",

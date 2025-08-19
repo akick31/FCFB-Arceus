@@ -1,10 +1,10 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Season
+import com.fcfb.arceus.model.Season
 import com.fcfb.arceus.repositories.SeasonRepository
 import com.fcfb.arceus.service.fcfb.SeasonService
 import com.fcfb.arceus.service.fcfb.TeamService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

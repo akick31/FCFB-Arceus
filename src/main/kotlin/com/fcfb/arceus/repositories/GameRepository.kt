@@ -1,9 +1,9 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.GameWarning
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.GameWarning
+import com.fcfb.arceus.model.Game
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query

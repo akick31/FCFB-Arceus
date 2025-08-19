@@ -1,13 +1,13 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.enums.ActualResult
-import com.fcfb.arceus.domain.enums.PlayCall
-import com.fcfb.arceus.domain.enums.RunoffType
-import com.fcfb.arceus.domain.enums.Scenario
-import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.RunoffType
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Play
 import com.fcfb.arceus.service.fcfb.PlayService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

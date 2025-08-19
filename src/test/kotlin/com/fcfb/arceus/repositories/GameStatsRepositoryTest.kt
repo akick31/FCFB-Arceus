@@ -1,12 +1,12 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.GameStats
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.Subdivision
-import com.fcfb.arceus.domain.enums.TVChannel
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.TVChannel
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.model.GameStats
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

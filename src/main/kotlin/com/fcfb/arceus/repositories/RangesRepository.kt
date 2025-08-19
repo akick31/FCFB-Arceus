@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Ranges
-import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.model.Ranges
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository

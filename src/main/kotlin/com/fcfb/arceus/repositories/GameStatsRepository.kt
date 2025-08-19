@@ -1,6 +1,6 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.GameStats
+import com.fcfb.arceus.model.GameStats
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository

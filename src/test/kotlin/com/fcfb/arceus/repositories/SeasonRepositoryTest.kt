@@ -1,6 +1,6 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Season
+import com.fcfb.arceus.model.Season
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

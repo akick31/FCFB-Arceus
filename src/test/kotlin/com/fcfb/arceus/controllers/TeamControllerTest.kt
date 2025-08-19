@@ -1,14 +1,12 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.Team.Conference.ACC
-import com.fcfb.arceus.domain.Team.Conference.SEC
-import com.fcfb.arceus.domain.Team.Conference.SWAC
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.enums.team.Conference
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.model.Team
 import com.fcfb.arceus.service.fcfb.TeamService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
@@ -47,7 +45,7 @@ class TeamControllerTest {
         subdivision: Subdivision = Subdivision.FCS,
         offensivePlaybook: OffensivePlaybook = OffensivePlaybook.AIR_RAID,
         defensivePlaybook: DefensivePlaybook = DefensivePlaybook.FIVE_TWO,
-        conference: Team.Conference = SWAC,
+        conference: Conference = Conference.SWAC,
     ): Team {
         return Team(
             logo = "logo$id.png",
@@ -105,7 +103,7 @@ class TeamControllerTest {
             sampleTeam(
                 1,
                 subdivision = Subdivision.FCFB,
-                conference = SEC,
+                conference = Conference.SEC,
                 offensivePlaybook = OffensivePlaybook.AIR_RAID,
                 defensivePlaybook = DefensivePlaybook.FOUR_THREE,
             )
@@ -113,7 +111,7 @@ class TeamControllerTest {
             sampleTeam(
                 2,
                 subdivision = Subdivision.FBS,
-                conference = ACC,
+                conference = Conference.ACC,
                 offensivePlaybook = OffensivePlaybook.PRO,
                 defensivePlaybook = DefensivePlaybook.THREE_FOUR,
             )

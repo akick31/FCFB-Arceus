@@ -1,8 +1,8 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.GameStats
+import com.fcfb.arceus.model.GameStats
 import com.fcfb.arceus.service.fcfb.GameStatsService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

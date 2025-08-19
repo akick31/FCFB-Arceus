@@ -1,16 +1,16 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.Team.Conference
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.PlayType
-import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.models.response.ScorebugResponse
+import com.fcfb.arceus.dto.ScorebugResponse
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.team.Conference
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Team
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
-import com.fcfb.arceus.utils.Logger
+import com.fcfb.arceus.util.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.data.domain.PageImpl
 import org.springframework.data.domain.Pageable

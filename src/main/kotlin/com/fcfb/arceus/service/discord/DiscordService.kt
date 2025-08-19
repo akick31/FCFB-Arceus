@@ -1,10 +1,10 @@
 package com.fcfb.arceus.service.discord
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.models.requests.SignupInfo
-import com.fcfb.arceus.utils.DiscordUserNotFoundException
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.ServerUtils
+import com.fcfb.arceus.dto.SignupInfo
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.util.DiscordUserNotFoundException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.ServerUtils
 import dev.kord.common.entity.Snowflake
 import dev.kord.core.Kord
 import dev.kord.core.entity.User

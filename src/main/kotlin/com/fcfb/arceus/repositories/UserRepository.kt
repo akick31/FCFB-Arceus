@@ -1,6 +1,8 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.User
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.UserRole
+import com.fcfb.arceus.model.User
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -56,7 +58,7 @@ interface UserRepository : CrudRepository<User, Long> {
 
     fun findByTeam(team: String): User?
 
-    fun findByPosition(position: User.CoachPosition): List<User>
+    fun findByPosition(position: CoachPosition): List<User>
 
-    fun findByRole(role: User.Role): List<User>
+    fun findByRole(role: UserRole): List<User>
 }

@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Season
+import com.fcfb.arceus.model.Season
 import com.fcfb.arceus.service.fcfb.SeasonService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin

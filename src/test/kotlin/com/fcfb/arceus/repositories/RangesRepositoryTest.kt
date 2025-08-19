@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Ranges
-import com.fcfb.arceus.domain.enums.Scenario
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.model.Ranges
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

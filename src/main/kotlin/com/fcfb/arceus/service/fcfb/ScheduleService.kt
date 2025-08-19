@@ -1,10 +1,10 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Schedule
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Schedule
 import com.fcfb.arceus.repositories.ScheduleRepository
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.ScheduleNotFoundException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.ScheduleNotFoundException
 import org.springframework.stereotype.Service
 
 @Service

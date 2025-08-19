@@ -1,6 +1,6 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.GameWriteup
+import com.fcfb.arceus.model.GameWriteup
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach

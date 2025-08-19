@@ -1,11 +1,12 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.converter.DTOConverter
-import com.fcfb.arceus.domain.NewSignup
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.models.dto.NewSignupDTO
+import com.fcfb.arceus.dto.NewSignupDTO
+import com.fcfb.arceus.enums.user.UserRole
+import com.fcfb.arceus.model.NewSignup
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.repositories.NewSignupRepository
-import com.fcfb.arceus.utils.EncryptionUtils
+import com.fcfb.arceus.util.DTOConverter
+import com.fcfb.arceus.util.EncryptionUtils
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.UUID
@@ -71,7 +72,7 @@ class NewSignupService(
                     hashedEmail = newSignup.hashedEmail,
                     password = newSignup.password,
                     position = newSignup.position,
-                    role = User.Role.USER,
+                    role = UserRole.USER,
                     salt = newSignup.salt,
                     team = null,
                     delayOfGameInstances = 0,

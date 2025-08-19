@@ -1,7 +1,8 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.enums.team.Conference
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.model.Team
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -118,7 +119,7 @@ interface TeamRepository : CrudRepository<Team, Int> {
 
     fun findByIsTaken(isTaken: Boolean): List<Team>
 
-    fun findByConference(conference: Team.Conference): List<Team>
+    fun findByConference(conference: Conference): List<Team>
 
     fun findBySubdivision(subdivision: Subdivision): List<Team>
 

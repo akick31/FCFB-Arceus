@@ -1,17 +1,15 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
-import com.fcfb.arceus.domain.User.Role.USER
-import com.fcfb.arceus.domain.enums.DefensivePlaybook.FOUR_THREE
-import com.fcfb.arceus.domain.enums.DefensivePlaybook.THREE_FOUR
-import com.fcfb.arceus.domain.enums.OffensivePlaybook.AIR_RAID
-import com.fcfb.arceus.domain.enums.OffensivePlaybook.PRO
-import com.fcfb.arceus.models.dto.UserDTO
-import com.fcfb.arceus.models.requests.UserValidationRequest
-import com.fcfb.arceus.models.response.UserValidationResponse
+import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.dto.UserValidationRequest
+import com.fcfb.arceus.dto.UserValidationResponse
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.UserRole
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.service.fcfb.UserService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -39,8 +37,8 @@ class UserControllerTest {
             coachName = "Test Coach",
             discordTag = "test#1234",
             discordId = "123456789",
-            position = HEAD_COACH,
-            role = USER,
+            position = CoachPosition.HEAD_COACH,
+            role = UserRole.USER,
             team = "Test Team",
             delayOfGameInstances = 2,
             wins = 10,
@@ -56,8 +54,8 @@ class UserControllerTest {
             playoffLosses = 1,
             nationalChampionshipWins = 0,
             nationalChampionshipLosses = 1,
-            offensivePlaybook = AIR_RAID,
-            defensivePlaybook = FOUR_THREE,
+            offensivePlaybook = OffensivePlaybook.AIR_RAID,
+            defensivePlaybook = DefensivePlaybook.FOUR_THREE,
             averageResponseTime = 15.5,
             delayOfGameWarningOptOut = false,
         )
@@ -82,8 +80,8 @@ class UserControllerTest {
                 email = "test@example.com",
                 hashedEmail = "hashedemail123",
                 password = "encryptedPassword",
-                position = HEAD_COACH,
-                role = USER,
+                position = CoachPosition.HEAD_COACH,
+                role = UserRole.USER,
                 salt = "randomSalt",
                 team = "Test Team",
                 delayOfGameInstances = 2,
@@ -100,8 +98,8 @@ class UserControllerTest {
                 playoffLosses = 1,
                 nationalChampionshipWins = 0,
                 nationalChampionshipLosses = 1,
-                offensivePlaybook = AIR_RAID,
-                defensivePlaybook = FOUR_THREE,
+                offensivePlaybook = OffensivePlaybook.AIR_RAID,
+                defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 averageResponseTime = 15.5,
                 delayOfGameWarningOptOut = false,
                 resetToken = null,
@@ -144,8 +142,8 @@ class UserControllerTest {
                     id = 2L,
                     username = "user2",
                     team = "Another Team",
-                    offensivePlaybook = PRO,
-                    defensivePlaybook = THREE_FOUR,
+                    offensivePlaybook = OffensivePlaybook.PRO,
+                    defensivePlaybook = DefensivePlaybook.THREE_FOUR,
                 ),
             )
         every { userService.getAllUsers() } returns users

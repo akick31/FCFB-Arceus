@@ -1,20 +1,19 @@
 import com.fcfb.arceus.controllers.GameController
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.enums.CoinTossCall
-import com.fcfb.arceus.domain.enums.CoinTossChoice
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.GameMode
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.GameWarning
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
-import com.fcfb.arceus.domain.enums.Platform
-import com.fcfb.arceus.domain.enums.PlayType
-import com.fcfb.arceus.domain.enums.Subdivision
-import com.fcfb.arceus.domain.enums.TVChannel
-import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.models.requests.StartRequest
+import com.fcfb.arceus.dto.StartRequest
+import com.fcfb.arceus.enums.game.GameMode
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.GameWarning
+import com.fcfb.arceus.enums.game.TVChannel
+import com.fcfb.arceus.enums.gameflow.CoinTossCall
+import com.fcfb.arceus.enums.gameflow.CoinTossChoice
+import com.fcfb.arceus.enums.gameflow.OvertimeCoinTossChoice
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
 import com.fcfb.arceus.service.fcfb.GameService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
 import io.mockk.Runs
@@ -258,9 +257,9 @@ class GameControllerTest {
                 coinTossChoice = CoinTossChoice.RECEIVE,
                 overtimeCoinTossWinner = null,
                 overtimeCoinTossChoice = null,
-                homePlatform = Platform.DISCORD,
+                homePlatform = com.fcfb.arceus.enums.system.Platform.DISCORD,
                 homePlatformId = "homePlatform123",
-                awayPlatform = Platform.DISCORD,
+                awayPlatform = com.fcfb.arceus.enums.system.Platform.DISCORD,
                 awayPlatformId = "awayPlatform456",
                 lastMessageTimestamp = "2023-10-01T12:30:00",
                 gameTimer = "10/02/2023 06:00:00",

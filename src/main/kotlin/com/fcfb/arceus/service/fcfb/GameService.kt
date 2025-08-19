@@ -1,40 +1,40 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.enums.ActualResult
-import com.fcfb.arceus.domain.enums.CoinTossCall
-import com.fcfb.arceus.domain.enums.CoinTossChoice
-import com.fcfb.arceus.domain.enums.GameMode
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.GameWarning
-import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
-import com.fcfb.arceus.domain.enums.Platform
-import com.fcfb.arceus.domain.enums.PlayCall
-import com.fcfb.arceus.domain.enums.PlayType
-import com.fcfb.arceus.domain.enums.Scenario
-import com.fcfb.arceus.domain.enums.Subdivision
-import com.fcfb.arceus.domain.enums.TeamSide
-import com.fcfb.arceus.models.requests.StartRequest
+import com.fcfb.arceus.dto.StartRequest
+import com.fcfb.arceus.enums.game.GameMode
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.GameWarning
+import com.fcfb.arceus.enums.gameflow.CoinTossCall
+import com.fcfb.arceus.enums.gameflow.CoinTossChoice
+import com.fcfb.arceus.enums.gameflow.OvertimeCoinTossChoice
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.enums.system.Platform.DISCORD
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Play
+import com.fcfb.arceus.model.Team
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
-import com.fcfb.arceus.utils.GameNotFoundException
-import com.fcfb.arceus.utils.InvalidCoinTossChoiceException
-import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
-import com.fcfb.arceus.utils.NoCoachesFoundException
-import com.fcfb.arceus.utils.NoGameFoundException
-import com.fcfb.arceus.utils.TeamNotFoundException
-import com.fcfb.arceus.utils.UnableToCreateGameThreadException
-import com.fcfb.arceus.utils.UnableToDeleteGameException
+import com.fcfb.arceus.util.GameNotFoundException
+import com.fcfb.arceus.util.InvalidCoinTossChoiceException
+import com.fcfb.arceus.util.InvalidHalfTimePossessionChangeException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.NoCoachDiscordIdsFoundException
+import com.fcfb.arceus.util.NoCoachesFoundException
+import com.fcfb.arceus.util.NoGameFoundException
+import com.fcfb.arceus.util.TeamNotFoundException
+import com.fcfb.arceus.util.UnableToCreateGameThreadException
+import com.fcfb.arceus.util.UnableToDeleteGameException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.domain.Page
@@ -119,8 +119,8 @@ class GameService(
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook
             val awayDefensivePlaybook = awayTeamData.defensivePlaybook
             val subdivision = startRequest.subdivision
-            val homePlatform = Platform.DISCORD
-            val awayPlatform = Platform.DISCORD
+            val homePlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
+            val awayPlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
 
             val (season, currentWeek) = getCurrentSeasonAndWeek(startRequest, week)
             val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
@@ -260,8 +260,8 @@ class GameService(
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook
             val awayDefensivePlaybook = awayTeamData.defensivePlaybook
             val subdivision = startRequest.subdivision
-            val homePlatform = Platform.DISCORD
-            val awayPlatform = Platform.DISCORD
+            val homePlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
+            val awayPlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
 
             val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
 
@@ -623,8 +623,8 @@ class GameService(
                 val startedGame =
                     startNormalGame(
                         StartRequest(
-                            Platform.DISCORD,
-                            Platform.DISCORD,
+                            DISCORD,
+                            DISCORD,
                             game.subdivision,
                             game.homeTeam,
                             game.awayTeam,
@@ -959,8 +959,8 @@ class GameService(
         deleteOngoingGame(channelId)
         val startRequest =
             StartRequest(
-                Platform.DISCORD,
-                Platform.DISCORD,
+                DISCORD,
+                DISCORD,
                 game.subdivision ?: Subdivision.FCFB,
                 game.homeTeam,
                 game.awayTeam,

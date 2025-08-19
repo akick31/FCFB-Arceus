@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.CoachTransactionLog
+import com.fcfb.arceus.model.CoachTransactionLog
 import com.fcfb.arceus.service.log.CoachTransactionLogService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin

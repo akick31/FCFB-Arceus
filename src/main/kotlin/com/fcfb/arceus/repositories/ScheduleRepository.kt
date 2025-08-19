@@ -1,7 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Schedule
-import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.model.Schedule
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository

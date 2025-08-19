@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.NewSignup
+import com.fcfb.arceus.model.NewSignup
 import com.fcfb.arceus.service.auth.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin

@@ -1,8 +1,8 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.model.Game
 import com.fcfb.arceus.repositories.GameRepository
 import org.springframework.data.jpa.domain.Specification
 import org.springframework.stereotype.Service

@@ -1,15 +1,15 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.converter.DTOConverter
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.models.dto.UserDTO
-import com.fcfb.arceus.models.requests.UserValidationRequest
-import com.fcfb.arceus.models.response.UserValidationResponse
+import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.dto.UserValidationRequest
+import com.fcfb.arceus.dto.UserValidationResponse
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.repositories.UserRepository
-import com.fcfb.arceus.utils.EncryptionUtils
-import com.fcfb.arceus.utils.UserNotFoundException
+import com.fcfb.arceus.util.DTOConverter
+import com.fcfb.arceus.util.EncryptionUtils
+import com.fcfb.arceus.util.UserNotFoundException
 import org.springframework.http.HttpStatus
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.stereotype.Service

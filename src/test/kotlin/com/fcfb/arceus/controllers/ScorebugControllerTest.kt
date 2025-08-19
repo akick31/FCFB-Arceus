@@ -1,8 +1,8 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Team.Conference
+import com.fcfb.arceus.enums.team.Conference
 import com.fcfb.arceus.service.fcfb.ScorebugService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

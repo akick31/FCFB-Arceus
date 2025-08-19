@@ -1,8 +1,10 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.UserRole
+import com.fcfb.arceus.model.User
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -33,8 +35,8 @@ class UserRepositoryTest {
                 email = "test@example.com",
                 hashedEmail = "hashedemail123",
                 password = "password123",
-                position = User.CoachPosition.HEAD_COACH,
-                role = User.Role.USER,
+                position = CoachPosition.HEAD_COACH,
+                role = UserRole.USER,
                 salt = "salt123",
                 team = "Alabama",
                 delayOfGameInstances = 0,
@@ -76,8 +78,8 @@ class UserRepositoryTest {
         assertEquals("test@example.com", found.email)
         assertEquals("hashedemail123", found.hashedEmail)
         assertEquals("password123", found.password)
-        assertEquals(User.CoachPosition.HEAD_COACH, found.position)
-        assertEquals(User.Role.USER, found.role)
+        assertEquals(CoachPosition.HEAD_COACH, found.position)
+        assertEquals(UserRole.USER, found.role)
         assertEquals("salt123", found.salt)
         assertEquals("Alabama", found.team)
         assertEquals(0, found.delayOfGameInstances)
@@ -189,37 +191,37 @@ class UserRepositoryTest {
     @Test
     fun `test find by role`() {
         // Given
-        val user1 = createTestUser(id = 1L, username = "user1", role = User.Role.ADMIN)
-        val user2 = createTestUser(id = 2L, username = "user2", role = User.Role.ADMIN)
+        val user1 = createTestUser(id = 1L, username = "user1", role = UserRole.ADMIN)
+        val user2 = createTestUser(id = 2L, username = "user2", role = UserRole.ADMIN)
         val users = listOf(user1, user2)
 
-        every { userRepository.findByRole(User.Role.ADMIN) } returns users
+        every { userRepository.findByRole(UserRole.ADMIN) } returns users
 
         // When
-        val found = userRepository.findByRole(User.Role.ADMIN)
+        val found = userRepository.findByRole(UserRole.ADMIN)
 
         // Then
         assertNotNull(found)
         assertEquals(2, found.size)
-        assertTrue(found.all { it.role == User.Role.ADMIN })
+        assertTrue(found.all { it.role == UserRole.ADMIN })
     }
 
     @Test
     fun `test find by position`() {
         // Given
-        val user1 = createTestUser(id = 1L, username = "user1", position = User.CoachPosition.HEAD_COACH)
-        val user2 = createTestUser(id = 2L, username = "user2", position = User.CoachPosition.HEAD_COACH)
+        val user1 = createTestUser(id = 1L, username = "user1", position = CoachPosition.HEAD_COACH)
+        val user2 = createTestUser(id = 2L, username = "user2", position = CoachPosition.HEAD_COACH)
         val users = listOf(user1, user2)
 
-        every { userRepository.findByPosition(User.CoachPosition.HEAD_COACH) } returns users
+        every { userRepository.findByPosition(CoachPosition.HEAD_COACH) } returns users
 
         // When
-        val found = userRepository.findByPosition(User.CoachPosition.HEAD_COACH)
+        val found = userRepository.findByPosition(CoachPosition.HEAD_COACH)
 
         // Then
         assertNotNull(found)
         assertEquals(2, found.size)
-        assertTrue(found.all { it.position == User.CoachPosition.HEAD_COACH })
+        assertTrue(found.all { it.position == CoachPosition.HEAD_COACH })
     }
 
     @Test
@@ -266,8 +268,8 @@ class UserRepositoryTest {
         email: String = "test@example.com",
         hashedEmail: String = "hashedemail123",
         password: String = "password123",
-        position: User.CoachPosition = User.CoachPosition.HEAD_COACH,
-        role: User.Role = User.Role.USER,
+        position: CoachPosition = CoachPosition.HEAD_COACH,
+        role: UserRole = UserRole.USER,
         salt: String = "salt123",
         team: String = "Alabama",
         delayOfGameInstances: Int = 0,

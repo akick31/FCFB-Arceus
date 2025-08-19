@@ -1,9 +1,10 @@
 package com.fcfb.arceus.controllers
 
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fcfb.arceus.domain.RequestMessageLog
+import com.fcfb.arceus.enums.system.MessageType
+import com.fcfb.arceus.model.RequestMessageLog
 import com.fcfb.arceus.service.log.RequestMessageLogService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -12,7 +13,6 @@ import org.junit.jupiter.api.Test
 import org.springframework.http.MediaType
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 
@@ -37,7 +37,7 @@ class RequestMessageLogControllerTest {
     fun `logRequestMessage should return success for valid request`() {
         val requestMessageLog =
             RequestMessageLog(
-                messageType = RequestMessageLog.MessageType.GAME_THREAD,
+                messageType = MessageType.GAME_THREAD,
                 gameId = 123,
                 playId = 456,
                 messageId = 789L,
@@ -64,7 +64,7 @@ class RequestMessageLogControllerTest {
     fun `logRequestMessage should return success for private message type`() {
         val requestMessageLog =
             RequestMessageLog(
-                messageType = RequestMessageLog.MessageType.PRIVATE_MESSAGE,
+                messageType = MessageType.PRIVATE_MESSAGE,
                 gameId = 123,
                 playId = null,
                 messageId = 789L,
@@ -121,7 +121,7 @@ class RequestMessageLogControllerTest {
     fun `logRequestMessage should handle null playId`() {
         val requestMessageLog =
             RequestMessageLog(
-                messageType = RequestMessageLog.MessageType.GAME_THREAD,
+                messageType = MessageType.GAME_THREAD,
                 gameId = 123,
                 playId = null,
                 messageId = 789L,
@@ -148,7 +148,7 @@ class RequestMessageLogControllerTest {
     fun `logRequestMessage should handle service exception`() {
         val requestMessageLog =
             RequestMessageLog(
-                messageType = RequestMessageLog.MessageType.GAME_THREAD,
+                messageType = MessageType.GAME_THREAD,
                 gameId = 123,
                 playId = 456,
                 messageId = 789L,

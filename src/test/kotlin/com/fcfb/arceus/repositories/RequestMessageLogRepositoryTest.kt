@@ -1,6 +1,7 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.RequestMessageLog
+import com.fcfb.arceus.enums.system.MessageType
+import com.fcfb.arceus.model.RequestMessageLog
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -32,7 +33,7 @@ class RequestMessageLogRepositoryTest {
         // Then
         assertNotNull(found)
         assertEquals(saved.id, found.id)
-        assertEquals(RequestMessageLog.MessageType.GAME_THREAD, found.messageType)
+        assertEquals(MessageType.GAME_THREAD, found.messageType)
         assertEquals(123, found.gameId)
         assertEquals(456, found.playId)
         assertEquals(789L, found.messageId)
@@ -46,33 +47,33 @@ class RequestMessageLogRepositoryTest {
         val gameThreadLog =
             createTestRequestMessageLog(
                 id = 1,
-                messageType = RequestMessageLog.MessageType.GAME_THREAD,
+                messageType = MessageType.GAME_THREAD,
                 messageLocation = "game-channel",
             )
         val privateMessageLog =
             createTestRequestMessageLog(
                 id = 2,
-                messageType = RequestMessageLog.MessageType.PRIVATE_MESSAGE,
+                messageType = MessageType.PRIVATE_MESSAGE,
                 messageLocation = "private-channel",
             )
 
         every {
-            requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.GAME_THREAD)
+            requestMessageLogRepository.findByMessageType(MessageType.GAME_THREAD)
         } returns listOf(gameThreadLog)
         every {
-            requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.PRIVATE_MESSAGE)
+            requestMessageLogRepository.findByMessageType(MessageType.PRIVATE_MESSAGE)
         } returns listOf(privateMessageLog)
 
         // When
-        val gameThreadLogs = requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.GAME_THREAD)
-        val privateMessageLogs = requestMessageLogRepository.findByMessageType(RequestMessageLog.MessageType.PRIVATE_MESSAGE)
+        val gameThreadLogs = requestMessageLogRepository.findByMessageType(MessageType.GAME_THREAD)
+        val privateMessageLogs = requestMessageLogRepository.findByMessageType(MessageType.PRIVATE_MESSAGE)
 
         // Then
         assertEquals(1, gameThreadLogs.size)
-        assertEquals(RequestMessageLog.MessageType.GAME_THREAD, gameThreadLogs[0].messageType)
+        assertEquals(MessageType.GAME_THREAD, gameThreadLogs[0].messageType)
 
         assertEquals(1, privateMessageLogs.size)
-        assertEquals(RequestMessageLog.MessageType.PRIVATE_MESSAGE, privateMessageLogs[0].messageType)
+        assertEquals(MessageType.PRIVATE_MESSAGE, privateMessageLogs[0].messageType)
     }
 
     @Test
@@ -141,16 +142,16 @@ class RequestMessageLogRepositoryTest {
         val requestMessageLog = createTestRequestMessageLog()
 
         every {
-            requestMessageLogRepository.findByGameIdAndMessageType(123, RequestMessageLog.MessageType.GAME_THREAD)
+            requestMessageLogRepository.findByGameIdAndMessageType(123, MessageType.GAME_THREAD)
         } returns listOf(requestMessageLog)
 
         // When
-        val found = requestMessageLogRepository.findByGameIdAndMessageType(123, RequestMessageLog.MessageType.GAME_THREAD)
+        val found = requestMessageLogRepository.findByGameIdAndMessageType(123, MessageType.GAME_THREAD)
 
         // Then
         assertEquals(1, found.size)
         assertEquals(123, found[0].gameId)
-        assertEquals(RequestMessageLog.MessageType.GAME_THREAD, found[0].messageType)
+        assertEquals(MessageType.GAME_THREAD, found[0].messageType)
     }
 
     @Test
@@ -175,16 +176,16 @@ class RequestMessageLogRepositoryTest {
         val requestMessageLog = createTestRequestMessageLog()
 
         every {
-            requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, RequestMessageLog.MessageType.GAME_THREAD, 456)
+            requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, MessageType.GAME_THREAD, 456)
         } returns listOf(requestMessageLog)
 
         // When
-        val found = requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, RequestMessageLog.MessageType.GAME_THREAD, 456)
+        val found = requestMessageLogRepository.findByGameIdAndMessageTypeAndPlayId(123, MessageType.GAME_THREAD, 456)
 
         // Then
         assertEquals(1, found.size)
         assertEquals(123, found[0].gameId)
-        assertEquals(RequestMessageLog.MessageType.GAME_THREAD, found[0].messageType)
+        assertEquals(MessageType.GAME_THREAD, found[0].messageType)
         assertEquals(456, found[0].playId)
     }
 
@@ -200,7 +201,7 @@ class RequestMessageLogRepositoryTest {
 
         // Then
         assertNotNull(updated)
-        assertEquals(RequestMessageLog.MessageType.GAME_THREAD, updated.messageType)
+        assertEquals(MessageType.GAME_THREAD, updated.messageType)
     }
 
     @Test
@@ -217,7 +218,7 @@ class RequestMessageLogRepositoryTest {
 
     private fun createTestRequestMessageLog(
         id: Int = 1,
-        messageType: RequestMessageLog.MessageType = RequestMessageLog.MessageType.GAME_THREAD,
+        messageType: MessageType = MessageType.GAME_THREAD,
         gameId: Int = 123,
         playId: Int = 456,
         messageId: Long = 789L,

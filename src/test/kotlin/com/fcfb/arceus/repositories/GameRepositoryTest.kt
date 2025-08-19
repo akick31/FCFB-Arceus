@@ -1,19 +1,18 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.enums.CoinTossChoice
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.GameMode
-import com.fcfb.arceus.domain.enums.GameStatus
-import com.fcfb.arceus.domain.enums.GameType
-import com.fcfb.arceus.domain.enums.GameWarning
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.OvertimeCoinTossChoice
-import com.fcfb.arceus.domain.enums.Platform
-import com.fcfb.arceus.domain.enums.PlayType
-import com.fcfb.arceus.domain.enums.Subdivision
-import com.fcfb.arceus.domain.enums.TVChannel
-import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.enums.game.GameMode
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.GameWarning
+import com.fcfb.arceus.enums.game.TVChannel
+import com.fcfb.arceus.enums.gameflow.CoinTossChoice
+import com.fcfb.arceus.enums.gameflow.OvertimeCoinTossChoice
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -340,9 +339,9 @@ class GameRepositoryTest {
         coinTossChoice: CoinTossChoice? = null,
         overtimeCoinTossWinner: TeamSide? = null,
         overtimeCoinTossChoice: OvertimeCoinTossChoice? = null,
-        homePlatform: Platform = Platform.DISCORD,
+        homePlatform: com.fcfb.arceus.enums.system.Platform = com.fcfb.arceus.enums.system.Platform.DISCORD,
         homePlatformId: String? = null,
-        awayPlatform: Platform = Platform.DISCORD,
+        awayPlatform: com.fcfb.arceus.enums.system.Platform = com.fcfb.arceus.enums.system.Platform.DISCORD,
         awayPlatformId: String? = null,
         lastMessageTimestamp: String? = null,
         gameTimer: String? = null,

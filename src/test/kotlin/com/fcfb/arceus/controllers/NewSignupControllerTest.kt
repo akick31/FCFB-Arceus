@@ -1,11 +1,11 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.models.dto.NewSignupDTO
+import com.fcfb.arceus.dto.NewSignupDTO
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
 import com.fcfb.arceus.service.fcfb.NewSignupService
-import com.fcfb.arceus.utils.GlobalExceptionHandler
+import com.fcfb.arceus.util.GlobalExceptionHandler
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
@@ -41,7 +41,7 @@ class NewSignupControllerTest {
                     coachName = "Test Coach 1",
                     discordTag = "test1#1234",
                     discordId = "123456789",
-                    position = HEAD_COACH,
+                    position = CoachPosition.HEAD_COACH,
                     teamChoiceOne = "team1",
                     teamChoiceTwo = "team2",
                     teamChoiceThree = "team3",
@@ -55,7 +55,7 @@ class NewSignupControllerTest {
                     coachName = "Test Coach 2",
                     discordTag = "test2#1234",
                     discordId = "123456788",
-                    position = HEAD_COACH,
+                    position = CoachPosition.HEAD_COACH,
                     teamChoiceOne = "team1",
                     teamChoiceTwo = "team2",
                     teamChoiceThree = "team3",

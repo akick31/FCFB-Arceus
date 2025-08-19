@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.RequestMessageLog
+import com.fcfb.arceus.model.RequestMessageLog
 import com.fcfb.arceus.service.log.RequestMessageLogService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.PostMapping

@@ -1,7 +1,8 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.CoachTransactionLog
-import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.TransactionType
+import com.fcfb.arceus.model.CoachTransactionLog
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
@@ -13,7 +14,7 @@ interface CoachTransactionLogRepository : CrudRepository<CoachTransactionLog, In
 
     fun findByTeam(team: String): List<CoachTransactionLog>
 
-    fun findByTransaction(transaction: CoachTransactionLog.TransactionType): List<CoachTransactionLog>
+    fun findByTransaction(transaction: TransactionType): List<CoachTransactionLog>
 
     fun findByPosition(position: CoachPosition): List<CoachTransactionLog>
 

@@ -1,8 +1,8 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.CoachTransactionLog
-import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType
-import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.TransactionType
+import com.fcfb.arceus.model.CoachTransactionLog
 import com.fcfb.arceus.service.log.CoachTransactionLogService
 import io.mockk.every
 import io.mockk.mockk

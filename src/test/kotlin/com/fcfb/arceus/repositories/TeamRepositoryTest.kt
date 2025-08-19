@@ -1,10 +1,10 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.Team.Conference
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.domain.enums.Subdivision
+import com.fcfb.arceus.enums.team.Conference
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.model.Team
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

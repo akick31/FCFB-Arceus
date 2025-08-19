@@ -1,12 +1,13 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.RequestMessageLog
+import com.fcfb.arceus.enums.system.MessageType
+import com.fcfb.arceus.model.RequestMessageLog
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
 interface RequestMessageLogRepository : CrudRepository<RequestMessageLog, Int> {
-    fun findByMessageType(messageType: RequestMessageLog.MessageType): List<RequestMessageLog>
+    fun findByMessageType(messageType: MessageType): List<RequestMessageLog>
 
     fun findByGameId(gameId: Int): List<RequestMessageLog>
 
@@ -18,7 +19,7 @@ interface RequestMessageLogRepository : CrudRepository<RequestMessageLog, Int> {
 
     fun findByGameIdAndMessageType(
         gameId: Int,
-        messageType: RequestMessageLog.MessageType,
+        messageType: MessageType,
     ): List<RequestMessageLog>
 
     fun findByGameIdAndPlayId(
@@ -28,7 +29,7 @@ interface RequestMessageLogRepository : CrudRepository<RequestMessageLog, Int> {
 
     fun findByGameIdAndMessageTypeAndPlayId(
         gameId: Int,
-        messageType: RequestMessageLog.MessageType,
+        messageType: MessageType,
         playId: Int,
     ): List<RequestMessageLog>
 }

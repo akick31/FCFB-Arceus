@@ -1,6 +1,6 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.NewSignup
+import com.fcfb.arceus.model.NewSignup
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository

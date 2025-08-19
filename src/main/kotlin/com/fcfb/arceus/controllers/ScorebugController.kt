@@ -1,6 +1,6 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Team.Conference
+import com.fcfb.arceus.enums.team.Conference
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort

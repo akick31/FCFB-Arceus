@@ -1,7 +1,7 @@
 package com.fcfb.arceus.service.email
 
-import com.fcfb.arceus.utils.EncryptionUtils
-import com.fcfb.arceus.utils.Logger
+import com.fcfb.arceus.util.EncryptionUtils
+import com.fcfb.arceus.util.Logger
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.mail.SimpleMailMessage
 import org.springframework.mail.javamail.JavaMailSender

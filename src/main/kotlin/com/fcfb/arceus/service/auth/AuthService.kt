@@ -1,14 +1,14 @@
 package com.fcfb.arceus.service.auth
 
-import com.fcfb.arceus.domain.NewSignup
-import com.fcfb.arceus.models.requests.SignupInfo
-import com.fcfb.arceus.models.website.LoginResponse
+import com.fcfb.arceus.dto.LoginResponse
+import com.fcfb.arceus.dto.SignupInfo
+import com.fcfb.arceus.model.NewSignup
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.service.fcfb.UserService
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.UserUnauthorizedException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.UserUnauthorizedException
 import org.springframework.http.ResponseEntity
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component

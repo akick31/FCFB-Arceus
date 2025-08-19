@@ -1,9 +1,9 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.enums.ActualResult
-import com.fcfb.arceus.domain.enums.PlayCall
-import com.fcfb.arceus.domain.enums.TeamSide
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Play
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify

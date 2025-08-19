@@ -1,7 +1,7 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.enums.PlayCall
-import com.fcfb.arceus.domain.enums.RunoffType
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.RunoffType
 import com.fcfb.arceus.service.fcfb.PlayService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping

@@ -1,19 +1,20 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.NewSignup
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
-import com.fcfb.arceus.domain.enums.DefensivePlaybook
-import com.fcfb.arceus.domain.enums.OffensivePlaybook
-import com.fcfb.arceus.models.dto.UserDTO
-import com.fcfb.arceus.models.website.LoginResponse
+import com.fcfb.arceus.dto.LoginResponse
+import com.fcfb.arceus.dto.UserDTO
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.UserRole
+import com.fcfb.arceus.model.NewSignup
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.service.auth.AuthService
 import com.fcfb.arceus.service.auth.SessionService
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.email.EmailService
 import com.fcfb.arceus.service.fcfb.NewSignupService
 import com.fcfb.arceus.service.fcfb.UserService
-import com.fcfb.arceus.utils.UserUnauthorizedException
+import com.fcfb.arceus.util.UserUnauthorizedException
 import io.mockk.Runs
 import io.mockk.every
 import io.mockk.just
@@ -63,7 +64,7 @@ class AuthControllerTest {
                 email = "email@example.com",
                 hashedEmail = "hashedEmail",
                 password = "password",
-                position = HEAD_COACH,
+                position = CoachPosition.HEAD_COACH,
                 salt = "salt",
                 teamChoiceOne = "team1",
                 teamChoiceTwo = "team2",
@@ -98,7 +99,7 @@ class AuthControllerTest {
                 email = "email@example.com",
                 hashedEmail = "hashedEmail",
                 password = "password",
-                position = HEAD_COACH,
+                position = CoachPosition.HEAD_COACH,
                 salt = "salt",
                 teamChoiceOne = "team1",
                 teamChoiceTwo = "team2",
@@ -138,8 +139,8 @@ class AuthControllerTest {
                 email = "user@example.com",
                 hashedEmail = "hashedEmail",
                 password = encodedPassword,
-                position = User.CoachPosition.HEAD_COACH,
-                role = User.Role.USER,
+                position = CoachPosition.HEAD_COACH,
+                role = UserRole.USER,
                 salt = "somesalt",
                 team = "FakeU",
                 delayOfGameInstances = 0,
@@ -172,7 +173,7 @@ class AuthControllerTest {
 
         val result = authService.login(usernameOrEmail, rawPassword)
 
-        assertEquals(LoginResponse(token, 1L, User.Role.USER), result)
+        assertEquals(LoginResponse(token, 1L, UserRole.USER), result)
     }
 
     @Test
@@ -188,8 +189,8 @@ class AuthControllerTest {
                 email = "user@example.com",
                 hashedEmail = "hashedEmail",
                 password = password,
-                position = User.CoachPosition.HEAD_COACH,
-                role = User.Role.USER,
+                position = CoachPosition.HEAD_COACH,
+                role = UserRole.USER,
                 salt = "somesalt",
                 team = "FakeU",
                 delayOfGameInstances = 0,
@@ -261,8 +262,8 @@ class AuthControllerTest {
                 email = "user@example.com",
                 hashedEmail = "hashedEmail",
                 password = "passsword",
-                position = User.CoachPosition.HEAD_COACH,
-                role = User.Role.USER,
+                position = CoachPosition.HEAD_COACH,
+                role = UserRole.USER,
                 salt = "somesalt",
                 team = "FakeU",
                 delayOfGameInstances = 0,

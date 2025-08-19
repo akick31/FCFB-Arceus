@@ -1,7 +1,8 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.CoachTransactionLog
-import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.TransactionType
+import com.fcfb.arceus.model.CoachTransactionLog
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -37,7 +38,7 @@ class CoachTransactionLogRepositoryTest {
         assertNotNull(found)
         assertEquals("Alabama", found.team)
         assertEquals(CoachPosition.HEAD_COACH, found.position)
-        assertEquals(CoachTransactionLog.TransactionType.HIRED, found.transaction)
+        assertEquals(TransactionType.HIRED, found.transaction)
         assertEquals("2024-01-01", found.transactionDate)
         assertEquals("Admin", found.processedBy)
     }
@@ -67,23 +68,23 @@ class CoachTransactionLogRepositoryTest {
     @Test
     fun `test find by transaction`() {
         // Given
-        val hiredLog = createTestCoachTransactionLog(transaction = CoachTransactionLog.TransactionType.HIRED)
-        val firedLog = createTestCoachTransactionLog(transaction = CoachTransactionLog.TransactionType.FIRED)
+        val hiredLog = createTestCoachTransactionLog(transaction = TransactionType.HIRED)
+        val firedLog = createTestCoachTransactionLog(transaction = TransactionType.FIRED)
         val hiredLogs = listOf(hiredLog)
         val firedLogs = listOf(firedLog)
 
-        every { coachTransactionLogRepository.findByTransaction(CoachTransactionLog.TransactionType.HIRED) } returns hiredLogs
-        every { coachTransactionLogRepository.findByTransaction(CoachTransactionLog.TransactionType.FIRED) } returns firedLogs
+        every { coachTransactionLogRepository.findByTransaction(TransactionType.HIRED) } returns hiredLogs
+        every { coachTransactionLogRepository.findByTransaction(TransactionType.FIRED) } returns firedLogs
 
         // When
-        val foundHiredLogs = coachTransactionLogRepository.findByTransaction(CoachTransactionLog.TransactionType.HIRED)
-        val foundFiredLogs = coachTransactionLogRepository.findByTransaction(CoachTransactionLog.TransactionType.FIRED)
+        val foundHiredLogs = coachTransactionLogRepository.findByTransaction(TransactionType.HIRED)
+        val foundFiredLogs = coachTransactionLogRepository.findByTransaction(TransactionType.FIRED)
 
         // Then
         assertEquals(1, foundHiredLogs.size)
-        assertEquals(CoachTransactionLog.TransactionType.HIRED, foundHiredLogs[0].transaction)
+        assertEquals(TransactionType.HIRED, foundHiredLogs[0].transaction)
         assertEquals(1, foundFiredLogs.size)
-        assertEquals(CoachTransactionLog.TransactionType.FIRED, foundFiredLogs[0].transaction)
+        assertEquals(TransactionType.FIRED, foundFiredLogs[0].transaction)
     }
 
     @Test
@@ -213,7 +214,7 @@ class CoachTransactionLogRepositoryTest {
         team: String = "Alabama",
         position: CoachPosition = CoachPosition.HEAD_COACH,
         coach: MutableList<String> = mutableListOf("Coach1"),
-        transaction: CoachTransactionLog.TransactionType = CoachTransactionLog.TransactionType.HIRED,
+        transaction: TransactionType = TransactionType.HIRED,
         transactionDate: String = "2024-01-01",
         processedBy: String = "Admin",
     ): CoachTransactionLog {
