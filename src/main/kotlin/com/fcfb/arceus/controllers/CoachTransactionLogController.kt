@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/coach-transaction-log")
+@RequestMapping("${ApiConstants.FULL_PATH}/coach_transaction_log")
 class CoachTransactionLogController(
     private val coachTransactionLogService: CoachTransactionLogService,
 ) {

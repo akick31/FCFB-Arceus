@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/user")
+@RequestMapping("${ApiConstants.FULL_PATH}/user")
 class UserController(
     private var userService: UserService,
 ) {

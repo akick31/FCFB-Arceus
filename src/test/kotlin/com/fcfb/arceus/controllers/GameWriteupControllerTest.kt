@@ -37,7 +37,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -54,7 +54,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -71,7 +71,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -88,7 +88,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -104,7 +104,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } throws RuntimeException("Service error")
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -118,7 +118,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isNotFound)
@@ -134,7 +134,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isNotFound)
@@ -150,7 +150,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -167,7 +167,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -184,7 +184,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -201,7 +201,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -218,7 +218,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -235,7 +235,7 @@ class GameWriteupControllerTest {
         every { gameWriteupService.getGameMessageByScenario(scenario, playCall) } returns mockMessage
 
         mockMvc.perform(
-            get("/game_writeup/{scenario}/{playCall}", scenario, playCall)
+            get("/api/v1/arceus/game_writeup/{scenario}/{playCall}", scenario, playCall)
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)

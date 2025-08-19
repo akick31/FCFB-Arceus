@@ -70,15 +70,24 @@ pipeline {
             }
         }
 
+        stage('Test') {
+            steps {
+                echo 'Setting up test properties...'
+                sh 'cp src/test/resources/application-test.properties src/main/resources/application.properties'
+                
+                echo 'Running tests...'
+                sh './gradlew clean test'
+            }
+        }
+        
         stage('Build') {
             steps {
-                echo 'Creating the properties file...'
+                echo 'Creating the production properties file...'
                 script {
                     def propertiesContent = """
                         # Domain configuration
                         domain.url=https://dev.api.fakecollegefootball.com
                         website.url=http://dev.fakecollegefootball.com
-                        server.servlet.context-path=/arceus
                         server.address=0.0.0.0
                         server.port=1313
 
@@ -137,7 +146,7 @@ pipeline {
                 }
 
                 echo 'Building the Arceus project...'
-                sh './gradlew clean build'
+                sh './gradlew build -x test'
             }
         }
 

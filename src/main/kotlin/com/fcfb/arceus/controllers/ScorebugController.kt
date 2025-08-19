@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/scorebug")
+@RequestMapping("${ApiConstants.FULL_PATH}/scorebug")
 class ScorebugController(
     private var scorebugService: ScorebugService,
 ) {

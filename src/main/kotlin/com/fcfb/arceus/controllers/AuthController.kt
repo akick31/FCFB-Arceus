@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/users")
+@RequestMapping("${ApiConstants.FULL_PATH}/auth")
 class AuthController(
     private val authService: AuthService,
 ) {

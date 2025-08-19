@@ -36,7 +36,7 @@ class ScorebugControllerTest {
         every { scorebugService.generateAllScorebugs() } returns Unit
 
         mockMvc.perform(
-            post("/scorebug/generate/all")
+            post("/api/v1/arceus/scorebug/generate/all")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isOk)
@@ -52,7 +52,7 @@ class ScorebugControllerTest {
         every { scorebugService.getScorebugByGameId(gameId) } returns mockResponse
 
         mockMvc.perform(
-            get("/scorebug")
+            get("/api/v1/arceus/scorebug")
                 .param("gameId", gameId.toString())
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -64,7 +64,7 @@ class ScorebugControllerTest {
     @Test
     fun `getScorebugByGameId should return 500 when gameId is missing`() {
         mockMvc.perform(
-            get("/scorebug")
+            get("/api/v1/arceus/scorebug")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -78,7 +78,7 @@ class ScorebugControllerTest {
         every { scorebugService.getLatestScorebugByGameId(gameId) } returns mockResponse
 
         mockMvc.perform(
-            get("/scorebug/latest")
+            get("/api/v1/arceus/scorebug/latest")
                 .param("gameId", gameId.toString())
                 .contentType(MediaType.APPLICATION_JSON),
         )
@@ -90,7 +90,7 @@ class ScorebugControllerTest {
     @Test
     fun `getLatestScorebugByGameId should return 500 when gameId is missing`() {
         mockMvc.perform(
-            get("/scorebug/latest")
+            get("/api/v1/arceus/scorebug/latest")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -106,7 +106,7 @@ class ScorebugControllerTest {
         every { scorebugService.getScorebugsForConference(season, week, conference) } returns mockResponse
 
         mockMvc.perform(
-            get("/scorebug/conference")
+            get("/api/v1/arceus/scorebug/conference")
                 .param("season", season.toString())
                 .param("week", week.toString())
                 .param("conference", conference.name)
@@ -121,7 +121,7 @@ class ScorebugControllerTest {
     fun `getScorebugsForConference should return 500 when required parameters are missing`() {
         // Missing season
         mockMvc.perform(
-            get("/scorebug/conference")
+            get("/api/v1/arceus/scorebug/conference")
                 .param("week", "5")
                 .param("conference", "BIG_12")
                 .contentType(MediaType.APPLICATION_JSON),
@@ -130,7 +130,7 @@ class ScorebugControllerTest {
 
         // Missing week
         mockMvc.perform(
-            get("/scorebug/conference")
+            get("/api/v1/arceus/scorebug/conference")
                 .param("season", "2024")
                 .param("conference", "BIG_12")
                 .contentType(MediaType.APPLICATION_JSON),
@@ -139,7 +139,7 @@ class ScorebugControllerTest {
 
         // Missing conference
         mockMvc.perform(
-            get("/scorebug/conference")
+            get("/api/v1/arceus/scorebug/conference")
                 .param("season", "2024")
                 .param("week", "5")
                 .contentType(MediaType.APPLICATION_JSON),
@@ -150,7 +150,7 @@ class ScorebugControllerTest {
     @Test
     fun `getFilteredScorebugs should return filtered scorebugs with all parameters`() {
         mockMvc.perform(
-            get("/scorebug/filtered")
+            get("/api/v1/arceus/scorebug/filtered")
                 .param("filters", "IN_PROGRESS")
                 .param("category", "ONGOING")
                 .param("sort", "CLOSEST_TO_END")
@@ -165,7 +165,7 @@ class ScorebugControllerTest {
     @Test
     fun `getFilteredScorebugs should return filtered scorebugs with minimal parameters`() {
         mockMvc.perform(
-            get("/scorebug/filtered")
+            get("/api/v1/arceus/scorebug/filtered")
                 .contentType(MediaType.APPLICATION_JSON),
         )
             .andExpect(status().isInternalServerError)
@@ -174,7 +174,7 @@ class ScorebugControllerTest {
     @Test
     fun `getFilteredScorebugs should handle multiple filters`() {
         mockMvc.perform(
-            get("/scorebug/filtered")
+            get("/api/v1/arceus/scorebug/filtered")
                 .param("filters", "IN_PROGRESS", "OUT_OF_CONFERENCE")
                 .contentType(MediaType.APPLICATION_JSON),
         )

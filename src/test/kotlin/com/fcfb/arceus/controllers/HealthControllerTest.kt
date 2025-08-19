@@ -39,7 +39,7 @@ class HealthControllerTest {
         val health = Health.up().build()
         every { healthEndpoint.health() } returns health
 
-        mockMvc.perform(get("/health").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/arceus/health").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(content().string("Application is healthy"))
     }
@@ -49,7 +49,7 @@ class HealthControllerTest {
         val health = Health.down().build()
         every { healthEndpoint.health() } returns health
 
-        mockMvc.perform(get("/health").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/arceus/health").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(content().string("Application is unhealthy"))
     }
@@ -58,7 +58,7 @@ class HealthControllerTest {
     fun `should return unhealthy when health endpoint returns null`() {
         every { healthEndpoint.health() } returns null
 
-        mockMvc.perform(get("/health").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/arceus/health").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(content().string("Application is unhealthy"))
     }

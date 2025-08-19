@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/play")
+@RequestMapping("${ApiConstants.FULL_PATH}/play")
 class PlayController(
     private var playService: PlayService,
 ) {

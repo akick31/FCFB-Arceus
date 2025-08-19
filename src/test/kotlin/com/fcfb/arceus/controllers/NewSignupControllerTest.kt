@@ -67,7 +67,7 @@ class NewSignupControllerTest {
 
         every { newSignupService.getNewSignups() } returns signups
 
-        mockMvc.perform(get("/new_signups").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/arceus/new_signups").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$[0].id").value(1))
             .andExpect(jsonPath("$[0].username").value("testuser1"))
@@ -81,7 +81,7 @@ class NewSignupControllerTest {
     fun `should handle error when getting new signups`() {
         every { newSignupService.getNewSignups() } throws RuntimeException("Failed to get signups")
 
-        mockMvc.perform(get("/new_signups").contentType(MediaType.APPLICATION_JSON))
+        mockMvc.perform(get("/api/v1/arceus/new_signups").contentType(MediaType.APPLICATION_JSON))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Failed to get signups"))
     }
