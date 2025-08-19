@@ -10,27 +10,18 @@ import org.springframework.http.HttpMethod
 import org.springframework.http.HttpStatus
 import org.springframework.http.ResponseEntity
 import org.springframework.web.client.RestTemplate
-import java.lang.reflect.Field
 
 class DiscordOAuthControllerTest {
     private val restTemplate: RestTemplate = mockk()
 
     private val controller =
-        DiscordOAuthController(restTemplate).apply {
-            setPrivateField("clientId", "test-client-id")
-            setPrivateField("clientSecret", "test-client-secret")
-            setPrivateField("redirectUri", "http://localhost/redirect")
-            setPrivateField("websiteUrl", "http://localhost")
-        }
-
-    private fun DiscordOAuthController.setPrivateField(
-        fieldName: String,
-        value: String,
-    ) {
-        val field: Field = this::class.java.getDeclaredField(fieldName)
-        field.isAccessible = true
-        field.set(this, value)
-    }
+        DiscordOAuthController(
+            restTemplate = restTemplate,
+            clientId = "test-client-id",
+            clientSecret = "test-client-secret",
+            redirectUri = "http://localhost/redirect",
+            websiteUrl = "http://localhost",
+        )
 
     private val objectMapper = jacksonObjectMapper()
 

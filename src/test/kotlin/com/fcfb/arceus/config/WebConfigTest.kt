@@ -47,7 +47,7 @@ class WebConfigTest {
     fun `WebConfig should be a valid Spring configuration class`() {
         // Test that the class can be instantiated and has proper annotations
         val webConfig = WebConfig()
-        assertNotNull(webConfig, "WebConfig should be a valid Spring configuration")
+        assertNotNull(webConfig, "WebConfig should be annotated with @Configuration")
 
         // Verify it's properly configured as a Spring Security configuration
         assertTrue(

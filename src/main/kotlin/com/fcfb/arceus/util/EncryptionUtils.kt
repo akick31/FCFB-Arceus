@@ -11,13 +11,12 @@ import javax.crypto.spec.IvParameterSpec
 import javax.crypto.spec.SecretKeySpec
 
 @Component
-class EncryptionUtils {
+class EncryptionUtils(
     @Value("\${encryption.algorithm}")
-    private val algorithm: String? = null
-
+    private val algorithm: String,
     @Value("\${encryption.key}")
-    private val encryptionKey: String? = null
-
+    private val encryptionKey: String,
+) {
     @Throws(Exception::class)
     fun encrypt(value: String): String {
         // Generate a new IV for each encryption

@@ -20,16 +20,13 @@ import org.springframework.web.client.RestTemplate
 class DiscordService(
     private val restTemplate: RestTemplate,
     private val serverUtils: ServerUtils,
-) {
     @Value("\${discord.bot.url}")
-    private var discordBotUrl: String? = null
-
+    private val discordBotUrl: String,
     @Value("\${discord.guild.id}")
-    private val guildId: String? = null
-
+    private val guildId: String,
     @Value("\${discord.bot.token}")
-    private val botToken: String? = null
-
+    private val botToken: String,
+) {
     /**
      * Start a game thread in Discord
      * @param game

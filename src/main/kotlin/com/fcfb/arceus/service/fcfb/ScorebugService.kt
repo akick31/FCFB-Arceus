@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage
 import java.io.File
 import java.io.IOException
 import java.io.InputStream
-import java.net.URL
+import java.net.URI
 import java.util.Base64
 import javax.imageio.ImageIO
 
@@ -39,10 +39,9 @@ import javax.imageio.ImageIO
 class ScorebugService(
     private val teamService: TeamService,
     private val gameService: GameService,
-) {
     @Value("\${images.path}")
-    private val imagePath: String? = null
-
+    private val imagePath: String,
+) {
     /**
      * Get the scorebug for a game filtered
      * @param filters
@@ -458,7 +457,7 @@ class ScorebugService(
         if (logoUrl != null) {
             try {
                 // Download the logo from the URL
-                val logoImage = ImageIO.read(URL(logoUrl))
+                val logoImage = ImageIO.read(URI(logoUrl).toURL())
 
                 // Calculate position: right-aligned in the 140px width
                 val logoX = 245 + (115 - logoWidth) / 2

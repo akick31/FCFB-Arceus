@@ -2,7 +2,6 @@ package com.fcfb.arceus.controllers
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.HttpEntity
 import org.springframework.http.HttpHeaders
@@ -17,21 +16,16 @@ import org.springframework.web.client.RestTemplate
 
 @RestController
 class DiscordOAuthController(
-    @Autowired
     private val restTemplate: RestTemplate,
-) {
     @Value("\${discord.client.id}")
-    private lateinit var clientId: String
-
+    private val clientId: String,
     @Value("\${discord.client.secret}")
-    private lateinit var clientSecret: String
-
+    private val clientSecret: String,
     @Value("\${discord.oauth.redirect}")
-    private lateinit var redirectUri: String
-
+    private val redirectUri: String,
     @Value("\${website.url}")
-    private lateinit var websiteUrl: String
-
+    private val websiteUrl: String,
+) {
     private val objectMapper = jacksonObjectMapper()
 
     @GetMapping("/discord/redirect")
