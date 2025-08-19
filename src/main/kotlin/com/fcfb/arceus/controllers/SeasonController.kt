@@ -1,6 +1,8 @@
 package com.fcfb.arceus.controllers
 
+import com.fcfb.arceus.model.Season
 import com.fcfb.arceus.service.fcfb.SeasonService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PostMapping
@@ -13,12 +15,12 @@ import org.springframework.web.bind.annotation.RestController
 class SeasonController(
     private var seasonService: SeasonService,
 ) {
-    @PostMapping("/start")
-    fun startSeason() = seasonService.startSeason()
+    @PostMapping
+    fun startSeason(): ResponseEntity<Season> = ResponseEntity.ok(seasonService.startSeason())
 
     @GetMapping("/current")
-    fun getCurrentSeason() = seasonService.getCurrentSeason()
+    fun getCurrentSeason(): ResponseEntity<Season> = ResponseEntity.ok(seasonService.getCurrentSeason())
 
-    @GetMapping("/week")
-    fun getCurrentWeek() = seasonService.getCurrentWeek()
+    @GetMapping("/current/week")
+    fun getCurrentWeek(): ResponseEntity<Int> = ResponseEntity.ok(seasonService.getCurrentWeek())
 }

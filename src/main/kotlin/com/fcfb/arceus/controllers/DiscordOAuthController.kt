@@ -15,19 +15,17 @@ import org.springframework.web.bind.annotation.RestController
 import org.springframework.web.client.RestTemplate
 
 @RestController
-class DiscordOAuthController {
+class DiscordOAuthController(
+    private val restTemplate: RestTemplate,
     @Value("\${discord.client.id}")
-    private lateinit var clientId: String
-
+    private val clientId: String,
     @Value("\${discord.client.secret}")
-    private lateinit var clientSecret: String
-
+    private val clientSecret: String,
     @Value("\${discord.oauth.redirect}")
-    private lateinit var redirectUri: String
-
+    private val redirectUri: String,
     @Value("\${website.url}")
-    private lateinit var websiteUrl: String
-
+    private val websiteUrl: String,
+) {
     private val objectMapper = jacksonObjectMapper()
 
     @GetMapping("${ApiConstants.FULL_PATH}/discord/redirect")
@@ -48,7 +46,6 @@ class DiscordOAuthController {
                 add("scope", "identify")
             }
 
-        val restTemplate = RestTemplate()
         val headers =
             HttpHeaders().apply {
                 set("Content-Type", "application/x-www-form-urlencoded")

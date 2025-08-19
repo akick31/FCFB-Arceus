@@ -1,6 +1,6 @@
 package com.fcfb.arceus.service.log
 
-import com.fcfb.arceus.domain.CoachTransactionLog
+import com.fcfb.arceus.model.CoachTransactionLog
 import com.fcfb.arceus.repositories.CoachTransactionLogRepository
 import org.springframework.stereotype.Component
 

@@ -1,13 +1,13 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Ranges
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.model.Ranges
 import com.fcfb.arceus.repositories.RangesRepository
-import com.fcfb.arceus.utils.ResultNotFoundException
+import com.fcfb.arceus.util.ResultNotFoundException
 import org.springframework.stereotype.Service
 
 @Service

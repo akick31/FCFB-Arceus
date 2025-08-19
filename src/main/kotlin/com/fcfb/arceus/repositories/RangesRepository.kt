@@ -1,12 +1,13 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Ranges
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.model.Ranges
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface RangesRepository : CrudRepository<Ranges?, Int?> {
+interface RangesRepository : CrudRepository<Ranges, Int> {
     @Query(
         value =
             "SELECT * FROM new_ranges WHERE play_type = ? AND offensive_playbook = ? " +
@@ -65,4 +66,18 @@ interface RangesRepository : CrudRepository<Ranges?, Int?> {
         playType: String,
         yards: Int,
     ): Int?
+
+    fun findByPlayType(playType: String): List<Ranges>
+
+    fun findByOffensivePlaybook(offensivePlaybook: String): List<Ranges>
+
+    fun findByDefensivePlaybook(defensivePlaybook: String): List<Ranges>
+
+    fun findByLowerRange(lowerRange: Int): List<Ranges>
+
+    fun findByUpperRange(upperRange: Int): List<Ranges>
+
+    fun findByResult(result: Scenario): List<Ranges>
+
+    fun findByPlayTime(playTime: Int): List<Ranges>
 }

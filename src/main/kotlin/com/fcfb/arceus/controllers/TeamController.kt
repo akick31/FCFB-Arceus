@@ -1,7 +1,7 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User.CoachPosition
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.model.Team
 import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping

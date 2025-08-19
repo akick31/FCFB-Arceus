@@ -1,6 +1,6 @@
 package com.fcfb.arceus.service.log
 
-import com.fcfb.arceus.domain.RequestMessageLog
+import com.fcfb.arceus.model.RequestMessageLog
 import com.fcfb.arceus.repositories.RequestMessageLogRepository
 import org.springframework.stereotype.Component
 import java.time.ZoneId
