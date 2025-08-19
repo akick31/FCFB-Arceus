@@ -1,27 +1,18 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.CoachTransactionLog
-import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.FIRED
-import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED
-import com.fcfb.arceus.domain.CoachTransactionLog.TransactionType.HIRED_INTERIM
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.GameType.BOWL
-import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_CHAMPIONSHIP
-import com.fcfb.arceus.domain.Game.GameType.CONFERENCE_GAME
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User.CoachPosition
-import com.fcfb.arceus.domain.User.CoachPosition.DEFENSIVE_COORDINATOR
-import com.fcfb.arceus.domain.User.CoachPosition.HEAD_COACH
-import com.fcfb.arceus.domain.User.CoachPosition.OFFENSIVE_COORDINATOR
-import com.fcfb.arceus.domain.User.CoachPosition.RETIRED
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.user.CoachPosition
+import com.fcfb.arceus.enums.user.TransactionType
+import com.fcfb.arceus.model.CoachTransactionLog
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Team
 import com.fcfb.arceus.repositories.TeamRepository
 import com.fcfb.arceus.service.log.CoachTransactionLogService
-import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
-import com.fcfb.arceus.utils.TeamNotFoundException
-import com.fcfb.arceus.utils.TooManyCoachesException
+import com.fcfb.arceus.util.NoCoachDiscordIdsFoundException
+import com.fcfb.arceus.util.TeamNotFoundException
+import com.fcfb.arceus.util.TooManyCoachesException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.http.HttpStatus
@@ -50,15 +41,15 @@ class TeamService(
             awayTeam.currentLosses += 1
             homeTeam.overallWins += 1
             awayTeam.overallLosses += 1
-            if (game.gameType == CONFERENCE_GAME) {
+            if (game.gameType == GameType.CONFERENCE_GAME) {
                 homeTeam.currentConferenceWins += 1
                 awayTeam.currentConferenceLosses += 1
                 homeTeam.overallConferenceWins += 1
                 awayTeam.overallConferenceLosses += 1
-            } else if (game.gameType == CONFERENCE_CHAMPIONSHIP) {
+            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
                 homeTeam.conferenceChampionshipWins += 1
                 awayTeam.conferenceChampionshipLosses += 1
-            } else if (game.gameType == BOWL) {
+            } else if (game.gameType == GameType.BOWL) {
                 homeTeam.bowlWins += 1
                 awayTeam.bowlLosses += 1
             } else if (game.gameType == GameType.PLAYOFFS) {
@@ -79,15 +70,15 @@ class TeamService(
             awayTeam.currentWins += 1
             homeTeam.overallLosses += 1
             awayTeam.overallWins += 1
-            if (game.gameType == CONFERENCE_GAME) {
+            if (game.gameType == GameType.CONFERENCE_GAME) {
                 homeTeam.currentConferenceLosses += 1
                 awayTeam.currentConferenceWins += 1
                 homeTeam.overallConferenceLosses += 1
                 awayTeam.overallConferenceWins += 1
-            } else if (game.gameType == CONFERENCE_CHAMPIONSHIP) {
+            } else if (game.gameType == GameType.CONFERENCE_CHAMPIONSHIP) {
                 homeTeam.conferenceChampionshipLosses += 1
                 awayTeam.conferenceChampionshipWins += 1
-            } else if (game.gameType == BOWL) {
+            } else if (game.gameType == GameType.BOWL) {
                 homeTeam.bowlLosses += 1
                 awayTeam.bowlWins += 1
             } else if (game.gameType == GameType.PLAYOFFS) {
@@ -262,7 +253,7 @@ class TeamService(
         val user = userService.getUserDTOByDiscordId(discordId)
         user.team = existingTeam.name
         when (coachPosition) {
-            HEAD_COACH -> {
+            CoachPosition.HEAD_COACH -> {
                 // Fire previous coach if hiring a new head coach
                 if (existingTeam.coachUsernames != null) {
                     fireCoach(existingTeam.name, processedBy)
@@ -274,7 +265,7 @@ class TeamService(
                 existingTeam.offensivePlaybook = user.offensivePlaybook
                 existingTeam.defensivePlaybook = user.defensivePlaybook
             }
-            OFFENSIVE_COORDINATOR -> {
+            CoachPosition.OFFENSIVE_COORDINATOR -> {
                 if (existingTeam.coachNames == null || existingTeam.coachNames == listOf<String>()) {
                     existingTeam.coachNames = mutableListOf(user.coachName)
                 } else if (existingTeam.coachNames?.size == 1) {
@@ -308,7 +299,7 @@ class TeamService(
                 }
                 existingTeam.offensivePlaybook = user.offensivePlaybook
             }
-            DEFENSIVE_COORDINATOR -> {
+            CoachPosition.DEFENSIVE_COORDINATOR -> {
                 if (existingTeam.coachNames == null || existingTeam.coachNames == mutableListOf<String>()) {
                     existingTeam.coachNames = mutableListOf(user.coachName)
                 } else if (existingTeam.coachNames?.size == 1) {
@@ -342,7 +333,7 @@ class TeamService(
                 }
                 existingTeam.defensivePlaybook = user.defensivePlaybook
             }
-            RETIRED -> {}
+            CoachPosition.RETIRED -> {}
         }
 
         withContext(Dispatchers.IO) {
@@ -358,7 +349,7 @@ class TeamService(
                     existingTeam.name ?: "TEAM_NOT_FOUND",
                     coachPosition,
                     mutableListOf(user.username),
-                    HIRED,
+                    TransactionType.HIRED,
                     ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
                     processedBy,
                 ),
@@ -397,9 +388,9 @@ class TeamService(
             coachTransactionLogService.logCoachTransaction(
                 CoachTransactionLog(
                     existingTeam.name ?: "TEAM_NOT_FOUND",
-                    HEAD_COACH,
+                    CoachPosition.HEAD_COACH,
                     mutableListOf(user.username),
-                    HIRED_INTERIM,
+                    TransactionType.HIRED_INTERIM,
                     ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
                     processedBy,
                 ),
@@ -429,9 +420,9 @@ class TeamService(
         coachTransactionLogService.logCoachTransaction(
             CoachTransactionLog(
                 existingTeam.name ?: "TEAM_NOT_FOUND",
-                HEAD_COACH,
+                CoachPosition.HEAD_COACH,
                 existingTeam.coachUsernames,
-                FIRED,
+                TransactionType.FIRED,
                 ZonedDateTime.now(ZoneId.of("America/New_York")).format(DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss")),
                 processedBy,
             ),
@@ -482,6 +473,8 @@ class TeamService(
 
         return Pair(homeRank, awayRank)
     }
+
+    fun resetWinsAndLosses() = teamRepository.resetWinsAndLosses()
 
     /**
      * Check if playoff ranking is used

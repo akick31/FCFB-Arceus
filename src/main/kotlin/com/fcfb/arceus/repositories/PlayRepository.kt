@@ -1,6 +1,9 @@
 package com.fcfb.arceus.repositories
 
-import com.fcfb.arceus.domain.Play
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.model.Play
 import org.springframework.data.jpa.repository.Modifying
 import org.springframework.data.jpa.repository.Query
 import org.springframework.data.repository.CrudRepository
@@ -8,7 +11,7 @@ import org.springframework.stereotype.Repository
 import javax.transaction.Transactional
 
 @Repository
-interface PlayRepository : CrudRepository<Play?, Int?> {
+interface PlayRepository : CrudRepository<Play, Int> {
     @Query(value = "SELECT * FROM play WHERE play_id =?", nativeQuery = true)
     fun getPlayById(playId: Int): Play?
 
@@ -68,4 +71,18 @@ interface PlayRepository : CrudRepository<Play?, Int?> {
     @Modifying
     @Query(value = "DELETE FROM play WHERE game_id =?", nativeQuery = true)
     fun deleteAllPlaysByGameId(gameId: Int)
+
+    fun findByGameId(gameId: Int): List<Play>
+
+    fun findByOffensiveSubmitter(offensiveSubmitter: String): List<Play>
+
+    fun findByDefensiveSubmitter(defensiveSubmitter: String): List<Play>
+
+    fun findByPlayCall(playCall: PlayCall): List<Play>
+
+    fun findByActualResult(actualResult: ActualResult): List<Play>
+
+    fun findByResult(result: Scenario): List<Play>
+
+    fun findByPlayFinished(playFinished: Boolean): List<Play>
 }

@@ -1,9 +1,12 @@
 package com.fcfb.arceus.controllers
 
-import com.fcfb.arceus.domain.NewSignup
+import com.fcfb.arceus.model.NewSignup
 import com.fcfb.arceus.service.auth.AuthService
+import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -13,46 +16,45 @@ import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/users")
 class AuthController(
     private val authService: AuthService,
 ) {
-    @PostMapping("/register")
+    @PostMapping
     fun registerUser(
         @RequestBody newSignup: NewSignup,
-    ) = authService.createNewSignup(newSignup)
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.createNewSignup(newSignup))
 
-    @PostMapping("/login")
+    @PostMapping("/sessions")
     fun login(
         @RequestParam("usernameOrEmail") usernameOrEmail: String,
         @RequestParam("password") password: String,
-    ) = authService.login(usernameOrEmail, password)
+    ): ResponseEntity<Any> = ResponseEntity.ok(authService.login(usernameOrEmail, password))
 
-    @PostMapping("/logout")
+    @DeleteMapping("/sessions/{token}")
     fun logout(
-        @RequestParam("token") token: String,
-    ) = authService.logout(token)
+        @PathVariable("token") token: String,
+    ): ResponseEntity<String> = ResponseEntity.ok(authService.logout(token))
 
-    @GetMapping("/verify")
+    @GetMapping("/verify-email")
     fun verifyEmail(
         @RequestParam("token") token: String,
-    ) = authService.verifyEmail(token)
+    ): ResponseEntity<Boolean> = ResponseEntity.ok(authService.verifyEmail(token))
 
-    @PutMapping("/resend-verification-email")
+    @PutMapping("/{id}/verification-email")
     fun resetVerificationToken(
-        @RequestParam("id") id: Long,
-    ) = authService.resetVerificationToken(id)
+        @PathVariable("id") id: Long,
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(id))
 
-    // Add to AuthController.kt
-    @PostMapping("/forgot-password")
+    @PostMapping("/password-reset")
     fun forgotPassword(
         @RequestParam email: String,
-    ) = authService.forgotPassword(email)
+    ): ResponseEntity<String> = authService.forgotPassword(email)
 
-    @PostMapping("/reset-password")
+    @PutMapping("/{userId}/password")
     fun resetPassword(
         @RequestParam token: String,
-        @RequestParam userId: Long,
+        @PathVariable("userId") userId: Long,
         @RequestParam newPassword: String,
-    ) = authService.resetPassword(token, userId, newPassword)
+    ): ResponseEntity<String> = authService.resetPassword(token, userId, newPassword)
 }

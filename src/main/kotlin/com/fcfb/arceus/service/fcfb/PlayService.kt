@@ -1,26 +1,28 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.DefensivePlaybook
-import com.fcfb.arceus.domain.Game.OffensivePlaybook
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.RunoffType
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Ranges
+import com.fcfb.arceus.enums.game.GameMode
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.play.RunoffType
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.enums.team.DefensivePlaybook
+import com.fcfb.arceus.enums.team.OffensivePlaybook
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Play
+import com.fcfb.arceus.model.Ranges
 import com.fcfb.arceus.repositories.PlayRepository
-import com.fcfb.arceus.utils.DefensiveNumberNotFound
-import com.fcfb.arceus.utils.EncryptionUtils
-import com.fcfb.arceus.utils.InvalidActualResultException
-import com.fcfb.arceus.utils.InvalidPlayTypeException
-import com.fcfb.arceus.utils.InvalidScenarioException
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.NumberNotFoundException
-import com.fcfb.arceus.utils.PlayNotFoundException
-import com.fcfb.arceus.utils.ResultNotFoundException
+import com.fcfb.arceus.util.DefensiveNumberNotFound
+import com.fcfb.arceus.util.EncryptionUtils
+import com.fcfb.arceus.util.InvalidActualResultException
+import com.fcfb.arceus.util.InvalidPlayTypeException
+import com.fcfb.arceus.util.InvalidScenarioException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.NumberNotFoundException
+import com.fcfb.arceus.util.PlayNotFoundException
+import com.fcfb.arceus.util.ResultNotFoundException
 import org.springframework.stereotype.Service
 import java.time.Duration
 import java.time.LocalDateTime
@@ -52,7 +54,7 @@ class PlayService(
         try {
             val game = gameService.getGameById(gameId)
             val responseSpeed =
-                if (game.gameStatus != Game.GameStatus.PREGAME) {
+                if (game.gameStatus != GameStatus.PREGAME) {
                     getResponseSpeed(game)
                 } else {
                     null
@@ -1145,7 +1147,7 @@ class PlayService(
                         OffensivePlaybook.WEST_COAST -> 17
                     }
                 runoffType == RunoffType.CHEW -> 30
-                game.gameMode == Game.GameMode.CHEW -> 30
+                game.gameMode == GameMode.CHEW -> 30
                 offensivePlaybook == OffensivePlaybook.PRO -> 15
                 offensivePlaybook == OffensivePlaybook.AIR_RAID -> 10
                 offensivePlaybook == OffensivePlaybook.FLEXBONE -> 20

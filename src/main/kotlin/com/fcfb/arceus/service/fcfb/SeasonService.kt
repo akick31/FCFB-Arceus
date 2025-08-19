@@ -1,10 +1,10 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Season
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Season
 import com.fcfb.arceus.repositories.SeasonRepository
-import com.fcfb.arceus.utils.CurrentSeasonNotFoundException
-import com.fcfb.arceus.utils.CurrentWeekNotFoundException
+import com.fcfb.arceus.util.CurrentSeasonNotFoundException
+import com.fcfb.arceus.util.CurrentWeekNotFoundException
 import org.springframework.stereotype.Component
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -13,11 +13,12 @@ import java.time.format.DateTimeFormatter
 @Component
 class SeasonService(
     private val seasonRepository: SeasonRepository,
+    private val teamService: TeamService,
 ) {
     /**
      * Start the current season
      */
-    fun startSeason() {
+    fun startSeason(): Season {
         val previousSeason = seasonRepository.getPreviousSeason()
         val season =
             Season(
@@ -31,7 +32,9 @@ class SeasonService(
                 currentWeek = 1,
                 currentSeason = true,
             )
+        teamService.resetWinsAndLosses()
         seasonRepository.save(season)
+        return season
     }
 
     /**

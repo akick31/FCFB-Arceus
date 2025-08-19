@@ -1,47 +1,40 @@
 package com.fcfb.arceus.service.fcfb
 
-import com.fcfb.arceus.domain.Game
-import com.fcfb.arceus.domain.Game.ActualResult
-import com.fcfb.arceus.domain.Game.CoinTossCall
-import com.fcfb.arceus.domain.Game.CoinTossChoice
-import com.fcfb.arceus.domain.Game.GameMode
-import com.fcfb.arceus.domain.Game.GameMode.NORMAL
-import com.fcfb.arceus.domain.Game.GameStatus
-import com.fcfb.arceus.domain.Game.GameStatus.END_OF_REGULATION
-import com.fcfb.arceus.domain.Game.GameStatus.PREGAME
-import com.fcfb.arceus.domain.Game.GameType
-import com.fcfb.arceus.domain.Game.GameType.SCRIMMAGE
-import com.fcfb.arceus.domain.Game.OvertimeCoinTossChoice
-import com.fcfb.arceus.domain.Game.Platform
-import com.fcfb.arceus.domain.Game.PlayCall
-import com.fcfb.arceus.domain.Game.PlayType
-import com.fcfb.arceus.domain.Game.PlayType.KICKOFF
-import com.fcfb.arceus.domain.Game.Scenario
-import com.fcfb.arceus.domain.Game.Subdivision
-import com.fcfb.arceus.domain.Game.TeamSide
-import com.fcfb.arceus.domain.Game.TeamSide.AWAY
-import com.fcfb.arceus.domain.Game.TeamSide.HOME
-import com.fcfb.arceus.domain.Game.Warning.NONE
-import com.fcfb.arceus.domain.Play
-import com.fcfb.arceus.domain.Team
-import com.fcfb.arceus.domain.User
-import com.fcfb.arceus.models.requests.StartRequest
+import com.fcfb.arceus.dto.StartRequest
+import com.fcfb.arceus.enums.game.GameMode
+import com.fcfb.arceus.enums.game.GameStatus
+import com.fcfb.arceus.enums.game.GameType
+import com.fcfb.arceus.enums.game.GameWarning
+import com.fcfb.arceus.enums.gameflow.CoinTossCall
+import com.fcfb.arceus.enums.gameflow.CoinTossChoice
+import com.fcfb.arceus.enums.gameflow.OvertimeCoinTossChoice
+import com.fcfb.arceus.enums.play.ActualResult
+import com.fcfb.arceus.enums.play.PlayCall
+import com.fcfb.arceus.enums.play.PlayType
+import com.fcfb.arceus.enums.play.Scenario
+import com.fcfb.arceus.enums.system.Platform.DISCORD
+import com.fcfb.arceus.enums.team.Subdivision
+import com.fcfb.arceus.enums.team.TeamSide
+import com.fcfb.arceus.model.Game
+import com.fcfb.arceus.model.Play
+import com.fcfb.arceus.model.Team
+import com.fcfb.arceus.model.User
 import com.fcfb.arceus.repositories.GameRepository
 import com.fcfb.arceus.repositories.PlayRepository
 import com.fcfb.arceus.service.discord.DiscordService
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameCategory
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameFilter
 import com.fcfb.arceus.service.fcfb.GameSpecificationService.GameSort
-import com.fcfb.arceus.utils.GameNotFoundException
-import com.fcfb.arceus.utils.InvalidCoinTossChoiceException
-import com.fcfb.arceus.utils.InvalidHalfTimePossessionChangeException
-import com.fcfb.arceus.utils.Logger
-import com.fcfb.arceus.utils.NoCoachDiscordIdsFoundException
-import com.fcfb.arceus.utils.NoCoachesFoundException
-import com.fcfb.arceus.utils.NoGameFoundException
-import com.fcfb.arceus.utils.TeamNotFoundException
-import com.fcfb.arceus.utils.UnableToCreateGameThreadException
-import com.fcfb.arceus.utils.UnableToDeleteGameException
+import com.fcfb.arceus.util.GameNotFoundException
+import com.fcfb.arceus.util.InvalidCoinTossChoiceException
+import com.fcfb.arceus.util.InvalidHalfTimePossessionChangeException
+import com.fcfb.arceus.util.Logger
+import com.fcfb.arceus.util.NoCoachDiscordIdsFoundException
+import com.fcfb.arceus.util.NoCoachesFoundException
+import com.fcfb.arceus.util.NoGameFoundException
+import com.fcfb.arceus.util.TeamNotFoundException
+import com.fcfb.arceus.util.UnableToCreateGameThreadException
+import com.fcfb.arceus.util.UnableToDeleteGameException
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import org.springframework.data.domain.Page
@@ -81,7 +74,7 @@ class GameService(
         week: Int?,
     ): Game {
         val game = startNormalGame(startRequest, week)
-        if (startRequest.gameType != SCRIMMAGE) {
+        if (startRequest.gameType != GameType.SCRIMMAGE) {
             scheduleService.markManuallyStartedGameAsStarted(game)
         }
         return game
@@ -126,8 +119,8 @@ class GameService(
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook
             val awayDefensivePlaybook = awayTeamData.defensivePlaybook
             val subdivision = startRequest.subdivision
-            val homePlatform = Platform.DISCORD
-            val awayPlatform = Platform.DISCORD
+            val homePlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
+            val awayPlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
 
             val (season, currentWeek) = getCurrentSeasonAndWeek(startRequest, week)
             val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
@@ -149,7 +142,7 @@ class GameService(
                             awayDefensivePlaybook = awayDefensivePlaybook,
                             homeScore = 0,
                             awayScore = 0,
-                            possession = HOME,
+                            possession = TeamSide.HOME,
                             quarter = 1,
                             clock = "7:00",
                             ballLocation = 35,
@@ -167,7 +160,7 @@ class GameService(
                             winProbability = 0.0,
                             season = season,
                             week = currentWeek,
-                            waitingOn = AWAY,
+                            waitingOn = TeamSide.AWAY,
                             numPlays = 0,
                             homeTimeouts = 3,
                             awayTimeouts = 3,
@@ -181,14 +174,14 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarning = NONE,
-                            currentPlayType = KICKOFF,
+                            gameWarning = GameWarning.NONE,
+                            currentPlayType = PlayType.KICKOFF,
                             currentPlayId = 0,
                             clockStopped = true,
                             requestMessageId = null,
                             gameType = startRequest.gameType,
-                            gameStatus = PREGAME,
-                            gameMode = NORMAL,
+                            gameStatus = GameStatus.PREGAME,
+                            gameMode = GameMode.NORMAL,
                             overtimeHalf = 0,
                             closeGame = false,
                             closeGamePinged = false,
@@ -267,8 +260,8 @@ class GameService(
             val homeDefensivePlaybook = homeTeamData.defensivePlaybook
             val awayDefensivePlaybook = awayTeamData.defensivePlaybook
             val subdivision = startRequest.subdivision
-            val homePlatform = Platform.DISCORD
-            val awayPlatform = Platform.DISCORD
+            val homePlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
+            val awayPlatform = com.fcfb.arceus.enums.system.Platform.DISCORD
 
             val (homeTeamRank, awayTeamRank) = teamService.getTeamRanks(homeTeamData.id, awayTeamData.id)
 
@@ -289,7 +282,7 @@ class GameService(
                             awayDefensivePlaybook = awayDefensivePlaybook,
                             homeScore = 0,
                             awayScore = 0,
-                            possession = HOME,
+                            possession = TeamSide.HOME,
                             quarter = 5,
                             clock = "0:00",
                             ballLocation = 75,
@@ -307,7 +300,7 @@ class GameService(
                             winProbability = 0.0,
                             season = null,
                             week = null,
-                            waitingOn = AWAY,
+                            waitingOn = TeamSide.AWAY,
                             numPlays = 0,
                             homeTimeouts = 1,
                             awayTimeouts = 1,
@@ -321,14 +314,14 @@ class GameService(
                             awayPlatformId = null,
                             lastMessageTimestamp = null,
                             gameTimer = formattedDateTime,
-                            gameWarning = NONE,
+                            gameWarning = GameWarning.NONE,
                             currentPlayType = PlayType.NORMAL,
                             currentPlayId = 0,
                             clockStopped = true,
                             requestMessageId = null,
-                            gameType = SCRIMMAGE,
-                            gameStatus = END_OF_REGULATION,
-                            gameMode = NORMAL,
+                            gameType = GameType.SCRIMMAGE,
+                            gameStatus = GameStatus.END_OF_REGULATION,
+                            gameMode = GameMode.NORMAL,
                             overtimeHalf = 1,
                             closeGame = false,
                             closeGamePinged = false,
@@ -432,7 +425,7 @@ class GameService(
         game.winProbability = play.winProbability
         game.numPlays = play.playNumber
         game.gameTimer = calculateDelayOfGameTimer()
-        game.gameWarning = NONE
+        game.gameWarning = GameWarning.NONE
 
         gameRepository.save(game)
 
@@ -471,16 +464,16 @@ class GameService(
     ) {
         try {
             if (gamePlay.actualResult == ActualResult.DELAY_OF_GAME) {
-                if (game.waitingOn == HOME) {
+                if (game.waitingOn == TeamSide.HOME) {
                     game.awayScore -= 8
-                    if (game.gameType != Game.GameType.SCRIMMAGE) {
+                    if (game.gameType != GameType.SCRIMMAGE) {
                         val user = userService.getUserByDiscordId(game.homeCoachDiscordIds?.get(0) ?: "")
                         user.delayOfGameInstances -= 1
                         userService.saveUser(user)
                     }
                 } else {
                     game.homeScore -= 8
-                    if (game.gameType != Game.GameType.SCRIMMAGE) {
+                    if (game.gameType != GameType.SCRIMMAGE) {
                         val user = userService.getUserByDiscordId(game.awayCoachDiscordIds?.get(0) ?: "")
                         user.delayOfGameInstances -= 1
                         userService.saveUser(user)
@@ -499,7 +492,7 @@ class GameService(
                 }
             }
             if (isOffensiveTouchdownPlay(gamePlay.actualResult)) {
-                if (gamePlay.possession == HOME) {
+                if (gamePlay.possession == TeamSide.HOME) {
                     game.homeScore -= 6
                 } else {
                     game.awayScore -= 6
@@ -507,7 +500,7 @@ class GameService(
                 game.currentPlayType = PlayType.NORMAL
             }
             if (isDefensiveTouchdownPlay(gamePlay.actualResult)) {
-                if (gamePlay.possession == AWAY) {
+                if (gamePlay.possession == TeamSide.AWAY) {
                     game.homeScore -= 6
                 } else {
                     game.awayScore -= 6
@@ -516,14 +509,14 @@ class GameService(
             }
             if (gamePlay.actualResult == ActualResult.GOOD) {
                 if (gamePlay.playCall == PlayCall.PAT) {
-                    if (gamePlay.possession == HOME) {
+                    if (gamePlay.possession == TeamSide.HOME) {
                         game.homeScore -= 1
                     } else {
                         game.awayScore -= 1
                     }
                     game.currentPlayType = PlayType.PAT
                 } else if (gamePlay.playCall == PlayCall.FIELD_GOAL) {
-                    if (gamePlay.possession == HOME) {
+                    if (gamePlay.possession == TeamSide.HOME) {
                         game.homeScore -= 3
                     } else {
                         game.awayScore -= 3
@@ -532,7 +525,7 @@ class GameService(
                 }
             }
             if (gamePlay.actualResult == ActualResult.SUCCESS) {
-                if (gamePlay.possession == HOME) {
+                if (gamePlay.possession == TeamSide.HOME) {
                     game.homeScore -= 2
                 } else {
                     game.awayScore -= 2
@@ -540,7 +533,7 @@ class GameService(
                 game.currentPlayType = PlayType.PAT
             }
             if (gamePlay.actualResult == ActualResult.DEFENSE_TWO_POINT) {
-                if (gamePlay.possession == HOME) {
+                if (gamePlay.possession == TeamSide.HOME) {
                     game.awayScore -= 2
                 } else {
                     game.homeScore -= 2
@@ -548,7 +541,7 @@ class GameService(
                 game.currentPlayType = PlayType.PAT
             }
             if (gamePlay.actualResult == ActualResult.SAFETY) {
-                if (gamePlay.possession == HOME) {
+                if (gamePlay.possession == TeamSide.HOME) {
                     game.awayScore -= 2
                 } else {
                     game.homeScore -= 2
@@ -562,7 +555,7 @@ class GameService(
                 game.currentPlayType = PlayType.KICKOFF
             }
             if (gamePlay.offensiveTimeoutCalled) {
-                if (gamePlay.possession == HOME) {
+                if (gamePlay.possession == TeamSide.HOME) {
                     game.homeTimeouts--
                 } else {
                     game.awayTimeouts--
@@ -587,7 +580,7 @@ class GameService(
             game.ballLocation = previousPlay.ballLocation
             game.down = previousPlay.down
             game.yardsToGo = previousPlay.yardsToGo
-            game.waitingOn = if (previousPlay.possession == HOME) AWAY else HOME
+            game.waitingOn = if (previousPlay.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
             game.gameTimer = calculateDelayOfGameTimer()
             gameStatsService.generateGameStats(game.gameId)
             saveGame(game)
@@ -630,8 +623,8 @@ class GameService(
                 val startedGame =
                     startNormalGame(
                         StartRequest(
-                            Platform.DISCORD,
-                            Platform.DISCORD,
+                            DISCORD,
+                            DISCORD,
                             game.subdivision,
                             game.homeTeam,
                             game.awayTeam,
@@ -706,7 +699,7 @@ class GameService(
     private fun endGame(game: Game): Game {
         try {
             game.gameStatus = GameStatus.FINAL
-            if (game.gameType != SCRIMMAGE) {
+            if (game.gameType != GameType.SCRIMMAGE) {
                 teamService.updateTeamWinsAndLosses(game)
                 userService.updateUserWinsAndLosses(game)
 
@@ -777,10 +770,10 @@ class GameService(
     private fun endOvertimePeriod(game: Game) {
         game.overtimeHalf = 1
         game.possession =
-            if (game.possession == HOME) {
-                HOME
+            if (game.possession == TeamSide.HOME) {
+                TeamSide.HOME
             } else {
-                AWAY
+                TeamSide.AWAY
             }
         game.ballLocation = 75
         game.down = 1
@@ -788,7 +781,7 @@ class GameService(
         game.quarter += 1
         game.homeTimeouts = 1
         game.awayTimeouts = 1
-        game.waitingOn = if (game.possession == HOME) AWAY else HOME
+        game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
     }
 
     /**
@@ -836,13 +829,13 @@ class GameService(
                     (result == 1 && coinTossCall == CoinTossCall.HEADS) ||
                     (result == 0 && coinTossCall == CoinTossCall.TAILS)
                 ) {
-                    AWAY
+                    TeamSide.AWAY
                 } else {
-                    HOME
+                    TeamSide.HOME
                 }
-            if (game.gameStatus == PREGAME) {
+            if (game.gameStatus == GameStatus.PREGAME) {
                 game.coinTossWinner = coinTossWinner
-            } else if (game.gameStatus == END_OF_REGULATION) {
+            } else if (game.gameStatus == GameStatus.END_OF_REGULATION) {
                 game.overtimeCoinTossWinner = coinTossWinner
             }
             game.gameTimer = calculateDelayOfGameTimer()
@@ -877,18 +870,18 @@ class GameService(
 
         try {
             game.coinTossChoice = coinTossChoice
-            if (game.coinTossWinner == HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = AWAY
-                game.waitingOn = HOME
-            } else if (game.coinTossWinner == HOME && coinTossChoice == CoinTossChoice.DEFER) {
-                game.possession = HOME
-                game.waitingOn = AWAY
-            } else if (game.coinTossWinner == AWAY && coinTossChoice == CoinTossChoice.RECEIVE) {
-                game.possession = HOME
-                game.waitingOn = AWAY
-            } else if (game.coinTossWinner == AWAY && coinTossChoice == CoinTossChoice.DEFER) {
-                game.possession = AWAY
-                game.waitingOn = HOME
+            if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
+            } else if (game.coinTossWinner == TeamSide.HOME && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.RECEIVE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.coinTossWinner == TeamSide.AWAY && coinTossChoice == CoinTossChoice.DEFER) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OPENING_KICKOFF
             game.gameTimer = calculateDelayOfGameTimer()
@@ -922,18 +915,18 @@ class GameService(
 
         try {
             game.overtimeCoinTossChoice = coinTossChoice
-            if (game.overtimeCoinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
-                game.possession = AWAY
-                game.waitingOn = HOME
-            } else if (game.overtimeCoinTossWinner == HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
-                game.possession = HOME
-                game.waitingOn = AWAY
-            } else if (game.overtimeCoinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
-                game.possession = HOME
-                game.waitingOn = AWAY
-            } else if (game.overtimeCoinTossWinner == AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
-                game.possession = AWAY
-                game.waitingOn = HOME
+            if (game.overtimeCoinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
+            } else if (game.overtimeCoinTossWinner == TeamSide.HOME && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.overtimeCoinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.DEFENSE) {
+                game.possession = TeamSide.HOME
+                game.waitingOn = TeamSide.AWAY
+            } else if (game.overtimeCoinTossWinner == TeamSide.AWAY && coinTossChoice == OvertimeCoinTossChoice.OFFENSE) {
+                game.possession = TeamSide.AWAY
+                game.waitingOn = TeamSide.HOME
             }
             game.gameStatus = GameStatus.OVERTIME
             Logger.info(
@@ -966,13 +959,13 @@ class GameService(
         deleteOngoingGame(channelId)
         val startRequest =
             StartRequest(
-                Platform.DISCORD,
-                Platform.DISCORD,
+                DISCORD,
+                DISCORD,
                 game.subdivision ?: Subdivision.FCFB,
                 game.homeTeam,
                 game.awayTeam,
                 game.tvChannel,
-                game.gameType ?: SCRIMMAGE,
+                game.gameType ?: GameType.SCRIMMAGE,
             )
         return startNormalGame(startRequest, game.week)
     }
@@ -1022,7 +1015,7 @@ class GameService(
     fun updateRequestMessageId(
         gameId: Int,
         requestMessageId: String,
-    ) {
+    ): Game {
         val game = getGameById(gameId)
 
         val requestMessageIdList =
@@ -1033,17 +1026,19 @@ class GameService(
             }
         game.requestMessageId = requestMessageIdList
         saveGame(game)
+        return game
     }
 
     /**
      * Update the last message timestamp
      * @param gameId
      */
-    fun updateLastMessageTimestamp(gameId: Int) {
+    fun updateLastMessageTimestamp(gameId: Int): Game {
         val game = getGameById(gameId)
         val timestamp = Timestamp.from(Instant.now()).toString()
         game.lastMessageTimestamp = timestamp
         saveGame(game)
+        return game
     }
 
     /**
@@ -1065,10 +1060,10 @@ class GameService(
      * Update the team the game is waiting on
      */
     private fun updateWaitingOn(possession: TeamSide): TeamSide {
-        return if (possession == HOME) {
-            AWAY
+        return if (possession == TeamSide.HOME) {
+            TeamSide.AWAY
         } else {
-            HOME
+            TeamSide.HOME
         }
     }
 
@@ -1236,7 +1231,7 @@ class GameService(
     ) {
         game.clock = "0:00"
         game.quarter = quarter
-        game.gameStatus = END_OF_REGULATION
+        game.gameStatus = GameStatus.END_OF_REGULATION
         game.currentPlayType = PlayType.NORMAL
         game.ballLocation = 75
         game.down = 1
@@ -1287,15 +1282,15 @@ class GameService(
                 } else {
                     game.overtimeHalf = 2
                     game.possession =
-                        if (game.possession == HOME) {
-                            AWAY
+                        if (game.possession == TeamSide.HOME) {
+                            TeamSide.AWAY
                         } else {
-                            HOME
+                            TeamSide.HOME
                         }
                     game.ballLocation = 75
                     game.down = 1
                     game.yardsToGo = 10
-                    game.waitingOn = if (game.possession == HOME) AWAY else HOME
+                    game.waitingOn = if (game.possession == TeamSide.HOME) TeamSide.AWAY else TeamSide.HOME
                 }
             } else {
                 if (homeScore != awayScore || game.currentPlayType == PlayType.PAT) {
@@ -1509,14 +1504,14 @@ class GameService(
      * @return
      */
     fun handleHalfTimePossessionChange(game: Game): TeamSide {
-        return if (game.coinTossWinner == HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
-            AWAY
-        } else if (game.coinTossWinner == HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            HOME
-        } else if (game.coinTossWinner == AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
-            HOME
-        } else if (game.coinTossWinner == AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
-            AWAY
+        return if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.DEFER) {
+            TeamSide.AWAY
+        } else if (game.coinTossWinner == TeamSide.HOME && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            TeamSide.HOME
+        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.DEFER) {
+            TeamSide.HOME
+        } else if (game.coinTossWinner == TeamSide.AWAY && game.coinTossChoice == CoinTossChoice.RECEIVE) {
+            TeamSide.AWAY
         } else {
             throw InvalidHalfTimePossessionChangeException()
         }
@@ -1739,7 +1734,7 @@ class GameService(
         week: Int?,
     ): Pair<Int?, Int?> {
         var (season, currentWeek) =
-            if (startRequest.gameType != SCRIMMAGE) {
+            if (startRequest.gameType != GameType.SCRIMMAGE) {
                 seasonService.getCurrentSeason().seasonNumber to seasonService.getCurrentSeason().currentWeek
             } else {
                 null to null
