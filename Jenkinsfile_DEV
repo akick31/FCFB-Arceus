@@ -124,7 +124,7 @@ pipeline {
                         discord.forum.channel.id=${env.DISCORD_FORUM_CHANNEL_ID}
                         discord.client.id=${env.DISCORD_CLIENT_ID}
                         discord.client.secret=${env.DISCORD_CLIENT_SECRET}
-                        discord.oauth.redirect=https://dev.api.fakecollegefootball.com/arceus/discord/redirect
+                        discord.oauth.redirect=https://dev.api.fakecollegefootball.com/api/v1/arceus/discord/redirect
 
                         # Logging configuration
                         logging.level.org.hibernate=warn
