@@ -19,7 +19,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "game_stats", schema = "arceus")
+@Table(name = "game_stats")
 class GameStats(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -24,7 +24,6 @@ class TeamTest {
         val tableAnnotation = Team::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("team", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

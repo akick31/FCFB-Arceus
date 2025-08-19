@@ -23,7 +23,6 @@ class UserTest {
         val tableAnnotation = User::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("user", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

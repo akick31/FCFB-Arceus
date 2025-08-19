@@ -11,7 +11,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "ranges", schema = "arceus")
+@Table(name = "ranges")
 class Ranges {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

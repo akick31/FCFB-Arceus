@@ -18,7 +18,6 @@ class RangesTest {
         val tableAnnotation = Ranges::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("ranges", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

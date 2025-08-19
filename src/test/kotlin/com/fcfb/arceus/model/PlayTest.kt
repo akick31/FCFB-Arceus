@@ -23,7 +23,6 @@ class PlayTest {
         val tableAnnotation = Play::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("play", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

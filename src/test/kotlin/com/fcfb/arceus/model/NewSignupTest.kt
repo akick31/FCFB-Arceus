@@ -22,7 +22,6 @@ class NewSignupTest {
         val tableAnnotation = NewSignup::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("new_signup", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

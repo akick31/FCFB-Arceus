@@ -16,7 +16,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "coach_transaction_log", schema = "arceus")
+@Table(name = "coach_transaction_log")
 @TypeDef(name = "json", typeClass = JsonStringType::class)
 class CoachTransactionLog {
     @Id

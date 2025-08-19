@@ -7,7 +7,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "season", schema = "arceus")
+@Table(name = "season")
 class Season {
     @Id
     @Column(name = "season_number")

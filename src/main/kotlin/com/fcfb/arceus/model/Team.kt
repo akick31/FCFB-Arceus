@@ -20,7 +20,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "team", schema = "arceus")
+@Table(name = "team")
 class Team {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Id

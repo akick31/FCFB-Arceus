@@ -14,7 +14,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "schedule", schema = "arceus")
+@Table(name = "schedule")
 class Schedule {
     @Id
     @GeneratedValue(strategy = IDENTITY)

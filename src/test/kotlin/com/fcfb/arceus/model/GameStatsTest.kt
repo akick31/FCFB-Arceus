@@ -23,7 +23,6 @@ class GameStatsTest {
         val tableAnnotation = GameStats::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("game_stats", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
     }
 
     @Test

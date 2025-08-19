@@ -32,8 +32,6 @@ class GameTest {
         val tableAnnotation = Game::class.java.getAnnotation(javax.persistence.Table::class.java)
         assertNotNull(tableAnnotation)
         assertEquals("game", tableAnnotation.name)
-        assertEquals("arceus", tableAnnotation.schema)
-
         val typeDefAnnotation = Game::class.java.getAnnotation(org.hibernate.annotations.TypeDef::class.java)
         assertNotNull(typeDefAnnotation)
         assertEquals("json", typeDefAnnotation.name)

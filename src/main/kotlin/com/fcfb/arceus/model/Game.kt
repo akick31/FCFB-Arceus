@@ -27,7 +27,7 @@ import javax.persistence.Id
 import javax.persistence.Table
 
 @Entity
-@Table(name = "game", schema = "arceus")
+@Table(name = "game")
 @TypeDef(name = "json", typeClass = JsonStringType::class)
 class Game {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
