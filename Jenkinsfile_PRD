@@ -70,7 +70,7 @@ pipeline {
                 sh 'cp src/test/resources/application-test.properties src/main/resources/application.properties'
                 
                 echo 'Running tests...'
-                sh './gradlew clean test'
+                sh './gradlew clean test --args="--spring.profiles.active=test"'
             }
         }
         
