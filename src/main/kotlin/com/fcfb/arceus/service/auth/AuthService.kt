@@ -119,20 +119,18 @@ class AuthService(
     /**
      * Reset user password
      * @param token
-     * @param userId
      * @param newPassword
      * @return
      */
     fun resetPassword(
         token: String,
-        userId: Long,
         newPassword: String,
     ): ResponseEntity<String> {
-        val user = userService.getUserById(userId)
+        val user =
+            userService.getUserByResetToken(token)
+                ?: return ResponseEntity.badRequest().body("Invalid or expired token")
 
-        if (user.resetToken != token ||
-            user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true
-        ) {
+        if (user.resetTokenExpiration?.let { LocalDateTime.parse(it).isBefore(LocalDateTime.now()) } == true) {
             return ResponseEntity.badRequest().body("Invalid or expired token")
         }
 
