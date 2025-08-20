@@ -42,6 +42,8 @@ interface UserRepository : CrudRepository<User, Long> {
     @Query("SELECT u FROM User u LEFT JOIN Team t ON u.team = t.name WHERE u.team IS NULL OR (t.isTaken = FALSE)")
     fun getFreeAgents(): List<User>
 
+    fun getUserByResetToken(token: String): User?
+
     fun existsByDiscordId(discordId: String): Boolean
 
     fun existsByDiscordTag(discordUsername: String): Boolean

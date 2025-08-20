@@ -384,6 +384,11 @@ class UserService(
         userRepository.getByDiscordId(id) ?: throw UserNotFoundException("User not found with Discord ID $id")
 
     /**
+     * Get a user by their reset token
+     */
+    fun getUserByResetToken(token: String) = userRepository.getUserByResetToken(token)
+
+    /**
      * Save a user
      * @param user
      */
