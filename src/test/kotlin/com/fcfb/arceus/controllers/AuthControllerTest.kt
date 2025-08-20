@@ -115,12 +115,12 @@ class AuthControllerTest {
 
         every { newSignupService.getNewSignupById(id) } returns newSignup
         every { newSignupService.saveNewSignup(newSignup) } returns newSignup
-        every { emailService.sendVerificationEmail(eq(newSignup.email), eq(newSignup.id), eq(fixedToken)) } just Runs
+        every { emailService.sendVerificationEmail(newSignup.email, newSignup.id, fixedToken) } just Runs
 
         val result = authService.resetVerificationToken(id)
 
         assertEquals(fixedToken, result.verificationToken)
-        verify { emailService.sendVerificationEmail(eq(newSignup.email), eq(newSignup.id), eq(fixedToken)) }
+        verify { emailService.sendVerificationEmail(newSignup.email, newSignup.id, fixedToken) }
     }
 
     @Test
@@ -163,9 +163,7 @@ class AuthControllerTest {
                 delayOfGameWarningOptOut = false,
                 resetToken = null,
                 resetTokenExpiration = null,
-            ).apply {
-                id = 1L
-            }
+            ).apply { id = 1L }
 
         every { userService.getUserByUsernameOrEmail(usernameOrEmail) } returns user
         every { passwordEncoder.matches(rawPassword, encodedPassword) } returns true
@@ -188,7 +186,7 @@ class AuthControllerTest {
                 discordId = "123456",
                 email = "user@example.com",
                 hashedEmail = "hashedEmail",
-                password = password,
+                password = "encodedPassword",
                 position = CoachPosition.HEAD_COACH,
                 role = UserRole.USER,
                 salt = "somesalt",
@@ -213,9 +211,7 @@ class AuthControllerTest {
                 delayOfGameWarningOptOut = false,
                 resetToken = null,
                 resetTokenExpiration = null,
-            ).apply {
-                id = 1L
-            }
+            ).apply { id = 1L }
 
         every { userService.getUserByUsernameOrEmail(usernameOrEmail) } returns user
         every { passwordEncoder.matches(password, user.password) } returns false
@@ -261,7 +257,7 @@ class AuthControllerTest {
                 discordId = "123456",
                 email = "user@example.com",
                 hashedEmail = "hashedEmail",
-                password = "passsword",
+                password = "password",
                 position = CoachPosition.HEAD_COACH,
                 role = UserRole.USER,
                 salt = "somesalt",
@@ -286,9 +282,7 @@ class AuthControllerTest {
                 delayOfGameWarningOptOut = false,
                 resetToken = "resettoken",
                 resetTokenExpiration = null,
-            ).apply {
-                id = 1L
-            }
+            ).apply { id = 1L }
 
         every { userService.updateResetToken(email) } returns user
         every { emailService.sendPasswordResetEmail(user.email, user.id, user.resetToken!!) } just Runs
@@ -302,8 +296,9 @@ class AuthControllerTest {
     @Test
     fun `should reset password successfully`() {
         val token = "resetToken"
-        val userId = 1L
         val newPassword = "newPassword"
+        val userId = 1L
+
         val user =
             mockk<User> {
                 every { id } returns userId
@@ -311,10 +306,10 @@ class AuthControllerTest {
                 every { resetTokenExpiration } returns LocalDateTime.now().plusDays(1).toString()
             }
 
-        every { userService.getUserById(userId) } returns user
+        every { userService.getUserByResetToken(token) } returns user
         every { userService.updateUserPassword(userId, newPassword) } returns mockk<UserDTO>()
 
-        val result = authService.resetPassword(token, userId, newPassword)
+        val result = authService.resetPassword(token, newPassword)
 
         assertEquals(ResponseEntity.ok("Password updated successfully"), result)
     }
@@ -322,17 +317,17 @@ class AuthControllerTest {
     @Test
     fun `should return bad request when reset token is invalid or expired`() {
         val token = "invalidToken"
-        val userId = 1L
         val newPassword = "newPassword"
+
         val user =
             mockk<User> {
                 every { resetToken } returns "validToken"
                 every { resetTokenExpiration } returns LocalDateTime.now().minusDays(1).toString()
             }
 
-        every { userService.getUserById(userId) } returns user
+        every { userService.getUserByResetToken(token) } returns user
 
-        val result = authService.resetPassword(token, userId, newPassword)
+        val result = authService.resetPassword(token, newPassword)
 
         assertEquals(ResponseEntity.badRequest().body("Invalid or expired token"), result)
     }

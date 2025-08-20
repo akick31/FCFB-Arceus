@@ -6,7 +6,15 @@ import com.fcfb.arceus.dto.ResetPasswordRequest
 import com.fcfb.arceus.model.NewSignup
 import com.fcfb.arceus.service.auth.AuthService
 import org.springframework.http.ResponseEntity
-import org.springframework.web.bind.annotation.*
+import org.springframework.web.bind.annotation.CrossOrigin
+import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
+import org.springframework.web.bind.annotation.PostMapping
+import org.springframework.web.bind.annotation.RequestBody
+import org.springframework.web.bind.annotation.RequestHeader
+import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
+import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
 @RestController
@@ -17,14 +25,12 @@ class AuthController(
     @PostMapping("/register")
     fun registerUser(
         @RequestBody newSignup: NewSignup,
-    ): ResponseEntity<NewSignup> =
-        ResponseEntity.ok(authService.createNewSignup(newSignup))
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.createNewSignup(newSignup))
 
     @PostMapping("/login")
     fun login(
         @RequestBody request: LoginRequest,
-    ): ResponseEntity<Any> =
-        ResponseEntity.ok(authService.login(request.usernameOrEmail, request.password))
+    ): ResponseEntity<Any> = ResponseEntity.ok(authService.login(request.usernameOrEmail, request.password))
 
     @PostMapping("/logout")
     fun logout(
@@ -37,24 +43,20 @@ class AuthController(
     @GetMapping("/verify-email")
     fun verifyEmail(
         @RequestParam("token") token: String,
-    ): ResponseEntity<Boolean> =
-        ResponseEntity.ok(authService.verifyEmail(token))
+    ): ResponseEntity<Boolean> = ResponseEntity.ok(authService.verifyEmail(token))
 
     @PostMapping("/{id}/verification-email/resend")
     fun resetVerificationToken(
         @PathVariable("id") id: Long,
-    ): ResponseEntity<NewSignup> =
-        ResponseEntity.ok(authService.resetVerificationToken(id))
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(id))
 
     @PostMapping("/forgot-password")
     fun forgotPassword(
         @RequestBody request: ForgotPasswordRequest,
-    ): ResponseEntity<String> =
-        authService.forgotPassword(request.email)
+    ): ResponseEntity<String> = authService.forgotPassword(request.email)
 
     @PostMapping("/reset-password")
     fun resetPassword(
         @RequestBody request: ResetPasswordRequest,
-    ): ResponseEntity<String> =
-        authService.resetPassword(request.token, request.newPassword)
+    ): ResponseEntity<String> = authService.resetPassword(request.token, request.newPassword)
 }
