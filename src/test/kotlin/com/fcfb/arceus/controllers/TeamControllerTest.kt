@@ -45,7 +45,7 @@ class TeamControllerTest {
         subdivision: Subdivision = Subdivision.FCS,
         offensivePlaybook: OffensivePlaybook = OffensivePlaybook.AIR_RAID,
         defensivePlaybook: DefensivePlaybook = DefensivePlaybook.FIVE_TWO,
-        conference: Conference = Conference.SWAC,
+        conference: Conference = Conference.COLONIAL,
     ): Team {
         return Team(
             logo = "logo$id.png",
