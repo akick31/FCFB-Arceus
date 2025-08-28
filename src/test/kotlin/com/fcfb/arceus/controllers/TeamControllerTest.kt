@@ -91,7 +91,7 @@ class TeamControllerTest {
         val team = sampleTeam()
         every { teamService.getTeamById(1) } returns Optional.ofNullable(team) as Optional<Team?>
 
-        mockMvc.perform(get("/api/v1/arceus/team/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/team/1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Team1"))
             .andExpect(jsonPath("$.conference").value("COLONIAL"))
@@ -264,7 +264,7 @@ class TeamControllerTest {
     fun `should delete team`() {
         every { teamService.deleteTeam(1) } returns OK
 
-        mockMvc.perform(delete("/api/v1/arceus/team").param("id", "1"))
+        mockMvc.perform(delete("/api/v1/arceus/team/1"))
             .andExpect(status().isOk)
     }
 
@@ -272,7 +272,7 @@ class TeamControllerTest {
     fun `should error when get team by id missing`() {
         every { teamService.getTeamById(1) } throws RuntimeException("Team not found")
 
-        mockMvc.perform(get("/api/v1/arceus/team/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/team/1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Team not found"))
     }

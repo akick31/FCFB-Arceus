@@ -8,7 +8,6 @@ import com.fcfb.arceus.service.auth.AuthService
 import org.springframework.http.ResponseEntity
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.RequestBody
 import org.springframework.web.bind.annotation.RequestHeader
@@ -45,10 +44,10 @@ class AuthController(
         @RequestParam("token") token: String,
     ): ResponseEntity<Boolean> = ResponseEntity.ok(authService.verifyEmail(token))
 
-    @PostMapping("/{id}/verification-email/resend")
+    @PostMapping("/verification-email/resend")
     fun resetVerificationToken(
-        @PathVariable("id") id: Long,
-    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(id))
+        @RequestParam("newSignupId") newSignupId: Long,
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(newSignupId))
 
     @PostMapping("/forgot-password")
     fun forgotPassword(

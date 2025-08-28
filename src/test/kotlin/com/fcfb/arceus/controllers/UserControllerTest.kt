@@ -108,7 +108,7 @@ class UserControllerTest {
 
         every { userService.getUserById(1L) } returns fullUser
 
-        mockMvc.perform(get("/api/v1/arceus/user/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/user/1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.id").value(fullUser.id))
             .andExpect(jsonPath("$.username").value(fullUser.username))
@@ -119,7 +119,7 @@ class UserControllerTest {
     fun `getUserByDiscordId returns user`() {
         every { userService.getUserDTOByDiscordId("123456789") } returns sampleUser
 
-        mockMvc.perform(get("/api/v1/arceus/user/discord").param("id", "123456789"))
+        mockMvc.perform(get("/api/v1/arceus/user/discord").param("discordId", "123456789"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.discordId").value("123456789"))
     }
@@ -280,7 +280,7 @@ class UserControllerTest {
     fun `deleteTeam deletes user`() {
         every { userService.deleteUser(1L) } returns OK
 
-        mockMvc.perform(delete("/api/v1/arceus/user").param("id", "1"))
+        mockMvc.perform(delete("/api/v1/arceus/user/1"))
             .andExpect(status().isOk)
     }
 
@@ -288,7 +288,7 @@ class UserControllerTest {
     fun `getUserById handles error`() {
         every { userService.getUserById(1L) } throws RuntimeException("User not found")
 
-        mockMvc.perform(get("/api/v1/arceus/user/id").param("id", "1"))
+        mockMvc.perform(get("/api/v1/arceus/user/1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("User not found"))
     }
