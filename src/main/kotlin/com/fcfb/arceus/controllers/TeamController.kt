@@ -6,6 +6,7 @@ import com.fcfb.arceus.service.fcfb.TeamService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -23,10 +24,10 @@ class TeamController(
      * Get a team by id
      * @param id
      */
-    @GetMapping("/id")
+    @GetMapping("/{teamId}")
     fun getTeamById(
-        @RequestParam id: Int,
-    ) = teamService.getTeamById(id)
+        @PathVariable teamId: Int,
+    ) = teamService.getTeamById(teamId)
 
     /**
      * Get all teams
@@ -110,8 +111,8 @@ class TeamController(
     /**
      * Delete a team
      */
-    @DeleteMapping("")
+    @DeleteMapping("/{teamId}")
     fun deleteTeam(
-        @RequestParam id: Int,
-    ) = teamService.deleteTeam(id)
+        @PathVariable teamId: Int,
+    ) = teamService.deleteTeam(teamId)
 }

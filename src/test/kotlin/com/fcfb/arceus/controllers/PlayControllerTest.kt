@@ -80,7 +80,7 @@ class PlayControllerTest {
         val play = createSamplePlay()
         every { playService.getPlayById(1) } returns play
 
-        mockMvc.perform(get("/api/v1/arceus/play").param("playId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play/1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.gameId").value(1))
     }
@@ -183,7 +183,7 @@ class PlayControllerTest {
     fun `should return error when play not found`() {
         every { playService.getPlayById(1) } throws RuntimeException("Play not found")
 
-        mockMvc.perform(get("/api/v1/arceus/play").param("playId", "1"))
+        mockMvc.perform(get("/api/v1/arceus/play/1"))
             .andExpect(status().isInternalServerError)
             .andExpect(jsonPath("$.error").value("Play not found"))
     }

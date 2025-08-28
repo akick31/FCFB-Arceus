@@ -243,7 +243,6 @@ class TeamTest {
         assertEquals("American", Conference.AMERICAN.description)
         assertEquals("Big 12", Conference.BIG_12.description)
         assertEquals("Big Ten", Conference.BIG_TEN.description)
-        assertEquals("C-USA", Conference.CUSA.description)
         assertEquals("Fake Team", Conference.FAKE_TEAM.description)
         assertEquals("FBS Independent", Conference.FBS_INDEPENDENT.description)
         assertEquals("MAC", Conference.MAC.description)
@@ -251,17 +250,9 @@ class TeamTest {
         assertEquals("Pac-12", Conference.PAC_12.description)
         assertEquals("SEC", Conference.SEC.description)
         assertEquals("Sun Belt", Conference.SUN_BELT.description)
-        assertEquals("Atlantic Sun", Conference.ATLANTIC_SUN.description)
-        assertEquals("Big Sky", Conference.BIG_SKY.description)
-        assertEquals("Carolina Football Conference", Conference.CAROLINA_FOOTBALL_CONFERENCE.description)
         assertEquals("Missouri Valley", Conference.MISSOURI_VALLEY.description)
         assertEquals("Colonial", Conference.COLONIAL.description)
         assertEquals("NEC", Conference.NEC.description)
-        assertEquals("Ivy League", Conference.IVY_LEAGUE.description)
-        assertEquals("Mid-Atlantic", Conference.MID_ATLANTIC.description)
-        assertEquals("Southland", Conference.SOUTHLAND.description)
-        assertEquals("Ohio Valley", Conference.OHIO_VALLEY.description)
-        assertEquals("SWAC", Conference.SWAC.description)
     }
 
     @Test

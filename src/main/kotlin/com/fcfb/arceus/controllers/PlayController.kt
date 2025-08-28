@@ -5,6 +5,7 @@ import com.fcfb.arceus.enums.play.RunoffType
 import com.fcfb.arceus.service.fcfb.PlayService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestMapping
@@ -65,9 +66,9 @@ class PlayController(
      * @param playId
      * @return
      */
-    @GetMapping("")
+    @GetMapping("/{playId}")
     fun getPlayById(
-        @RequestParam("playId") playId: Int,
+        @PathVariable("playId") playId: Int,
     ) = playService.getPlayById(playId)
 
     /**

@@ -6,6 +6,7 @@ import com.fcfb.arceus.service.fcfb.UserService
 import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.DeleteMapping
 import org.springframework.web.bind.annotation.GetMapping
+import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.PostMapping
 import org.springframework.web.bind.annotation.PutMapping
 import org.springframework.web.bind.annotation.RequestBody
@@ -19,15 +20,15 @@ import org.springframework.web.bind.annotation.RestController
 class UserController(
     private var userService: UserService,
 ) {
-    @GetMapping("id")
+    @GetMapping("{userId}")
     fun getUserById(
-        @RequestParam id: Long,
-    ) = userService.getUserById(id)
+        @PathVariable userId: Long,
+    ) = userService.getUserById(userId)
 
     @GetMapping("/discord")
     fun getUserDTOByDiscordId(
-        @RequestParam id: String,
-    ) = userService.getUserDTOByDiscordId(id)
+        @RequestParam discordId: String,
+    ) = userService.getUserDTOByDiscordId(discordId)
 
     @GetMapping("/team")
     fun getUserByTeam(
@@ -64,8 +65,8 @@ class UserController(
         @RequestBody userValidationRequest: UserValidationRequest,
     ) = userService.validateUser(userValidationRequest)
 
-    @DeleteMapping("")
+    @DeleteMapping("{teamId}")
     fun deleteTeam(
-        @RequestParam id: Long,
-    ) = userService.deleteUser(id)
+        @PathVariable teamId: Long,
+    ) = userService.deleteUser(teamId)
 }
