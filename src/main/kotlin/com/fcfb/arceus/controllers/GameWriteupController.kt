@@ -5,6 +5,7 @@ import org.springframework.web.bind.annotation.CrossOrigin
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.PathVariable
 import org.springframework.web.bind.annotation.RequestMapping
+import org.springframework.web.bind.annotation.RequestParam
 import org.springframework.web.bind.annotation.RestController
 
 @CrossOrigin(origins = ["*"])
@@ -13,9 +14,9 @@ import org.springframework.web.bind.annotation.RestController
 class GameWriteupController(
     private var gameMessagesService: GameWriteupService,
 ) {
-    @GetMapping("/{scenario}/{playCall}")
+    @GetMapping("")
     fun getGameMessageByScenario(
-        @PathVariable scenario: String,
-        @PathVariable playCall: String,
+        @RequestParam scenario: String,
+        @RequestParam playCall: String,
     ) = gameMessagesService.getGameMessageByScenario(scenario, playCall)
 }

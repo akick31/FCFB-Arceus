@@ -45,10 +45,10 @@ class AuthController(
         @RequestParam("token") token: String,
     ): ResponseEntity<Boolean> = ResponseEntity.ok(authService.verifyEmail(token))
 
-    @PostMapping("/{id}/verification-email/resend")
+    @PostMapping("/verification-email/resend")
     fun resetVerificationToken(
-        @PathVariable("id") id: Long,
-    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(id))
+        @RequestParam("newSignupId") newSignupId: Long,
+    ): ResponseEntity<NewSignup> = ResponseEntity.ok(authService.resetVerificationToken(newSignupId))
 
     @PostMapping("/forgot-password")
     fun forgotPassword(

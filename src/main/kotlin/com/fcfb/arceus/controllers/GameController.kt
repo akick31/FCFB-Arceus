@@ -73,17 +73,17 @@ class GameController(
         @RequestParam("week") week: Int,
     ): ResponseEntity<List<Game>> = ResponseEntity.status(201).body(gameService.startWeek(season, week))
 
-    @PostMapping("/{channelId}/end")
+    @PostMapping("/end")
     fun endGame(
-        @PathVariable("channelId") channelId: ULong,
+        @RequestParam("channelId") channelId: ULong,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.endSingleGame(channelId))
 
     @PostMapping("/end-all")
     fun endAllGames(): ResponseEntity<List<Game>> = ResponseEntity.ok(gameService.endAllGames())
 
-    @PostMapping("/{channelId}/chew")
+    @PostMapping("/chew")
     fun chewGame(
-        @PathVariable("channelId") channelId: ULong,
+        @RequestParam("channelId") channelId: ULong,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.chewGame(channelId))
 
     @PutMapping("/{gameId}/coin-toss")
@@ -120,9 +120,9 @@ class GameController(
         @RequestParam("requestMessageId") requestMessageId: String,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.getGameByRequestMessageId("\"$requestMessageId\""))
 
-    @GetMapping("/platform/{id}")
+    @GetMapping("/platform")
     fun getGameByPlatformId(
-        @PathVariable("id") platformId: ULong,
+        @RequestParam("platformId") platformId: ULong,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.getGameByPlatformId(platformId))
 
     @PutMapping("/{gameId}/sub")
@@ -132,9 +132,9 @@ class GameController(
         @RequestParam("discordId") discordId: String,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.subCoachIntoGame(gameId, team, discordId))
 
-    @PostMapping("/{channelId}/restart")
+    @PostMapping("/restart")
     suspend fun restartGame(
-        @PathVariable("channelId") channelId: ULong,
+        @RequestParam("channelId") channelId: ULong,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.restartGame(channelId))
 
     @PutMapping("/{gameId}/close-game-pinged")
@@ -153,8 +153,8 @@ class GameController(
         return ResponseEntity.noContent().build()
     }
 
-    @DeleteMapping("/{channelId}")
+    @DeleteMapping("")
     fun deleteOngoingGame(
-        @PathVariable("channelId") channelId: ULong,
+        @RequestParam("channelId") channelId: ULong,
     ): ResponseEntity<Boolean> = ResponseEntity.ok(gameService.deleteOngoingGame(channelId))
 }
