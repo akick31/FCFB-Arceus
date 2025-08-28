@@ -45,7 +45,7 @@ class TeamControllerTest {
         subdivision: Subdivision = Subdivision.FCS,
         offensivePlaybook: OffensivePlaybook = OffensivePlaybook.AIR_RAID,
         defensivePlaybook: DefensivePlaybook = DefensivePlaybook.FIVE_TWO,
-        conference: Conference = Conference.SWAC,
+        conference: Conference = Conference.COLONIAL,
     ): Team {
         return Team(
             logo = "logo$id.png",
@@ -94,7 +94,7 @@ class TeamControllerTest {
         mockMvc.perform(get("/api/v1/arceus/team/1"))
             .andExpect(status().isOk)
             .andExpect(jsonPath("$.name").value("Team1"))
-            .andExpect(jsonPath("$.conference").value("SWAC"))
+            .andExpect(jsonPath("$.conference").value("COLONIAL"))
     }
 
     @Test
@@ -148,7 +148,7 @@ class TeamControllerTest {
               "primaryColor":"#111111","secondaryColor":"#222222",
               "currentWins":1,"currentLosses":1,
               "subdivision":"FCS","offensivePlaybook":"AIR_RAID",
-              "defensivePlaybook":"FIVE_TWO","conference":"SWAC",
+              "defensivePlaybook":"FIVE_TWO","conference":"COLONIAL",
               "coachesPollRanking":5,"playoffCommitteeRanking":6,
               "currentConferenceWins":1,"currentConferenceLosses":0,
               "overallWins":10,"overallLosses":2,
@@ -182,7 +182,7 @@ class TeamControllerTest {
               "shortName":"T1","primaryColor":"#111111","secondaryColor":"#222222",
               "currentWins":1,"currentLosses":1,
               "subdivision":"FCS","offensivePlaybook":"AIR_RAID",
-              "defensivePlaybook":"FIVE_TWO","conference":"SWAC",
+              "defensivePlaybook":"FIVE_TWO","conference":"COLONIAL",
               "coachesPollRanking":5,"playoffCommitteeRanking":6,
               "currentConferenceWins":1,"currentConferenceLosses":0,
               "overallWins":10,"overallLosses":2,
