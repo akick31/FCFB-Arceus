@@ -791,8 +791,12 @@ class GameService(
         val gamesToChew = getAllOngoingGames()
         val chewedGames = mutableListOf<Game>()
         for (game in gamesToChew) {
-            chewedGames.add(chewGame(game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
-            ?: throw GameNotFoundException("Game not found for Platform ID: ${game.homePlatformId}")))
+            chewedGames.add(
+                chewGame(
+                    game.homePlatformId?.toULong() ?: game.awayPlatformId?.toULong()
+                        ?: throw GameNotFoundException("Game not found for Platform ID: ${game.homePlatformId}"),
+                ),
+            )
         }
         return chewedGames
     }
