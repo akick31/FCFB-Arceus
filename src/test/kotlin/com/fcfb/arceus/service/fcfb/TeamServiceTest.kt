@@ -66,6 +66,7 @@ class TeamServiceTest {
             defensivePlaybook = DefensivePlaybook.FOUR_THREE,
             averageResponseTime = 0.0,
             delayOfGameWarningOptOut = false,
+            scoutingReportHiddenColumns = null,
         )
 
     @BeforeEach

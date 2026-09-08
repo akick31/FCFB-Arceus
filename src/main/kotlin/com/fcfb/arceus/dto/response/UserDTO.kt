@@ -32,4 +32,5 @@ data class UserDTO(
     var defensivePlaybook: DefensivePlaybook,
     var averageResponseTime: Double,
     var delayOfGameWarningOptOut: Boolean,
+    var scoutingReportHiddenColumns: List<String>?,
 )

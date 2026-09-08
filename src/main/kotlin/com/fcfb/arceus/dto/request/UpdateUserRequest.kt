@@ -58,5 +58,6 @@ data class UpdateUserRequest(
             defensivePlaybook = defensivePlaybook,
             averageResponseTime = 0.0,
             delayOfGameWarningOptOut = false,
+            scoutingReportHiddenColumns = null,
         )
 }
