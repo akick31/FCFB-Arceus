@@ -86,6 +86,12 @@ class PlayController(
         @RequestParam("discordId") discordId: String,
     ) = playService.getAllPlaysByDiscordId(discordId)
 
+    @Operation(summary = "List team's plays")
+    @GetMapping("/all/team")
+    fun getAllPlaysByTeam(
+        @RequestParam("team") team: String,
+    ) = playService.getAllPlaysByTeam(team)
+
     @Operation(summary = "Delay of game counts")
     @GetMapping("/delay-of-game")
     fun getDelayOfGameCountsByWeek(

@@ -1688,6 +1688,8 @@ class GameService(
             throw GameNotFoundException("No games found when getting all games")
         }
 
+    fun getGamesByIds(gameIds: List<Int>): List<Game> = gameRepository.findAllById(gameIds).toList()
+
     private fun getAllOngoingGames() =
         gameRepository.getAllOngoingGames().ifEmpty {
             throw GameNotFoundException("No ongoing games found")
