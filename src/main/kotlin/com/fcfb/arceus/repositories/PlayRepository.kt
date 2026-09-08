@@ -30,6 +30,18 @@ interface PlayRepository : CrudRepository<Play, Int> {
     )
     fun getAllPlaysByDiscordId(discordId: String): List<Play>
 
+    @Query(
+        value =
+            "SELECT play.* " +
+                "FROM play " +
+                "JOIN game g ON play.game_id = g.game_id " +
+                "WHERE (g.home_team = :team OR g.away_team = :team)" +
+                " AND g.game_type != 'SCRIMMAGE' " +
+                "ORDER BY play_id DESC;",
+        nativeQuery = true,
+    )
+    fun getAllPlaysByTeam(team: String): List<Play>
+
     @Query(value = "SELECT * FROM play WHERE game_id = ? AND play_finished = false ORDER BY play_id DESC LIMIT 1", nativeQuery = true)
     fun getCurrentPlay(gameId: Int): Play?
 

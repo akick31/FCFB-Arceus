@@ -39,6 +39,12 @@ class GameController(
         @RequestParam("id") id: Int,
     ): ResponseEntity<Game> = ResponseEntity.ok(gameService.getGameById(id))
 
+    @Operation(summary = "Get games by ID")
+    @PostMapping("/batch")
+    fun getGamesByIds(
+        @RequestBody gameIds: List<Int>,
+    ): ResponseEntity<List<Game>> = ResponseEntity.ok(gameService.getGamesByIds(gameIds))
+
     @Operation(summary = "List games")
     @GetMapping
     fun getFilteredGames(

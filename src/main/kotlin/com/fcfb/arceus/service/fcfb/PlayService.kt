@@ -234,6 +234,11 @@ class PlayService(
             throw PlayNotFoundException("No plays found for user $discordId")
         }
 
+    fun getAllPlaysByTeam(team: String) =
+        playRepository.getAllPlaysByTeam(team).ifEmpty {
+            throw PlayNotFoundException("No plays found for team $team")
+        }
+
     fun updatePlay(play: Play): Play {
         val existingPlay = getPlayById(play.playId)
 
