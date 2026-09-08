@@ -81,6 +81,13 @@ class UserController(
         @RequestParam username: String,
     ) = userService.addHistoricalUsername(userId, username)
 
+    @Operation(summary = "Update scouting report hidden columns preference")
+    @PutMapping("/scouting-report-columns")
+    fun updateScoutingReportHiddenColumns(
+        @RequestParam id: Long,
+        @RequestBody hiddenColumns: List<String>,
+    ): UserDTO = userService.updateScoutingReportHiddenColumns(id, hiddenColumns)
+
     @Operation(summary = "Update password")
     @PutMapping("/update/password")
     fun updateUserPassword(

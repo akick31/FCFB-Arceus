@@ -62,6 +62,7 @@ class UserControllerTest {
             defensivePlaybook = DefensivePlaybook.FOUR_THREE,
             averageResponseTime = 15.5,
             delayOfGameWarningOptOut = false,
+            scoutingReportHiddenColumns = null,
         )
 
     @BeforeEach

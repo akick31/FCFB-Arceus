@@ -4,6 +4,7 @@ import com.fcfb.arceus.enums.team.DefensivePlaybook
 import com.fcfb.arceus.enums.team.OffensivePlaybook
 import com.fcfb.arceus.enums.user.CoachPosition
 import com.fcfb.arceus.enums.user.UserRole
+import org.hibernate.annotations.Type
 import javax.persistence.Basic
 import javax.persistence.Column
 import javax.persistence.Entity
@@ -151,6 +152,10 @@ class User {
     @Basic
     @Column(name = "api_key_hash")
     var apiKeyHash: String? = null
+
+    @Type(type = "json")
+    @Column(name = "scouting_report_hidden_columns", columnDefinition = "longtext")
+    var scoutingReportHiddenColumns: MutableList<String>? = mutableListOf()
 
     constructor(
         username: String,

@@ -49,6 +49,7 @@ class UserDTOTest {
                 defensivePlaybook = DefensivePlaybook.FOUR_THREE,
                 averageResponseTime = 120.5,
                 delayOfGameWarningOptOut = false,
+                scoutingReportHiddenColumns = null,
             )
 
         assertEquals(1L, userDTO.id)
@@ -109,6 +110,7 @@ class UserDTOTest {
                 defensivePlaybook = DefensivePlaybook.THREE_FOUR,
                 averageResponseTime = 0.0,
                 delayOfGameWarningOptOut = true,
+                scoutingReportHiddenColumns = null,
             )
 
         assertEquals(null, userDTO.discordId)
@@ -274,6 +276,7 @@ class UserDTOTest {
             defensivePlaybook = DefensivePlaybook.FOUR_THREE,
             averageResponseTime = 120.5,
             delayOfGameWarningOptOut = false,
+            scoutingReportHiddenColumns = null,
         )
     }
 }

@@ -248,6 +248,19 @@ class UserService(
         return dtoConverter.convertToUserDTO(user)
     }
 
+    fun updateScoutingReportHiddenColumns(
+        id: Long,
+        hiddenColumns: List<String>,
+    ): UserDTO {
+        requireSelfOrAdmin(id)
+        val user = getUserById(id)
+        user.apply {
+            this.scoutingReportHiddenColumns = hiddenColumns.toMutableList()
+        }
+        saveUser(user)
+        return dtoConverter.convertToUserDTO(user)
+    }
+
     private fun requireSelfOrAdmin(id: Long) {
         if (AuthContext.currentUserId() != id && !AuthContext.isAdmin()) {
             throw UserForbiddenException()
