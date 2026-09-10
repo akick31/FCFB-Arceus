@@ -26,6 +26,7 @@ class SeasonService(
     private val scheduleRepository: ScheduleRepository,
     private val teamSeasonConferenceService: TeamSeasonConferenceService,
     private val scheduleValidationService: ScheduleValidationService,
+    private val rankingMetricService: RankingMetricService,
 ) {
     fun startSeason(): Season {
         val pendingSeason =
@@ -127,8 +128,10 @@ class SeasonService(
         val season =
             seasonRepository.findBySeasonNumber(seasonNumber)
                 ?: throw CurrentSeasonNotFoundException()
+        val previousWeek = season.currentWeek
         season.currentWeek = week
         seasonRepository.save(season)
+        (previousWeek until week).forEach { completedWeek -> computeRankingMetricsSafely(seasonNumber, completedWeek) }
         return season
     }
 
@@ -142,8 +145,21 @@ class SeasonService(
 
     fun incrementWeek() {
         val season = getCurrentSeason()
+        val previousWeek = season.currentWeek
         season.currentWeek = season.currentWeek.plus(1)
         seasonRepository.save(season)
+        computeRankingMetricsSafely(season.seasonNumber, previousWeek)
+    }
+
+    private fun computeRankingMetricsSafely(
+        season: Int,
+        week: Int,
+    ) {
+        try {
+            rankingMetricService.computeMetrics(season, week)
+        } catch (e: Exception) {
+            Logger.error("Unable to compute ranking metrics for season $season week $week", e)
+        }
     }
 
     fun getAllSeasons(): List<Season> = seasonRepository.getAllSeasons()
