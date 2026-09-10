@@ -140,7 +140,7 @@ class OutOfConferenceScheduleGenerationService(
         return ScheduleEntry(
             season = season,
             week = week,
-            subdivision = team1.subdivision ?: Subdivision.FBS,
+            subdivision = team1.subdivision ?: Subdivision.FCFB,
             homeTeam = home,
             awayTeam = away,
             gameType = GameType.OUT_OF_CONFERENCE,

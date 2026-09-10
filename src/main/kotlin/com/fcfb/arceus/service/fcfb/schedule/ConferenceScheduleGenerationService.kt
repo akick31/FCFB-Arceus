@@ -717,7 +717,7 @@ class ConferenceScheduleGenerationService(
             try {
                 Logger.info("[${index + 1}/${conferences.size}] Generating schedule for ${conference.code}...")
                 val teams = (teamService.getTeamsInConference(conference.code) ?: emptyList()).filter { it.active }
-                val subdivision = teams.firstOrNull()?.subdivision ?: Subdivision.FBS
+                val subdivision = teams.firstOrNull()?.subdivision ?: Subdivision.FCFB
                 val rules = conferenceRulesService.getConferenceRules(conference.code)
 
                 val request =

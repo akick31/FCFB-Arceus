@@ -12,7 +12,7 @@ open class AppConfig {
     open fun restTemplate(): RestTemplate {
         val factory = HttpComponentsClientHttpRequestFactory()
         factory.setConnectTimeout(5000)
-        factory.setReadTimeout(5000)
+        factory.setReadTimeout(20000)
         val restTemplate = RestTemplate()
         restTemplate.requestFactory = factory
         restTemplate.messageConverters.add(MappingJackson2HttpMessageConverter())
