@@ -614,13 +614,15 @@ object GameStatsCalculator {
             return currentQuarterScore
         }
         if (play.possession == possession) {
-            if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN) {
+            if (play.actualResult == ActualResult.TOUCHDOWN || play.actualResult == ActualResult.KICKING_TEAM_TOUCHDOWN ||
+                play.actualResult == ActualResult.PUNT_TEAM_TOUCHDOWN
+            ) {
                 return currentQuarterScore + 6
             }
             if (play.playCall == PlayCall.PAT && play.actualResult == ActualResult.GOOD) {
                 return currentQuarterScore + 1
             }
-            if (play.playCall == PlayCall.TWO_POINT && play.actualResult == ActualResult.GOOD) {
+            if (play.playCall == PlayCall.TWO_POINT && play.actualResult == ActualResult.SUCCESS) {
                 return currentQuarterScore + 2
             }
             if (play.playCall == PlayCall.FIELD_GOAL && play.result == Scenario.GOOD) {
@@ -633,10 +635,7 @@ object GameStatsCalculator {
             ) {
                 return currentQuarterScore + 6
             }
-            if (play.playCall == PlayCall.PAT && play.actualResult == ActualResult.DEFENSE_TWO_POINT) {
-                return currentQuarterScore + 1
-            }
-            if (play.playCall == PlayCall.TWO_POINT && play.actualResult == ActualResult.DEFENSE_TWO_POINT) {
+            if (play.actualResult == ActualResult.DEFENSE_TWO_POINT) {
                 return currentQuarterScore + 2
             }
             if (play.actualResult == ActualResult.SAFETY) {
